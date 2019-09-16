@@ -14,6 +14,7 @@ import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.springframework.web.util.HtmlUtils;
+import org.vaadin.viritin.button.MButton;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -34,6 +35,7 @@ public class ProfilesListOverviewPanel extends Panel {
 
   private Button addNew;
   private Button deleteProfileAction;
+  private Button ldifExportAction;
 
   private Consumer<DirectoryObject> itemButtonClickedConsumer = null;
   private Grid.Column<DirectoryObject, Button> itemBtn;
@@ -82,6 +84,15 @@ public class ProfilesListOverviewPanel extends Panel {
     deleteProfileAction.addStyleName("deleteProfile");
     actionLine.addComponent(deleteProfileAction);
     layout.addComponent(actionLine);
+
+    ldifExportAction = new Button("");
+    ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    ldifExportAction.addStyleName("ldifExport");
+//    addNew.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(viewName + "/create"));
+    actionLine.addComponent(ldifExportAction);
 
     gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
@@ -181,6 +192,9 @@ public class ProfilesListOverviewPanel extends Panel {
 
   public Button getDeleteButton() {
     return deleteProfileAction;
+  }
+
+  public Button getLdifExportButton() { return ldifExportAction;
   }
 
   public CheckBox getCheckBox() {

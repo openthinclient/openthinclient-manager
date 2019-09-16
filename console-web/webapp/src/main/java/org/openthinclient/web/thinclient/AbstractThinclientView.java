@@ -16,9 +16,11 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang3.StringUtils;
+import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
@@ -35,6 +37,7 @@ import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
@@ -45,6 +48,9 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public abstract class AbstractThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+  @Autowired
+  private LDAPConnectionDescriptor ldapConnectionDescriptor;
 
   protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
@@ -508,7 +514,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public ProfilesListOverviewPanel createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
-    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop);
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(ldapConnectionDescriptor));
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);

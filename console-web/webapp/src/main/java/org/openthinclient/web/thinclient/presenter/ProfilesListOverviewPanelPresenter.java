@@ -7,7 +7,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.MultiSelectionModel;
+import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
@@ -17,9 +17,9 @@ import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.vaadin.viritin.button.MButton;
 
-import java.util.*;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -30,16 +30,27 @@ public class ProfilesListOverviewPanelPresenter {
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
+  private Registration ldifExportClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
+  private LdifExporterService ldifExporterService;
 
-  public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel) {
+  public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
     this.thinclientView = thinclientView;
     this.panel = panel;
+    this.ldifExporterService = ldifExporterService;
 
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
+    addLdifExportButtonClickHandler(this::handleLdifExportAction);
     panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
+  }
+
+  private void handleLdifExportAction(Button.ClickEvent event) {
+    Set<DirectoryObject> selectedItems = panel.getSelectedItems();
+
+    ldifExporterService.performAction(selectedItems);
+
   }
 
   private void handleDeleteAction(Button.ClickEvent event) {
@@ -122,6 +133,11 @@ public class ProfilesListOverviewPanelPresenter {
     deleteClickListenerRegistration = panel.getDeleteButton().addClickListener(clickListener);
   }
 
+  public void addLdifExportButtonClickHandler(Button.ClickListener clickListener) {
+    if (ldifExportClickListenerRegistration != null) ldifExportClickListenerRegistration.remove();
+    ldifExportClickListenerRegistration = panel.getLdifExportButton().addClickListener(clickListener);
+  }
+
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     panel.setItemButtonClickedConsumer(itemButtonClickedConsumer);
   }
@@ -145,4 +161,6 @@ public class ProfilesListOverviewPanelPresenter {
     if (deleteClickListenerRegistration != null) deleteClickListenerRegistration.remove();
     panel.getDeleteButton().setEnabled(false);
   }
+
+
 }
