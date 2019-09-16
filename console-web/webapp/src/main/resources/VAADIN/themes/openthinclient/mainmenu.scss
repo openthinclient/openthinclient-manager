@@ -93,6 +93,11 @@
       .v-icon + .valo-menu-item-caption {
           margin-left: 0;
       }
+
+      [class*="caption"] {
+        width: unset;
+        max-width: unset;
+      }
     }
 
     #sidebaritem_menulinktosettings, #sidebaritem_menulinkfromsettings {
