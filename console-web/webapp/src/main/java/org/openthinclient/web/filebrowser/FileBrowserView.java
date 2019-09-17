@@ -59,7 +59,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = "filebrowser", ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 90)
 @ThemeIcon("icon/filebrowser.svg")
-public final class FileBrowserView extends Panel implements View {
+public final class FileBrowserView extends Panel implements View, FileUploadView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
    public static final String ICON_PREFIX_VAADIN = "vaadin:";
@@ -392,7 +392,12 @@ public final class FileBrowserView extends Panel implements View {
 
    }
 
-   class FileSystemDataProvider extends AbstractBackEndHierarchicalDataProvider<File, FilenameFilter> {
+  @Override
+  public void uploadSucceed(Path file) {
+    refresh(file);
+  }
+
+  class FileSystemDataProvider extends AbstractBackEndHierarchicalDataProvider<File, FilenameFilter> {
 
       private  final Comparator<File> nameComparator = (fileA, fileB) -> {
          return String.CASE_INSENSITIVE_ORDER.compare(fileA.getName(), fileB.getName());

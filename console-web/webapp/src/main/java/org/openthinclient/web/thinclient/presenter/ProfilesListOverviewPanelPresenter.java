@@ -4,6 +4,8 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
@@ -17,6 +19,12 @@ import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.vaadin.viritin.button.MButton;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -42,15 +50,15 @@ public class ProfilesListOverviewPanelPresenter {
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
-    addLdifExportButtonClickHandler(this::handleLdifExportAction);
+    extendLdifExportButton(createResource());
     panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
   }
 
-  private void handleLdifExportAction(Button.ClickEvent event) {
-    Set<DirectoryObject> selectedItems = panel.getSelectedItems();
-
-    ldifExporterService.performAction(selectedItems);
-
+  private StreamResource createResource() {
+    return new StreamResource((StreamResource.StreamSource) () -> {
+      Set<DirectoryObject> selectedItems = panel.getSelectedItems();
+      return new ByteArrayInputStream(ldifExporterService.performAction(selectedItems));
+    }, "export.ldif");
   }
 
   private void handleDeleteAction(Button.ClickEvent event) {
@@ -133,9 +141,11 @@ public class ProfilesListOverviewPanelPresenter {
     deleteClickListenerRegistration = panel.getDeleteButton().addClickListener(clickListener);
   }
 
-  public void addLdifExportButtonClickHandler(Button.ClickListener clickListener) {
-    if (ldifExportClickListenerRegistration != null) ldifExportClickListenerRegistration.remove();
-    ldifExportClickListenerRegistration = panel.getLdifExportButton().addClickListener(clickListener);
+  public void extendLdifExportButton(StreamResource myResource) {
+    FileDownloader fileDownloader = new FileDownloader(myResource);
+    fileDownloader.extend(panel.getLdifExportButton());
+
+
   }
 
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {

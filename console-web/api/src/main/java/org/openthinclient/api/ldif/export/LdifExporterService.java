@@ -5,6 +5,8 @@ import org.apache.directory.server.tools.util.ListenerParameter;
 import org.apache.directory.server.tools.util.Parameter;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -15,8 +17,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class LdifExporterService {
+
+  protected final Logger log = LoggerFactory.getLogger(getClass());
 
   static final String BASEDN_REPLACE = "#%BASEDN%#";
   LDAPConnectionDescriptor lcd;
@@ -25,14 +30,14 @@ public class LdifExporterService {
     this.lcd = ldapConnectionDescriptor;
   }
 
-  public void performAction(Set<DirectoryObject> activatedNodes) {
+  public byte[] performAction(Set<DirectoryObject> directoryObjects) {
 
 
 //    final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor.) activatedNodes[0].getLookup().lookup(LDAPConnectionDescriptor.class);
 
 
 //    final String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
-    final String dn = activatedNodes.iterator().next().getDn();
+//    final String dn = activatedNodes.iterator().next().getDn();
     try {
       final NameCallback nc = new NameCallback("Bind DN");
       final PasswordCallback pc = new PasswordCallback("Password", false);
@@ -59,7 +64,7 @@ public class LdifExporterService {
       params.add(new Parameter(ExportCommandExecutor.SCOPE_PARAMETER,
           ExportCommandExecutor.SCOPE_SUBTREE));
       params.add(new Parameter(ExportCommandExecutor.EXPORTPOINT_PARAMETER,
-          dn));
+          directoryObjects.stream().map(DirectoryObject::getDn).collect(Collectors.toSet())));
       String path = "dir-objects.ldif";
 
       final File temp = File.createTempFile("openthinclient-export-",".ldif");
@@ -107,7 +112,7 @@ public class LdifExporterService {
 //          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
       } finally {
 //          handle.finish();
-          createExportFile(temp, path, lcd.getBaseDN());
+          return createExportFile(temp, path, lcd.getBaseDN());
 //          bar.finished(Messages.getString("LdifExportPanel.name"),
 //              Messages.getString("LdifExportPanel.text"));
       }
@@ -118,9 +123,10 @@ public class LdifExporterService {
 //        bar.finished("LdifExportPanel.name", t.toString());
     }
 
+    return null;
   }
 
-  private static void createExportFile(File tempFile, String path, String dn) throws Exception {
+  private static byte[] createExportFile(File tempFile, String path, String dn) throws Exception {
     final FileInputStream fstream = new FileInputStream(tempFile);
     final DataInputStream in = new DataInputStream(fstream);
     final BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -128,29 +134,17 @@ public class LdifExporterService {
     String strLine;
 
     // replace last occurrence of dn with "#%BASEDN%#" on relevant entries
-    final Pattern toReplace = Pattern.compile(
-        "((^dn:)|(^uniquemember:)|(^l:)) .*" + dn + "$",
-        Pattern.CASE_INSENSITIVE);
+    final Pattern toReplace = Pattern.compile("((^dn:)|(^uniquemember:)|(^l:)) .*" + dn + "$", Pattern.CASE_INSENSITIVE);
     while ((strLine = br.readLine()) != null) {
       final Matcher m = toReplace.matcher(strLine);
       if (m.matches()) {
         final int pos = strLine.lastIndexOf(dn);
-        content.append(strLine.substring(0, pos) + BASEDN_REPLACE).append(
-            System.getProperty("line.separator"));
+        content.append(strLine.substring(0, pos) + BASEDN_REPLACE).append(System.getProperty("line.separator"));
       } else
         content.append(strLine).append(System.getProperty("line.separator"));
     }
     in.close();
     tempFile.delete();
-    OutputStream os = null;
-    try {
-      os = new BufferedOutputStream(new FileOutputStream(path));
-      os.write(content.toString().getBytes());
-    } finally {
-      if (null != os) {
-        os.flush();
-        os.close();
-      }
-    }
+    return content.toString().getBytes();
   }
 }

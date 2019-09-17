@@ -26,10 +26,10 @@ public class FileUploadSubWindow extends Window {
    private Path doc;
    private Label fileUploadInfoLabel;
 
-   private FileBrowserView fileBrowserView;
+   private FileUploadView fileBrowserView;
    private IMessageConveyor mc;
 
-   public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHomePath) {
+   public FileUploadSubWindow(FileUploadView fileBrowserView, Path doc, Path managerHomePath) {
       
       this.fileBrowserView = fileBrowserView;
       
@@ -97,7 +97,7 @@ public class FileUploadSubWindow extends Window {
       public void uploadSucceeded(SucceededEvent event) {
          fileUploadInfoLabel.setValue(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_UPLOAD_SUCCESS, file.getFileName()));
          fileUploadInfoLabel.setEnabled(true);
-         fileBrowserView.refresh(file);
+         fileBrowserView.uploadSucceed(file);
       }
   }   
 }

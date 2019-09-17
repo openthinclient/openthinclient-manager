@@ -11,17 +11,23 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.ldif.export.LdifExporterService;
+import org.openthinclient.api.ldif.export.LdifImporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.filebrowser.FileUploadSubWindow;
+import org.openthinclient.web.filebrowser.FileUploadView;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
@@ -40,15 +46,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-public abstract class AbstractThinclientView extends Panel implements View {
+public abstract class AbstractThinclientView extends Panel implements View, FileUploadView {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+  @Autowired
+  protected ManagerHome managerHome;
   @Autowired
   private LDAPConnectionDescriptor ldapConnectionDescriptor;
 
@@ -142,6 +151,26 @@ public abstract class AbstractThinclientView extends Panel implements View {
     action.addStyleName("thinclient-action-button");
     action.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(target));
     actionRow.addComponent(action);
+  }
+
+  Path uploadDir;
+  public void addCreateLdifImportButton(String caption, String icon) {
+    this.uploadDir = managerHome.getLocation().toPath();
+    Button uploadButton = new Button(caption /*, new ThemeResource(icon)*/);
+    uploadButton.addClickListener(e ->
+        UI.getCurrent().addWindow(new FileUploadSubWindow(this, uploadDir, managerHome.getLocation().toPath()))
+    );
+    uploadButton.addStyleName("thinclient-action-button");
+    uploadButton.setIcon(VaadinIcons.UPLOAD);
+//    uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    actionRow.addComponent(uploadButton);
+  }
+
+  @Override
+  public void uploadSucceed(Path file) {
+    LdifImporterService lis = new LdifImporterService(ldapConnectionDescriptor);
+    lis.importAction(file.toFile());
+    // TODO refresh, feedback?
   }
 
   protected void addOverviewComponent(Component c) {

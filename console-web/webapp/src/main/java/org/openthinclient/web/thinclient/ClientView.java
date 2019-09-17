@@ -68,8 +68,6 @@ public final class ClientView extends AbstractThinclientView {
   public static final ConsoleWebMessages TITLE_KEY = UI_CLIENT_HEADER;
 
   @Autowired
-  private ManagerHome managerHome;
-  @Autowired
   private PrinterService printerService;
   @Autowired
   private ApplicationService applicationService;
@@ -106,6 +104,7 @@ public final class ClientView extends AbstractThinclientView {
   public void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ICON, NAME + "/create");
+    addCreateLdifImportButton("Import LDIF", ICON);
   }
 
   @Override

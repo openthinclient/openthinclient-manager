@@ -6,6 +6,8 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
@@ -86,6 +88,7 @@ public class ProfilesListOverviewPanel extends Panel {
     layout.addComponent(actionLine);
 
     ldifExportAction = new Button("");
+    ldifExportAction.setDescription("Export LDIF");
     ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_SMALL);
