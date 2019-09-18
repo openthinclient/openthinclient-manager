@@ -158,7 +158,7 @@ public class DashboardView extends Panel implements View {
     private Label newPackagesLabel = new Label();
 
     public UpdatePanel() {
-      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION));
+      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION), new ThemeResource("icon/bell.svg"));
       addStyleNames("update-notification", "size-1x2");
 
       if(updateChecker.hasNetworkError()) {
