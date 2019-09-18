@@ -74,7 +74,7 @@
         margin-top: 0;
       }
 
-      .v-slot-dashboard-panel-image {
+      .v-slot-dashboard-panel-image-circle {
         display: block !important;
         margin-top: 1.2em;
 
@@ -178,11 +178,9 @@
     .dashboard-panel.size-1x2 {
       width: 30em;
       .dashboard-panel-image {
-        background: none;
         height: 2em;
-      }
-      .dashboard-panel-title {
-        margin-top: 0.2em;
+        margin: 0 1ch;
+        background: none;
       }
     }
 
