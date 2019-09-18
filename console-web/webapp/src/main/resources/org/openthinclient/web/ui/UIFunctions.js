@@ -17,3 +17,10 @@ function disableSpellcheck() {
     node.setAttribute('autocomplete', 'off')
   })
 }
+
+function updateIFrameLoadingClass() {
+  document.querySelectorAll('.v-browserframe.loading').forEach(browserFrame =>
+    browserFrame.querySelector('iframe').onload = () =>
+        browserFrame.classList.remove('loading')
+  )
+}

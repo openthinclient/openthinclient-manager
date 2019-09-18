@@ -120,11 +120,7 @@ public class DashboardView extends Panel implements View {
 	  toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
-    dashboardPanels.addComponents(helpPanel, toolsPanel);
-
-    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
-    newsBrowser.addStyleNames("size-2x3", "dashboard-panel");
-    dashboardPanels.addComponent(newsBrowser);
+    dashboardPanels.addComponents(helpPanel, toolsPanel, new NewsBrowser());
 
     return dashboardPanels;
   }
@@ -162,7 +158,7 @@ public class DashboardView extends Panel implements View {
     private Label newPackagesLabel = new Label();
 
     public UpdatePanel() {
-      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION));
+      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION), new ThemeResource("icon/bell.svg"));
       addStyleNames("update-notification", "size-1x2");
 
       if(updateChecker.hasNetworkError()) {
@@ -212,6 +208,27 @@ public class DashboardView extends Panel implements View {
         newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_CURRENT));
         newPackagesLabel.setIcon(VaadinIcons.CHECK);
       }
+    }
+  }
+
+  class NewsBrowser extends CssLayout {
+    public NewsBrowser() {
+      super();
+      addStyleNames("news-browser", "dashboard-panel", "size-2x3");
+
+      BrowserFrame frame = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
+      frame.addStyleName("loading");
+
+      CssLayout fallback = new CssLayout();
+      fallback.addComponents(
+        new Image(null, new ThemeResource("open_news.png")),
+        new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_NEW_BROWSER_FALLBACK), ContentMode.HTML)
+        );
+      fallback.addStyleName("fallback");
+
+      addComponents(frame, fallback);
+
+      JavaScript.getCurrent().execute("updateIFrameLoadingClass()");
     }
   }
 
