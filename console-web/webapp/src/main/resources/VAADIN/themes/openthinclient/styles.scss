@@ -72,6 +72,12 @@ b {
   font-weight: bold;
 }
 
+@keyframes makeVisible {
+	to {
+		visibility: visible;
+	}
+}
+
 .openthinclient {
   p {
     font-weight: normal;
