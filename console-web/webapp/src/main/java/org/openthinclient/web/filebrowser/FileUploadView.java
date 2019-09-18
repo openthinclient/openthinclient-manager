@@ -6,4 +6,5 @@ public interface FileUploadView {
 
   void uploadSucceed(Path file);
 
+  void uploadFailed(Exception exception);
 }

@@ -99,5 +99,9 @@ public class FileUploadSubWindow extends Window {
          fileUploadInfoLabel.setEnabled(true);
          fileBrowserView.uploadSucceed(file);
       }
+
+      public void uploadFailed(Upload.FailedEvent event) {
+         fileBrowserView.uploadFailed(event.getReason());
+      }
   }   
 }

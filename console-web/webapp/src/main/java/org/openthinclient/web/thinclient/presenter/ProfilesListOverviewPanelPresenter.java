@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -56,8 +57,8 @@ public class ProfilesListOverviewPanelPresenter {
 
   private StreamResource createResource() {
     return new StreamResource((StreamResource.StreamSource) () -> {
-      Set<DirectoryObject> selectedItems = panel.getSelectedItems();
-      return new ByteArrayInputStream(ldifExporterService.performAction(selectedItems));
+      Set<String> dns = panel.getSelectedItems().stream().map(DirectoryObject::getDn).collect(Collectors.toSet());
+      return new ByteArrayInputStream(ldifExporterService.performAction(dns));
     }, "export.ldif");
   }
 
@@ -144,8 +145,6 @@ public class ProfilesListOverviewPanelPresenter {
   public void extendLdifExportButton(StreamResource myResource) {
     FileDownloader fileDownloader = new FileDownloader(myResource);
     fileDownloader.extend(panel.getLdifExportButton());
-
-
   }
 
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {

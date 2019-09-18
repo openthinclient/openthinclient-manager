@@ -1,5 +1,6 @@
 package org.openthinclient.api.ldif.export;
 
+import org.apache.directory.server.tools.ToolCommandListener;
 import org.apache.directory.server.tools.commands.exportcmd.ExportCommandExecutor;
 import org.apache.directory.server.tools.util.ListenerParameter;
 import org.apache.directory.server.tools.util.Parameter;
@@ -30,7 +31,7 @@ public class LdifExporterService {
     this.lcd = ldapConnectionDescriptor;
   }
 
-  public byte[] performAction(Set<DirectoryObject> directoryObjects) {
+  public byte[] performAction(Set<String> directoryObjectsDN) {
 
 
 //    final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor.) activatedNodes[0].getLookup().lookup(LDAPConnectionDescriptor.class);
@@ -50,22 +51,14 @@ public class LdifExporterService {
 
       switch (lcd.getAuthenticationMethod()){
         case SIMPLE :
-          params.add(new Parameter(ExportCommandExecutor.AUTH_PARAMETER,
-              "simple"));
-          params.add(new Parameter(ExportCommandExecutor.USER_PARAMETER, nc
-              .getName()));
-          params.add(new Parameter(
-              ExportCommandExecutor.PASSWORD_PARAMETER, new String(pc
-              .getPassword())));
+          params.add(new Parameter(ExportCommandExecutor.AUTH_PARAMETER, "simple"));
+          params.add(new Parameter(ExportCommandExecutor.USER_PARAMETER, nc.getName()));
+          params.add(new Parameter(ExportCommandExecutor.PASSWORD_PARAMETER, new String(pc.getPassword())));
       }
 
-      params.add(new Parameter(ExportCommandExecutor.BASEDN_PARAMETER, lcd
-          .getBaseDN()));
-      params.add(new Parameter(ExportCommandExecutor.SCOPE_PARAMETER,
-          ExportCommandExecutor.SCOPE_SUBTREE));
-      params.add(new Parameter(ExportCommandExecutor.EXPORTPOINT_PARAMETER,
-          directoryObjects.stream().map(DirectoryObject::getDn).collect(Collectors.toSet())));
-      String path = "dir-objects.ldif";
+      params.add(new Parameter(ExportCommandExecutor.BASEDN_PARAMETER, lcd.getBaseDN()));
+      params.add(new Parameter(ExportCommandExecutor.SCOPE_PARAMETER, ExportCommandExecutor.SCOPE_SUBTREE));
+      params.add(new Parameter(ExportCommandExecutor.EXPORTPOINT_PARAMETER, directoryObjectsDN));
 
       final File temp = File.createTempFile("openthinclient-export-",".ldif");
       params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp
@@ -76,43 +69,42 @@ public class LdifExporterService {
           true));
 
 //        final ProgressHandle handle = ProgressHandleFactory.createHandle("LDIF export");
-//        final ListenerParameter listeners[] = new ListenerParameter[]{
-//            new ListenerParameter(
-//                ExportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
-//                new ToolCommandListener() {
-//                  public void notify(Serializable o) {
+        final ListenerParameter listeners[] = new ListenerParameter[]{
+            new ListenerParameter(
+                ExportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
+                new ToolCommandListener() {
+                  public void notify(Serializable o) {
 //                    ErrorManager.getDefault().annotate((Throwable) o,
 //                        "Exception during LDIF export");
-//                    ErrorManager.getDefault().notify((Throwable) o);
-//                  }
-//                }),
-//            new ListenerParameter(
-//                ExportCommandExecutor.OUTPUTLISTENER_PARAMETER,
-//                new ToolCommandListener() {
-//                  public void notify(Serializable o) {
+                  }
+                }),
+            new ListenerParameter(
+                ExportCommandExecutor.OUTPUTLISTENER_PARAMETER,
+                new ToolCommandListener() {
+                  public void notify(Serializable o) {
 //                    handle.progress(o.toString());
-//                  }
-//                }),
-//            new ListenerParameter(
-//                ExportCommandExecutor.ERRORLISTENER_PARAMETER,
-//                new ToolCommandListener() {
-//                  public void notify(Serializable o) {
-//                    final IOException e = new IOException(o.toString());
+                  }
+                }),
+            new ListenerParameter(
+                ExportCommandExecutor.ERRORLISTENER_PARAMETER,
+                new ToolCommandListener() {
+                  public void notify(Serializable o) {
+                    final IOException e = new IOException(o.toString());
 //                    ErrorManager.getDefault().annotate(e,
 //                        "Error during LDIF export");
 //                    ErrorManager.getDefault().notify((Throwable) o);
-//                  }
-//                })};
+                  }
+                })};
 //
 //        handle.start();
       try {
         final ExportCommandExecutor ex = new ExportCommandExecutor();
 
-        ex.execute(params.toArray(new Parameter[params.size()]), new ListenerParameter[]{});
-//          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
+//        ex.execute(params.toArray(new Parameter[params.size()]), new ListenerParameter[]{});
+          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
       } finally {
 //          handle.finish();
-          return createExportFile(temp, path, lcd.getBaseDN());
+          return createExportFile(temp, lcd.getBaseDN());
 //          bar.finished(Messages.getString("LdifExportPanel.name"),
 //              Messages.getString("LdifExportPanel.text"));
       }
@@ -126,7 +118,7 @@ public class LdifExporterService {
     return null;
   }
 
-  private static byte[] createExportFile(File tempFile, String path, String dn) throws Exception {
+  private static byte[] createExportFile(File tempFile, String dn) throws Exception {
     final FileInputStream fstream = new FileInputStream(tempFile);
     final DataInputStream in = new DataInputStream(fstream);
     final BufferedReader br = new BufferedReader(new InputStreamReader(in));

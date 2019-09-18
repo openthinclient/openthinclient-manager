@@ -397,6 +397,11 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
     refresh(file);
   }
 
+  @Override
+  public void uploadFailed(Exception exception) {
+    LOGGER.error("Upload failed.", exception);
+  }
+
   class FileSystemDataProvider extends AbstractBackEndHierarchicalDataProvider<File, FilenameFilter> {
 
       private  final Comparator<File> nameComparator = (fileA, fileB) -> {
