@@ -99,6 +99,8 @@ public class StatisticsReport extends AbstractReport {
   public static class ConfigurationSummary {
     @JsonProperty("thinclient-count")
     private int thinClientCount;
+    @JsonProperty("unregistered-count")
+    private int unrecognizedClientCount;
     @JsonProperty("application-group-count")
     private int applicationGroupCount;
     @JsonProperty("thinclient-group-count")
@@ -129,6 +131,14 @@ public class StatisticsReport extends AbstractReport {
 
     public void setThinClientGroupCount(int thinClientGroupCount) {
       this.thinClientGroupCount = thinClientGroupCount;
+    }
+
+    public int getUnrecognizedClientCount() {
+      return unrecognizedClientCount;
+    }
+
+    public void setUnrecognizedClientCount(int unrecognizedClientCount) {
+      this.unrecognizedClientCount = unrecognizedClientCount;
     }
 
     public int getThinClientCount() {
