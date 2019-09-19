@@ -4,15 +4,21 @@ import org.apache.directory.server.tools.commands.importcmd.ImportCommandExecuto
 import org.apache.directory.server.tools.util.ListenerParameter;
 import org.apache.directory.server.tools.util.Parameter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Name;
+import javax.naming.ldap.LdapContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import java.io.File;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LdifImporterService {
 
@@ -25,9 +31,8 @@ public class LdifImporterService {
     this.lcd = ldapConnectionDescriptor;
   }
 
-  public void importAction(File importFile) {
+  private void importAction(File importFile) throws Exception {
 
-    try {
       if (logger.isDebugEnabled())
         logger.debug("import following temporary file: " + importFile);
 
@@ -70,18 +75,64 @@ public class LdifImporterService {
       importCommandExecutor.execute(
           params.toArray(new Parameter[params.size()]),
           new ListenerParameter[0]);
+  }
 
-      // FIXME: implement exception/error Listener
-      // see e.g.:
-      // http://svn.apache.org/repos/asf/directory/sandbox/pamarcelot/trunks/ldapstudio-importexport-plugin/src/main/java/org/apache/directory/ldapstudio/importexport/controller/actions/ImportAction.java
-//      bar.finished(Messages.getString("LdifImportPanel.name"),
-//          Messages.getString("LdifImportPanel.text"));
+  // Following lines are copied from DirectoryEntryNode!!
+  public void importTempFile(File importFile) throws Exception {
+    final FileInputStream fstream = new FileInputStream(importFile);
+    final DataInputStream in = new DataInputStream(fstream);
+    final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    final StringBuffer content = new StringBuffer();
 
-    } catch (final Throwable t) {
-//      bar.finished();
-      logger.error("Could not import", t);
-//      ErrorManager.getDefault().annotate(t, "Could not import");
-//      ErrorManager.getDefault().notify(t);
+    String strLine;
+    final String baseDn = lcd.getBaseDN();
+
+    final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
+    final Name targetName = ctx.getNameParser("").parse("");
+
+    // check if we got a root ldif file to import
+    // if true: delete root tree and skip administrator entries
+    // (importAction/importCommandExecutor is only able to add entries!)
+    // FIXME: notice user about deleting current entries!
+    if (isRootImportLdifFile(importFile))
+      Util.deleteRecursively(ctx, targetName, "^cn=administrator[s]?$");
+
+    final Pattern toReplace = Pattern.compile(".*" + BASEDN_REPLACE + "$");
+    while ((strLine = br.readLine()) != null) {
+      final Matcher m = toReplace.matcher(strLine);
+      if (m.matches()) {
+        final int pos = strLine.lastIndexOf(BASEDN_REPLACE);
+        content.append(strLine.substring(0, pos) + baseDn).append(System.getProperty("line.separator"));
+      } else
+        content.append(strLine).append(System.getProperty("line.separator"));
     }
+    in.close();
+
+    final File tempFile = File.createTempFile("openthinclient-import-", ".ldif");
+    OutputStream os = null;
+    try {
+      os = new BufferedOutputStream(new FileOutputStream(tempFile.getAbsolutePath()));
+      os.write(content.toString().getBytes());
+    } finally {
+      if (null != os) {
+        os.flush();
+        os.close();
+      }
+    }
+
+    importAction(tempFile);
+    tempFile.delete();
+  }
+
+  private static boolean isRootImportLdifFile(File importFile) throws IOException {
+
+    final FileInputStream fstream = new FileInputStream(importFile);
+    final DataInputStream in = new DataInputStream(fstream);
+    final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+    // if second line matches "dn: BASEDN_REPLACE" it's a root import
+    br.readLine();
+    String s = br.readLine();
+    return s != null && s.matches("^dn:[ ]+" + BASEDN_REPLACE + "$");
   }
 }

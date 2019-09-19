@@ -33,12 +33,6 @@ public class LdifExporterService {
 
   public byte[] performAction(Set<String> directoryObjectsDN) {
 
-
-//    final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor.) activatedNodes[0].getLookup().lookup(LDAPConnectionDescriptor.class);
-
-
-//    final String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
-//    final String dn = activatedNodes.iterator().next().getDn();
     try {
       final NameCallback nc = new NameCallback("Bind DN");
       final PasswordCallback pc = new PasswordCallback("Password", false);
@@ -100,13 +94,11 @@ public class LdifExporterService {
       try {
         final ExportCommandExecutor ex = new ExportCommandExecutor();
 
-//        ex.execute(params.toArray(new Parameter[params.size()]), new ListenerParameter[]{});
-          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
+        ex.execute(params.toArray(new Parameter[params.size()]), new ListenerParameter[]{});
+//          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
       } finally {
 //          handle.finish();
           return createExportFile(temp, lcd.getBaseDN());
-//          bar.finished(Messages.getString("LdifExportPanel.name"),
-//              Messages.getString("LdifExportPanel.text"));
       }
     } catch (final Throwable t) {
 

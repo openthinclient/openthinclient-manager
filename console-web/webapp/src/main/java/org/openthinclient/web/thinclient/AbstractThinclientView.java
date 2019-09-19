@@ -54,7 +54,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   @Autowired
   protected ManagerHome managerHome;
   @Autowired
-  private RealmService realmService;
+  private LDAPConnectionDescriptor ldapConnectionDescriptor;
 
   protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
@@ -518,7 +518,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public ProfilesListOverviewPanel createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
-    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(ldapConnectionDescriptor));
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
