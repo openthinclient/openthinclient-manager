@@ -243,7 +243,7 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 			try {
 				namingEnumerations.add(ctx.search(dn, "(objectClass=*)", ctls));
 			} catch (NamingException e) {
-				throw new ToolCommandException("Could not retreive entriy for dn=" + dn);
+				throw new ToolCommandException("Could not retrieve entry for dn=" + dn);
 			}
 		}
 		return namingEnumerations;
