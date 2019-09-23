@@ -1,5 +1,6 @@
 package org.openthinclient.api.ldif.export;
 
+import org.apache.directory.server.tools.ToolCommandListener;
 import org.apache.directory.server.tools.commands.importcmd.ImportCommandExecutor;
 import org.apache.directory.server.tools.util.ListenerParameter;
 import org.apache.directory.server.tools.util.Parameter;
@@ -13,10 +14,10 @@ import javax.naming.ldap.LdapContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ public class LdifImporterService {
     this.lcd = ldapConnectionDescriptor;
   }
 
-  private void importAction(File importFile) throws Exception {
+  private void importAction(File importFile, Consumer<State> result) throws Exception {
 
       if (logger.isDebugEnabled())
         logger.debug("import following temporary file: " + importFile);
@@ -45,40 +46,57 @@ public class LdifImporterService {
       final List<Parameter> params = new ArrayList<Parameter>();
       final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
 
-      params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd
-          .getHostname()));
-      params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER,
-          new Integer(lcd.getPortNumber())));
+      params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd.getHostname()));
+      params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER, new Integer(lcd.getPortNumber())));
 
       switch (lcd.getAuthenticationMethod()){
         case SIMPLE :
-
-          params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER,
-              "simple"));
-          params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER, nc
-              .getName()));
-          params.add(new Parameter(ImportCommandExecutor.PASSWORD_PARAMETER,
-              new String(pc.getPassword())));
+          params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER, "simple"));
+          params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER, nc.getName()));
+          params.add(new Parameter(ImportCommandExecutor.PASSWORD_PARAMETER, new String(pc.getPassword())));
       }
-      params
-          .add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, importFile));
-      params.add(new Parameter(ImportCommandExecutor.IGNOREERRORS_PARAMETER,
-          new Boolean(true)));
-      params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER,
-          new Boolean(false)));
-      params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER,
-          new Boolean(false)));
-      params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,
-          new Boolean(false)));
+      params.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, importFile));
+      params.add(new Parameter(ImportCommandExecutor.IGNOREERRORS_PARAMETER, new Boolean(true)));
+      params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER, new Boolean(false)));
+      params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER, new Boolean(false)));
+      params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,  new Boolean(false)));
+
+      // Listeners
+    final ListenerParameter listeners[] = new ListenerParameter[]{
+        new ListenerParameter(
+            ImportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
+            new ToolCommandListener() {
+              public void notify(Serializable o) {
+                logger.error("Exception occurred while importing from ldif-file.", o);
+                result.accept(State.EXCEPTION);
+              }
+            }),
+        new ListenerParameter(
+            ImportCommandExecutor.OUTPUTLISTENER_PARAMETER,
+            new ToolCommandListener() {
+              public void notify(Serializable o) {
+                result.accept(State.SUCCESS);
+              }
+            }),
+        new ListenerParameter(
+            ImportCommandExecutor.ERRORLISTENER_PARAMETER,
+            new ToolCommandListener() {
+              public void notify(Serializable o) {
+                final IOException e = new IOException(o.toString());
+                logger.error("Error occurred while importing from ldif-file.", e);
+                result.accept(State.ERROR);
+              }
+        })};
 
       // Calling the import command
-      importCommandExecutor.execute(
-          params.toArray(new Parameter[params.size()]),
-          new ListenerParameter[0]);
+      importCommandExecutor.execute(params.toArray(new Parameter[params.size()]), listeners);
+
   }
 
+
   // Following lines are copied from DirectoryEntryNode!!
-  public void importTempFile(File importFile) throws Exception {
+  public void importTempFile(File importFile, Consumer<LdifImporterService.State> result) throws Exception {
+
     final FileInputStream fstream = new FileInputStream(importFile);
     final DataInputStream in = new DataInputStream(fstream);
     final BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -120,7 +138,7 @@ public class LdifImporterService {
       }
     }
 
-    importAction(tempFile);
+    importAction(tempFile, result);
     tempFile.delete();
   }
 
@@ -134,5 +152,11 @@ public class LdifImporterService {
     br.readLine();
     String s = br.readLine();
     return s != null && s.matches("^dn:[ ]+" + BASEDN_REPLACE + "$");
+  }
+
+  public enum State {
+    EXCEPTION,
+    ERROR,
+    SUCCESS;
   }
 }

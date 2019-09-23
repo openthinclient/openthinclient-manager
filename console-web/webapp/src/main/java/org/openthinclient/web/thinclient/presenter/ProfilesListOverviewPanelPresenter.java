@@ -8,7 +8,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
@@ -19,19 +24,19 @@ import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.vaadin.viritin.button.MButton;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CANCEL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE;
 
 public class ProfilesListOverviewPanelPresenter {
 
@@ -39,7 +44,6 @@ public class ProfilesListOverviewPanelPresenter {
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
-  private Registration ldifExportClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
   private LdifExporterService ldifExporterService;
 
@@ -57,8 +61,21 @@ public class ProfilesListOverviewPanelPresenter {
 
   private StreamResource createResource() {
     return new StreamResource((StreamResource.StreamSource) () -> {
-      Set<String> dns = panel.getSelectedItems().stream().map(DirectoryObject::getDn).collect(Collectors.toSet());
-      return new ByteArrayInputStream(ldifExporterService.performAction(dns));
+      Set<String> dns = panel.getSelectedItems().stream()
+          .map(DirectoryObject::getDn)
+          .filter(s -> s.contains(ldifExporterService.getBaseDN()))
+          .map(s -> s.substring(0, s.indexOf(ldifExporterService.getBaseDN())-1))
+          .collect(Collectors.toSet());
+
+      Set<LdifExporterService.State> exportResult = new HashSet<>();
+      byte[] bytes = ldifExporterService.performAction(dns, exportResult::add);
+      if (exportResult.contains(LdifExporterService.State.ERROR) || exportResult.contains(LdifExporterService.State.EXCEPTION)) {
+        // TODO: place error-message somewhere
+        return null;
+      } else {
+        // TODO: place success-message somewhere?
+        return new ByteArrayInputStream(bytes);
+      }
     }, "export.ldif");
   }
 

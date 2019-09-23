@@ -1,7 +1,6 @@
 package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -10,11 +9,17 @@ import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.api.ldif.export.LdifImporterService;
 import org.openthinclient.common.model.service.RealmService;
-import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
@@ -26,17 +31,17 @@ import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.MimeType;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_LDIF_IMPORT_EXPORT_HEADER;
 
@@ -59,6 +64,9 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
   private Label importErrorLabel;
   private Label exportErrorLabel;
   private Label exportSuccessLabel;
+
+  Set<LdifImporterService.State> importResult = new HashSet<>();
+  Set<LdifExporterService.State> exportResult = new HashSet<>();
 
   public LdifImportExportView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
 
@@ -93,16 +101,15 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
     content.addComponent(labelImportDescription);
     HorizontalLayout importHL = new HorizontalLayout();
     content.addComponent(importHL);
-    importSuccessLabel = new Label("Import erfolgreich", ContentMode.HTML);
+    importSuccessLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_LDIF_IMPORT_SUCCESS), ContentMode.HTML);
     importSuccessLabel.setVisible(false);
-    importErrorLabel = new Label("Import fehlgeschlagen", ContentMode.HTML);
+    importErrorLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_LDIF_IMPORT_FAILED), ContentMode.HTML);
     importErrorLabel.setVisible(false);
     importErrorLabel.setStyleName("unexpected_error");
 
     Upload upload = new Upload(null, receiver);
     upload.setButtonCaption("LDIF Import");
-    upload.setIcon(VaadinIcons.UPLOAD);
-    upload.addStyleName("thinclient-action-button");
+//    upload.setIcon(VaadinIcons.UPLOAD);
     upload.setAcceptMimeTypes("text/ldif");
     upload.addSucceededListener(receiver);
     upload.setImmediateMode(true);
@@ -131,19 +138,14 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
 
     HorizontalLayout exportHL = new HorizontalLayout();
     content.addComponent(exportHL);
-    exportSuccessLabel = new Label("Export erfolgreich", ContentMode.HTML);
+    exportSuccessLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_LDIF_EXPORT_SUCCESS), ContentMode.HTML);
     exportSuccessLabel.setVisible(false);
-    exportErrorLabel = new Label("Export fehlgeschlagen", ContentMode.HTML);
+    exportErrorLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_LDIF_EXPORT_FAILED), ContentMode.HTML);
     exportErrorLabel.setVisible(false);
     exportErrorLabel.setStyleName("unexpected_error");
     Button exportButton = new Button("LDIF Export" /*, new ThemeResource(icon)*/);
-    exportButton.addClickListener(e -> {
-          exportSuccessLabel.setVisible(false);
-          exportErrorLabel.setVisible(false);
-        }
-    );
     exportButton.addStyleName("thinclient-action-button");
-    exportButton.setIcon(VaadinIcons.DOWNLOAD);
+//    exportButton.setIcon(VaadinIcons.DOWNLOAD);
     // attach file-downloader
     FileDownloader fileDownloader = new FileDownloader(createResource());
     fileDownloader.extend(exportButton);
@@ -158,15 +160,27 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
   private StreamResource createResource() {
     return new StreamResource((StreamResource.StreamSource) () -> {
       LdifExporterService ldifExporterService = new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor());
-      return new ByteArrayInputStream(ldifExporterService.performAction(Collections.singleton("")));
+      byte[] bytes = ldifExporterService.performAction(Collections.singleton(""), exportResult::add);
+      if (exportResult.contains(LdifExporterService.State.ERROR) || exportResult.contains(LdifExporterService.State.EXCEPTION)) {
+        exportErrorLabel.setVisible(true); // will be shown only on a UI-click (..somewhere)
+        return null;
+      } else {
+        exportSuccessLabel.setVisible(true);
+        return new ByteArrayInputStream(bytes);
+      }
     }, "openthinclient-export.ldif");
   }
 
   public void uploadSucceed(Path file) {
     LdifImporterService lis = new LdifImporterService(realmService.getDefaultRealm().getConnectionDescriptor());
     try {
-      lis.importTempFile(file.toFile());
-      importSuccessLabel.setVisible(true);
+      lis.importTempFile(file.toFile(), importResult::add);
+      // check import-result
+      if (importResult.contains(LdifImporterService.State.ERROR) || importResult.contains(LdifImporterService.State.EXCEPTION)) {
+        importErrorLabel.setVisible(true);
+      } else {
+        importSuccessLabel.setVisible(true);
+      }
     } catch (Exception e) {
       LOGGER.error("Failed to import file " + file.getFileName(), e);
       importErrorLabel.setVisible(true);

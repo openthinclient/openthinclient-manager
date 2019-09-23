@@ -4,7 +4,6 @@ import org.apache.directory.server.tools.ToolCommandListener;
 import org.apache.directory.server.tools.commands.exportcmd.ExportCommandExecutor;
 import org.apache.directory.server.tools.util.ListenerParameter;
 import org.apache.directory.server.tools.util.Parameter;
-import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +11,18 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LdifExporterService {
 
@@ -31,7 +35,7 @@ public class LdifExporterService {
     this.lcd = ldapConnectionDescriptor;
   }
 
-  public byte[] performAction(Set<String> directoryObjectsDN) {
+  public byte[] performAction(Set<String> directoryObjectsDN, Consumer<LdifExporterService.State> result) {
 
     try {
       final NameCallback nc = new NameCallback("Bind DN");
@@ -55,50 +59,44 @@ public class LdifExporterService {
       params.add(new Parameter(ExportCommandExecutor.EXPORTPOINT_PARAMETER, directoryObjectsDN));
 
       final File temp = File.createTempFile("openthinclient-export-",".ldif");
-      params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp
-          .getPath()));
-      params
-          .add(new Parameter(ExportCommandExecutor.DEBUG_PARAMETER, true));
-      params.add(new Parameter(ExportCommandExecutor.VERBOSE_PARAMETER,
-          true));
+      params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp.getPath()));
+      params.add(new Parameter(ExportCommandExecutor.DEBUG_PARAMETER, true));
+      params.add(new Parameter(ExportCommandExecutor.VERBOSE_PARAMETER,true));
 
-//        final ProgressHandle handle = ProgressHandleFactory.createHandle("LDIF export");
+//      Set<String> result = new HashSet<>();
         final ListenerParameter listeners[] = new ListenerParameter[]{
             new ListenerParameter(
                 ExportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
                 new ToolCommandListener() {
                   public void notify(Serializable o) {
-//                    ErrorManager.getDefault().annotate((Throwable) o,
-//                        "Exception during LDIF export");
+                    log.error("Exception occurred while exporting to ldif-file.", o);
+                    result.accept(LdifExporterService.State.EXCEPTION);
                   }
                 }),
             new ListenerParameter(
                 ExportCommandExecutor.OUTPUTLISTENER_PARAMETER,
                 new ToolCommandListener() {
                   public void notify(Serializable o) {
-//                    handle.progress(o.toString());
+                    result.accept(LdifExporterService.State.SUCCESS);
                   }
                 }),
             new ListenerParameter(
                 ExportCommandExecutor.ERRORLISTENER_PARAMETER,
                 new ToolCommandListener() {
                   public void notify(Serializable o) {
-                    final IOException e = new IOException(o.toString());
-//                    ErrorManager.getDefault().annotate(e,
-//                        "Error during LDIF export");
-//                    ErrorManager.getDefault().notify((Throwable) o);
+                    log.error("Error occurred while exporting to ldif-file.", o);
+                    result.accept(LdifExporterService.State.ERROR);
                   }
                 })};
-//
-//        handle.start();
       try {
         final ExportCommandExecutor ex = new ExportCommandExecutor();
-
-        ex.execute(params.toArray(new Parameter[params.size()]), new ListenerParameter[]{});
-//          ex.execute(params.toArray(new Parameter[params.size()]), listeners);
+        ex.execute(params.toArray(new Parameter[params.size()]), listeners);
       } finally {
-//          handle.finish();
+//        if (result.contains("ERROR") || result.contains("EXCEPTION")) {
+//          return null;
+//        } else {
           return createExportFile(temp, lcd.getBaseDN());
+//        }
       }
     } catch (final Throwable t) {
 
@@ -130,5 +128,15 @@ public class LdifExporterService {
     in.close();
     tempFile.delete();
     return content.toString().getBytes();
+  }
+
+  public String getBaseDN() {
+    return lcd.getBaseDN();
+  }
+
+  public enum State {
+    EXCEPTION,
+    ERROR,
+    SUCCESS;
   }
 }
