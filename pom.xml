@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<name>openthinclient.org Manager</name>
-	<version>2019.1-SNAPSHOT</version>
+	<version>2019.2-SNAPSHOT</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
@@ -73,6 +73,7 @@
 		<module>first-start-wizard</module>
 		<!--<module>console-desktop</module>-->
 		<module>runtime</module>
+		<module>sysreport</module>
 	</modules>
 
 	<build>
@@ -263,12 +264,12 @@
 				<version>0.9.5.5</version>
 			</dependency>
 
-        <!-- APACHE SHIRO -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${apache.shiro-core.version}</version>
-        </dependency>
+			<!-- APACHE SHIRO -->
+			<dependency>
+				<groupId>org.apache.shiro</groupId>
+				<artifactId>shiro-core</artifactId>
+				<version>${apache.shiro-core.version}</version>
+			</dependency>
 
             <!-- SLF4J -->
             <dependency>
@@ -331,7 +332,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>27.1-jre</version>
             </dependency>
 			<dependency>
 				<groupId>org.mapdb</groupId>
@@ -348,20 +349,6 @@
 				<artifactId>viritin</artifactId>
 				<version>2.0.beta1</version>
 			</dependency>
-
-			<!--<dependency>-->
-				<!--<groupId>javax.validation</groupId>-->
-				<!--<artifactId>validation-api</artifactId>-->
-				<!--<version>1.1.0.Final</version>-->
-				<!--<scope>compile</scope>-->
-			<!--</dependency>-->
-			<!--<dependency>-->
-				<!--<groupId>javax.validation</groupId>-->
-				<!--<artifactId>validation-api</artifactId>-->
-				<!--<version>1.1.0.Final</version>-->
-				<!--<classifier>sources</classifier>-->
-				<!--<scope>compile</scope>-->
-			<!--</dependency>-->
 
 	        <!-- i18n -->
 	        <dependency>
@@ -399,9 +386,13 @@
 				<version>2.4.0-b180725.0644</version>
 			</dependency>
 
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.13</version>
+			</dependency>
+
 		</dependencies>
-
-
     </dependencyManagement>
 
 	<dependencies>

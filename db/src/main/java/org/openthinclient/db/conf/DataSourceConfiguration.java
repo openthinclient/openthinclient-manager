@@ -1,6 +1,6 @@
 package org.openthinclient.db.conf;
 
-import java.nio.file.Paths;
+import com.mysql.cj.jdbc.ConnectionImpl;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.Validator;
 import org.openthinclient.db.DatabaseConfiguration;
@@ -19,8 +19,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZoneId;
 
 @Configuration
 @PropertySource("classpath:/org/openthinclient/db/conf/database-application.properties")
@@ -68,6 +70,19 @@ public class DataSourceConfiguration {
         dataSource.setUsername(conf.getUsername());
         if (conf.getPassword() != null)
             dataSource.setPassword(conf.getPassword());
+
+        if(conf.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+          String properties = "autoReconnect=true";
+          String timezone = conf.getTimezone();
+          if(timezone == null || timezone.trim().isEmpty()) {
+            timezone = ZoneId.systemDefault().getId();
+          }
+          if(!timezone.equals("auto")) {
+            properties = properties + ";serverTimezone=" + timezone;
+          }
+          dataSource.setConnectionProperties(properties);
+        }
+
         return dataSource;
     }
 
@@ -78,7 +93,7 @@ public class DataSourceConfiguration {
      * @param source the source to validate
      * @throws SQLException in case of an error when trying to connect to the database.
      */
-    public static void validateDataSource(javax.sql.DataSource source) throws SQLException {
+    public static void validateDataSource(DataSource source) throws SQLException {
         try (final Connection connection = source.getConnection()) {
             connection.createStatement().execute("select 1");
         }
@@ -105,12 +120,7 @@ public class DataSourceConfiguration {
         } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
             url = createApacheDerbyDatabaseUrl(managerHome);
         } else {
-            // in case of MySQL we're adding the autoReconnect=true property to ensure that connections will be reestablished when required.
-            // but only if there are no other parameters specified
-            if (conf.getUrl().indexOf('?') == -1)
-                url = conf.getUrl() + "?autoReconnect=true";
-            else
-                url = conf.getUrl();
+            url = conf.getUrl();
         }
 
         DataSource dataSource = createDataSource(conf, url);
@@ -169,7 +179,7 @@ public class DataSourceConfiguration {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.openthinclient.pkgmgr.db");
+        factory.setPackagesToScan("org.openthinclient.pkgmgr.db", "org.openthinclient.service.common.license");
         factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
 
@@ -187,18 +197,17 @@ public class DataSourceConfiguration {
         private static final Logger LOGGER = LoggerFactory.getLogger(MySQLConnectionValidator.class);
         @Override
         public boolean validate(Connection connection, int validateAction) {
-            // TODO: java12 add ping again?
-//            if (connection instanceof com.mysql.jdbc.Connection) {
-//                try {
-//                    LOGGER.info("Validating MySQL connection using ping...");
-//                    ((com.mysql.jdbc.Connection) connection).ping();
-//                    return true;
-//                } catch (SQLException e) {
-//                    LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
-//                    LOGGER.debug("MySQL Connection broken.", e);
-//                    return false;
-//                }
-//            }
+            if (connection instanceof ConnectionImpl) {
+                try {
+                    LOGGER.info("Validating MySQL connection using ping...");
+                    ((ConnectionImpl) connection).ping();
+                    return true;
+                } catch (SQLException e) {
+                    LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
+                    LOGGER.debug("MySQL Connection broken.", e);
+                    return false;
+                }
+            }
             LOGGER.info("Validating MySQL connection using query...");
             try {
                 connection.createStatement().executeQuery("SELECT 1");

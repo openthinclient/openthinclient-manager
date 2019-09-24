@@ -1,0 +1,80 @@
+@mixin header {
+
+  .header {
+    height: $header-height !important;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .header-searchfield {
+      height: 30px;
+      margin: 0 2ch;
+      img {
+        display: none;
+      }
+      input {
+        border: none;
+        padding-left: 1ch !important;
+        border-radius: 0;
+        color: $v-font-color;
+        background-color: #eee;
+      }
+
+      .v-filterselect-button {
+        border: none;
+
+        &::before {
+          content: "\e805";
+          font-family: "Vaadin-Icons";
+        }
+      }
+    }
+
+    img.v-icon {
+      height: $v-font-size;
+    }
+
+    .v-label-header-circle {
+      height: 40px;
+      width: 40px;
+      background-color: #f9f9f9;
+      color: $v-font-color;
+      border-radius: 50%;
+      font-weight: 400;
+      font-size: 20px;
+      display: inline-block;
+      text-align: center;
+      padding-top: 5px;
+      margin-top: -2px;
+    }
+  }
+
+  .v-filterselect-suggestpopup-header-searchfield {
+    * {
+      border-radius: 0 !important;
+    }
+    img {
+      position: absolute;  // workaround for jerky image update (1/2)
+      filter: invert(1);
+    }
+    span {
+      padding-left: 36px; // workaround for jerky image update  (2/2)
+    }
+    tbody:empty::before {
+      content: var(--no-results-feedback);
+      display: block;
+      text-align: center;
+    }
+  }
+
+
+
+  .v-menubar-header-menu > .v-menubar-menuitem-selected {
+     background-color:unset;
+     color: rgb(80, 153, 198);
+     background-image: unset;
+  }
+  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
+     color: #5099c6;
+  }
+}

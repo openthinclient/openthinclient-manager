@@ -223,4 +223,19 @@
 		<attribute name="ipHostNumber" type="java.lang.String" />
 	</class>
 
+	<!--
+		Note; <class> tags for *MetaData types MUST NOT have a key-class attribute.
+					So the corresponding TypeMapping will not be used when loading objects
+					by DN alone (without specifying the type).
+	-->
+	<class name="org.openthinclient.common.model.ClientMetaData" base-rdn="ou=clients" filter="(objectclass=ipHost)"
+		object-classes="top, device, ipHost, ieee802Device">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
+
+		<attribute name="description" type="java.lang.String" />
+		<attribute name="ipHostNumber" type="java.lang.String" />
+		<attribute name="macAddress" type="java.lang.String" />
+	</class>
+
 </mapping>

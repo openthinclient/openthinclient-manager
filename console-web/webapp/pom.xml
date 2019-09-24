@@ -3,7 +3,7 @@
     <parent>
         <artifactId>manager-console-web</artifactId>
         <groupId>org.openthinclient</groupId>
-        <version>2019.1-SNAPSHOT</version>
+        <version>2019.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -44,14 +44,33 @@
             <artifactId>manager-service-dhcp</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-update</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-web-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-console-web-support</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- caching provider -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -61,11 +80,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency -->        
+        </dependency -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-        </dependency>   
+        </dependency>
 
         <!-- Vaadin -->
         <dependency>
@@ -79,6 +98,10 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-push</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -134,6 +157,12 @@
             <version>1.1.0.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -149,7 +178,7 @@
                         <goal>update-widgetset</goal>
                         <!-- goal>compile</goal -->
                         <goal>compile-theme</goal>
-                        <goal>update-theme</goal>                        
+                        <goal>update-theme</goal>
                     </goals>
                 </execution>
             </executions>
@@ -203,8 +232,8 @@
 			          </goals>
 			        </execution>
 			      </executions>
-			    </plugin>        		
-        		
+			    </plugin>
+
         	</plugins>
         </pluginManagement>
     </build>

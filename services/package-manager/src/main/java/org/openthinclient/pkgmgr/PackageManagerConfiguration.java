@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @ConfigurationFile("package-manager.xml")
 @XmlRootElement(name = "package-manager", namespace = "http://www.openthinclient.org/ns/manager/service/package-manager/1.0")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PackageManagerConfiguration implements ServiceConfiguration {
+public class PackageManagerConfiguration implements ServiceConfiguration, Cloneable {
 
 
   @ConfigurationDirectory("nfs/root")
@@ -153,4 +153,16 @@ public class PackageManagerConfiguration implements ServiceConfiguration {
     this.proxyConfiguration = proxyConfiguration;
   }
 
+  @Override
+  public PackageManagerConfiguration clone() {
+    try {
+      PackageManagerConfiguration cloned = (PackageManagerConfiguration) super.clone();
+      if (proxyConfiguration != null)
+        cloned.proxyConfiguration = proxyConfiguration.clone();
+      return cloned;
+    } catch (CloneNotSupportedException e) {
+      // won't happen as we're implementing Cloneable.
+      return null;
+    }
+  }
 }

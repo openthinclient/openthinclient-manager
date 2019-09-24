@@ -1,0 +1,9 @@
+@mixin views-common {
+  .v-slot-header ~ .v-slot {
+    overflow: auto;
+
+    & > * {
+      padding: 18px;
+    }
+  }
+}

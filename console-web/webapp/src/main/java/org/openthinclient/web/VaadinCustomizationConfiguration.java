@@ -1,5 +1,6 @@
 package org.openthinclient.web;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.util.FileTypeResolver;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,7 @@ public class VaadinCustomizationConfiguration {
 //      FileTypeResolver.addIcon(MIME_TYPE_SFS, FontAwesome.HDD_O);
 
       // specify the default fallback icon.
-      FileTypeResolver.DEFAULT_ICON = FontAwesome.FILE_O;
+      FileTypeResolver.DEFAULT_ICON = VaadinIcons.FILE_O;
 
       // setting some commonly used mime types
 //      FileTypeResolver.addIcon("application/pdf", FontAwesome.FILE_PDF_O);

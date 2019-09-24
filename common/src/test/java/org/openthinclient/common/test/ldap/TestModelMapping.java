@@ -44,7 +44,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	private static final Class[] objectClasses = {Location.class, UserGroup.class,
 			Application.class, ApplicationGroup.class, Printer.class, Device.class,
-			HardwareType.class, User.class,ClientGroup.class, Client.class};
+			HardwareType.class, User.class, ClientGroup.class, Client.class};
 
 	private static final String baseDN = "dc=test,dc=test";
 	private static final String envDN = "ou=NeueUmgebung," + baseDN;
@@ -81,8 +81,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 		realm.refresh();
 
-		final Set<OrganizationalUnit> currentOUs = dir
-				.list(OrganizationalUnit.class);
+		final Set<OrganizationalUnit> currentOUs = dir.list(OrganizationalUnit.class);
 
 		Assert.assertTrue("RealmConfigurations wasn't created!", currentRealms
 				.size() > 0);

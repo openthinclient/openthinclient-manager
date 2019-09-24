@@ -28,6 +28,7 @@ public class DatabaseModel {
 
       final MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
       target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+      target.setTimezone(mySQLConfiguration.getTimezone());
       target.setUsername(mySQLConfiguration.getUsername());
       target.setPassword(mySQLConfiguration.getPassword());
     } else if (model.getType() == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
@@ -67,6 +68,8 @@ public class DatabaseModel {
       @Min(1)
       @Max(65535)
       private int port = 3306;
+      @NotNull
+      private String timezone = "";
 
       public String getHostname() {
          return hostname;
@@ -106,6 +109,14 @@ public class DatabaseModel {
 
       public void setPort(int port) {
          this.port = port;
+      }
+
+      public String getTimezone() {
+         return timezone;
+      }
+
+      public void setTimezone(String timezone) {
+         this.timezone = timezone;
       }
    }
 

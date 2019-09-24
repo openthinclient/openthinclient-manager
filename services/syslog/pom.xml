@@ -5,23 +5,23 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2019.1-SNAPSHOT</version>
+        <version>2019.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>manager-service-syslog</artifactId>
 
 <dependencies>
-    
+
         <!--
         OUR COMMON API THAT ALL SERVICES SHARE
         -->
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
-            <version>2019.1-SNAPSHOT</version>
+            <version>2019.2-SNAPSHOT</version>
         </dependency>
-        
+
         <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -39,7 +39,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
-        
+
         <!-- levigo -->
         <dependency>
             <groupId>com.levigo.util</groupId>
@@ -51,5 +51,5 @@
         	<groupId>org.slf4j</groupId>
         	<artifactId>slf4j-ext</artifactId>
         </dependency>
-</dependencies>    
+</dependencies>
 </project>

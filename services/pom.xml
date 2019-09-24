@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager</artifactId>
-        <version>2019.1-SNAPSHOT</version>
+        <version>2019.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -20,5 +20,6 @@
         <module>syslog</module>
         <module>tftp</module>
         <module>dhcp</module>
+        <module>update</module>
     </modules>
 </project>

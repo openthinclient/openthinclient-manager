@@ -20,7 +20,7 @@ import org.openthinclient.runtime.web.comptest.ui.tests.ProgressDialogTest;
 import java.util.function.Supplier;
 
 @SpringUI
-@Theme("dashboard")
+@Theme("openthinclient")
 public class ComponentTestUI extends UI {
 
     private MainView mainView;

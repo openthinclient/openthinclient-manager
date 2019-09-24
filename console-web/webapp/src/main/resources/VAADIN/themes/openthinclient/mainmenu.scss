@@ -1,0 +1,254 @@
+@mixin mainmenu {
+  &.settingsui #mainmenu {
+    color: #b3e2ff;
+    background: #0064a2;
+
+    .valo-menu-item.selected {
+      font-width: bold;
+      color: white;
+      background: transparent;
+    }
+  }
+  &.managerui #mainmenu {
+    color: #fff;
+    background: #2b2e33;
+
+    .valo-menu-item.selected {
+      background: #000;
+      border-color: var(--section-color);
+    }
+  }
+  #mainmenu {
+    border: none;
+    width: $menu-width;
+
+    .valo-menu-part {
+      display: flex;
+      flex-flow: column nowrap;
+      min-width: 240px !important;
+      max-width: 100%;
+      padding-bottom: 50px;
+      overflow: hidden;
+    }
+
+    .logo-button {
+      min-height: $header-height;
+      width: 100% !important;
+      background: #0064a2;
+      margin: 0;
+      padding: 4% 8% 2% 8%;
+    }
+
+    --section-color: cyan;
+
+    .dashboardview {
+      --section-color: #2db200;
+    }
+    .clientview {
+      --section-color: #1ca6e7;
+    }
+    .applicationview {
+      --section-color: #8500b3;
+    }
+    .userview {
+      --section-color: #00b2b2;
+    }
+    .deviceview {
+      --section-color: #ff5d26;
+    }
+    .printerview {
+      --section-color: #8c4600;
+    }
+    .hardwaretypeview {
+      --section-color: #fe2725;
+    }
+    .locationview {
+      --section-color: #ffff00;
+    }
+    .filebrowserview {
+      --section-color: #006600;
+    }
+
+
+    .valo-menu-item {
+      display: flex;
+      align-items: center;
+      min-height: 30px;
+      margin-top: 10px;
+      border-left: 8px solid transparent;
+      padding: 4px 0px 4px 50px;
+      overflow: visible;
+      white-space: normal;
+      font-size: 16px;
+      line-height: 24px;
+
+      .v-icon {
+        position: absolute;
+        top: 4px;
+        left: 10px;
+        max-height: 30px;
+        width: 30px;
+      }
+
+      .v-icon + .valo-menu-item-caption {
+          margin-left: 0;
+      }
+
+      [class*="caption"] {
+        width: unset;
+        max-width: unset;
+      }
+    }
+
+    #sidebaritem_menulinktosettings, #sidebaritem_menulinkfromsettings {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      border: none;
+      padding-left: 58px;
+
+      img {
+        left: 18px;
+      }
+    }
+
+    #sidebaritem_menulinktosettings {
+      border-top: 2px solid #0064a2;
+      &:hover {
+        background: #0064a2;
+      }
+    }
+    #sidebaritem_menulinkfromsettings {
+      border-top: 2px solid #191a1e;
+      &:hover {
+        background: #191a1e;
+      }
+    }
+
+    // item list
+    .v-grid-tablewrapper {
+      border: 0;
+      background: #000;
+    }
+
+    .filterGrid {
+      position: relative;
+      font-size: 13px;
+      background: #000;
+      flex: 1;
+      display: flex;
+      flex-flow: column nowrap;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 25px;
+        top: 7px;
+        height: 16px;
+        width: 16px;
+        background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
+
+      }
+
+      .filterRow {
+        display: flex;
+        border: 1px solid #747474;
+        border-width: 1px 0;
+        padding: 4px 16px 4px 55px;
+        align-items: center;
+
+        input {
+          flex: 1;
+          height: auto;
+          padding: 0;
+          border: none;
+          box-shadow: none;
+          outline: none;
+          background: none;
+          color: #747474;
+
+          ::placeholder {
+            color: #747474;
+          }
+        }
+
+        .v-caption {
+          font-size: unset;
+          color: #747474;
+          padding: 0;
+        }
+      }
+
+      .profileSelectionGrid {
+        flex: 1;
+        background: #191a1e;
+
+        .v-grid-scroller {
+          border: none;
+          background: #191a1e;
+        }
+      }
+
+      .MenuGroupProfile td.v-grid-cell {
+        color: white;
+        font-weight: bold;
+        pointer-events: none;
+      }
+
+      tr {
+        max-width: calc(100% - 16px - 55px);
+        padding: 2px 16px 2px 55px;
+      }
+
+      tr.MenuGroupProfile {
+        padding-left: 18px;
+      }
+
+      td.v-grid-cell {
+        max-width: 100%;
+        border: 0;
+        padding: 0;
+        font-size: 12px;
+        font-weight: bolder;
+        line-height: 1.5;
+        background: transparent;
+        color: #747474;
+      }
+
+      tr {
+        &:not(.MenuGroupProfile)::before {
+          content: "";
+          position: absolute;
+          width: 9px;
+          height: 9px;
+          top: calc(50% - 3px);
+          left: 28px;
+          border-radius: 50%;
+          z-index: 1;
+          background: #2a2d32;
+        }
+      }
+
+      tr.v-grid-row-selected {
+        &::before {
+          display: inline-block;
+          background: var(--section-color);
+        }
+        & > td.v-grid-cell {
+          color: #fff;
+        }
+      }
+
+      td.v-grid-cell:hover {
+        color: #fff;
+      }
+
+      // fix/overwrite valo default style
+      td.v-grid-cell-focused::before {
+          display: inline-block;
+          border: none;
+      }
+    }
+  }
+}

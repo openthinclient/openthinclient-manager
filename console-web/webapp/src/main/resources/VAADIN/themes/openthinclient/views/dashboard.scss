@@ -1,0 +1,278 @@
+@mixin dashboard-view {
+
+  .privacy-notice-info {
+    width: 100%;
+  }
+
+  .privacy-notice-info.expanded {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    padding: 8px round($v-unit-size/2);
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 0 1px silver;
+    background: #ffd;
+  }
+
+  .privacy-notice-info.expanded > :first-child {
+    display: inline-flex;
+    flex-flow: row wrap;
+    align-items: center
+  }
+
+  .privacy-notice-info > :last-child {
+    float: right;
+  }
+
+  .privacy-notice-content {
+    display: flex;
+    max-width: 70ch;
+    height: 100%;
+    padding: 0 !important;
+    flex-flow: column;
+
+    * {
+      white-space: normal;
+    }
+
+    > * {
+      overflow: auto;
+      padding: 12px;
+    }
+
+    > :last-child {
+      min-height: 38px;
+      border-top: 1px solid #ddd;
+      padding: 12px 24px;
+      text-align: right;
+    }
+  }
+
+  .dashboard-panels {
+
+    display: flex;
+    flex-flow: row wrap;
+    margin-top:12px;
+    margin-left:12px;
+
+    .dashboard-panel {
+      width: 14em;
+      height: 14em;
+      padding: 0;
+      border: 1px solid #0b0;
+      margin: 0 2em 2em 0;
+      overflow: hidden;
+      text-align: center;
+
+      .v-widget {
+        text-align: center;
+      }
+      p {
+        line-height: 1.4em;
+        margin-top: 0;
+      }
+
+      .v-slot-dashboard-panel-image-circle {
+        display: block !important;
+        margin-top: 1.2em;
+
+        .dashboard-panel-image-circle {
+          height: 5.5em;
+          border-radius: 50%;
+          background-color: #509DC9;
+        }
+      }
+
+      .v-slot-content-panel-number-large {
+        margin-top: -10px;
+      }
+
+      .content-panel-number-large {
+        margin-top: .3em;
+        font-size: 3em;
+        color: #888888;
+      }
+
+      .dashboard-panel-title {
+        margin-top: 0.4em;
+        font-size: .9em;
+        font-weight: bold;
+      }
+    }
+
+    .dashboard-panel.unregistered-clients {
+      .dashboard-panel-image {
+        background-color: #FF9326;
+      }
+      .v-filterselect * {
+        text-align: left;
+      }
+    }
+
+    .dashboard-panel.update-notification {
+      .manager-updates, .package-updates {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-column-gap: 2ch;
+        padding: 0 1ch;
+        text-align: left;
+
+        & > :first-child {
+          grid-column: span 2;
+        }
+        .v-link {
+          grid-column: 2;
+          grid-row: span 42;
+        }
+        .v-icon {
+          vertical-align: top;
+        }
+      }
+
+      .v-slot-update-error {
+        padding: 0 2ch;
+        .v-widget {
+          text-align: left;
+        }
+        .v-caption-update-error {
+          display: flex;
+          padding-bottom: 1ch;
+        }
+      }
+    }
+
+    .dashboard-panel.news-browser {
+      .v-browserframe, .fallback {
+        width: 100%;
+        height: 100%;
+      }
+      .loading, .fallback {
+        display: none;
+      }
+      .loading + .fallback {
+        display: flex;
+        flex-flow: column nowrap;
+        font: normal 15px/1.42857em "OpenSans-Regular", sans-serif;
+        color: #444;
+        img {
+          margin: 20px auto;
+        }
+        hr {
+          margin: 1em 0;
+          border: 0;
+          border-bottom: 1px solid #A2A2A2;
+        }
+        a {
+          color: #3B90E5;
+          font-weight: normal;
+        }
+        p {
+          animation: makeVisible 0s 3s forwards;
+          visibility: hidden;
+        }
+      }
+    }
+
+    .dashboard-panel.size-1x2 {
+      width: 30em;
+      .dashboard-panel-image {
+        height: 2em;
+        margin: 0 1ch;
+        background: none;
+      }
+    }
+
+    .dashboard-panel.size-2x3 {
+      width: 46em;
+      height: 30em;
+      .dashboard-panel-image {
+        background: none;
+        height: 2em;
+      }
+      .dashboard-panel-title {
+        margin-top: 0.2em;
+      }
+    }
+  }
+
+  .notifications.v-window {
+    overflow: visible !important;
+    top: 2 * $v-unit-size !important;
+    // right: $view-padding;
+    left: 235px !important;
+    max-width: 90%;
+
+    $window-outline: $v-overlay-shadow;
+    @if list-of-lists($window-outline) {
+      $window-outline: last($v-overlay-shadow);
+    }
+    $window-outline: flatten-list(valo-bevel-and-shadow($bevel: null, $shadow: $window-outline));
+    $outline-width: nth($window-outline, length($window-outline) - 1);
+    $outline-color: last($window-outline);
+
+    @include transform-origin(296px - (2 * $v-unit-size - round($v-unit-size / 3)) -7px);
+
+    &.v-window-animate-in {
+      @include animation(animate-in-scale-up 260ms cubic-bezier(.68,.37,.51,1.37));
+    }
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      top: -14px;
+      right: 7 * $v-unit-size - round($v-unit-size / 3);
+      border: 7px solid transparent;
+      width: 0;
+      height: 0;
+      border-bottom-color: $v-window-background-color;
+    }
+
+
+    &:before {
+      @if type-of($outline-width) == number and $outline-width > 0 {
+        top: -15px - 2 * $outline-width;
+        margin-right: -$outline-width;
+        border-width: 7px + $outline-width;
+        border-bottom-width: 8px;
+        border-bottom-color: $outline-color;
+      } @else {
+        content: none;
+      }
+    }
+
+    .v-window-header {
+      color: $v-selection-color;
+    }
+
+    .v-window-outerheader:after,
+    .v-scrollable:before {
+      display: none;
+    }
+
+    .notification-item {
+      font-size: round($v-font-size * 0.9);
+    }
+
+    .notification-title {
+      font-weight: $v-font-weight + 200;
+    }
+
+    .notification-time {
+      font-size: round($v-font-size * 0.8);
+      color: valo-font-color($v-window-background-color, .5);
+    }
+
+  }
+
+  // Need to use normal media queries because Responsive doesn't work for overlay elements just yet
+  @media screen and (max-width: 480px) {
+    .notifications.v-window {
+      left: round($view-padding / 2);
+    }
+  }
+
+
+}

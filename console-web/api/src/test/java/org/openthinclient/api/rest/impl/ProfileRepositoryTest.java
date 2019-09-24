@@ -179,7 +179,7 @@ public class ProfileRepositoryTest {
 
         // this is for testing
         LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-        lcd.setBaseDN("dc=openthinclient,dc=org");
+        lcd.setBaseDN("dc=open+thinclient,dc=org");
         lcd.setHostname("10.10.10.10");
         realm.setConnectionDescriptor(lcd);
 
@@ -189,7 +189,8 @@ public class ProfileRepositoryTest {
         final org.openthinclient.api.rest.model.Client locc = repo.getClient("00:11:22:33:44:55:66:78").getBody();
         assertEquals("10.10.10.10", locc.getConfiguration().getAdditionalProperties().get("BootOptions.TFTPBootserver"));
         assertEquals("10.10.10.10", locc.getConfiguration().getAdditionalProperties().get("BootOptions.NFSRootserver"));
-        assertEquals("ldap://10.10.10.10:10389/dc=openthinclient,dc=org", locc.getConfiguration().getAdditionalProperties().get("Directory.Primary.LDAPURLs"));
+        assertEquals("ldap://10.10.10.10:10389/dc%3Dopen%2Bthinclient%2Cdc%3Dorg", locc.getConfiguration().getAdditionalProperties().get("Directory.Primary.LDAPURLs"));
+        assertEquals("cn=roPrincipal,ou=RealmConfiguration,dc=open+thinclient,dc=org", locc.getConfiguration().getAdditionalProperties().get("Directory.Primary.ReadOnly.Principal"));
 
     }
 

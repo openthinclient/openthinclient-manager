@@ -64,7 +64,7 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
             }
             if (e instanceof RuntimeException)
                 throw (RuntimeException) e;
-            throw new DownloadException("download failed of " + uri + " failed", e);
+            throw new DownloadException("download of " + uri + " failed", e);
         }
     }
 
