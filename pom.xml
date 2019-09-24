@@ -341,7 +341,7 @@
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-spring-boot</artifactId>
-				<version>1.0.0</version>
+				<version>3.2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.vaadin</groupId>
@@ -374,6 +374,12 @@
 				<groupId>org.mapstruct</groupId>
 				<artifactId>mapstruct-jdk8</artifactId>
 				<version>${mapstruct.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.el</groupId>
+				<artifactId>javax.el-api</artifactId>
+				<version>3.0.0</version>
 			</dependency>
 
 			<!-- java 12 -->
