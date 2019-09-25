@@ -106,7 +106,7 @@ public class DashboardView extends Panel implements View {
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
-    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel("Unregistered " + mc.getMessage(UI_CLIENT_HEADER),
+    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS),
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
 
