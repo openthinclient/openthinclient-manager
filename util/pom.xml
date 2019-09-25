@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager</artifactId>
-        <version>2019.1.1</version>
+        <version>2019.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>manager-util</artifactId>
