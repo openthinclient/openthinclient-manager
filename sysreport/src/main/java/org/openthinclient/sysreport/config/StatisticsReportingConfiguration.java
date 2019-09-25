@@ -24,7 +24,6 @@ public class StatisticsReportingConfiguration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsReportingConfiguration.class);
 
-  public static final String CRON_EXPRESSION = "0 32 7 * * FRI";
   @Autowired
   private ManagerHome managerHome;
   @Autowired
@@ -55,10 +54,10 @@ public class StatisticsReportingConfiguration {
     return new StatisticsReportPublisher(statisticsReportGenerator(), uploader());
   }
 
-  // once every Friday
-    @Scheduled(cron= CRON_EXPRESSION)
-  // once every minute for testing
-//  @Scheduled(cron = "0 * * * * *")
+
+  @Scheduled(cron = "0 30 7 * * FRI") // Friday morning
+  @Scheduled(cron = "0 0 12 * * WED") // Wednesday noon
+  // @Scheduled(cron = "0 * * * * *")    // every minute for testing
   public void transmitStatisticsReport() throws Exception {
     if(managerHome.getMetadata().isUsageStatisticsEnabled())
       statisticsReportPublisher().publish();
