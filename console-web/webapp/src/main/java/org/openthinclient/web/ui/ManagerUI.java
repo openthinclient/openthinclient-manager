@@ -412,7 +412,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     }
 
     if (navigationState != null) {
-      getNavigator().navigateTo(navigationState + "/" + directoryObject.getName());
+      getNavigator().navigateTo(navigationState + "/edit/" + directoryObject.getName());
     }
   }
 

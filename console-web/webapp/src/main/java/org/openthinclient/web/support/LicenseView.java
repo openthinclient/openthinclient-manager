@@ -169,7 +169,9 @@ public class LicenseView extends Panel implements View {
         new Button(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON), ev -> {
             (new DeletionPopup()).open();
         }),
-        new Label(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON_HINT))
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON_HINT)),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_SHOP_LINK), ContentMode.HTML),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_SHOP_LINK_HINT))
       );
     }
   }

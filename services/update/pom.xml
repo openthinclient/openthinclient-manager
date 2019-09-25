@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openthinclient</groupId>
+        <artifactId>manager-services</artifactId>
+        <version>2019.1.1</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>manager-service-update</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-db</artifactId>
+            <version>2019.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-package-manager</artifactId>
+            <version>2019.1.1</version>
+        </dependency>
+
+        <!-- http://maven.ej-technologies.com/repository/com/install4j/install4j-runtime/6.1.4/install4j-runtime-6.1.4.jar -->
+        <dependency>
+            <groupId>com.install4j</groupId>
+            <artifactId>install4j-runtime</artifactId>
+            <version>6.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

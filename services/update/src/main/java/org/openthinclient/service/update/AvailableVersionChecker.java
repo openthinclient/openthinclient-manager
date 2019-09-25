@@ -1,4 +1,4 @@
-package org.openthinclient.api.versioncheck;
+package org.openthinclient.service.update;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.progress.ProgressReceiver;
@@ -16,11 +16,9 @@ import java.net.URI;
  */
 public class AvailableVersionChecker {
 
-    private ManagerHome managerHome;
     private final DownloadManager downloadManager;
 
-    public AvailableVersionChecker(ManagerHome managerHome, DownloadManager downloadManager) {
-        this.managerHome = managerHome;
+    public AvailableVersionChecker(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
     }
 

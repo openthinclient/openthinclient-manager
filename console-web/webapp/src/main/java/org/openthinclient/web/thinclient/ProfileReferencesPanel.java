@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * ReferencesPanel to display and edit all profile-related references and associations
@@ -36,7 +37,7 @@ public class ProfileReferencesPanel extends CssLayout {
 
   }
 
-  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
+  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, Function<Item, List<Item>> memberSupplier, boolean isReadOnly) {
 
     // TODO beachten wg. Presenter und so
 //    ReferenceSection referenceSection= new ReferenceSection(buttonCaption);
@@ -44,7 +45,7 @@ public class ProfileReferencesPanel extends CssLayout {
 //    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, referencesPanel);
 
     ReferencesComponent rc = new ReferencesComponent(label);
-    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, isReadOnly);
+    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, memberSupplier, isReadOnly);
 
     rows.addComponent(rc);
 

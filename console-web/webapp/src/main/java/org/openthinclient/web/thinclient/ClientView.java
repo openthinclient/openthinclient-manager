@@ -18,7 +18,6 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -67,8 +66,6 @@ public final class ClientView extends AbstractThinclientView {
   public static final String ICON = "icon/thinclient.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_CLIENT_HEADER;
 
-  @Autowired
-  private ManagerHome managerHome;
   @Autowired
   private PrinterService printerService;
   @Autowired
@@ -207,9 +204,9 @@ public final class ClientView extends AbstractThinclientView {
     return item -> {
       Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
       if (first.isPresent()) {
-        Stream<? extends DirectoryObject> stream = first.get().getApplications().stream()
-                                                              .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
-        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+        return first.get().getApplications().stream()
+          .map(m -> new Item(m.getName(), Item.Type.APPLICATION))
+          .collect(Collectors.toList());
       } else {
         return new ArrayList<>();
       }

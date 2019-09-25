@@ -20,6 +20,8 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.service.update.UpdateChecker;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.PrivacyNoticeInfo;
@@ -34,7 +36,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -58,6 +60,10 @@ public class DashboardView extends Panel implements View {
   private DeviceService deviceService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
+  @Autowired
+  private UpdateChecker updateChecker;
+  @Autowired
+  private PackageManager packageManager;
 
   @Value("${application.version}")
   private String applicationVersion;
@@ -100,9 +106,11 @@ public class DashboardView extends Panel implements View {
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
-    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel("Unregistered " + mc.getMessage(UI_CLIENT_HEADER),
+    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS),
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
+
+    dashboardPanels.addComponent(new UpdatePanel());
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
 	  helpPanel.addStyleName("size-1x2");
@@ -112,11 +120,7 @@ public class DashboardView extends Panel implements View {
 	  toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
-    dashboardPanels.addComponents(helpPanel, toolsPanel);
-
-    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
-    newsBrowser.addStyleNames("size-2x3", "dashboard-panel");
-    dashboardPanels.addComponent(newsBrowser);
+    dashboardPanels.addComponents(helpPanel, toolsPanel, new NewsBrowser());
 
     return dashboardPanels;
   }
@@ -143,6 +147,88 @@ public class DashboardView extends Panel implements View {
         label.addStyleName("content-panel-number-large");
         addComponent(label);
       }
+    }
+  }
+
+  class UpdatePanel extends ContentPanel {
+    private static final String managerUpdateURL = "/ui/settings#!support";
+    private static final String packagesUpdateURL = "/ui/settings#!package-management";
+
+    private Label newVersionLabel = new Label();
+    private Label newPackagesLabel = new Label();
+
+    public UpdatePanel() {
+      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION), new ThemeResource("icon/bell.svg"));
+      addStyleNames("update-notification", "size-1x2");
+
+      if(updateChecker.hasNetworkError()) {
+        Label errorNotification = new Label(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_NETWORK_ERROR));
+        errorNotification.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_NETWORK_ERROR_CAPTION));
+        errorNotification.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
+        errorNotification.setStyleName("update-error");
+        addComponents(errorNotification);
+      } else {
+        CssLayout managerNotification = new CssLayout();
+        managerNotification.setStyleName("manager-updates");
+        CssLayout packagesNotification = new CssLayout();
+        packagesNotification.setStyleName("package-updates");
+        addComponents(managerNotification, packagesNotification);
+
+        managerNotification.addComponents(
+          new Label("openthinclient-Manager " + applicationVersion),
+          new Link("Manager Updates", new ExternalResource(managerUpdateURL)),
+          newVersionLabel
+        );
+        updateManagerStatus(updateChecker.getNewVersion());
+
+        packagesNotification.addComponents(
+          new Label("openthinclient-OS"),
+          new Link(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION), new ExternalResource(packagesUpdateURL)),
+          newPackagesLabel
+        );
+        updatePackageStatus(packageManager.getUpdateablePackages());
+      }
+    }
+
+    void updateManagerStatus(Optional<String> newVersion) {
+      if(newVersion.isPresent()) {
+        newVersionLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_MANAGER_UPDATABLE, newVersion.get()));
+        newVersionLabel.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
+      } else {
+        newVersionLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_MANAGER_CURRENT));
+        newVersionLabel.setIcon(VaadinIcons.CHECK);
+      }
+    }
+
+    void updatePackageStatus(Collection updatablePackages) {
+      if(updatablePackages.size() > 0) {
+        newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_UPDATABLE));
+        newPackagesLabel.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
+      } else {
+        newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_CURRENT));
+        newPackagesLabel.setIcon(VaadinIcons.CHECK);
+      }
+    }
+  }
+
+  class NewsBrowser extends CssLayout {
+    public NewsBrowser() {
+      super();
+      addStyleNames("news-browser", "dashboard-panel", "size-2x3");
+
+      BrowserFrame frame = new BrowserFrame(null, new ExternalResource("about:blank"));
+
+      CssLayout fallback = new CssLayout();
+      fallback.addComponents(
+        new Image(null, new ThemeResource("open_news.png")),
+        new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_NEW_BROWSER_FALLBACK), ContentMode.HTML)
+        );
+      fallback.addStyleName("fallback");
+
+      addComponents(frame, fallback);
+
+      JavaScript.getCurrent().execute(String.format("loadBrowserFrame('.news-browser .v-browserframe', '%s')",
+                                                    NEWS_URL + applicationVersion));
     }
   }
 

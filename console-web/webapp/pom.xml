@@ -3,7 +3,7 @@
     <parent>
         <artifactId>manager-console-web</artifactId>
         <groupId>org.openthinclient</groupId>
-        <version>2019.1</version>
+        <version>2019.1.1</version>
         <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -42,6 +42,11 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-update</artifactId>
             <version>${project.version}</version>
         </dependency>
 

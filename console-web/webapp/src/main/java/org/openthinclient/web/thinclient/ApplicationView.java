@@ -51,8 +51,6 @@ public final class ApplicationView extends AbstractThinclientView {
   public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_HEADER;
 
   @Autowired
-  private RealmService realmService;
-  @Autowired
   private ApplicationGroupView applicationGroupView;
   @Autowired
   private ApplicationService applicationService;
@@ -155,7 +153,7 @@ public final class ApplicationView extends AbstractThinclientView {
                                 values -> saveReference(item, values, userGroups, UserGroup.class));
 
     Set<User> allUsers = userService.findAll();
-    realmService.findAllRealms().forEach(realm ->
+    getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
     );
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
@@ -227,9 +225,9 @@ public final class ApplicationView extends AbstractThinclientView {
       if (first.isPresent()) {
         ApplicationGroup applicationGroup =  first.get();
         LOGGER.info("ApplicationGroup {} with applications {} loaded.", applicationGroup.getName(), applicationGroup.getApplications());
-        Stream<? extends DirectoryObject> stream = applicationGroup.getApplications().stream()
-            .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
-        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+        return applicationGroup.getApplications().stream()
+          .map(m -> new Item(m.getName(), Item.Type.APPLICATION))
+          .collect(Collectors.toList());
       } else {
         return new ArrayList<>();
       }

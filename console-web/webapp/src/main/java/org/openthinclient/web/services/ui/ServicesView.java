@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import org.openthinclient.service.apacheds.DirectoryService;
@@ -24,7 +25,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "services", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 20)
@@ -47,12 +48,13 @@ public class ServicesView extends Panel implements View {
                               EventBus.SessionEventBus eventBus,
                               DashboardNotificationService notificationService) {
 
-    directoryServicePanel = new ServicePanel(serviceManager, DirectoryService.class);
-    tftpServicePanel = new ServicePanel(serviceManager, TFTPService.class);
-    syslogServicePanel = new ServicePanel(serviceManager, SyslogService.class);
-    nfsServicePanel = new ServicePanel(serviceManager, NFSService.class);
-    dhcpServicePanel = new ServicePanel(serviceManager, DHCPService.class);
     mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    directoryServicePanel = new ServicePanel(serviceManager, DirectoryService.class, mc.getMessage(UI_SERVICE_CAPTION_DIRECTORY));
+    tftpServicePanel = new ServicePanel(serviceManager, TFTPService.class, mc.getMessage(UI_SERVICE_CAPTION_TFTP));
+    syslogServicePanel = new ServicePanel(serviceManager, SyslogService.class, mc.getMessage(UI_SERVICE_CAPTION_SYSLOG));
+    nfsServicePanel = new ServicePanel(serviceManager, NFSService.class, mc.getMessage(UI_SERVICE_CAPTION_NFS));
+    dhcpServicePanel = new ServicePanel(serviceManager, DHCPService.class, mc.getMessage(UI_SERVICE_CAPTION_DHCP));
 
     setSizeFull();
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SERVICES_CAPTION)));
@@ -77,7 +79,7 @@ public class ServicesView extends Panel implements View {
     VerticalLayout content = new VerticalLayout();
     content.addComponent(servicePanels);
     content.addComponent(dhcpServiceConfigurationForm);
-    Responsive.makeResponsive(content);
+    content.addComponent(new Label(mc.getMessage(UI_SERVICE_DHCP_CONF_DESCRIPTION), ContentMode.HTML));
     return content;
   }
 

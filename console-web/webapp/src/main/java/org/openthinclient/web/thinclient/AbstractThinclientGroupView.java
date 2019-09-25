@@ -115,7 +115,7 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/");
+    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
     if (params.length > 0) {
       // handle create action
       if ("create".equals(params[0])) {

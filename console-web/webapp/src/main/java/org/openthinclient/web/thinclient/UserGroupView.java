@@ -39,8 +39,6 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   public static final ConsoleWebMessages TITLE_KEY = UI_USERGROUP_HEADER;
 
   @Autowired
-  private RealmService realmService;
-  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
@@ -68,7 +66,7 @@ public final class UserGroupView extends AbstractThinclientGroupView {
 
   @PostConstruct
   public void setup() {
-    secondaryDirectory = "secondary".equals(realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+    secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
     addStyleName(UserView.NAME);
     if (!secondaryDirectory) {
       addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
@@ -100,7 +98,7 @@ public final class UserGroupView extends AbstractThinclientGroupView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<User> allUsers = userService.findAll();
-    realmService.findAllRealms().forEach(realm ->
+    getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
     );
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),

@@ -10,6 +10,11 @@ $item-group-panel-margin-left: 10px;
     height: 100%;
     overflow: hidden;
 
+    .shoplink:after {
+      content: " \e7de";
+      font-family: "Vaadin-Icons";
+    }
+
     & > * {
       display: flex;
       flex-flow: column nowrap;

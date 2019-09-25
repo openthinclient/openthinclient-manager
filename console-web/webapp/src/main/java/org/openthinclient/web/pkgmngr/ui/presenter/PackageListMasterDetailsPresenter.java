@@ -25,10 +25,7 @@ import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -110,11 +107,14 @@ public class PackageListMasterDetailsPresenter {
    * Refreshes the updatePanel view with current data
    */
   public void refreshUpdatePanel() {
-    Source lastUpdatedSource = packageManager.getSourcesList().getSources().stream()
-            .sorted(Comparator.comparing(Source::getLastUpdated, Comparator.nullsLast(Comparator.reverseOrder())))
-            .findFirst().get();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mc.getMessage(UI_DATE_FORMAT));
-    view.setSourceUpdateLabelValue(mc.getMessage(UI_PACKAGEMANAGER_LASTUPDATE_LABEL, lastUpdatedSource.getLastUpdated().format(formatter)));
+    packageManager.getSourcesList().getSources().stream()
+        .min(Comparator.comparing(Source::getLastUpdated, Comparator.nullsLast(Comparator.reverseOrder())))
+        .ifPresent(lastUpdatedSource -> {
+          if (lastUpdatedSource.getLastUpdated() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mc.getMessage(UI_DATE_FORMAT));
+            view.setSourceUpdateLabelValue(mc.getMessage(UI_PACKAGEMANAGER_LASTUPDATE_LABEL, lastUpdatedSource.getLastUpdated().format(formatter)));
+          }
+        });
   }
 
   protected void applyFilters() {

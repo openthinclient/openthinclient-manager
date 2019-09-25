@@ -1,9 +1,9 @@
-package org.openthinclient.api.importer.versioncheck;
+package org.openthinclient.service.update;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openthinclient.api.versioncheck.AvailableVersionChecker;
-import org.openthinclient.api.versioncheck.UpdateDescriptor;
+import org.openthinclient.service.update.AvailableVersionChecker;
+import org.openthinclient.service.update.UpdateDescriptor;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.impl.HttpClientDownloadManager;
 import org.openthinclient.progress.NoopProgressReceiver;
@@ -44,8 +44,8 @@ public class VersionCheckerTest {
     @Test
     public void testReadVersion() throws URISyntaxException, JAXBException, IOException {
 
-        AvailableVersionChecker avc = new AvailableVersionChecker(null, downloadManager);
-        URL resource = VersionCheckerTest.class.getResource("/versioncheck/updates.xml");
+        AvailableVersionChecker avc = new AvailableVersionChecker(downloadManager);
+        URL resource = VersionCheckerTest.class.getResource("updates.xml");
         assertNotNull("Missing updates.xml for Test.", resource);
         UpdateDescriptor version = avc.getVersion(resource.toURI(), new NoopProgressReceiver());
         assertNotNull(version);

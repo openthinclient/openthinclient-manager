@@ -90,8 +90,13 @@
         width: 30px;
       }
 
-      .valo-menu-item .v-icon + .valo-menu-item-caption {
+      .v-icon + .valo-menu-item-caption {
           margin-left: 0;
+      }
+
+      [class*="caption"] {
+        width: unset;
+        max-width: unset;
       }
     }
 
@@ -138,7 +143,7 @@
       &::before {
         content: "";
         position: absolute;
-        left: 17px;
+        left: 25px;
         top: 7px;
         height: 16px;
         width: 16px;
@@ -196,6 +201,10 @@
         padding: 2px 16px 2px 55px;
       }
 
+      tr.MenuGroupProfile {
+        padding-left: 18px;
+      }
+
       td.v-grid-cell {
         max-width: 100%;
         border: 0;
@@ -208,19 +217,16 @@
       }
 
       tr {
-        &::before {
+        &:not(.MenuGroupProfile)::before {
           content: "";
           position: absolute;
           width: 9px;
           height: 9px;
           top: calc(50% - 3px);
-          left: 20px;
+          left: 28px;
           border-radius: 50%;
           z-index: 1;
           background: #2a2d32;
-        }
-        &.MenuGroupProfile::before {
-          background: #fff;
         }
       }
 

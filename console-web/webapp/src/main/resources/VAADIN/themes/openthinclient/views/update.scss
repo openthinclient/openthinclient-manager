@@ -1,0 +1,34 @@
+@mixin update-view {
+  .v-panel .updateview {
+    display: grid;
+    margin: 2ch;
+
+    .update-checker, .update-runner, .wikilinks {
+      display: grid;
+      border-top: 1px solid #ddd;
+      margin-top: 1ch;
+      padding-top: 1ch;
+
+      .description {
+        grid-area: description;
+      }
+    }
+
+    .update-checker {
+      grid-template: "button status" / auto 1fr;
+      grid-gap: 2ch;
+    }
+
+    .update-runner {
+      grid-template:
+        "button       status"
+        "description  description" / auto 1fr;
+      grid-gap: 2ch;
+    }
+
+    .wikilinks a:after {
+      content: " \e7de";
+      font-family: "Vaadin-Icons";
+    }
+  }
+}

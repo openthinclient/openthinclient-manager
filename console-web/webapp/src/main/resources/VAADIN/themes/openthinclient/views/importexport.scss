@@ -1,0 +1,18 @@
+@mixin importexport-view {
+  .importexport {
+    .ldif-import .v-button {
+      height: 28px;
+      &::before {
+        content: "\0e6f5";
+        font-family: Vaadin-Icons;
+        width: 3ch;
+      }
+    }
+    .ldif-export::before {
+      content: "\0e6ef";
+      font-family: Vaadin-Icons;
+      width: 3ch;
+      text-align: left;
+    }
+  }
+}

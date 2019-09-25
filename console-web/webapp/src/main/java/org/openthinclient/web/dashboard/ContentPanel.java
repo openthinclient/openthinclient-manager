@@ -17,6 +17,7 @@ public class ContentPanel extends VerticalLayout {
         setSizeUndefined();
         addStyleName(PANEL_STYLE_NAME);
         title = new HorizontalLayout();
+        title.addStyleName(TITLE_STYLE_NAME);
         title.setSpacing(false);
         addComponent(title);
     }
@@ -24,7 +25,6 @@ public class ContentPanel extends VerticalLayout {
     public void setTitle(String text) {
         if(titleLabel == null) {
             titleLabel = new Label();
-            titleLabel.addStyleName(TITLE_STYLE_NAME);
             title.addComponent(titleLabel);
         }
         titleLabel.setValue(text);

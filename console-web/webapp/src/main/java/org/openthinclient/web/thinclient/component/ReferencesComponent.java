@@ -5,15 +5,15 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.thinclient.model.Item;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ReferencesComponent extends CssLayout {
 
   private CssLayout referenceLine;
 //  private ComboBox<Item> itemComboBox;
   private Button multiSelectPopupBtn;
-  private Map<String, CssLayout> itemComponents = new HashMap<>();
+  private NavigableMap<String, ItemButtonComponent> itemComponents = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+  private Map<String, CssLayout> sublineComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
     addStyleName("referenceComponent");
@@ -42,14 +42,13 @@ public class ReferencesComponent extends CssLayout {
   public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
     ItemButtonComponent buttonComponent = new ItemButtonComponent(name, isReadOnly);
     itemComponents.put(name, buttonComponent);
-    referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount());
+    addComponentSorted(name, buttonComponent);
     return buttonComponent;
   }
 
   public void removeItemComponent(String name) {
     if (itemComponents.containsKey(name)) {
-      referenceLine.removeComponent(itemComponents.get(name));
-      itemComponents.remove(name);
+      referenceLine.removeComponent(itemComponents.remove(name));
     }
   }
 
@@ -65,12 +64,12 @@ public class ReferencesComponent extends CssLayout {
   public void addReferenceSublineComponents(String name, Component... components) {
     addStyleName("has-subline-content");
     CssLayout referenceContentLine = new CssLayout();
-    referenceContentLine.setId(name);
+    referenceContentLine.addComponents(components);
     referenceContentLine.setStyleName("referenceLine");
     referenceContentLine.addStyleName("subline-content");
-    addComponent(referenceContentLine);
 
-    referenceContentLine.addComponents(components);
+    sublineComponents.put(name, referenceContentLine);
+    addComponentSorted(name, referenceContentLine);
   }
 
   /**
@@ -78,13 +77,17 @@ public class ReferencesComponent extends CssLayout {
    * @param name the Label, used for reference line component id
    */
   public void removeReferenceSublineComponent(String name) {
-    int componentCount = getComponentCount();
-    for (int i=0; i<componentCount; i++) {
-      Component component = getComponent(i);
-      if (component.getId() != null && component.getId().equals(name)) {
-        removeComponent(component);
-        break;
-      }
+    if (sublineComponents.containsKey(name)) {
+      referenceLine.removeComponent(sublineComponents.remove(name));
+    }
+  }
+
+  private void addComponentSorted(String name, Component component) {
+    Map.Entry<String, ItemButtonComponent> nextItemEntry = itemComponents.higherEntry(name);
+    if (nextItemEntry != null) {
+      referenceLine.addComponent(component, referenceLine.getComponentIndex(nextItemEntry.getValue()));
+    } else {
+      referenceLine.addComponent(component);
     }
   }
 }
