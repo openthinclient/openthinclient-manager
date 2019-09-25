@@ -14,11 +14,21 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
+import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
@@ -35,16 +45,31 @@ import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_ERROR_DIRECTORY_EXCEPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_NAME_ALREADY_EXISTS;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_NEW_PROFILE_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION;
 
 public abstract class AbstractThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+  @Autowired
+  protected ManagerHome managerHome;
+  @Autowired
+  private RealmService realmService;
 
   protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
@@ -508,7 +533,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public ProfilesListOverviewPanel createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
-    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop);
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
@@ -627,5 +652,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
     } else {
       navigator.navigateTo(getParentViewName());
     }
+  }
+
+  public RealmService getRealmService() {
+    return realmService;
   }
 }

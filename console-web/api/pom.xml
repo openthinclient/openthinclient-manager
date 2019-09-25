@@ -69,6 +69,21 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>org.openthinclient.3rd-party.apacheds</groupId>
+            <artifactId>apacheds-server-tools</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>nlog4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>

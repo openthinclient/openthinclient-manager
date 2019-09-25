@@ -48,8 +48,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
   private IMessageConveyor mc;
 
   @Autowired
-  private RealmService realmService;
-  @Autowired
   private SchemaProvider schemaProvider;
   @Autowired @Qualifier("settingsSideBar")
   private OTCSideBar settingsSideBar;
@@ -64,7 +62,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
   @Override
   public HashSet getAllItems() throws AllItemsListException {
      try {
-       Set<Realm> allRealms = realmService.findAllRealms();
+       Set<Realm> allRealms = getRealmService().findAllRealms();
        HashSet hashSet = new HashSet();
        hashSet.addAll(allRealms);
        return hashSet;
@@ -122,7 +120,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-    Set<Realm> allRealms = realmService.findAllRealms();
+    Set<Realm> allRealms = getRealmService().findAllRealms();
 
     Optional<Realm> first = allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst();
     if (first.isPresent()) {

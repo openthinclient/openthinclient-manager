@@ -4,10 +4,17 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.MultiSelectionModel;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
@@ -17,12 +24,19 @@ import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.vaadin.viritin.button.MButton;
 
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CANCEL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE;
 
 public class ProfilesListOverviewPanelPresenter {
 
@@ -31,15 +45,38 @@ public class ProfilesListOverviewPanelPresenter {
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
+  private LdifExporterService ldifExporterService;
 
-  public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel) {
+  public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
     this.thinclientView = thinclientView;
     this.panel = panel;
+    this.ldifExporterService = ldifExporterService;
 
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
+    extendLdifExportButton(createResource());
     panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
+  }
+
+  private StreamResource createResource() {
+    return new StreamResource((StreamResource.StreamSource) () -> {
+      Set<String> dns = panel.getSelectedItems().stream()
+          .map(DirectoryObject::getDn)
+          .filter(s -> s.contains(ldifExporterService.getBaseDN()))
+          .map(s -> s.substring(0, s.indexOf(ldifExporterService.getBaseDN())-1))
+          .collect(Collectors.toSet());
+
+      Set<LdifExporterService.State> exportResult = new HashSet<>();
+      byte[] bytes = ldifExporterService.performAction(dns, exportResult::add);
+      if (exportResult.contains(LdifExporterService.State.ERROR) || exportResult.contains(LdifExporterService.State.EXCEPTION)) {
+        // TODO: place error-message somewhere
+        return null;
+      } else {
+        // TODO: place success-message somewhere?
+        return new ByteArrayInputStream(bytes);
+      }
+    }, "export.ldif");
   }
 
   private void handleDeleteAction(Button.ClickEvent event) {
@@ -122,6 +159,11 @@ public class ProfilesListOverviewPanelPresenter {
     deleteClickListenerRegistration = panel.getDeleteButton().addClickListener(clickListener);
   }
 
+  public void extendLdifExportButton(StreamResource myResource) {
+    FileDownloader fileDownloader = new FileDownloader(myResource);
+    fileDownloader.extend(panel.getLdifExportButton());
+  }
+
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     panel.setItemButtonClickedConsumer(itemButtonClickedConsumer);
   }
@@ -145,4 +187,6 @@ public class ProfilesListOverviewPanelPresenter {
     if (deleteClickListenerRegistration != null) deleteClickListenerRegistration.remove();
     panel.getDeleteButton().setEnabled(false);
   }
+
+
 }

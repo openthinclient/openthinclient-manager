@@ -65,8 +65,6 @@ public final class UserView extends AbstractThinclientView {
   @Autowired
   private UserGroupView userGroupView;
   @Autowired
-  private RealmService realmService;
-  @Autowired
   private PrinterService printerService;
   @Autowired
   private UserService userService;
@@ -92,7 +90,7 @@ public final class UserView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
-    secondaryDirectory = "secondary".equals(realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+    secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
 
     addStyleName(NAME);
     if (!secondaryDirectory) {
@@ -104,7 +102,7 @@ public final class UserView extends AbstractThinclientView {
   public Set getAllItems() {
     try {
       Set<User> users = userService.findAll();
-      realmService.findAllRealms().forEach(realm ->
+      getRealmService().findAllRealms().forEach(realm ->
         users.removeAll(realm.getAdministrators().getMembers())
       );
       return users;
