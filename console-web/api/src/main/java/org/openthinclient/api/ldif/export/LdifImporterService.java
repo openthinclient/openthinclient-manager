@@ -82,9 +82,7 @@ public class LdifImporterService {
             ImportCommandExecutor.ERRORLISTENER_PARAMETER,
             new ToolCommandListener() {
               public void notify(Serializable o) {
-                final IOException e = new IOException(o.toString());
-                logger.error("Error occurred while importing from ldif-file.", e);
-                result.accept(State.ERROR);
+                logger.info("Error occurred while importing from ldif-file: {}", o.toString());
               }
         })};
 
