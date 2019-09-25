@@ -22,7 +22,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class Source {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.TABLE)
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+    @GenericGenerator(name = "native", strategy = "native")
     @XmlTransient
     private Long id;
 

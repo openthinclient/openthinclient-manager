@@ -32,14 +32,15 @@ public class Package implements Serializable, Comparable<Package> {
 
     private static final long serialVersionUID = 0x2d33363938363032L;
     @Id
-    @GeneratedValue(strategy= GenerationType.TABLE)
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+    @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "source_id")
     private Source source;
 
-    @Column
+    @Column(name = "installed_size")
     private Long installedSize;
     @Column
     private PackageReferenceList depends = new PackageReferenceList();
@@ -93,7 +94,7 @@ public class Package implements Serializable, Comparable<Package> {
 
     @Column
     private boolean installed;
-    @Column
+    @Column(name = "change_log")
     @Lob
     private String changeLog;
 

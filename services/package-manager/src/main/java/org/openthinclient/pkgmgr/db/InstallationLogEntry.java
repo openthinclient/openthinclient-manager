@@ -29,7 +29,8 @@ import javax.persistence.*;
 public class InstallationLogEntry {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.TABLE)
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+    @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

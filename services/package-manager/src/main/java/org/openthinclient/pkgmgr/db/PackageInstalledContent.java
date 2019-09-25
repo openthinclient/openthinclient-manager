@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr.db;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -14,7 +16,8 @@ import javax.persistence.*;
 public class PackageInstalledContent {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.TABLE)
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+    @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
     @ManyToOne

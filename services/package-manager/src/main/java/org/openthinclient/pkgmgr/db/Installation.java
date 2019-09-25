@@ -15,7 +15,8 @@ public class Installation {
 
    @Column(nullable = false)
    @Id
-   @GeneratedValue(strategy= GenerationType.TABLE)
+   @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+   @GenericGenerator(name = "native", strategy = "native")
    private Long id;
 
    /**
