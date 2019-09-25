@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2019.2-SNAPSHOT</version>
+        <version>2019.1.1</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -15,13 +15,13 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-db</artifactId>
-            <version>2019.2-SNAPSHOT</version>
+            <version>2019.1.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
-            <version>2019.2-SNAPSHOT</version>
+            <version>2019.1.1</version>
         </dependency>
 
         <!-- http://maven.ej-technologies.com/repository/com/install4j/install4j-runtime/6.1.4/install4j-runtime-6.1.4.jar -->

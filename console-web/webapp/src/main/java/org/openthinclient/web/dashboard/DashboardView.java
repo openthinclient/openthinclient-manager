@@ -106,7 +106,7 @@ public class DashboardView extends Panel implements View {
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
-    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel("Unregistered " + mc.getMessage(UI_CLIENT_HEADER),
+    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS),
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
 
@@ -216,8 +216,7 @@ public class DashboardView extends Panel implements View {
       super();
       addStyleNames("news-browser", "dashboard-panel", "size-2x3");
 
-      BrowserFrame frame = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
-      frame.addStyleName("loading");
+      BrowserFrame frame = new BrowserFrame(null, new ExternalResource("about:blank"));
 
       CssLayout fallback = new CssLayout();
       fallback.addComponents(
@@ -228,7 +227,8 @@ public class DashboardView extends Panel implements View {
 
       addComponents(frame, fallback);
 
-      JavaScript.getCurrent().execute("updateIFrameLoadingClass()");
+      JavaScript.getCurrent().execute(String.format("loadBrowserFrame('.news-browser .v-browserframe', '%s')",
+                                                    NEWS_URL + applicationVersion));
     }
   }
 

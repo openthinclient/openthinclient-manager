@@ -18,9 +18,13 @@ function disableSpellcheck() {
   })
 }
 
-function updateIFrameLoadingClass() {
-  document.querySelectorAll('.v-browserframe.loading').forEach(browserFrame =>
-    browserFrame.querySelector('iframe').onload = () =>
-        browserFrame.classList.remove('loading')
-  )
+function loadBrowserFrame(browserSelector, url) {
+  document.querySelectorAll(browserSelector).forEach(browserFrame => {
+    if(!browserFrame.classList.contains('loading')) {
+      browserFrame.classList.add('loading')
+      let iframe = browserFrame.querySelector('iframe')
+      iframe.addEventListener('load', () => browserFrame.classList.remove('loading'))
+      iframe.src = url
+    }
+  })
 }
