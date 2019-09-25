@@ -36,10 +36,8 @@ public class DatabaseSetupTest {
       assertEquals("Expected project-version not found at package-entry", projectVersion, resultSet.getString(1));
     }
 
-
     @Test
     public void testSetupAndTablesPresent() throws Exception {
-
         final Connection connection = dataSource.getConnection();
         connection.createStatement().executeQuery("SELECT * FROM otc_package");
     }
@@ -51,8 +49,8 @@ public class DatabaseSetupTest {
       ResultSet resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(3, resultSet.getInt(1));
       
+      assertEquals(2, resultSet.getInt(1));
       String driverClassName = ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getDriverClassName();
       
       if (driverClassName.equals(DatabaseConfiguration.DatabaseType.H2.getDriverClassName())) {
@@ -70,7 +68,7 @@ public class DatabaseSetupTest {
       resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(4, resultSet.getInt(1));
+      assertEquals(3, resultSet.getInt(1));
     }
 
     /**
@@ -100,4 +98,14 @@ public class DatabaseSetupTest {
           assertEquals("LONGTEXT", columns.getString("TYPE_NAME"));
         }
     }
+
+    @Test
+    public void testDefaultSourceIsPresent() throws Exception {
+      final Connection connection = dataSource.getConnection();
+      ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM otc_source where default_source=true");
+      assertNotNull(resultSet);
+      resultSet.next();
+      assertEquals("virtual source", resultSet.getString("description"));
+    }
+
 }

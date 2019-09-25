@@ -20,11 +20,11 @@ public class InstallableDistributionsTest {
           "    <distribution name=\"Dist1\" preferred=\"false\">\n" + //
           "        <description>Description 1</description>\n" + //
           "        <sources>\n" + //
-          "            <source enabled=\"true\">\n" + //
+          "            <source enabled=\"true\" default=\"false\">\n" + //
           "                <description>openthinclient.org Pales</description>\n" + //
           "                <url>http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/</url>\n" + //
           "            </source>\n" + //
-          "            <source enabled=\"true\">\n" + //
+          "            <source enabled=\"true\" default=\"false\">\n" + //
           "                <description>openthinclient.org Pales Testing</description>\n" + //
           "                <url>http://archive.openthinclient.org/openthinclient/v2.1/manager-test/</url>\n" + //
           "            </source>\n" + //
