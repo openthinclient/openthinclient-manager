@@ -89,7 +89,7 @@ public class ProfilesListOverviewPanel extends Panel {
 
     ldifExportAction = new Button("");
     ldifExportAction.setDescription("Export LDIF");
-    ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
+    ldifExportAction.setIcon(VaadinIcons.ARROW_CIRCLE_DOWN_O);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_SMALL);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);

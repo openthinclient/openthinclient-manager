@@ -31,6 +31,7 @@ import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.vaadin.icons.VaadinIcons;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -77,9 +78,8 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
     root = new VerticalLayout();
     root.setSizeFull();
     root.setMargin(true);
+    root.setStyleName("importexport");
     setContent(root);
-    Responsive.makeResponsive(root);
-
   }
 
   @Override
@@ -108,8 +108,8 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
     importErrorLabel.setStyleName("unexpected_error");
 
     Upload upload = new Upload(null, receiver);
+    upload.addStyleName("ldif-import");
     upload.setButtonCaption("LDIF Import");
-//    upload.setIcon(VaadinIcons.UPLOAD);
     upload.setAcceptMimeTypes("text/ldif");
     upload.addSucceededListener(receiver);
     upload.setImmediateMode(true);
@@ -143,9 +143,8 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
     exportErrorLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_LDIF_EXPORT_FAILED), ContentMode.HTML);
     exportErrorLabel.setVisible(false);
     exportErrorLabel.setStyleName("unexpected_error");
-    Button exportButton = new Button("LDIF Export" /*, new ThemeResource(icon)*/);
-    exportButton.addStyleName("thinclient-action-button");
-//    exportButton.setIcon(VaadinIcons.DOWNLOAD);
+    Button exportButton = new Button("LDIF Export");
+    exportButton.addStyleName("ldif-export");
     // attach file-downloader
     FileDownloader fileDownloader = new FileDownloader(createResource());
     fileDownloader.extend(exportButton);
