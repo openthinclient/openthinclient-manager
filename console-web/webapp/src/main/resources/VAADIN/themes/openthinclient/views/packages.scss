@@ -5,10 +5,28 @@
     padding-left: 15px;
   }
 
-  .package-manager .v-tabsheet {
-    // workaround for Vaadins shoddy geometry calculation
-    width: calc(100% - 18px) !important;
-    height: calc(100% - 36px) !important;
+  .package-manager {
+    .v-tabsheet {
+      // workaround for Vaadins shoddy geometry calculation
+      width: calc(100% - 18px) !important;
+      height: calc(100% - 36px) !important;
+    }
+
+    // darker grid headers
+    .v-grid-header .v-grid-cell {
+      background: black;
+      color: white;
+    }
+
+    // disable ugly stripes in grid
+    .v-grid-row-stripe:not(.v-grid-row-selected) > td {
+      background: $v-grid-row-background-color;
+    }
+
+    // keep dateils button readable after selection
+    .v-grid-row-selected .details-button {
+      color: white;
+    }
   }
 
   .v-panel-sources {
