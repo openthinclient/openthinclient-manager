@@ -41,6 +41,10 @@ public class Source {
     @Column(name = "last_updated")
     @XmlTransient
     private LocalDateTime lastUpdated;
+
+    @Column(name = "default_source")
+    @XmlAttribute(name = "default")
+    private Boolean defaultSource = Boolean.FALSE;
     
     public Long getId() {
         return id;
@@ -82,12 +86,24 @@ public class Source {
         this.lastUpdated = lastUpdated;
     }
 
+    public boolean isDefaultSource() {
+      return defaultSource == null ? false : defaultSource;
+    }
+
+  /**
+   * @param defaultSource maybe null
+   */
+  public void setDefaultSource(Boolean defaultSource) {
+      this.defaultSource = defaultSource == null ? false : defaultSource;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
             .append("id", id)
             .append("url", url)
             .append("enabled", enabled)
+            .append("defaultSource", defaultSource)
             .append("lastUpdated", lastUpdated)
             .append("description", description)
             .toString();

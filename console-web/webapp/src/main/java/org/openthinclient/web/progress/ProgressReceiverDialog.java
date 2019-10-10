@@ -48,8 +48,8 @@ public class ProgressReceiverDialog {
     private final ProgressBar progressBar;
     private final Label messageLabel;
     private final Window window;
+    private final HorizontalLayout header;
     private final HorizontalLayout footer;
-    private final Button closeButton;
 
     private final IMessageConveyor mc;
 
@@ -77,12 +77,18 @@ public class ProgressReceiverDialog {
         content.addComponent(this.messageLabel);
         content.addComponent(this.progressBar);
 
+        this.header = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+        Button headerCloseButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
+        this.header.addComponent(headerCloseButton);
+        header.setComponentAlignment(headerCloseButton, Alignment.MIDDLE_RIGHT);
+
         this.footer = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        closeButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
-        this.footer.addComponent(closeButton);
-        footer.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
+        Button footerCloseButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
+        this.footer.addComponent(footerCloseButton);
+        footer.setComponentAlignment(footerCloseButton, Alignment.MIDDLE_RIGHT);
 
         window.setContent(content);
+        window.center();
     }
 
     public void open(boolean modal) {
@@ -161,7 +167,8 @@ public class ProgressReceiverDialog {
       operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED) + " " + report.getRemoved()));
       operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED) + " " + report.getUpdated()));
       operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED) + " " + report.getSkipped()));
-      window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+      window.setContent(new MVerticalLayout(checkLabel, header, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+      window.center();
     }
 
     /**
@@ -182,7 +189,8 @@ public class ProgressReceiverDialog {
           operationReport.setHeaderVisible(false);
         }
 
-        window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+        window.setContent(new MVerticalLayout(checkLabel, header, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+        window.center();
     }
 
     public void onError(final Throwable throwable) {
@@ -200,7 +208,8 @@ public class ProgressReceiverDialog {
         } else {
             errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
         }
-        window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
+        window.setContent(new MVerticalLayout(errorLabel, header, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
+        window.center();
       });
     }
 

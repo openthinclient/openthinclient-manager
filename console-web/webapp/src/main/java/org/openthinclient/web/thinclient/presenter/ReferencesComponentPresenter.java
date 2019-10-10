@@ -62,7 +62,7 @@ public class ReferencesComponentPresenter {
 
   private void itemSelected(Item item) {
 
-    LOGGER.trace("Item selected: {}", item);
+    LOGGER.debug("Item selected: {}", item);
 
     currentReferencedItems.add(item);
     profileReferenceChanged.accept(currentReferencedItems); // save
@@ -74,7 +74,7 @@ public class ReferencesComponentPresenter {
 
   private void itemDeSelected(Item item) {
 
-    LOGGER.trace("Item de-selected: {}", item);
+    LOGGER.debug("Item de-selected: {}", item);
 
     currentReferencedItems.remove(item);
     profileReferenceChanged.accept(currentReferencedItems); // save

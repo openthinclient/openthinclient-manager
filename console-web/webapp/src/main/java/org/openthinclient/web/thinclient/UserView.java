@@ -65,8 +65,6 @@ public final class UserView extends AbstractThinclientView {
   @Autowired
   private UserGroupView userGroupView;
   @Autowired
-  private RealmService realmService;
-  @Autowired
   private PrinterService printerService;
   @Autowired
   private UserService userService;
@@ -92,7 +90,7 @@ public final class UserView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
-    secondaryDirectory = "secondary".equals(realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+    secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
 
     addStyleName(NAME);
     if (!secondaryDirectory) {
@@ -104,7 +102,7 @@ public final class UserView extends AbstractThinclientView {
   public Set getAllItems() {
     try {
       Set<User> users = userService.findAll();
-      realmService.findAllRealms().forEach(realm ->
+      getRealmService().findAllRealms().forEach(realm ->
         users.removeAll(realm.getAdministrators().getMembers())
       );
       return users;
@@ -365,7 +363,7 @@ public final class UserView extends AbstractThinclientView {
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/");
+    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
     if (params.length > 0) {
       if ("create".equals(params[0])) {
         showProfileMetadata(new User());

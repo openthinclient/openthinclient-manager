@@ -8,7 +8,9 @@
 @import "views/login";
 @import "views/dashboard";
 @import "views/packages";
+@import "views/filebrowser";
 @import "views/update";
+@import "views/importexport";
 
 // Main layout padding
 $view-padding: round($v-unit-size / 1.5) !default;
@@ -99,7 +101,9 @@ b {
   @include login-view;
   @include dashboard-view;
   @include packages-view;
+  @include filebrowser-view;
   @include update-view;
+  @include importexport-view;
 }
 
 @media (max-width: 1216px) {

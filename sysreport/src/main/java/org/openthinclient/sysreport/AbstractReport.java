@@ -77,6 +77,8 @@ public class AbstractReport {
   public static final class Server {
     private final OperatingSystem os = new OperatingSystem();
     private String ServerId;
+    private boolean isAppliance;
+    private String applianceVersion;
     private long freeDiskSpace;
     private Map<String, String> environment;
     @JsonProperty("environment-keys")
@@ -88,6 +90,22 @@ public class AbstractReport {
 
     public void setServerId(String serverId) {
       ServerId = serverId;
+    }
+
+    public boolean isAppliance() {
+      return this.isAppliance;
+    }
+
+    public void setIsAppliance(boolean isAppliance) {
+      this.isAppliance = isAppliance;
+    }
+
+    public String getApplianceVersion() {
+      return this.applianceVersion;
+    }
+
+    public void setApplianceVersion(String applianceVersion) {
+      this.applianceVersion = applianceVersion;
     }
 
     public long getFreeDiskSpace() {

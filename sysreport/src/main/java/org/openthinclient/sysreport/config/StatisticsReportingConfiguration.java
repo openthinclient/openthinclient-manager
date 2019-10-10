@@ -4,6 +4,7 @@ import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientGroupService;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -23,13 +24,14 @@ public class StatisticsReportingConfiguration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsReportingConfiguration.class);
 
-  public static final String CRON_EXPRESSION = "0 32 7 * * FRI";
   @Autowired
   private ManagerHome managerHome;
   @Autowired
   private PackageManager packageManager;
   @Autowired
   private ClientService clientService;
+  @Autowired
+  private UnrecognizedClientService unrecognizedClientService;
   @Autowired
   private ApplicationService applicationService;
   @Autowired
@@ -39,7 +41,7 @@ public class StatisticsReportingConfiguration {
 
   @Bean
   public StatisticsReportGenerator statisticsReportGenerator() {
-    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService, applicationGroupService, clientGroupService);
+    return new StatisticsReportGenerator(managerHome, packageManager, clientService, unrecognizedClientService, applicationService, applicationGroupService, clientGroupService);
   }
 
   @Bean
@@ -52,10 +54,10 @@ public class StatisticsReportingConfiguration {
     return new StatisticsReportPublisher(statisticsReportGenerator(), uploader());
   }
 
-  // once every Friday
-    @Scheduled(cron= CRON_EXPRESSION)
-  // once every minute for testing
-//  @Scheduled(cron = "0 * * * * *")
+
+  @Scheduled(cron = "0 30 7 * * FRI") // Friday morning
+  @Scheduled(cron = "0 0 12 * * WED") // Wednesday noon
+  // @Scheduled(cron = "0 * * * * *")    // every minute for testing
   public void transmitStatisticsReport() throws Exception {
     if(managerHome.getMetadata().isUsageStatisticsEnabled())
       statisticsReportPublisher().publish();

@@ -51,6 +51,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
     packageList.addColumn((ValueProvider<AbstractPackageItem, Component>) item -> {
       final Button moreButton = new Button();
+      moreButton.addStyleName("details-button");
       moreButton.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_LIST_DETAILS_CAPTION));
       moreButton.setIcon(VaadinIcons.INFO_CIRCLE_O);
       moreButton.addStyleNames(ValoTheme.BUTTON_LINK);
