@@ -60,5 +60,29 @@
 
   </changeSet>
 
+
+    <changeSet id="3" author="JN" dbms="derby">
+
+        <sql>
+            CREATE TABLE otc_item
+            (
+            id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+            )
+        </sql>
+        <sql>
+            CREATE TABLE otc_item_configuration
+            (
+            id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+            )
+        </sql>
+        <sql>
+            CREATE TABLE otc_item_member
+            (
+            id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+            )
+        </sql>
+
+    </changeSet>
+
 </databaseChangeLog>
 

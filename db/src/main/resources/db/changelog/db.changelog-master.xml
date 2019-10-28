@@ -13,6 +13,7 @@
 
 	<include file="db.changelog-columns-packagemanager.xml" relativeToChangelogFile="true" />
 	<include file="db.changelog-columns-licensemanager.xml" relativeToChangelogFile="true" />
+	<include file="db.changelog-columns-clientmanager.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
 

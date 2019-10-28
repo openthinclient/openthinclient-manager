@@ -40,6 +40,8 @@ public class DatabaseSetupTest {
     public void testSetupAndTablesPresent() throws Exception {
         final Connection connection = dataSource.getConnection();
         connection.createStatement().executeQuery("SELECT * FROM otc_package");
+        connection.createStatement().executeQuery("SELECT * FROM otc_item");
+        connection.createStatement().executeQuery("SELECT * FROM otc_item_configuration");
     }
     
     @Test

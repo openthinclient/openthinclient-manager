@@ -60,5 +60,30 @@
 
     </changeSet>
 
+    <changeSet id="3" author="JN" dbms="mysql">
+
+        <createTable tableName="otc_item">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" uniqueConstraintName="pk_item"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_item" columnName="id" columnDataType="bigint"/>
+
+        <createTable tableName="otc_item_configuration">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" uniqueConstraintName="pk_item_configuration"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_item_configuration" columnName="id" columnDataType="bigint"/>
+
+        <createTable tableName="otc_item_member">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" uniqueConstraintName="pk_item_member" />
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_item_member" columnName="id" columnDataType="bigint"/>
+
+    </changeSet>
+
 </databaseChangeLog>
 
