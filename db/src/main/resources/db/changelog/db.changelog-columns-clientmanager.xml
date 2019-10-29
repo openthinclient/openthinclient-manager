@@ -35,6 +35,22 @@
                                 referencedTableName="otc_item"
                                 referencedColumnNames="id" onDelete="RESTRICT"/>
 
+        <addColumn tableName="otc_item_member">
+            <column name="item_id"   type="bigint"/>
+            <column name="member_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="otc_item_member"
+                                 baseColumnNames="item_id"
+                                 constraintName="fk_otc_item_member_item"
+                                 referencedTableName="otc_item"
+                                 referencedColumnNames="id" onDelete="RESTRICT"/>
+        <addForeignKeyConstraint baseTableName="otc_item_member"
+                                 baseColumnNames="member_id"
+                                 constraintName="fk_otc_item_member_member"
+                                 referencedTableName="otc_item"
+                                 referencedColumnNames="id" onDelete="RESTRICT"/>
+
+
         <!--<addPrimaryKey tableName="otc_installation"-->
         <!--columnNames="id"-->
         <!--constraintName="pk_otc_installation"/> -->

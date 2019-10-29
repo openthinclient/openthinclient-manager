@@ -33,6 +33,15 @@ public class ItemConfiguration {
    @Enumerated(EnumType.STRING)
    private Type type;
 
+   public ItemConfiguration() {};
+
+   public ItemConfiguration(Item item, String name, String value, Type type) {
+      this.item = item;
+      this.name = name;
+      this.value = value;
+      this.type = type;
+   }
+
    public enum Type {
       STRING, INTEGER, BOOLEAN
    }

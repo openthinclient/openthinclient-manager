@@ -24,7 +24,7 @@ public class ClientManagerInMemoryDatabaseConfiguration {
     public DataSource dataSource() {
         return DataSourceBuilder.create() //
                 .driverClassName(org.h2.Driver.class.getName()) //
-                .url("jdbc:h2:mem:clientmngr-test-" + System.currentTimeMillis() + ";DB_CLOSE_ON_EXIT=FALSE") //
+                .url("jdbc:h2:mem:clientmgr-test-" + System.currentTimeMillis() + ";DB_CLOSE_ON_EXIT=FALSE") //
                 .build();
     }
 

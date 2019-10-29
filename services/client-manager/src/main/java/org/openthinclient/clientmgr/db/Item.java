@@ -2,15 +2,10 @@ package org.openthinclient.clientmgr.db;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * An entity for items.
@@ -25,25 +20,30 @@ public class Item {
    @GenericGenerator(name = "native", strategy = "native")
    private Long id;
 
-   /**
-    *  Name
-    */
    @Column(length = 1024, columnDefinition = "char")
    private String name;
 
-   /**
-    * An optional user provided comment.
-    */
    @Column
    @Lob
    private String comment;
 
-   /**
-    *  Type
-    */
    @Column(length = 100, columnDefinition = "char")
    @Enumerated(EnumType.STRING)
    private Type type;
+
+   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   @JoinTable(name = "otc_item_member",
+       joinColumns = @JoinColumn(name = "item_id", referencedColumnName = "id"),
+       inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id"))
+   private Set<Item> members;
+
+   public Item() {};
+
+   public Item(String name, String comment, Type type) {
+      this.name = name;
+      this.comment = comment;
+      this.type = type;
+   }
 
    public Long getId() {
       return id;
@@ -71,6 +71,14 @@ public class Item {
 
    public void setType(Type type) {
       this.type = type;
+   }
+
+   public Set<Item> getMembers() {
+      return members;
+   }
+
+   public void setMembers(Set<Item> members) {
+      this.members = members;
    }
 
    public enum Type {
