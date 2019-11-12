@@ -5,6 +5,7 @@ import org.openthinclient.clientmgr.db.ItemConfiguration;
 import org.openthinclient.clientmgr.db.ItemConfigurationRepository;
 import org.openthinclient.clientmgr.db.ItemRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -46,4 +47,11 @@ public class ClientManagerService {
     return itemRepository.findByHwAddress(hwAddressString);
   }
 
+  public List<Item> findByName(String name) {
+    return itemRepository.findByName(name);
+  }
+
+  public List<Item> saveItems(Item... items) {
+    return itemRepository.saveAll(Arrays.asList(items));
+  }
 }

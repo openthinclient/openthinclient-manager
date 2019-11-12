@@ -61,10 +61,14 @@ public class Ldif2JsonModelParser {
                     profileType = ProfileType.HARDWARETYPE;
                 } else if (ou.equals("apps")) {
                     profileType = ProfileType.APPLICATION;
+                } else if (ou.equals("appgroups")) {
+                    profileType = ProfileType.APPLICATION_GROUP;
                 } else if (ou.equals("printers")) {
                     profileType = ProfileType.PRINTER;
                 } else if (ou.equals("clients")) {
                     profileType = ProfileType.CLIENT;
+                } else if (ou.equals("clientgroups")) {
+                    profileType = ProfileType.CLIENT_GROUP;
                 } else if (ou.equals("locations")) {
                     profileType = ProfileType.LOCATION;
                 } else if (ou.equals("devices")) {
@@ -80,12 +84,20 @@ public class Ldif2JsonModelParser {
                         profileObject = new Client();
                         profileObject.setName(getString(name, "cn"));
                         break;
+                    case CLIENT_GROUP:
+                        profileObject = new ClientGroup();
+                        profileObject.setName(getString(name, "ou"));
+                        break;
                     case HARDWARETYPE:
                         profileObject = new HardwareType();
                         profileObject.setName(getString(name, "cn"));
                         break;
                     case APPLICATION:
                         profileObject = new Application();
+                        profileObject.setName(getString(name, "cn"));
+                        break;
+                    case APPLICATION_GROUP:
+                        profileObject = new ApplicationGroup();
                         profileObject.setName(getString(name, "cn"));
                         break;
                     case DEVICE:
@@ -127,19 +139,24 @@ public class Ldif2JsonModelParser {
                 }
 
                 // add members
-
-                    try {
-                        if (uniquemember != null && uniquemember.get() != null) {
-                            if (profileType == ProfileType.DEVICE) {
-                                ((Device) profileObject).addMember(uniquemember.get().toString());
-                            }
-                            if (profileType == ProfileType.APPLICATION) {
-                                ((Application) profileObject).addMember(uniquemember.get().toString());
-                            }
+                try {
+                    if (uniquemember != null && uniquemember.get() != null) {
+                        String fullCn = uniquemember.get().toString();
+                        int endIndex = fullCn.indexOf(",", fullCn.indexOf("=") + 1) > 0 ? fullCn.indexOf(",") : fullCn.length() - 1;
+                        String member = fullCn.substring(fullCn.indexOf("=") + 1, endIndex);
+                        if (profileType == ProfileType.DEVICE) {
+                            ((Device) profileObject).addMember(member);
+                        } else if (profileType == ProfileType.APPLICATION) {
+                            ((Application) profileObject).addMember(member);
+                        } else if (profileType == ProfileType.APPLICATION_GROUP) {
+                            ((ApplicationGroup) profileObject).addMember(member);
+                        } else if (profileType == ProfileType.CLIENT_GROUP) {
+                            ((ClientGroup) profileObject).addMember(member);
                         }
-                    } catch (NamingException e) {
-                        logger.debug("Cannot handle uniquemember", e);
                     }
+                } catch (NamingException e) {
+                    logger.debug("Cannot handle uniquemember", e);
+                }
 
 
                 // Do we need to handle objectClass?
@@ -179,12 +196,13 @@ public class Ldif2JsonModelParser {
                 parseResults.add(profileObject);
                 if (logger.isDebugEnabled()) {
                     ObjectMapper om = new ObjectMapper();
-                    logger.debug(om.writeValueAsString(profileObject));
+                    logger.debug("Migrated record: {}", om.writeValueAsString(profileObject));
                 }
             }
             profileObject = reader.read();
         }
 
+        // TODO: hier checken!!
         // consolidate result: merge object with same name
         Map<String, AbstractProfileObject> result = new HashMap<>();
         parseResults.forEach(apo -> {
@@ -197,6 +215,10 @@ public class Ldif2JsonModelParser {
                 if (object instanceof Application && apo instanceof  Application) {
                     ((Application) object).addMembers(((Application) apo).getMembers());
                 }
+                if (object instanceof ApplicationGroup && apo instanceof ApplicationGroup) {
+                    ((ApplicationGroup) object).addMembers(((ApplicationGroup) apo).getMembers());
+                }
+                // TODO ClientGRoups
             } else {
                 result.put(apo.getName(), apo);
             }

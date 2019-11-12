@@ -81,4 +81,14 @@ public class ItemConfiguration {
    public void setType(Type type) {
       this.type = type;
    }
+
+   @Override
+   public String toString() {
+      final StringBuffer sb = new StringBuffer("ItemConfiguration name=")
+          .append(getName())
+          .append(", value=").append(value)
+          .append(", type=").append(type)
+          .append(", item.id=").append(item != null ? item.getId() : "null");
+      return sb.toString();
+   }
 }

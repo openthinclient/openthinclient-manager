@@ -3,9 +3,8 @@ package org.openthinclient.clientmgr.db;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * An entity for items.
@@ -25,23 +24,30 @@ public class Item {
 
    @Column
    @Lob
-   private String comment;
+   private String description;
 
    @Column(length = 100, columnDefinition = "char")
    @Enumerated(EnumType.STRING)
    private Type type;
 
-   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   /**
+    * Member of Item: this item has members i.e.:
+    * <li>Item=Application has members=[AppGroup1, AppGroup2]</li>
+    * <li>Item=Device has members=[ClientAutoLogin, ClientX]</li>
+    * <li>Item=HardwareType has members=[ClientShowRoomPC]</li>
+    * <li>Item=AppGroup1 has members=[AppGroup2, AppGroup3, ClientShowRoomPC]</li>
+    */
+   @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY)
    @JoinTable(name = "otc_item_member",
        joinColumns = @JoinColumn(name = "item_id", referencedColumnName = "id"),
        inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id"))
-   private Set<Item> members;
+   private Set<Item> members = new HashSet<>();
 
-   public Item() {};
+   public Item() {}
 
-   public Item(String name, String comment, Type type) {
+   public Item(String name, String description, Type type) {
       this.name = name;
-      this.comment = comment;
+      this.description = description;
       this.type = type;
    }
 
@@ -57,12 +63,12 @@ public class Item {
       this.name = name;
    }
 
-   public String getComment() {
-      return comment;
+   public String getDescription() {
+      return description;
    }
 
-   public void setComment(String comment) {
-      this.comment = comment;
+   public void setDescription(String description) {
+      this.description = description;
    }
 
    public Type getType() {
@@ -82,6 +88,17 @@ public class Item {
    }
 
    public enum Type {
-      CLIENT, DEVICE, APPLICATION, HARDWARE_TYPE, LOCATION, PRINTER, REALM, CLIENT_GROUP, APPLICATION_GROUP
+      CLIENT, DEVICE, APPLICATION, HARDWARETYPE, LOCATION, PRINTER, REALM, CLIENT_GROUP, APPLICATION_GROUP
+   }
+
+   @Override
+   public String toString() {
+      final StringBuffer sb = new StringBuffer("Item id=")
+          .append(id)
+          .append(", name=").append(name)
+          .append(", description=").append(description)
+          .append(", type=").append(type)
+          .append(", members=").append(members);
+      return sb.toString();
    }
 }

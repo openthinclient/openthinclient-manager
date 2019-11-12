@@ -1,7 +1,5 @@
 package org.openthinclient.clientmgr.db;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.clientmgr.ClientManagerInMemoryDatabaseConfiguration;
@@ -37,7 +35,7 @@ public class ItemRepositoryTest {
 
     Item item = new Item();
     item.setName("TC ABC");
-    item.setComment("bdcjbsdjkcbsdkx");
+    item.setDescription("bdcjbsdjkcbsdkx");
     item.setType(Item.Type.CLIENT);
 
     Item saved = itemRepository.save(item);
@@ -51,7 +49,7 @@ public class ItemRepositoryTest {
 
     Item item = new Item();
     item.setName("TC ABC");
-    item.setComment("bdcjbsdjkcbsdkx");
+    item.setDescription("bdcjbsdjkcbsdkx");
     item.setType(Item.Type.CLIENT);
     itemRepository.save(item);
 
@@ -107,7 +105,7 @@ public class ItemRepositoryTest {
     // find by type
     assertEquals(2, itemRepository.findAllByType(Item.Type.CLIENT).size());
     assertEquals(1, itemRepository.findAllByType(Item.Type.DEVICE).size());
-    assertEquals(0, itemRepository.findAllByType(Item.Type.HARDWARE_TYPE).size());
+    assertEquals(0, itemRepository.findAllByType(Item.Type.HARDWARETYPE).size());
 
     // find configurations
     assertEquals(0, itemConfigurationRepository.findByItemId(client.getId()).size());

@@ -7,6 +7,7 @@ import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
 import org.openthinclient.api.importer.model.ImportableLocation;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
+import org.openthinclient.api.rest.model.ApplicationGroup;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
@@ -30,6 +31,8 @@ public interface ImportModelMapper {
   Location fromImportable(ImportableLocation location);
 
   Application fromImportable(org.openthinclient.api.rest.model.Application application);
+
+//  ApplicationGroup fromImportable(org.openthinclient.api.rest.model.ApplicationGroup applicationGroup);
 
   Client fromImportable(ImportableClient importableClient);
 

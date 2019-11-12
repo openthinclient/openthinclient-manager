@@ -2,8 +2,15 @@ package org.openthinclient.api.importer.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
+import org.openthinclient.common.model.Device;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
 
 public enum ProfileType {
 
@@ -12,11 +19,13 @@ public enum ProfileType {
   DEVICE(Device.class),
   LOCATION(Location.class),
   CLIENT(Client.class),
-  PRINTER(Printer.class);
+  PRINTER(Printer.class),
+  APPLICATION_GROUP(ApplicationGroup.class),
+  CLIENT_GROUP(ClientGroup.class);
 
-  private final Class<? extends Profile> targetType;
+  private final Class<? extends DirectoryObject> targetType;
 
-  ProfileType(Class<? extends Profile> targetType) {
+  ProfileType(Class<? extends DirectoryObject> targetType) {
     this.targetType = targetType;
   }
 
@@ -25,7 +34,7 @@ public enum ProfileType {
     return valueOf(raw.toUpperCase());
   }
 
-  public Class<? extends Profile> getTargetType() {
+  public Class<? extends DirectoryObject> getTargetType() {
     return targetType;
   }
 
