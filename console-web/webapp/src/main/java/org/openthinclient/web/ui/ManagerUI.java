@@ -8,8 +8,14 @@ import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.navigator.*;
-import com.vaadin.server.*;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
@@ -19,29 +25,44 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.service.*;
+import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DeviceService;
+import org.openthinclient.common.model.service.HardwareTypeService;
+import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.common.model.service.PrinterService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.Registration;
+import org.openthinclient.service.common.license.LicenseChangeEvent;
+import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.web.OTCSideBar;
-import org.openthinclient.web.dashboard.DashboardView;
 import org.openthinclient.web.component.LicenseMessageBar;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.*;
+import org.openthinclient.web.thinclient.ApplicationGroupView;
+import org.openthinclient.web.thinclient.ApplicationView;
+import org.openthinclient.web.thinclient.ClientView;
+import org.openthinclient.web.thinclient.DeviceView;
+import org.openthinclient.web.thinclient.HardwaretypeView;
+import org.openthinclient.web.thinclient.LocationView;
+import org.openthinclient.web.thinclient.PrinterView;
+import org.openthinclient.web.thinclient.UserView;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
-import org.openthinclient.service.common.license.LicenseChangeEvent;
-import org.openthinclient.service.common.license.LicenseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -53,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO_RESULT;
 
@@ -253,12 +273,13 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   @EventBusListenerMethod
   public void userLoggedOut(final UserLoggedOutEvent event) {
-    LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    SecurityContext securityContext = (SecurityContext) VaadinSession.getCurrent().getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+    Authentication authentication = securityContext.getAuthentication();
+    LOGGER.debug("Received UserLoggedOutEvent " + (authentication != null ? authentication.getPrincipal() : "null"));
     // When the user logs out, current VaadinSession gets closed and the
     // page gets reloaded on the login screen. Do notice the this doesn't
     // invalidate the current HttpSession.
     VaadinSession.getCurrent().close();
-    SecurityContextHolder.getContext().setAuthentication(null);
     vaadinSecurity.logout();
   }
 
@@ -446,7 +467,9 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
 
     if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
-      UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      SecurityContext securityContext = (SecurityContext) VaadinSession.getCurrent().getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+      Authentication authentication = securityContext.getAuthentication();
+      UserDetails principal = (UserDetails) authentication.getPrincipal();
       try {
         userProfileWindow.refresh(userService.findByName(principal.getUsername()));
       } catch (Exception e) {
