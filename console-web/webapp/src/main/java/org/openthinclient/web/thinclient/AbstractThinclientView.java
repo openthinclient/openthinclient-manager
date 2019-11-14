@@ -35,6 +35,7 @@ import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
+import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_ERROR_DIRECTORY_EXCEPTION;
@@ -361,7 +363,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
 
     LOGGER.info("Save values for profile: " + profile);
-
     profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
 
           // write values back from bean to profile
@@ -530,7 +531,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   // Overview panel setup
-  public ProfilesListOverviewPanel createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
+  public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
     ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
@@ -540,7 +541,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     plopPresenter.setDataProvider(dataProvider);
     plopPresenter.setVisible(true);
 
-    return plop;
+    return plopPresenter;
   }
 
 
@@ -598,13 +599,25 @@ public abstract class AbstractThinclientView extends Panel implements View {
     }
   }
 
+  /**
+   * Display overview-page with list of items
+   */
   public void showOverview() {
     try {
-      ProfilesListOverviewPanel overviewPanel = createOverviewItemlistPanel(getViewTitleKey(), getAllItems());
-      displayOverviewPanel(overviewPanel);
+      ProfilesListOverviewPanelPresenter overviewPanelPresenter = createOverviewItemlistPanel(getViewTitleKey(), getAllItems());
+      overviewPanelPresenter.setDeleteMandatSupplier(createDeleteMandateFunction());
+      displayOverviewPanel(overviewPanelPresenter.getPanel());
     } catch(AllItemsListException e) {
       showError(e);
     }
+  }
+
+  /**
+   * Overwritten by Hardware- and location type to prevent deletion of dependent items
+   * @return function-supplier to check item-dependencies
+   */
+  protected Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
+    return null;
   }
 
   public void showProfile(DirectoryObject profile) {
