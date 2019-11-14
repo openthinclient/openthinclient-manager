@@ -404,8 +404,13 @@ public abstract class AbstractThinclientView extends Panel implements View {
                         break;
                     }
                   } else {
-                    LOGGER.info(" Remove empty value for " + propertyKey);
-                    profile.removeValue(propertyKey);
+                    if (propertyKey.equals("description")) {
+                      LOGGER.info(" Apply null value for description");
+                      profile.setDescription(null);
+                    } else {
+                      LOGGER.info(" Remove empty value for " + propertyKey);
+                      profile.removeValue(propertyKey);
+                    }
                   }
                 } else {
                   LOGGER.info(" Unchanged " + propertyKey + "=" + org);
