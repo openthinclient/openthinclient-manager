@@ -109,7 +109,7 @@ public class ProfilePropertiesBuilder {
                                           .toArray(SelectOption[]::new);
           group.addProperty(new OtcBooleanProperty(
                   node.getLabel(),
-                  prepareTip(node.getTip()),
+                  node.getTip(),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   selectOptions[0],
@@ -118,17 +118,17 @@ public class ProfilePropertiesBuilder {
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
-                  prepareTip(node.getTip()),
+                  node.getTip(),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof PasswordNode) {
-         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), node.getTip(), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+        group.addProperty(new OtcTextProperty(node.getLabel(), node.getTip(), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
@@ -181,18 +181,6 @@ public class ProfilePropertiesBuilder {
     group.addProperty(optionProperty);
 
     return group;
-  }
-
-  /**
-   * remove HTML-Tags in tip text
-   * @param tip String
-   * @return String or null
-   */
-  private String prepareTip(String tip) {
-    if (tip != null) {
-      return tip.replaceAll("<html>|</html>|<br>|<b>|</b>", "");
-    }
-    return null;
   }
 
   final String REGEX_TRUTHY = "(?i)yes|ja|on|true";
