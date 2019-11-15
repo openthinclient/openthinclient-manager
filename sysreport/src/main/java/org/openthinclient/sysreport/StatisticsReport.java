@@ -103,6 +103,8 @@ public class StatisticsReport extends AbstractReport {
     private int applicationGroupCount;
     @JsonProperty("thinclient-group-count")
     private int thinClientGroupCount;
+    @JsonProperty("secondary-ldap-active")
+    private boolean secondaryLdapActive;
 
     public Map<String, Long> getApplications() {
       return applications;
@@ -137,6 +139,14 @@ public class StatisticsReport extends AbstractReport {
 
     public void setThinClientCount(int thinClientCount) {
       this.thinClientCount = thinClientCount;
+    }
+
+    public boolean isSecondaryLdapActive() {
+      return secondaryLdapActive;
+    }
+
+    public void setSecondaryLdapActive(boolean secondaryLdapActive) {
+      this.secondaryLdapActive = secondaryLdapActive;
     }
   }
 

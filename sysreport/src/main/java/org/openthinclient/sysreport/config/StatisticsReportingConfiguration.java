@@ -4,6 +4,7 @@ import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientGroupService;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -36,10 +37,12 @@ public class StatisticsReportingConfiguration {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ClientGroupService clientGroupService;
+  @Autowired
+  private RealmService realmService;
 
   @Bean
   public StatisticsReportGenerator statisticsReportGenerator() {
-    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService, applicationGroupService, clientGroupService);
+    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService, applicationGroupService, clientGroupService, realmService);
   }
 
   @Bean

@@ -6,6 +6,7 @@ import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientGroupService;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.sysreport.StatisticsReport;
 
 import java.util.Map;
@@ -18,12 +19,14 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
   private final ApplicationService applicationService;
   private final ApplicationGroupService applicationGroupService;
   private final ClientGroupService clientGroupService;
+  private final RealmService realmService;
 
-  public ConfigurationSummaryReportContributor(ClientService clientService, ApplicationService applicationService, ApplicationGroupService applicationGroupService, ClientGroupService clientGroupService) {
+  public ConfigurationSummaryReportContributor(ClientService clientService, ApplicationService applicationService, ApplicationGroupService applicationGroupService, ClientGroupService clientGroupService,RealmService realmService) {
     this.clientService = clientService;
     this.applicationService = applicationService;
     this.applicationGroupService = applicationGroupService;
     this.clientGroupService = clientGroupService;
+    this.realmService = realmService;
   }
 
   @Override
@@ -48,5 +51,9 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     TreeMap<String, Long> sortedApplicationCounts = new TreeMap<>(applicationCounts);
 
     report.getConfiguration().setApplications(sortedApplicationCounts);
+
+    String secondaryLdapUrl = realmService.getDefaultRealm().getValue("Directory.Secondary.LDAPURLs");
+    report.getConfiguration().setSecondaryLdapActive(secondaryLdapUrl != null && secondaryLdapUrl.length() > 0);
+
   }
 }
