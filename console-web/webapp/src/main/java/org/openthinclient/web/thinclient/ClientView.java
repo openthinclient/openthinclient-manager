@@ -323,7 +323,25 @@ public final class ClientView extends AbstractThinclientView {
           .forEach(otcProperty -> {
             ItemConfiguration bean = otcProperty.getConfiguration();
             String propertyKey = otcProperty.getKey();
-            String org = client.getValue(propertyKey);
+            String org;
+            switch (propertyKey) {
+              case "iphostnumber":org = client.getIpHostNumber();  break;
+              case "macaddress":  org = client.getMacAddress();  break;
+              case "location":    org = client.getLocation() != null ? client.getLocation().getDn() : null;  break;
+              case "hwtype":      org = client.getHardwareType() != null ? client.getHardwareType().getDn() : null;  break;
+              case "type":        {
+                try {
+                  org = client.getSchema(client.getRealm()).getName();
+                } catch (Exception e) {
+                  LOGGER.warn(" Cannot load schema for " + client.getName() + " to obtain original value for property 'type', using null.");
+                  org = null;
+                }
+                break;
+              }
+              case "name":        org = client.getName(); break;
+              case "description": org = client.getDescription(); break;
+              default:            org = client.getValue(propertyKey); break;
+            }
             String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
             if (!StringUtils.equals(org, current)) {
               if (current != null) {
@@ -342,8 +360,13 @@ public final class ClientView extends AbstractThinclientView {
                   default: client.setValue(propertyKey, current); break;
                 }
               } else {
-                LOGGER.info(" Remove empty value for " + propertyKey);
-                client.removeValue(propertyKey);
+                if (propertyKey.equals("description")) {
+                  LOGGER.info(" Apply null value for description");
+                  client.setDescription(null);
+                } else {
+                  LOGGER.info(" Remove empty value for " + propertyKey);
+                  client.removeValue(propertyKey);
+                }
               }
             } else {
               LOGGER.info(" Unchanged " + propertyKey + "=" + org);
