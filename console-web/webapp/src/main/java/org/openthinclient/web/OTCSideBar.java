@@ -385,17 +385,17 @@ public class OTCSideBar extends ValoSideBar {
         addStyleName(STYLE_SELECTED);
         // TODO: disable all other visible item lists
         // ...
-//        String parameters = event.getParameters();
-//
-//        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-//            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-//        ).findFirst();
-//
-//        if (descriptor.isPresent()) {
-//          Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
-//
-//        }
 
+        // find the grid-items in selected view an do 'select-item' form highlighting
+        String parameters = event.getParameters();
+        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
+        ).findFirst();
+        if (descriptor.isPresent()) {
+          Grid<DirectoryObject> grid = itemsMap.get(descriptor.get()).itemGrid;
+          grid.getDataProvider().fetch(new Query<>()).filter(d -> parameters.endsWith(d.getName()))
+              .findFirst().ifPresent(d -> grid.select(d));
+        }
 
       } else {
         removeStyleName(STYLE_SELECTED);

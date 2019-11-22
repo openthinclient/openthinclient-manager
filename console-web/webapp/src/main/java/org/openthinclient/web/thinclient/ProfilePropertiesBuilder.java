@@ -292,11 +292,11 @@ public class ProfilePropertiesBuilder {
     } else if (clazz.equals(Device.class)) {
       itemType = Item.Type.DEVICE;
     } else if (clazz.equals(ApplicationGroup.class)) {
-      itemType = Item.Type.APPLICATION_GROUP;
+      itemType = Item.Type.APPLICATIONGROUP;
     } else if (clazz.equals(UserGroup.class)) {
-      itemType = Item.Type.USER_GROUP;
+      itemType = Item.Type.USERGROUP;
     } else if (clazz.equals(ClientGroup.class)) {
-      itemType = Item.Type.CLIENT_GROUP;
+      itemType = Item.Type.CLIENTGROUP;
     } else if (clazz.equals(User.class)) {
       itemType = Item.Type.USER;
     } else if (clazz.equals(Printer.class)) {

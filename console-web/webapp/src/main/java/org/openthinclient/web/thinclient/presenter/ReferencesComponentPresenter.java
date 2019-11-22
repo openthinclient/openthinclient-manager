@@ -4,8 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
-import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemButtonComponent;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
@@ -56,7 +54,7 @@ public class ReferencesComponentPresenter {
   }
 
   private void addItemToView(Item item) {
-    ItemButtonComponent button = view.addItemComponent(item.getName(), isReadOnly);
+    ItemButtonComponent button = view.addItemComponent(item, isReadOnly);
     button.addClickListener(clickEvent -> this.itemDeSelected(item));
   }
 
@@ -144,7 +142,7 @@ public class ReferencesComponentPresenter {
   protected void addMemberDetails(Item item) {
     if (memberSupplier != null) {
       List<Item> members = memberSupplier.apply(item);
-      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member.getName(), true)).collect(Collectors.toList());
+      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member, true)).collect(Collectors.toList());
       this.view.addReferenceSublineComponents(item.getName(), components.toArray(new ItemButtonComponent[]{}));
     }
   }
