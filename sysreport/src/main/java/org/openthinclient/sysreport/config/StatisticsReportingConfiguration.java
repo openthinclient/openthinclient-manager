@@ -1,13 +1,10 @@
 package org.openthinclient.sysreport.config;
 
-import org.openthinclient.common.model.service.ApplicationGroupService;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.ClientGroupService;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.sysreport.StatisticsReportPublisher;
 import org.openthinclient.sysreport.generate.StatisticsReportGenerator;
 import org.slf4j.Logger;
@@ -39,10 +36,24 @@ public class StatisticsReportingConfiguration {
   private ClientGroupService clientGroupService;
   @Autowired
   private RealmService realmService;
+  @Autowired
+  private UserService userService;
+  @Autowired
+  private UserGroupService userGroupService;
+  @Autowired
+  private DeviceService deviceService;
+  @Autowired
+  private LocationService locationService;
+  @Autowired
+  private PrinterService printerService;
+  @Autowired
+  private HardwareTypeService hardwareTypeService;
+  @Autowired
+  private LicenseManager licenseManager;
 
   @Bean
   public StatisticsReportGenerator statisticsReportGenerator() {
-    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService, applicationGroupService, clientGroupService, realmService);
+    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService, applicationGroupService, clientGroupService, realmService, userService, userGroupService, deviceService, locationService, printerService, hardwareTypeService, licenseManager);
   }
 
   @Bean

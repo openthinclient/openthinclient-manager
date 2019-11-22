@@ -1,8 +1,10 @@
 package org.openthinclient.sysreport;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -105,17 +107,43 @@ public class StatisticsReport extends AbstractReport {
     private int thinClientGroupCount;
     @JsonProperty("secondary-ldap-active")
     private boolean secondaryLdapActive;
-
-    public Map<String, Long> getApplications() {
-      return applications;
-    }
-
-    public void setApplications(Map<String, Long> applications) {
-      this.applications = applications;
-    }
-
+    @JsonProperty("primary-ldap-user-count")
+    private int primaryLdapUserCount;
+    @JsonProperty("primary-ldap-user-group-count")
+    private int primaryLdapUserGroupCount;
     @JsonProperty
     private Map<String, Long> applications = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> applicationUsage = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> devices = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> deviceUsage = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> locations = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> locationUsage = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> printers = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> printerUsage = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> hardwaretypes = new TreeMap<>();
+    @JsonProperty
+    private Map<String, Long> hardwaretypeUsage = new TreeMap<>();
+    @JsonProperty
+    Integer licenseCount;
+    @JsonProperty
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate licenseSoftExpiredDate;
+    @JsonProperty
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate licenseExpiredDate;
+    @JsonProperty
+    String licenseState;
+
+    @JsonProperty("admin-user-login-count")
+    private int adminUserLoginCount;
 
     public int getApplicationGroupCount() {
       return applicationGroupCount;
@@ -147,6 +175,134 @@ public class StatisticsReport extends AbstractReport {
 
     public void setSecondaryLdapActive(boolean secondaryLdapActive) {
       this.secondaryLdapActive = secondaryLdapActive;
+    }
+
+    public Map<String, Long> getApplications() {
+      return applications;
+    }
+
+    public void setApplications(Map<String, Long> applications) {
+      this.applications = applications;
+    }
+
+    public int getPrimaryLdapUserCount() {
+      return primaryLdapUserCount;
+    }
+
+    public void setPrimaryLdapUserCount(int primaryLdapUserCount) {
+      this.primaryLdapUserCount = primaryLdapUserCount;
+    }
+
+    public int getPrimaryLdapUserGroupCount() {
+      return primaryLdapUserGroupCount;
+    }
+
+    public void setPrimaryLdapUserGroupCount(int primaryLdapUserGroupCount) {
+      this.primaryLdapUserGroupCount = primaryLdapUserGroupCount;
+    }
+
+    public Map<String, Long> getApplicationUsage() {
+      return applicationUsage;
+    }
+
+    public void setApplicationUsage(Map<String, Long> applicationUsage) {
+      this.applicationUsage = applicationUsage;
+    }
+
+    public Map<String, Long> getDeviceUsage() {
+      return deviceUsage;
+    }
+
+    public Map<String, Long> getLocationUsage() {
+      return locationUsage;
+    }
+
+    public void setLocationUsage(Map<String, Long> locationUsage) {
+      this.locationUsage = locationUsage;
+    }
+
+    public Map<String, Long> getPrinterUsage() {
+      return printerUsage;
+    }
+
+    public void setPrinterUsage(Map<String, Long> printerUsage) {
+      this.printerUsage = printerUsage;
+    }
+
+    public void setDeviceUsage(Map<String, Long> deviceUsage) {
+      this.deviceUsage = deviceUsage;
+    }
+
+    public Map<String, Long> getHardwaretypeUsage() {
+      return hardwaretypeUsage;
+    }
+
+    public void setHardwaretypeUsage(Map<String, Long> hardwaretypeUsage) {
+      this.hardwaretypeUsage = hardwaretypeUsage;
+    }
+
+    public Map<String, Long> getDevices() {
+      return devices;
+    }
+
+    public void setDevices(Map<String, Long> devices) {
+      this.devices = devices;
+    }
+
+    public Map<String, Long> getLocations() {
+      return locations;
+    }
+
+    public void setLocations(Map<String, Long> locations) {
+      this.locations = locations;
+    }
+
+    public Map<String, Long> getPrinters() {
+      return printers;
+    }
+
+    public void setPrinters(Map<String, Long> printers) {
+      this.printers = printers;
+    }
+
+    public Map<String, Long> getHardwaretypes() {
+      return hardwaretypes;
+    }
+
+    public void setHardwaretypes(Map<String, Long> hardwaretypes) {
+      this.hardwaretypes = hardwaretypes;
+    }
+
+    public Integer getLicenseCount() {
+      return licenseCount;
+    }
+
+    public void setLicenseCount(Integer licenseCount) {
+      this.licenseCount = licenseCount;
+    }
+
+    public LocalDate getLicenseSoftExpiredDate() {
+      return licenseSoftExpiredDate;
+    }
+
+    public void setLicenseSoftExpiredDate(LocalDate licenseSoftExpiredDate) {
+      this.licenseSoftExpiredDate = licenseSoftExpiredDate;
+    }
+
+    public LocalDate getLicenseExpiredDate() {
+      return licenseExpiredDate;
+    }
+
+    public void setLicenseExpiredDate(LocalDate licenseExpiredDate) {
+      this.licenseExpiredDate = licenseExpiredDate;
+    }
+
+    public String getLicenseState() {
+      return licenseState;
+    }
+
+    public void setLicenseState(String licenseState) {
+      this.licenseState = licenseState;
     }
   }
 
