@@ -139,7 +139,7 @@ public final class LocationView extends AbstractThinclientView {
        Location location = (Location) directoryObject;
        // TODO: Performance: eigene Query bauen für: finde clients mit gegebener Location
        boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
-       if (optionalClient || location.getPrinters().size() > 0) {
+       if (optionalClient) {
          return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED, location.getName()));
        }
        return new DeleteMandate(true, "");
