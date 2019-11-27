@@ -254,7 +254,7 @@ public final class ApplicationView extends AbstractThinclientView {
   public void showOverview() {
     super.showOverview();
     overviewCL.addComponent(
-      applicationGroupView.createOverviewItemlistPanel(applicationGroupView.getViewTitleKey(), applicationGroupView.getAllItems())
+      applicationGroupView.createOverviewItemlistPanel(applicationGroupView.getViewTitleKey(), applicationGroupView.getAllItems()).getPanel()
     );
   }
 }

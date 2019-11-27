@@ -11,6 +11,18 @@
 
     <artifactId>manager-runtime-standalone</artifactId>
 
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>2.0.1.Final</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- dependency>
             <groupId>org.springframework.boot</groupId>
@@ -45,8 +57,8 @@
 		<dependency>
 		    <groupId>org.atteo</groupId>
 		    <artifactId>evo-inflector</artifactId>
-		    <version>1.2.1</version>
-		</dependency>
+		    <version>1.2.2</version>
+		</dependency>        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -54,6 +66,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-remote-shell</artifactId>
+            <version>1.5.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -134,31 +147,6 @@
             <version>2019.2-SNAPSHOT</version>
         </dependency>
 
-        <!--
-            THE PACKAGED DESKTOP CONSOLE
-        -->
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-desktop-application</artifactId>
-            <version>2019.2-SNAPSHOT</version>
-            <classifier>dist</classifier>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--
-            JNLP
-        -->
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-jnlp-download-servlet</artifactId>
-            <version>2019.2-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -172,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.5</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -205,7 +193,6 @@
                     </execution>
                 </executions>
 	        </plugin>
-
         </plugins>
     </build>
 

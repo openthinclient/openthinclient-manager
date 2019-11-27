@@ -37,18 +37,11 @@ public class ProfileReferencesPanel extends CssLayout {
 
   }
 
-  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, Function<Item, List<Item>> memberSupplier, boolean isReadOnly) {
-
-    // TODO beachten wg. Presenter und so
-//    ReferenceSection referenceSection= new ReferenceSection(buttonCaption);
-//    rows.addComponent(referenceSection);
-//    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, referencesPanel);
+  public ReferencesComponentPresenter addReferences(String label, List<Item> allItems, List<Item> referencedItems, Function<Item, List<Item>> memberSupplier, boolean isReadOnly) {
 
     ReferencesComponent rc = new ReferencesComponent(label);
     ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, memberSupplier, isReadOnly);
-
     rows.addComponent(rc);
-
     return rcp;
   }
 

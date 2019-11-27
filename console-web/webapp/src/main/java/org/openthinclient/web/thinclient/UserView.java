@@ -377,7 +377,7 @@ public final class UserView extends AbstractThinclientView {
   public void showOverview() {
     super.showOverview();
     overviewCL.addComponent(
-      userGroupView.createOverviewItemlistPanel(userGroupView.getViewTitleKey(), userGroupView.getAllItems())
+      userGroupView.createOverviewItemlistPanel(userGroupView.getViewTitleKey(), userGroupView.getAllItems()).getPanel()
     );
   }
 }

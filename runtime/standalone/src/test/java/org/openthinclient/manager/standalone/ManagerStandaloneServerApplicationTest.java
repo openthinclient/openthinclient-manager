@@ -19,7 +19,7 @@ public class ManagerStandaloneServerApplicationTest {
 
         resources.nextElement();
 
-        assertFalse("there seems to be more than only one application.properties on the classpath", resources.hasMoreElements());
+        assertFalse("there seems to be more than only one database.properties on the classpath", resources.hasMoreElements());
 
 
     }

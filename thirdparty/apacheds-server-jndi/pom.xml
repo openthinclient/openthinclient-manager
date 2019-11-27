@@ -60,5 +60,20 @@
 			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <!--<release>11</release>-->
+        </configuration>
+        <version>3.8.0</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 

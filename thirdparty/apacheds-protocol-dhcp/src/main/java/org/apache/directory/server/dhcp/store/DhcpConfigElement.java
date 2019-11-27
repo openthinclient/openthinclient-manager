@@ -14,7 +14,7 @@ import org.apache.directory.server.dhcp.options.OptionsField;
 
 
 /**
- * @author Jörg Henne
+ * @author JÃ¶rg Henne
  */
 public abstract class DhcpConfigElement
 {

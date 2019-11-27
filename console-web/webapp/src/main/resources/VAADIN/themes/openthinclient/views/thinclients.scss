@@ -473,6 +473,11 @@ $ok-button-color: #2db200;
               .v-button-referenceItemIconButton {
                 color: #d1001a;
               }
+
+              .v-button-referenceItemLink {
+                text-decoration: none;
+                color: #000;
+              }
             }
           }
           &.has-subline-content .referenceLine:not(.subline-content) .v-label {

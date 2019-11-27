@@ -11,7 +11,7 @@ import org.apache.directory.server.dhcp.options.DhcpOption;
 
 
 /**
- * @author Jörg Henne
+ * @author JÃ¶rg Henne
  */
 public class UnrecognizedOption extends DhcpOption
 {

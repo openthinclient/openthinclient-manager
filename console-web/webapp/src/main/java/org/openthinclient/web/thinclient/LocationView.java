@@ -113,11 +113,6 @@ public final class LocationView extends AbstractThinclientView {
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
-    // set MetaInformation
-//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
@@ -138,13 +133,14 @@ public final class LocationView extends AbstractThinclientView {
     return referencesPanel;
   }
 
-  private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
+  @Override
+  protected Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
      return directoryObject -> {
        Location location = (Location) directoryObject;
-       // TODO: Performance: eingene Query bauen für: finde clients mit gegebener Location
+       // TODO: Performance: eigene Query bauen für: finde clients mit gegebener Location
        boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
-       if (optionalClient || location.getPrinters().size() > 0) {
-         return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED));
+       if (optionalClient) {
+         return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED, location.getName()));
        }
        return new DeleteMandate(true, "");
      };
