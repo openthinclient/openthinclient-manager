@@ -198,13 +198,31 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 		// find conversation
 		final RequestID id = new RequestID(request);
-		final Conversation conversation = conversations.get(id);
+		Conversation conversation = conversations.get(id);
 
 		if (null == conversation) {
-			if (logger.isInfoEnabled())
-				logger.info("Got PXE REQUEST for which there is no conversation"
+			if(ArchType.isUEFI(request)) {
+				// Some UEFI PXE implementations don't set the correct transaction id
+				// in their last request. In order to be able to serve those devices
+				// we simply begin a new "conversation" and send the last ACK with the
+				// PXE boot data.
+				String hwAddressString = request.getHardwareAddress().getNativeRepresentation();
+				Client client = getClient(hwAddressString, clientAddress, request);
+				if(client == null) {
+					// client not eligible for PXE proxy service
+					return null;
+				}
+				logger.info("Got UEFI PXE REQUEST for which there is no conversation. Serving anyway."
 						+ getLogDetail(localAddress, clientAddress, request));
-			return null;
+				conversation = new Conversation(request);
+				conversation.setClient(client);
+				InetSocketAddress serverAddress = determineServerAddress(localAddress);
+				conversation.setApplicableServerAddress(serverAddress);
+			} else {
+				logger.info("Got BIOS PXE REQUEST for which there is no conversation"
+						+ getLogDetail(localAddress, clientAddress, request));
+				return null;
+			}
 		}
 
 		synchronized (conversation) {
