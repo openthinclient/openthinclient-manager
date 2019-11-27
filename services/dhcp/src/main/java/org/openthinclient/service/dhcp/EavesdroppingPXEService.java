@@ -1,6 +1,7 @@
 package org.openthinclient.service.dhcp;
 
 import org.apache.directory.server.dhcp.DhcpException;
+import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.vendor.HostName;
@@ -61,7 +62,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 			return null;
 
 		// detect PXE client
-		if (!isPXEClient(request)) {
+		if (!ArchType.isPXEClient(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));

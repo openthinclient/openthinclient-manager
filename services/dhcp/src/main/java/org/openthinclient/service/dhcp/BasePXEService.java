@@ -1,6 +1,7 @@
 package org.openthinclient.service.dhcp;
 
 import org.apache.directory.server.dhcp.DhcpException;
+import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.AddressOption;
@@ -51,7 +52,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 			return null;
 
 		// detect PXE client
-		if (!isPXEClient(request)) {
+		if (!ArchType.isPXEClient(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));
@@ -172,7 +173,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 			InetSocketAddress clientAddress, DhcpMessage request)
 			throws DhcpException {
 		// detect PXE client
-		if (!isPXEClient(request)) {
+		if (!ArchType.isPXEClient(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("Ignoring non-PXE REQUEST"
 						+ getLogDetail(localAddress, clientAddress, request));

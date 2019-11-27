@@ -21,6 +21,7 @@
 package org.openthinclient.service.dhcp;
 
 import org.apache.directory.server.dhcp.DhcpException;
+import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.HardwareAddress;
 import org.apache.directory.server.dhcp.messages.MessageType;
@@ -224,16 +225,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   }
 
   /**
-   * Check if the request comes from a PXE client by looking at the
-   * VendorClassIdentifier.
-   */
-  protected boolean isPXEClient(DhcpMessage request) {
-    final VendorClassIdentifier vci = (VendorClassIdentifier) request
-            .getOptions().get(VendorClassIdentifier.class);
-    return null != vci && vci.getString().startsWith("PXEClient:");
-  }
-
-  /**
    * Check whether the PXE client which originated the message is elegible for
    * PXE proxy service.
    */
@@ -306,7 +297,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
                                       InetSocketAddress clientAddress, DhcpMessage request)
           throws DhcpException {
     // detect PXE client
-    if (!isPXEClient(request)) {
+    if (!ArchType.isPXEClient(request)) {
       if (logger.isDebugEnabled())
         logger.debug("Ignoring non-PXE REQUEST"
                 + getLogDetail(localAddress, clientAddress, request));
