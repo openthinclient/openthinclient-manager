@@ -134,7 +134,8 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // secondary ldap
     String secondaryLdapUrl = realmService.getDefaultRealm().getValue("Directory.Secondary.LDAPURLs");
-    boolean secondaryLdapActive = secondaryLdapUrl != null && secondaryLdapUrl.length() > 0;
+    String version = realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion");
+    boolean secondaryLdapActive = version != null && version.equals("secondary") && secondaryLdapUrl != null && secondaryLdapUrl.length() > 0;
     report.getConfiguration().setSecondaryLdapActive(secondaryLdapActive);
     // user count on primary ldap
     if (!secondaryLdapActive) {
