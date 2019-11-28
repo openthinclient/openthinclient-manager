@@ -82,12 +82,12 @@ public class ItemRepositoryTest {
 
     Optional<Item> keyboardById = itemRepository.findById(keyboard.getId());
     assertTrue(keyboardById.isPresent());
-    assertEquals(2, keyboardById.get().getMembers().size());
+    assertEquals(2, itemRepository.findMembers(keyboardById.get().getId()).size());
 
     // remove first, save, test
     keyboard.getMembers().remove(client);
     itemRepository.save(keyboard);
-    assertEquals(1, itemRepository.findById(keyboard.getId()).get().getMembers().size());
+    assertEquals(1, itemRepository.findMembers(keyboard.getId()).size());
   }
 
   @Test

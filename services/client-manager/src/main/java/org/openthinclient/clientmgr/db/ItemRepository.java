@@ -20,4 +20,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
   @Query(value = "SELECT * FROM otc_item WHERE id in (SELECT item_id FROM otc_item_configuration WHERE name='macAddress' and value = ?1)", nativeQuery = true)
   Set<Item> findByHwAddress(String hwAddressString);
+
+  @Query(value = "SELECT * FROM otc_item WHERE id in (SELECT member_id FROM otc_item_member WHERE item_id = ?1)", nativeQuery = true)
+  Set<Item> findMembers(Long id);
 }

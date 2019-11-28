@@ -97,8 +97,7 @@ public class Item {
           .append(id)
           .append(", name=").append(name)
           .append(", description=").append(description)
-          .append(", type=").append(type)
-          .append(", members=").append(members);
+          .append(", type=").append(type);
       return sb.toString();
    }
 }

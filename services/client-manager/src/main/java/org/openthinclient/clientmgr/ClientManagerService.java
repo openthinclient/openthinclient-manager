@@ -8,6 +8,7 @@ import org.openthinclient.clientmgr.db.ItemRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ClientManagerService {
 
@@ -35,8 +36,27 @@ public class ClientManagerService {
     return itemRepository.save(new Item(name, comment, type));
   }
 
+  /**
+   * Save item and members of deep-1
+   * @param item Item
+   * @return saved Item
+   */
   public Item saveItem(Item item) {
+    item.getMembers().stream().filter(i -> i.getId() == null).collect(Collectors.toSet()).forEach(item1 -> itemRepository.save(item1));
+//    saveMembers(item.getMembers());
     return itemRepository.save(item);
+  }
+
+  // TODO: Recursive
+  private void saveMembers(Set<Item> items) {
+    items.forEach(item -> {
+          if (item.getMembers() != null && item.getMembers().size() > 0) {
+            saveMembers(item.getMembers());
+          }
+          if (item.getId() == null) {
+            itemRepository.save(item);
+          }
+        });
   }
 
   public List<ItemConfiguration> saveItemConfigurations(Set<ItemConfiguration> itemConfigurations) {
@@ -53,5 +73,9 @@ public class ClientManagerService {
 
   public List<Item> saveItems(Item... items) {
     return itemRepository.saveAll(Arrays.asList(items));
+  }
+
+  public Set<Item> getItemMembers(Item item) {
+    return itemRepository.findMembers(item.getId());
   }
 }

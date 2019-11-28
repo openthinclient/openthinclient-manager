@@ -88,7 +88,8 @@ public class LDIF2DatabaseMigrationTest {
         List<Item> testGroup2 = service.findByName("Group2");
         assertNotNull(testGroup2);
         assertEquals(1, testGroup2.size());
-        assertEquals(2, testGroup2.get(0).getMembers().size());
+        Set<Item> members = service.getItemMembers(testGroup2.get(0));
+        assertEquals(2, members.size());
 
 
 
@@ -147,8 +148,7 @@ public class LDIF2DatabaseMigrationTest {
                     item.getMembers().add(item1);
                 }
             });
-
-            System.out.println("SAVE = " + item);
+//            System.out.println("SAVE = " + item);
             service.saveItem(item);
             service.saveItemConfigurations(itemConfigurations);
 
@@ -156,13 +156,18 @@ public class LDIF2DatabaseMigrationTest {
         }
 
         // TODO Tests 4all
-        Set<Item> applications = service.findAll(Item.Type.APPLICATION);
-        applications.forEach(a -> {
-            System.out.println(a);
-            service.getItemConfiguration(a.getId()).forEach(System.out::println);
-            System.out.println("----");
+        StringBuilder sb = new StringBuilder("---\n");
+        Stream.of(Item.Type.values()).forEach(type -> {
+            Set<Item> itemSet = service.findAll(type);
+            itemSet.forEach(a -> {
+                sb.append(a.getName()).append(" (").append(a.getType()).append(")\n Konfig:\n");
+                service.getItemConfiguration(a.getId()).forEach(c -> sb.append("   ").append(c).append("\n"));
+                sb.append(" Members:\n");
+                service.getItemMembers(a).forEach(m -> sb.append("   ").append(m).append("\n"));
+                sb.append("----\n");
+            });
         });
-
+        System.out.println(sb.toString());
     }
 
     private Item.Type getType(ProfileType type) {
