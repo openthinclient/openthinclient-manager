@@ -23,4 +23,6 @@ public interface ClientService extends DirectoryObjectService<Client> {
 
   Set<ClientMetaData> findAllClientMetaData();
 
+  Set<ClientMetaData> findByLocation(String locationName);
+
 }

@@ -35,7 +35,20 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
         throw new RuntimeException(e);
       }
     }).collect(Collectors.toSet());
+  }
 
+  @Override
+  public Set<ClientMetaData> findByLocation(String locationName) {
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMetaData.class,
+            new Filter("(l=l=*{0}*)", locationName),
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
   }
 
   private Client initSchema(Client client) {

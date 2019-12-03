@@ -233,6 +233,9 @@ public class ProfilePropertiesBuilder {
    * @return list of {@link Item}
    */
   public static List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
+    if (members == null) {
+      return new ArrayList<>();
+    }
     List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
             .filter(member -> classList.contains(member.getClass()))

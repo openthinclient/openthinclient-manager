@@ -39,6 +39,7 @@ import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -194,7 +195,12 @@ public abstract class AbstractThinclientView extends Panel implements View {
         // get values from available-values set and add to members
         Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
-          association.add((T) directoryObject.get());
+          T t = (T) directoryObject.get();
+          if (association != null) {
+            association.add(t);
+          } else { // no associations of this type found, create new one
+            profile.setAssociatedObjects(t.getClass(), Stream.of(t).collect(Collectors.toSet()));
+          }
         } else {
           LOGGER.info("DirectoryObject not found for " + newValue);
         }
