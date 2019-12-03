@@ -34,11 +34,12 @@ public class TestQuoting extends TestCase {
   private static final String REPLACEMENT = "\\\\$0";
 
   public void testQuoting() throws Exception {
-    Pattern QUOTE_TO_LDAP = Pattern.compile("[\\\\,=]");
+    Pattern QUOTE_TO_LDAP = Pattern.compile("[\\\\,=()]");
     
     System.out.println(QUOTE_TO_LDAP.matcher("bla\\fasel").replaceAll(REPLACEMENT));
     System.out.println(QUOTE_TO_LDAP.matcher("bla,fasel").replaceAll(REPLACEMENT));
     System.out.println(QUOTE_TO_LDAP.matcher("bla=fasel").replaceAll(REPLACEMENT));
     System.out.println(QUOTE_TO_LDAP.matcher("bla\\fasel").replaceAll(REPLACEMENT));
+    System.out.println(QUOTE_TO_LDAP.matcher("bla (fasel)").replaceAll(REPLACEMENT));
   }
 }

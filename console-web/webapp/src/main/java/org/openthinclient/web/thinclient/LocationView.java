@@ -134,24 +134,13 @@ public final class LocationView extends AbstractThinclientView {
     Location location = ((Location) item);
 
     Set<ClientMetaData> clients = clientService.findByLocation(location.getName());
-//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = location.getAssociatedObjects();
-//    Set<? extends DirectoryObject> clients = associatedObjects.get(Client.class);
     refPresenter.showReference(clients, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)",
-                              Collections.emptySet(), Client.class,
-                              values -> saveReference(location, values, Collections.emptySet(), Client.class),
+                              Collections.emptySet(), ClientMetaData.class,
+                              values -> saveReference(location, values, Collections.emptySet(), ClientMetaData.class),
                               null, true);
 
     Set<Printer> all = printerService.findAll();
     refPresenter.showReference(location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), all, Printer.class, values -> saveReference(location, values, all, Printer.class));
-
-
-//    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-//    refPresenter.showReference(clients, mc.getMessage(UI_CLIENT_HEADER),
-//                               allClients, ClientMetaData.class,
-//                               values -> {
-//                                 Set<Client> collect = values.stream().map(v -> clientService.findByName(v.getName())).collect(Collectors.toSet()); // get complete objects from ldap to perform save-action
-//                                 saveAssociations(location, values, collect, Client.class);
-//                               });
 
     return referencesPanel;
   }
