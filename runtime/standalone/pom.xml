@@ -146,6 +146,31 @@
             <artifactId>manager-console-web-webapp</artifactId>
             <version>2019.2-SNAPSHOT</version>
         </dependency>
+        <!--
+            THE PACKAGED DESKTOP CONSOLE
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-console-desktop-application</artifactId>
+            <version>2019.1</version>
+            <classifier>dist</classifier>
+            <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--
+            JNLP
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-jnlp-download-servlet</artifactId>
+            <version>2019.1</version>
+        </dependency>
 
     </dependencies>
 
