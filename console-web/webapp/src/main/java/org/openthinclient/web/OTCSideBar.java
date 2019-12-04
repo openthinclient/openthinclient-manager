@@ -15,7 +15,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.ApplicationGroupView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
+import org.openthinclient.web.thinclient.UserGroupView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,6 +392,9 @@ public class OTCSideBar extends ValoSideBar {
           removeStyleName(STYLE_UNSELECTED);
           addStyleName(STYLE_SELECTED);
 
+          // beware ApplicationGroupView and UserGroupView
+          final boolean isGroupView = (newView instanceof ApplicationGroupView || newView instanceof UserGroupView);
+
           // find the grid-items in selected view an do 'select-item' form highlighting
           String parameters = event.getParameters();
           Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet()
@@ -398,10 +403,15 @@ public class OTCSideBar extends ValoSideBar {
               .findFirst();
           if (descriptor.isPresent()) {
             Grid<DirectoryObject> grid = itemsMap.get(descriptor.get()).itemGrid;
-            grid.getDataProvider()
+            Optional<DirectoryObject> directoryObjectOptional = grid.getDataProvider()
                 .fetch(new Query<>())
                 .filter(d -> parameters.endsWith(d.getName()))
-                .findFirst().ifPresent(grid::select);
+                .findFirst();
+            if (directoryObjectOptional.isPresent() && !isGroupView) {
+              grid.select(directoryObjectOptional.get());
+            } else {
+              grid.deselectAll();
+            }
           }
 
         } else {
