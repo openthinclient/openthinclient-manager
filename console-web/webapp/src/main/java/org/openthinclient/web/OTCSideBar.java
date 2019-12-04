@@ -396,7 +396,8 @@ public class OTCSideBar extends ValoSideBar {
           final boolean isGroupView = (newView instanceof ApplicationGroupView || newView instanceof UserGroupView);
 
           // find the grid-items in selected view an do 'select-item' form highlighting
-          String parameters = event.getParameters();
+          String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
+          String currentObjectName = (params.length == 2 && "edit".equals(params[0]))? params[1] : "";
           Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet()
               .stream()
               .filter(sbid -> sbid.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase()))
@@ -405,7 +406,7 @@ public class OTCSideBar extends ValoSideBar {
             Grid<DirectoryObject> grid = itemsMap.get(descriptor.get()).itemGrid;
             Optional<DirectoryObject> directoryObjectOptional = grid.getDataProvider()
                 .fetch(new Query<>())
-                .filter(d -> parameters.endsWith(d.getName()))
+                .filter(d -> currentObjectName.equals(d.getName()))
                 .findFirst();
             if (directoryObjectOptional.isPresent() && !isGroupView) {
               grid.select(directoryObjectOptional.get());
