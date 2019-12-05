@@ -110,9 +110,9 @@ public class StatisticsReport extends AbstractReport {
     @JsonProperty("secondary-ldap-active")
     private boolean secondaryLdapActive;
     @JsonProperty("primary-ldap-user-count")
-    private int primaryLdapUserCount;
+    private Integer primaryLdapUserCount;
     @JsonProperty("primary-ldap-user-group-count")
-    private int primaryLdapUserGroupCount;
+    private Integer primaryLdapUserGroupCount;
     @JsonProperty
     private Map<String, Long> applications = new TreeMap<>();
     @JsonProperty
@@ -195,19 +195,19 @@ public class StatisticsReport extends AbstractReport {
       this.applications = applications;
     }
 
-    public int getPrimaryLdapUserCount() {
+    public Integer getPrimaryLdapUserCount() {
       return primaryLdapUserCount;
     }
 
-    public void setPrimaryLdapUserCount(int primaryLdapUserCount) {
+    public void setPrimaryLdapUserCount(Integer primaryLdapUserCount) {
       this.primaryLdapUserCount = primaryLdapUserCount;
     }
 
-    public int getPrimaryLdapUserGroupCount() {
+    public Integer getPrimaryLdapUserGroupCount() {
       return primaryLdapUserGroupCount;
     }
 
-    public void setPrimaryLdapUserGroupCount(int primaryLdapUserGroupCount) {
+    public void setPrimaryLdapUserGroupCount(Integer primaryLdapUserGroupCount) {
       this.primaryLdapUserGroupCount = primaryLdapUserGroupCount;
     }
 
