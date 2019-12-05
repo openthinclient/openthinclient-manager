@@ -150,12 +150,13 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     }
 
     // licence usage
+    report.getConfiguration().setLicenseState(licenseManager.getLicenseState(clients.size()).name());
     License license = licenseManager.getLicense();
-    report.getConfiguration().setLicenseCount(license.getCount());
-    report.getConfiguration().setLicenseSoftExpiredDate(license.getSoftExpiredDate());
-    report.getConfiguration().setLicenseExpiredDate(license.getExpiredDate());
-    report.getConfiguration().setLicenseState(license.getState(managerHome.getMetadata().getServerID(), clients.size()).name());
-
+    if(license != null) {
+      report.getConfiguration().setLicenseCount(license.getCount());
+      report.getConfiguration().setLicenseSoftExpiredDate(license.getSoftExpiredDate());
+      report.getConfiguration().setLicenseExpiredDate(license.getExpiredDate());
+    }
 
   }
 
