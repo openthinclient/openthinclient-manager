@@ -246,6 +246,11 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
+    public Set<ClientMetaData> findByLocation(String locationName) {
+      return null;
+    }
+
+    @Override
     public void reloadAllSchemas() {
 
     }
