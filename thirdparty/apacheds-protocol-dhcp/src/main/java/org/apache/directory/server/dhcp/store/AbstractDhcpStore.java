@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * @author Jörg Henne
+ * @author JÃ¶rg Henne
  */
 public abstract class AbstractDhcpStore implements DhcpStore
 {

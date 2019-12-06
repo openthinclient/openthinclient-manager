@@ -103,7 +103,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
       showSettingInfoButton.setStyleName("borderless-colored");
 
-      Label currentSettingInfo = new Label(property.getTip());
+      Label currentSettingInfo = new Label(property.getTip(), ContentMode.HTML);
       currentSettingInfo.setStyleName("propertyInformationLabel");
       proprow.addComponents(showSettingInfoButton, currentSettingInfo);
     }

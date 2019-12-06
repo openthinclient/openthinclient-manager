@@ -39,10 +39,10 @@ public class ReferencesComponent extends CssLayout {
 
   }
 
-  public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
-    ItemButtonComponent buttonComponent = new ItemButtonComponent(name, isReadOnly);
-    itemComponents.put(name, buttonComponent);
-    addComponentSorted(name, buttonComponent);
+  public ItemButtonComponent addItemComponent(Item item, boolean isReadOnly) {
+    ItemButtonComponent buttonComponent = new ItemButtonComponent(item, isReadOnly);
+    itemComponents.put(item.getName(), buttonComponent);
+    addComponentSorted(item.getName(), buttonComponent);
     return buttonComponent;
   }
 

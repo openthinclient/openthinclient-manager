@@ -19,9 +19,11 @@ import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
+import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.vaadin.viritin.button.MButton;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +31,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_D
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE_NOT_POSSIBLE_HEADER;
 
 public class ProfilesListOverviewPanelPresenter {
 
@@ -46,6 +50,7 @@ public class ProfilesListOverviewPanelPresenter {
   private Registration deleteClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
   private LdifExporterService ldifExporterService;
+  private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
 
   public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
     this.thinclientView = thinclientView;
@@ -94,15 +99,23 @@ public class ProfilesListOverviewPanelPresenter {
     window.setPositionY(50);
 
     boolean deletionAllowed = true;
-    // TODO: HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
-//    if (deleteMandatSupplier != null) {
-//      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
-//      deletionAllowed = mandate.checkDelete();
-//      if (!deletionAllowed) {
-//        window.setCaption(mc.getMessage(UI_COMMON_DELETE_NOT_POSSIBLE_HEADER));
-//        content.addComponent(new Label(mandate.getMessage()));
-//      }
-//    }
+    // HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt
+    if (deleteMandatSupplier != null) {
+      StringBuilder messages = new StringBuilder();
+      for (DirectoryObject directoryObject : selectedItems) {
+        DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
+        boolean allowed = mandate.checkDelete();
+        if (!allowed) {
+          messages.append(mandate.getMessage()).append("<br>\n");
+          deletionAllowed = false;
+        }
+      }
+
+      if (!deletionAllowed) {
+        window.setCaption(mc.getMessage(UI_COMMON_DELETE_NOT_POSSIBLE_HEADER));
+        content.addComponent(new Label(messages.toString(), ContentMode.HTML));
+      }
+    }
 
     if (deletionAllowed) {
       window.setCaption(mc.getMessage(UI_COMMON_CONFIRM_DELETE));
@@ -188,5 +201,12 @@ public class ProfilesListOverviewPanelPresenter {
     panel.getDeleteButton().setEnabled(false);
   }
 
+  public void setDeleteMandatSupplier(Function<DirectoryObject, DeleteMandate> deleteMandatSupplier) {
+    this.deleteMandatSupplier = deleteMandatSupplier;
+  }
+
+  public ProfilesListOverviewPanel getPanel() {
+    return panel;
+  }
 
 }

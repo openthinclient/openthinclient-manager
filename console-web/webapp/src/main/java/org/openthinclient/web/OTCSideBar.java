@@ -15,7 +15,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.ApplicationGroupView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
+import org.openthinclient.web.thinclient.UserGroupView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -352,6 +354,8 @@ public class OTCSideBar extends ValoSideBar {
 
     private final String viewName;
     private static final String STYLE_SELECTED = "selected";
+    // hack: 'unselected' contains default-styles; without this, the browsers sticks in selection-mode at last selected item
+    private static final String STYLE_UNSELECTED = "unselected";
 
     ViewItemButton(SideBarItemDescriptor.ViewItemDescriptor descriptor) {
       super(descriptor);
@@ -380,30 +384,50 @@ public class OTCSideBar extends ValoSideBar {
 
     @Override
     public void afterViewChange(ViewChangeEvent event) {
-      if (event.getNewView() instanceof AbstractThinclientView
-          && viewName.equals(((AbstractThinclientView) event.getNewView()).getParentViewName())) {
-        addStyleName(STYLE_SELECTED);
-        // TODO: disable all other visible item lists
-        // ...
-//        String parameters = event.getParameters();
-//
-//        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-//            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-//        ).findFirst();
-//
-//        if (descriptor.isPresent()) {
-//          Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
-//
-//        }
+      View newView = event.getNewView();
 
+      if (this.viewName.equals(event.getViewName()) || // settings section
+          (newView instanceof AbstractThinclientView && viewName.equals(((AbstractThinclientView) newView).getParentViewName())) // managing section
+         ) {
+          removeStyleName(STYLE_UNSELECTED);
+          addStyleName(STYLE_SELECTED);
 
-      } else {
-        removeStyleName(STYLE_SELECTED);
-      }
+          // beware ApplicationGroupView and UserGroupView
+          final boolean isGroupView = (newView instanceof ApplicationGroupView || newView instanceof UserGroupView);
+
+          // find the grid-items in selected view an do 'select-item' form highlighting
+          String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
+          String currentObjectName = (params.length == 2 && "edit".equals(params[0]))? params[1] : "";
+          Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet()
+              .stream()
+              .filter(sbid -> sbid.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase()))
+              .findFirst();
+          if (descriptor.isPresent()) {
+            Grid<DirectoryObject> grid = itemsMap.get(descriptor.get()).itemGrid;
+            Optional<DirectoryObject> directoryObjectOptional = grid.getDataProvider()
+                .fetch(new Query<>())
+                .filter(d -> currentObjectName.equals(d.getName()))
+                .findFirst();
+            if (directoryObjectOptional.isPresent() && !isGroupView) {
+              grid.select(directoryObjectOptional.get());
+            } else {
+              grid.deselectAll();
+            }
+          }
+
+        } else {
+          removeStyleName(STYLE_SELECTED);
+          addStyleName(STYLE_UNSELECTED);
+
+          // disable all other visible item lists
+          FilterGrid filterGrid = filterGridMap.get(viewName);
+          if (filterGrid != null) filterGrid.setVisible(false);
+        }
+
     }
   }
 
-  // AbstratctSideBar
+  // AbstractSideBar
   @Override
   public void attach() {
     super.attach();

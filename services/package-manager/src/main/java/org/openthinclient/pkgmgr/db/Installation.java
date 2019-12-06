@@ -1,13 +1,10 @@
 package org.openthinclient.pkgmgr.db;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * An entity meant to "track" installation operations of the package manager.
@@ -18,7 +15,8 @@ public class Installation {
 
    @Column(nullable = false)
    @Id
-   @GeneratedValue
+   @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+   @GenericGenerator(name = "native", strategy = "native")
    private Long id;
 
    /**

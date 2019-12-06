@@ -51,7 +51,7 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
             } else if (propertyKey.equals("description")) {
               org = profile.getDescription();
             } else {
-              LOGGER.warn("Unexpected key {} for group {} will is being ignored!", propertyKey, profile.getClass().getName());
+              LOGGER.warn("Unexpected key {} for group {} will be ignored!", propertyKey, profile.getClass().getName());
             }
             String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
             if (current != null && !StringUtils.equals(org, current)) {
@@ -62,6 +62,11 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
               case "description":
                 profile.setDescription(current);
                 break;
+              }
+            } else {
+              if (propertyKey.equals("description")) {
+                LOGGER.info(" Apply null value for description");
+                profile.setDescription(null);
               }
             }
         });

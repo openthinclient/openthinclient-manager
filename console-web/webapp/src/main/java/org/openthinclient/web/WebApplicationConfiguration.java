@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  */
-@SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class)
+@SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
 @EnableSideBar
 @Import({
         WebApplicationSecurityConfiguration.class,

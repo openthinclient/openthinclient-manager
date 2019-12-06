@@ -16,7 +16,7 @@ import org.apache.directory.server.dhcp.service.Lease;
 
 
 /**
- * @author Jörg Henne
+ * @author JÃ¶rg Henne
  */
 public interface DhcpStore
 {

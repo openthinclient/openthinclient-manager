@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -271,15 +273,15 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
-//    file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent())); // won't be received
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> {
       // TODO: this is duplicate code
-      LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+      SecurityContext securityContext = (SecurityContext) VaadinSession.getCurrent().getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+      Authentication authentication = securityContext.getAuthentication();
+      LOGGER.debug("Received UserLoggedOutEvent " + (authentication != null ? authentication.getPrincipal() : "null"));
       // When the user logs out, current VaadinSession gets closed and the
       // page gets reloaded on the login screen. Do notice the this doesn't
       // invalidate the current HttpSession.
       VaadinSession.getCurrent().close();
-      SecurityContextHolder.getContext().setAuthentication(null);
       vaadinSecurity.logout();
     });
 
@@ -289,7 +291,9 @@ public final class SettingsUI extends UI implements ViewDisplay {
   private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
 
     if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
-      UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      SecurityContext securityContext = (SecurityContext) VaadinSession.getCurrent().getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+      Authentication authentication = securityContext.getAuthentication();
+      UserDetails principal = (UserDetails) authentication.getPrincipal();
       try {
         userProfileWindow.refresh(userService.findByName(principal.getUsername()));
       } catch (Exception e) {
