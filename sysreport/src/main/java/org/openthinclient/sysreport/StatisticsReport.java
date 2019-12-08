@@ -113,22 +113,27 @@ public class StatisticsReport extends AbstractReport {
     private int primaryLdapUserGroupCount;
     @JsonProperty
     private Map<String, Long> applications = new TreeMap<>();
+    /** Amount of TCs used by application-type */
     @JsonProperty
-    private Map<String, Long> applicationUsage = new TreeMap<>();
+    private Map<String, Long> applicationTypeUsage = new TreeMap<>();
     @JsonProperty
     private Map<String, Long> devices = new TreeMap<>();
+    /** Amount of TCs used by device-type */
     @JsonProperty
-    private Map<String, Long> deviceUsage = new TreeMap<>();
+    private Map<String, Long> deviceTypeUsage = new TreeMap<>();
     @JsonProperty
     private Map<String, Long> locations = new TreeMap<>();
+    /** Amount of TCs using locations */
     @JsonProperty
     private Map<String, Long> locationUsage = new TreeMap<>();
     @JsonProperty
     private Map<String, Long> printers = new TreeMap<>();
+    /** Amount of TCs using printers */
     @JsonProperty
     private Map<String, Long> printerUsage = new TreeMap<>();
     @JsonProperty
     private Map<String, Long> hardwaretypes = new TreeMap<>();
+    /** Amount of TCs using HardwareTypes */
     @JsonProperty
     private Map<String, Long> hardwaretypeUsage = new TreeMap<>();
     @JsonProperty
@@ -201,16 +206,16 @@ public class StatisticsReport extends AbstractReport {
       this.primaryLdapUserGroupCount = primaryLdapUserGroupCount;
     }
 
-    public Map<String, Long> getApplicationUsage() {
-      return applicationUsage;
+    public Map<String, Long> getApplicationTypeUsage() {
+      return applicationTypeUsage;
     }
 
-    public void setApplicationUsage(Map<String, Long> applicationUsage) {
-      this.applicationUsage = applicationUsage;
+    public void setApplicationTypeUsage(Map<String, Long> applicationTypeUsage) {
+      this.applicationTypeUsage = applicationTypeUsage;
     }
 
-    public Map<String, Long> getDeviceUsage() {
-      return deviceUsage;
+    public Map<String, Long> getDeviceTypeUsage() {
+      return deviceTypeUsage;
     }
 
     public Map<String, Long> getLocationUsage() {
@@ -229,8 +234,8 @@ public class StatisticsReport extends AbstractReport {
       this.printerUsage = printerUsage;
     }
 
-    public void setDeviceUsage(Map<String, Long> deviceUsage) {
-      this.deviceUsage = deviceUsage;
+    public void setDeviceTypeUsage(Map<String, Long> deviceTypeUsage) {
+      this.deviceTypeUsage = deviceTypeUsage;
     }
 
     public Map<String, Long> getHardwaretypeUsage() {
