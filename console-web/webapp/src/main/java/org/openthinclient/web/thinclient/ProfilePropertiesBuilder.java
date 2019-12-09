@@ -1,5 +1,7 @@
 package org.openthinclient.web.thinclient;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,29 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
+
+  private static String KBURLPrefix = getKBURLPrefix();
+  private static String getKBURLPrefix() {
+    java.util.Properties props = new java.util.Properties();
+    try {
+      InputStream in = ClassLoader.getSystemResourceAsStream("application.properties");
+      props.load(in);
+      in.close();
+    } catch(IOException ex) {
+      LOGGER.error("Could not read application properties");
+      return null;
+    }
+    String version = props.getProperty("application.version", null);
+    if(version == null) {
+      LOGGER.error("Could not read application version");
+      return null;
+    }
+    return "https://wiki.openthinclient.org/display/_PK/OMD"
+                + version.replaceAll("(\\d+)\\.(\\d+).*","$1$2")
+                + "/";
+  }
+
+  IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
   /**
    *
@@ -77,10 +102,8 @@ public class ProfilePropertiesBuilder {
       schema.getChildren().forEach(node -> extractChildren(node, group, profile));
       properties.add(group);
     } catch (SchemaLoadingException e) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
     } catch (Exception e) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       if (schema == null) {
         throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
       } else {
@@ -109,7 +132,7 @@ public class ProfilePropertiesBuilder {
                                           .toArray(SelectOption[]::new);
           group.addProperty(new OtcBooleanProperty(
                   node.getLabel(),
-                  node.getTip(),
+                  prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   selectOptions[0],
@@ -118,17 +141,17 @@ public class ProfilePropertiesBuilder {
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
-                  node.getTip(),
+                  prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof PasswordNode) {
-         group.addProperty(new OtcPasswordProperty(node.getLabel(), node.getTip(), node.getKey(),
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(), node.getTip(), node.getKey(),
+        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
@@ -140,8 +163,6 @@ public class ProfilePropertiesBuilder {
   }
 
   public OtcPropertyGroup createDirectoryObjectMetaDataGroup(DirectoryObject directoryObject) {
-
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setDisplayHeaderLabel(false);
@@ -159,8 +180,6 @@ public class ProfilePropertiesBuilder {
   }
 
   public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
-
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = createDirectoryObjectMetaDataGroup(profile);
 
@@ -181,6 +200,27 @@ public class ProfilePropertiesBuilder {
     group.addProperty(optionProperty);
 
     return group;
+  }
+
+  private String prepareTip(String tip, String kbArticle) {
+    if(KBURLPrefix == null) {
+      return tip;
+    }
+    if(tip == null) {
+      if(kbArticle == null) {
+        return null;
+      }
+      tip = "";
+    } else {
+      tip = "<div>"+tip+"</div>";
+    }
+    if(kbArticle != null) {
+      tip = String.format("%s<a href=\"%s%s%s\" class=\"kblink\" target=\"_blank\">%s</a>",
+          tip, KBURLPrefix, kbArticle,
+          UI.getCurrent().getLocale().getLanguage().equals("de")? "" : "#googtrans(de|en)",
+          mc.getMessage(UI_PROFILE_TIP_LINK));
+    }
+    return tip;
   }
 
   final String REGEX_TRUTHY = "(?i)yes|ja|on|true";

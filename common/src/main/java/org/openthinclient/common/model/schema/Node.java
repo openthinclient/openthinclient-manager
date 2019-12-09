@@ -75,6 +75,11 @@ public abstract class Node implements Iterable<Node>, Serializable {
   @XmlAttribute(name = "name")
   private String name;
   /**
+   * The KB article page key for this node
+   */
+  @XmlAttribute(name = "kbarticle")
+  private String kbarticle;
+  /**
    * The node's parent
    */
   private transient Node parent;
@@ -131,6 +136,14 @@ public abstract class Node implements Iterable<Node>, Serializable {
     if (name.contains("/"))
       throw new IllegalArgumentException("Node name may not contain a '/'");
     this.name = name;
+  }
+
+  public String getKBArticle() {
+    return kbarticle;
+  }
+
+  public void setKBArticle(String kbarticle) {
+    this.kbarticle = kbarticle;
   }
 
   /**
