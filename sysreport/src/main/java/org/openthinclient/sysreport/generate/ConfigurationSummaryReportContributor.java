@@ -17,13 +17,7 @@ import org.openthinclient.sysreport.StatisticsReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,34 +94,34 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     report.getConfiguration().setApplications(countTypes(applications));
 
     // application-clients usage with group handling
-    Map<Application, Set<Client>> appClients = getCollectClientsByProfile(clients, Client::getApplications);
+    ClientMap<Application> appClients = getCollectClientsByProfile(clients, Client::getApplications);
     for (ApplicationGroup applicationGroup : applicationGroups) { // applicationGroup and clients
       for (Application groupedApplication : applicationGroup.getApplications()) {
         Set<Client> applicationGroupClients = (Set<Client>) applicationGroup.getMembers().stream()
             .filter(Objects::nonNull)
             .filter(o -> o instanceof Client)
             .collect(toSet());
-        if (appClients.containsKey(groupedApplication)) {
-            appClients.get(groupedApplication).addAll(applicationGroupClients);
-        } else {
-            appClients.put(groupedApplication, applicationGroupClients);
-        }
+        appClients.get(groupedApplication).addAll(applicationGroupClients);
       }
     }
     report.getConfiguration().setApplicationTypeUsage(countSchemaObjects(applications, appClients));
 
+    // hardwaretype usage
+    Set<HardwareType> hardwareTypes = hardwareTypeService.findAll();
+    report.getConfiguration().setHardwaretypes(countTypes(hardwareTypes));
+    ClientMap<HardwareType> hwtClients = getCollectClientsByProfile(clients, Client::getHwTypes);
+    report.getConfiguration().setHardwaretypeUsage(countSchemaObjects(hardwareTypes, hwtClients));
 
     // device usage
     Set<Device> devices = deviceService.findAll();
     report.getConfiguration().setDevices(countTypes(devices));
-    Map<Device, Set<Client>> deviceClients = getCollectClientsByProfile(clients, Client::getDevices);
+    ClientMap<Device> deviceClients = getCollectClientsByProfile(clients, Client::getDevices);
+    for (HardwareType hardwaretype : hardwareTypes) {
+      for (Device device : hardwaretype.getDevices()) {
+        deviceClients.get(device).addAll(hwtClients.get(hardwaretype));
+      }
+    }
     report.getConfiguration().setDeviceTypeUsage(countSchemaObjects(devices, deviceClients));
-
-    // printer usage
-    Set<Printer> printers = printerService.findAll();
-    report.getConfiguration().setPrinters(countTypes(printers));
-    Map<Printer, Set<Client>> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);
-    report.getConfiguration().setPrinterUsage(countSchemaObjects(printers, printerClients));
 
     // location usage
     Set<Location> locations = locationService.findAll();
@@ -135,17 +129,20 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
     report.getConfiguration().setLocationUsage(countSchemaObjects(locations, locationClients));
 
-    // hardwaretype usage
-    Set<HardwareType> hardwareTypes = hardwareTypeService.findAll();
-    report.getConfiguration().setHardwaretypes(countTypes(hardwareTypes));
-    Map<HardwareType, Set<Client>> hwtClients = getCollectClientsByProfile(clients, client -> {
-      if (client.getHardwareType() != null) {
-        return Stream.of(client.getHardwareType()).collect(Collectors.toSet());
-      } else {
-        return Collections.emptySet();
+    // printer usage
+    Set<Printer> printers = printerService.findAll();
+    report.getConfiguration().setPrinters(countTypes(printers));
+    Map<Printer, Set<Client>> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);
+    for (Location location: locations) {
+      for (Printer printer : location.getPrinters()) {
+        if (printerClients.containsKey(printer)) {
+          printerClients.get(printer).addAll(locationClients.get(location));
+        } else {
+          printerClients.put(printer, locationClients.get(location));
+        }
       }
-    });
-    report.getConfiguration().setHardwaretypeUsage(countSchemaObjects(hardwareTypes, hwtClients));
+    }
+    report.getConfiguration().setPrinterUsage(countSchemaObjects(printers, printerClients));
 
     // secondary ldap
     String secondaryLdapUrl = realmService.getDefaultRealm().getValue("Directory.Secondary.LDAPURLs");
@@ -176,14 +173,12 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
    * @param <T> Profiles
    * @return Map of members with clients
    */
-  protected <T extends Profile> Map<T, Set<Client>> getCollectClientsByProfile(Set<Client> clients, Function<Client, Set<T>> function) {
-    Map<T, Set<Client>> profileClients = new HashMap<>();
+  protected <T extends Profile> ClientMap<T> getCollectClientsByProfile(Set<Client> clients, Function<Client, Set<T>> function) {
+    ClientMap<T> profileClients = new ClientMap<>();
     for (Client client : clients) {
       for (T profile : function.apply(client)) {
-        if (profileClients.containsKey(profile)) {
+        if(profile != null) {
           profileClients.get(profile).add(client);
-        } else {
-          profileClients.put(profile, Stream.of(client).collect(toSet()));
         }
       }
     }
@@ -194,13 +189,13 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     Map<String, Set<Client>> schemaTCcount = new HashMap<>();  // transform profile to schema and a SET of clients
     for (Map.Entry<T, Set<Client>> ac : clients.entrySet()) {
       getProfileWithRealm(allProfiles, ac.getKey()).ifPresent(profile -> {
+        String schemaName = "";
         try {
-          Schema schema = profile.getSchema(profile.getRealm());
-          schemaTCcount.compute(schema.getName(), (k, v) -> (v == null) ? ac.getValue() : Stream.concat(v.stream(), ac.getValue().stream()).collect(toSet()));
+          schemaName = profile.getSchema(profile.getRealm()).getName();
         } catch (Exception e) {
           LOGGER.warn("Cannot create statistics for profile " + profile.getName() + ", reason: " + e.getMessage());
-          schemaTCcount.compute(profile.getName(), (k, v) -> (v == null) ? ac.getValue() : Stream.concat(v.stream(), ac.getValue().stream()).collect(toSet()));
         }
+        schemaTCcount.compute(schemaName, (k, v) -> (v == null) ? ac.getValue() : Stream.concat(v.stream(), ac.getValue().stream()).collect(toSet()));
       });
     }
     final Map<String, Long> objectsCounts = new HashMap<>();
@@ -231,6 +226,21 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
         .map(Schema::getName) //
         .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
     return new TreeMap<>(typeCounts);
+  }
+
+  /**
+   * simple LazyMap from a T to a Set of Clients
+   */
+  private class ClientMap<T> extends HashMap<T, Set<Client>> {
+    @Override
+    public Set<Client> get(Object key) {
+      Set<Client> clientSet = super.get(key);
+      if (clientSet == null) {
+        clientSet = new HashSet<Client>();
+        this.put((T) key, clientSet);
+      }
+      return clientSet;
+    }
   }
 
 }
