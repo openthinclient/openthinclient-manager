@@ -93,7 +93,7 @@ public class Item {
     DEVICE,
     APPLICATION,
     APPLICATIONGROUP,
-    HARDWARE,
+    HARDWARETYPE,
     LOCATION,
     CLIENT,
     CLIENTGROUP,

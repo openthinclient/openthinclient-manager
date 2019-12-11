@@ -329,7 +329,7 @@ public class ProfilePropertiesBuilder {
     } else if (clazz.equals(Application.class)) {
       itemType = Item.Type.APPLICATION;
     } else if (clazz.equals(HardwareType.class)) {
-      itemType = Item.Type.HARDWARE;
+      itemType = Item.Type.HARDWARETYPE;
     } else if (clazz.equals(Location.class)) {
       itemType = Item.Type.LOCATION;
     } else if (clazz.equals(Device.class)) {
