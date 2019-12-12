@@ -110,7 +110,6 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     }
     report.getConfiguration().setApplicationTypeUsage(countSchemaObjects(applications, appClients));
 
-
     // device usage
     Set<Device> devices = deviceService.findAll();
     report.getConfiguration().setDevices(countTypes(devices));
@@ -121,13 +120,19 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     Set<Printer> printers = printerService.findAll();
     report.getConfiguration().setPrinters(countTypes(printers));
     Map<Printer, Set<Client>> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);
-    report.getConfiguration().setPrinterUsage(countSchemaObjects(printers, printerClients));
+    report.getConfiguration().setPrinterUsage(countObjects(printerClients));
 
     // location usage
     Set<Location> locations = locationService.findAll();
     report.getConfiguration().setLocations(countTypes(locations));
-    Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
-    report.getConfiguration().setLocationUsage(countSchemaObjects(locations, locationClients));
+    Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> {
+      if (client.getLocation() != null) {
+        return Stream.of(client.getLocation()).collect(Collectors.toSet());
+      } else {
+        return Collections.emptySet();
+      }
+    });
+    report.getConfiguration().setLocationUsage(countObjects(locationClients));
 
     // hardwaretype usage
     Set<HardwareType> hardwareTypes = hardwareTypeService.findAll();
@@ -139,7 +144,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
         return Collections.emptySet();
       }
     });
-    report.getConfiguration().setHardwaretypeUsage(countSchemaObjects(hardwareTypes, hwtClients));
+    report.getConfiguration().setHardwaretypeUsage(countObjects(hwtClients));
 
     // secondary ldap
     String secondaryLdapUrl = realmService.getDefaultRealm().getValue("Directory.Secondary.LDAPURLs");
@@ -159,7 +164,6 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     report.getConfiguration().setLicenseExpiredDate(license.getExpiredDate());
     report.getConfiguration().setLicenseState(license.getState(managerHome.getMetadata().getServerID(), clients.size()).name());
 
-
   }
 
   /**
@@ -169,7 +173,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
    * @param <T> Profiles
    * @return Map of members with clients
    */
-  protected <T extends Profile> Map<T, Set<Client>> getCollectClientsByProfile(Set<Client> clients, Function<Client, Set<T>> function) {
+  private <T extends Profile> Map<T, Set<Client>> getCollectClientsByProfile(Set<Client> clients, Function<Client, Set<T>> function) {
     Map<T, Set<Client>> profileClients = new HashMap<>();
     for (Client client : clients) {
       for (T profile : function.apply(client)) {
@@ -183,7 +187,19 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     return profileClients;
   }
 
-  protected <T extends Profile> Map<String, Long> countSchemaObjects(Set<T> allProfiles, Map<T, Set<Client>> clients) {
+  /**
+   * Count clients, group by profile
+   */
+  private <T extends Profile> Map<String, Long> countObjects(Map<T, Set<Client>> clients) {
+    final Map<String, Long> objectsCounts = new HashMap<>();
+    clients.forEach((s, c) -> objectsCounts.put(s.getName(), (long) c.size()));
+    return new TreeMap<>(objectsCounts);
+  }
+
+  /**
+   * Count assigned clients, group by schema
+   */
+  private <T extends Profile> Map<String, Long> countSchemaObjects(Set<T> allProfiles, Map<T, Set<Client>> clients) {
     Map<String, Set<Client>> schemaTCcount = new HashMap<>();  // transform profile to schema and a SET of clients
     for (Map.Entry<T, Set<Client>> ac : clients.entrySet()) {
       getProfileWithRealm(allProfiles, ac.getKey()).ifPresent(profile -> {
@@ -201,7 +217,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     return new TreeMap<>(objectsCounts);
   }
 
-  protected <T extends Profile> Optional<T> getProfileWithRealm(Set<T> allProfiles, T capp) {
+  private <T extends Profile> Optional<T> getProfileWithRealm(Set<T> allProfiles, T capp) {
     if (allProfiles == null || capp == null || capp.getDn() == null) {
       return Optional.empty();
     }
@@ -210,6 +226,9 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
         .findFirst();
   }
 
+  /**
+   * Count objects by schema
+   */
   private <T extends Profile> Map<String, Long> countTypes(Set<T> objects) {
     final Map<String, Long> typeCounts = objects.stream() //
         .map(profile -> {
