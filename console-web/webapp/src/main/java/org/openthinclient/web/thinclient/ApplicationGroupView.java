@@ -98,8 +98,8 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, ClientMetaData.class,
-                                values -> saveReference(applicationGroup, values, allClients, ClientMetaData.class));
+                                allClients, Client.class,
+                                values -> saveReference(applicationGroup, values, allClients, Client.class));
 
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
