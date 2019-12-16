@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="1" author="François Fernandès" dbms="mysql">
+    <changeSet id="1" author="François Fernandès" dbms="mysql,mariadb">
     
         <createTable tableName="otc_source">
             <column name="id" type="bigint">
@@ -42,7 +42,7 @@
 
     </changeSet>
 
-    <changeSet id="2" author="Marc Häfner" dbms="mysql">
+    <changeSet id="2" author="Marc Häfner" dbms="mysql,mariadb">
 
         <createTable tableName="otc_license">
             <column name="id" type="bigint">
