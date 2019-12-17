@@ -108,7 +108,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // hardwaretype usage
     Set<HardwareType> hardwareTypes = hardwareTypeService.findAll();
-    report.getConfiguration().setHardwaretypes(countTypes(hardwareTypes));
+    report.getConfiguration().setHardwaretypes(hardwareTypes.size());
     Set<HardwareType> usedHardwareTypes = new HashSet<>();
     for (Client client : clients) {
       usedHardwareTypes.add(client.getHardwareType());
@@ -129,7 +129,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // location usage
     Set<Location> locations = locationService.findAll();
-    report.getConfiguration().setLocations(countTypes(locations));
+    report.getConfiguration().setLocations(locations.size());
     Set<Location> usedLocations = new HashSet<>();
     for (Client client : clients) {
       usedLocations.add(client.getLocation());

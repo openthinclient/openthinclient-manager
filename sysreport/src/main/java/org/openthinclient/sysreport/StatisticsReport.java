@@ -124,7 +124,7 @@ public class StatisticsReport extends AbstractReport {
     @JsonProperty
     private Map<String, Long> deviceTypeUsage = new TreeMap<>();
     @JsonProperty
-    private Map<String, Long> locations = new TreeMap<>();
+    private Integer locations;
     /** Amount of locations in use */
     @JsonProperty
     private Integer locationUsage;
@@ -134,7 +134,7 @@ public class StatisticsReport extends AbstractReport {
     @JsonProperty
     private Map<String, Long> printerUsage = new TreeMap<>();
     @JsonProperty
-    private Map<String, Long> hardwaretypes = new TreeMap<>();
+    private Integer hardwaretypes;
     /** Amount of hardware types in use */
     @JsonProperty
     private Integer hardwaretypeUsage;
@@ -264,11 +264,11 @@ public class StatisticsReport extends AbstractReport {
       this.devices = devices;
     }
 
-    public Map<String, Long> getLocations() {
+    public Integer getLocations() {
       return locations;
     }
 
-    public void setLocations(Map<String, Long> locations) {
+    public void setLocations(int locations) {
       this.locations = locations;
     }
 
@@ -280,11 +280,11 @@ public class StatisticsReport extends AbstractReport {
       this.printers = printers;
     }
 
-    public Map<String, Long> getHardwaretypes() {
+    public Integer getHardwaretypes() {
       return hardwaretypes;
     }
 
-    public void setHardwaretypes(Map<String, Long> hardwaretypes) {
+    public void setHardwaretypes(int hardwaretypes) {
       this.hardwaretypes = hardwaretypes;
     }
 
