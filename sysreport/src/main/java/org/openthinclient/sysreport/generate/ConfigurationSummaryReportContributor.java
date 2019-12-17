@@ -108,11 +108,15 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // hardwaretype usage
     Set<HardwareType> hardwareTypes = hardwareTypeService.findAll();
-    report.getConfiguration().setHardwaretypes(countTypes(hardwareTypes));
-    ClientMap<HardwareType> hwtClients = getCollectClientsByProfile(clients, Client::getHwTypes);
-    report.getConfiguration().setHardwaretypeUsage(countSchemaObjects(hardwareTypes, hwtClients));
+    report.getConfiguration().setHardwaretypes(hardwareTypes.size());
+    Set<HardwareType> usedHardwareTypes = new HashSet<>();
+    for (Client client : clients) {
+      usedHardwareTypes.add(client.getHardwareType());
+    }
+    report.getConfiguration().setHardwaretypeUsage(usedHardwareTypes.size());
 
     // device usage
+    ClientMap<HardwareType> hwtClients = getCollectClientsByProfile(clients, Client::getHwTypes);
     Set<Device> devices = deviceService.findAll();
     report.getConfiguration().setDevices(countTypes(devices));
     ClientMap<Device> deviceClients = getCollectClientsByProfile(clients, Client::getDevices);
@@ -125,11 +129,15 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // location usage
     Set<Location> locations = locationService.findAll();
-    report.getConfiguration().setLocations(countTypes(locations));
-    Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
-    report.getConfiguration().setLocationUsage(countSchemaObjects(locations, locationClients));
+    report.getConfiguration().setLocations(locations.size());
+    Set<Location> usedLocations = new HashSet<>();
+    for (Client client : clients) {
+      usedLocations.add(client.getLocation());
+    }
+    report.getConfiguration().setLocationUsage(usedLocations.size());
 
     // printer usage
+    Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
     Set<Printer> printers = printerService.findAll();
     report.getConfiguration().setPrinters(countTypes(printers));
     Map<Printer, Set<Client>> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);

@@ -124,20 +124,20 @@ public class StatisticsReport extends AbstractReport {
     @JsonProperty
     private Map<String, Long> deviceTypeUsage = new TreeMap<>();
     @JsonProperty
-    private Map<String, Long> locations = new TreeMap<>();
-    /** Amount of TCs using locations */
+    private Integer locations;
+    /** Amount of locations in use */
     @JsonProperty
-    private Map<String, Long> locationUsage = new TreeMap<>();
+    private Integer locationUsage;
     @JsonProperty
     private Map<String, Long> printers = new TreeMap<>();
     /** Amount of TCs using printers */
     @JsonProperty
     private Map<String, Long> printerUsage = new TreeMap<>();
     @JsonProperty
-    private Map<String, Long> hardwaretypes = new TreeMap<>();
-    /** Amount of TCs using HardwareTypes */
+    private Integer hardwaretypes;
+    /** Amount of hardware types in use */
     @JsonProperty
-    private Map<String, Long> hardwaretypeUsage = new TreeMap<>();
+    private Integer hardwaretypeUsage;
     @JsonProperty
     Integer licenseCount;
     @JsonProperty
@@ -148,9 +148,6 @@ public class StatisticsReport extends AbstractReport {
     LocalDate licenseExpiredDate;
     @JsonProperty
     String licenseState;
-
-    @JsonProperty("admin-user-login-count")
-    private int adminUserLoginCount;
 
     public int getApplicationGroupCount() {
       return applicationGroupCount;
@@ -228,11 +225,11 @@ public class StatisticsReport extends AbstractReport {
       return deviceTypeUsage;
     }
 
-    public Map<String, Long> getLocationUsage() {
+    public Integer getLocationUsage() {
       return locationUsage;
     }
 
-    public void setLocationUsage(Map<String, Long> locationUsage) {
+    public void setLocationUsage(int locationUsage) {
       this.locationUsage = locationUsage;
     }
 
@@ -248,11 +245,11 @@ public class StatisticsReport extends AbstractReport {
       this.deviceTypeUsage = deviceTypeUsage;
     }
 
-    public Map<String, Long> getHardwaretypeUsage() {
+    public Integer getHardwaretypeUsage() {
       return hardwaretypeUsage;
     }
 
-    public void setHardwaretypeUsage(Map<String, Long> hardwaretypeUsage) {
+    public void setHardwaretypeUsage(int hardwaretypeUsage) {
       this.hardwaretypeUsage = hardwaretypeUsage;
     }
 
@@ -264,11 +261,11 @@ public class StatisticsReport extends AbstractReport {
       this.devices = devices;
     }
 
-    public Map<String, Long> getLocations() {
+    public Integer getLocations() {
       return locations;
     }
 
-    public void setLocations(Map<String, Long> locations) {
+    public void setLocations(int locations) {
       this.locations = locations;
     }
 
@@ -280,11 +277,11 @@ public class StatisticsReport extends AbstractReport {
       this.printers = printers;
     }
 
-    public Map<String, Long> getHardwaretypes() {
+    public Integer getHardwaretypes() {
       return hardwaretypes;
     }
 
-    public void setHardwaretypes(Map<String, Long> hardwaretypes) {
+    public void setHardwaretypes(int hardwaretypes) {
       this.hardwaretypes = hardwaretypes;
     }
 

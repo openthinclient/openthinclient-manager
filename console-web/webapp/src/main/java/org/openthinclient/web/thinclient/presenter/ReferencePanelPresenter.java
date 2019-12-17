@@ -76,7 +76,7 @@ public class ReferencePanelPresenter {
   public void showDeviceAssociations(Set<Device> all, Set<? extends DirectoryObject> members, Consumer<List<Item>> profileReferenceChangeConsumer) {
     List<Item> allDevices = builder.createItems(all);
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
-    ReferencesComponentPresenter presenter = view.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
+    ReferencesComponentPresenter presenter = view.addReferences(mc.getMessage(ConsoleWebMessages.UI_DEVICE_HEADER),
         allDevices, deviceMembers, null, false);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }

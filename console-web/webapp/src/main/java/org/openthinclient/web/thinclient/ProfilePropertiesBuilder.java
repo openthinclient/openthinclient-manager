@@ -190,7 +190,7 @@ public class ProfilePropertiesBuilder {
     List<SelectOption> selectOptions = schemaNames.entrySet().stream().map((entry) -> new SelectOption(entry.getValue(), entry.getKey())).collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
              mc.getMessage(UI_COMMON_TYPE_LABEL),
-             mc.getMessage(UI_COMMON_TYPE_TIP),
+             null,
             "type",
              schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
              selectOptions);
