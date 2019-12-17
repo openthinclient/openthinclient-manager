@@ -14,6 +14,7 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -106,28 +107,13 @@ public final class HardwaretypeView extends AbstractThinclientView {
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    ProfilePanel       profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
-    // set MetaInformation
-//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-//    ProfilePanel panel = createProfileMetadataPanel(profile);
-
-
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
-
-//    HardwareType hardwareType = (HardwareType) profile;
-//    Set<? extends DirectoryObject> members = hardwareType.getMembers();
-//    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
-//
-//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
-//    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-//    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
 
     return profilePanel;
   }
@@ -153,16 +139,16 @@ public final class HardwaretypeView extends AbstractThinclientView {
     return referencesPanel;
   }
 
-  private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
+  @Override
+  protected Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
     return directoryObject -> {
       HardwareType hwtype = (HardwareType) directoryObject;
       if (hwtype.getMembers().size() > 0) {
-        return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_HWTYPE_DENIED));
+        return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_HWTYPE_DENIED, hwtype.getName()));
       }
       return new DeleteMandate(true, "");
     };
   }
-
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {

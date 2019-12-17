@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-util</artifactId>
-        <version>2019.1.1</version>
+        <version>2019.1.2</version>
     </parent>
 
     <artifactId>manager-util-http</artifactId>
@@ -28,7 +28,11 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-progress</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
         </dependency>
 
     </dependencies>

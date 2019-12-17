@@ -1,24 +1,19 @@
 package org.openthinclient.service.common.license;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "otc_license_errors")
 @Access(AccessType.FIELD)
 public class LicenseError implements Serializable {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+  @GenericGenerator(name = "native", strategy = "native")
   private Long id;
 
   @Column

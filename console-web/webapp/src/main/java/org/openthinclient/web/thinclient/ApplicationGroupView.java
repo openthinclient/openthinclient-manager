@@ -96,7 +96,7 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
                                 allApplications, Application.class,
                                 values -> saveApplicationGroupReference(applicationGroup, values), null, false);
 
-    Set<Client> allClients = clientService.findAll();
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
                                 allClients, Client.class,
                                 values -> saveReference(applicationGroup, values, allClients, Client.class));

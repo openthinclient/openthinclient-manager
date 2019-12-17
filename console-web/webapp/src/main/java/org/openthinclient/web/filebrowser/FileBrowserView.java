@@ -120,6 +120,8 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       content.setMargin(new MarginInfo(true, true, true,true));
       content.setSizeFull();
 
+      content.addStyleName("filebrowser");
+
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
 

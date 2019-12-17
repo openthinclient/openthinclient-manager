@@ -9,7 +9,7 @@
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
   <artifactId>apacheds-server-tools</artifactId>
   <name>ApacheDS Server Tools</name>
-  <version>2019.1.1</version>
+  <version>2019.1.2</version>
   <description>
     Contained within this executable jar are various commandline utilities
     for apacheds.
@@ -39,9 +39,11 @@
       <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
                     <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
+                      <source>1.8</source>
+                      <target>1.8</target>
+                      <!--<release>11</release>-->
                     </configuration>
                 </plugin>
       <plugin>

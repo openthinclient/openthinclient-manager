@@ -1,0 +1,15 @@
+@mixin filebrowser-view {
+
+  .filebrowser {
+    // darker treegrid headers
+    .v-treegrid-header .v-treegrid-cell {
+      background: black;
+      color: white;
+    }
+
+    // disable ugly stripes in treegrid
+    .v-treegrid-row-stripe:not(.v-treegrid-row-selected) > td {
+      background: $v-grid-row-background-color;
+    }
+  }
+}

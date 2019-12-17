@@ -120,6 +120,12 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 
 	private NFSServiceConfiguration configuration;
 	
+	private boolean isRunning = false;
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
 	@Override
 	public void setConfiguration(NFSServiceConfiguration configuration) {
 		this.configuration = configuration;
@@ -136,6 +142,7 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	}	
 	@Override
 	public void startService() throws Exception {
+		isRunning = true;
 
 		// configure all configured exports
 		exporter.getExports().addAll(getConfiguration().getExports());
@@ -180,6 +187,8 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 
 	@Override
 	public void stopService() throws Exception {
+		isRunning = false;
+
 		if (null != flushTimer) {
 			flushTimer.cancel();
 			flushTimer = null;
@@ -207,6 +216,20 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 			LOG.info("Stopping path manager");
 			pathManager.shutdown();
 			pathManager = null;
+		}
+	}
+
+	public void restartService() {
+		LOG.info("Restarting NFS service");
+		try {
+			stopService();
+		} catch(Exception ex) {
+			LOG.error("Error while stopping NFS server for restart:", ex);
+		}
+		try {
+			startService();
+		} catch(Exception ex) {
+			LOG.error("Error while restarting NFS server:", ex);
 		}
 	}
 

@@ -92,13 +92,13 @@ public class Item {
   public enum Type {
     DEVICE,
     APPLICATION,
-    APPLICATION_GROUP,
-    HARDWARE,
+    APPLICATIONGROUP,
+    HARDWARETYPE,
     LOCATION,
     CLIENT,
-    CLIENT_GROUP,
+    CLIENTGROUP,
     USER,
-    USER_GROUP,
+    USERGROUP,
     PRINTER
   }
 }

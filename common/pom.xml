@@ -4,7 +4,7 @@
     <parent>
 	    <groupId>org.openthinclient</groupId>
 	    <artifactId>manager</artifactId>
-	    <version>2019.1.1</version>
+	    <version>2019.1.2</version>
 	    <relativePath>..</relativePath>
     </parent>
 
@@ -30,7 +30,7 @@
 	    <dependency>
 	        <groupId>org.openthinclient</groupId>
 	        <artifactId>manager-service-apacheds</artifactId>
-	        <version>2019.1.1</version>
+	        <version>2019.1.2</version>
 	        <scope>test</scope>
 	        <type>jar</type>
 	    </dependency>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
 
         <!-- slf4j simple logging -->
@@ -58,6 +58,31 @@
             <groupId>ch.qos.cal10n</groupId>
             <artifactId>cal10n-api</artifactId>
         </dependency>
+
+        <!-- jaxb -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <!--<version>2.3.3</version>-->
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+
 
     </dependencies>
 
@@ -80,7 +105,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.13.3</version>
+                <version>0.14.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -93,6 +118,7 @@
                             <episode>false</episode>
                             <locale>en</locale>
                             <extension>true</extension>
+                            <verbose>true</verbose>
                             <generatePackage>org.openthinclient.meta</generatePackage>
                             <args>
                                 <arg>-no-header</arg>
@@ -113,7 +139,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.5.0</version>
                 <executions>
                     <execution>
                         <id>schemagen</id>
@@ -150,6 +176,29 @@
                     <locale>en</locale>
                     <outputDirectory>${schema.dir}</outputDirectory>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-core</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+
+                </dependencies>
             </plugin>
 
         </plugins>

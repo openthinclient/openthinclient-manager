@@ -77,7 +77,7 @@ public class PackageOperationInstallTest {
                 installedFile(pkg, 9, "version/foo-version.txt", "5859d094ddc1848ef3d7fc6ff1d02d75d6ec1d95") //
         );
 
-        Mockito.verify(installedContentRepository).save(expected);
+        Mockito.verify(installedContentRepository).saveAll(expected);
     }
 
     private PackageInstalledContent installedDirectory(Package pkg, int sequence, String path) {

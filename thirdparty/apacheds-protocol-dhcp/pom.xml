@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
-	<version>2019.1.1</version>
+	<version>2019.1.2</version>
 	<artifactId>apacheds-protocol-dhcp</artifactId>
 	<name>ApacheDS Protocol Dhcp</name>
 	<description>The DHCP protocol provider for ApacheDS</description>
@@ -42,7 +42,11 @@
 	<properties>
 		<!-- FIXME: rewrite testcases -->
 		<maven.test.skip>true</maven.test.skip>
+		<!--<maven.compiler.source>1.8</maven.compiler.source>-->
+		<!--<maven.compiler.target>1.8</maven.compiler.target>-->
 	</properties>
+
+
 
 	<dependencies>
 	<!--
@@ -69,5 +73,18 @@
 			<version>1.0.2</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
 

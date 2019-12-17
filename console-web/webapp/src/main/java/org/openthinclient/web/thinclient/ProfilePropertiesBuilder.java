@@ -1,5 +1,7 @@
 package org.openthinclient.web.thinclient;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,29 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
+
+  private static String KBURLPrefix = getKBURLPrefix();
+  private static String getKBURLPrefix() {
+    java.util.Properties props = new java.util.Properties();
+    try {
+      InputStream in = ClassLoader.getSystemResourceAsStream("application.properties");
+      props.load(in);
+      in.close();
+    } catch(IOException ex) {
+      LOGGER.error("Could not read application properties");
+      return null;
+    }
+    String version = props.getProperty("application.version", null);
+    if(version == null) {
+      LOGGER.error("Could not read application version");
+      return null;
+    }
+    return "https://wiki.openthinclient.org/display/_PK/OMD"
+                + version.replaceAll("(\\d+)\\.(\\d+).*","$1$2")
+                + "/";
+  }
+
+  IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
   /**
    *
@@ -77,10 +102,8 @@ public class ProfilePropertiesBuilder {
       schema.getChildren().forEach(node -> extractChildren(node, group, profile));
       properties.add(group);
     } catch (SchemaLoadingException e) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
     } catch (Exception e) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       if (schema == null) {
         throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
       } else {
@@ -109,7 +132,7 @@ public class ProfilePropertiesBuilder {
                                           .toArray(SelectOption[]::new);
           group.addProperty(new OtcBooleanProperty(
                   node.getLabel(),
-                  prepareTip(node.getTip()),
+                  prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   selectOptions[0],
@@ -118,17 +141,17 @@ public class ProfilePropertiesBuilder {
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
-                  prepareTip(node.getTip()),
+                  prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof PasswordNode) {
-         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
@@ -140,8 +163,6 @@ public class ProfilePropertiesBuilder {
   }
 
   public OtcPropertyGroup createDirectoryObjectMetaDataGroup(DirectoryObject directoryObject) {
-
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setDisplayHeaderLabel(false);
@@ -160,8 +181,6 @@ public class ProfilePropertiesBuilder {
 
   public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
 
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
     OtcPropertyGroup group = createDirectoryObjectMetaDataGroup(profile);
 
     String schemaName = null;
@@ -171,7 +190,7 @@ public class ProfilePropertiesBuilder {
     List<SelectOption> selectOptions = schemaNames.entrySet().stream().map((entry) -> new SelectOption(entry.getValue(), entry.getKey())).collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
              mc.getMessage(UI_COMMON_TYPE_LABEL),
-             mc.getMessage(UI_COMMON_TYPE_TIP),
+             null,
             "type",
              schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
              selectOptions);
@@ -183,16 +202,25 @@ public class ProfilePropertiesBuilder {
     return group;
   }
 
-  /**
-   * remove HTML-Tags in tip text
-   * @param tip String
-   * @return String or null
-   */
-  private String prepareTip(String tip) {
-    if (tip != null) {
-      return tip.replaceAll("<html>|</html>|<br>|<b>|</b>", "");
+  private String prepareTip(String tip, String kbArticle) {
+    if(KBURLPrefix == null) {
+      return tip;
     }
-    return null;
+    if(tip == null) {
+      if(kbArticle == null) {
+        return null;
+      }
+      tip = "";
+    } else {
+      tip = "<div>"+tip+"</div>";
+    }
+    if(kbArticle != null) {
+      tip = String.format("%s<a href=\"%s%s%s\" class=\"kblink\" target=\"_blank\">%s</a>",
+          tip, KBURLPrefix, kbArticle,
+          UI.getCurrent().getLocale().getLanguage().equals("de")? "" : "#googtrans(de|en)",
+          mc.getMessage(UI_PROFILE_TIP_LINK));
+    }
+    return tip;
   }
 
   final String REGEX_TRUTHY = "(?i)yes|ja|on|true";
@@ -233,6 +261,9 @@ public class ProfilePropertiesBuilder {
    * @return list of {@link Item}
    */
   public static List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
+    if (members == null) {
+      return new ArrayList<>();
+    }
     List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
             .filter(member -> classList.contains(member.getClass()))
@@ -298,17 +329,17 @@ public class ProfilePropertiesBuilder {
     } else if (clazz.equals(Application.class)) {
       itemType = Item.Type.APPLICATION;
     } else if (clazz.equals(HardwareType.class)) {
-      itemType = Item.Type.HARDWARE;
+      itemType = Item.Type.HARDWARETYPE;
     } else if (clazz.equals(Location.class)) {
       itemType = Item.Type.LOCATION;
     } else if (clazz.equals(Device.class)) {
       itemType = Item.Type.DEVICE;
     } else if (clazz.equals(ApplicationGroup.class)) {
-      itemType = Item.Type.APPLICATION_GROUP;
+      itemType = Item.Type.APPLICATIONGROUP;
     } else if (clazz.equals(UserGroup.class)) {
-      itemType = Item.Type.USER_GROUP;
+      itemType = Item.Type.USERGROUP;
     } else if (clazz.equals(ClientGroup.class)) {
-      itemType = Item.Type.CLIENT_GROUP;
+      itemType = Item.Type.CLIENTGROUP;
     } else if (clazz.equals(User.class)) {
       itemType = Item.Type.USER;
     } else if (clazz.equals(Printer.class)) {

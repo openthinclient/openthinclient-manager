@@ -8,6 +8,7 @@
 @import "views/login";
 @import "views/dashboard";
 @import "views/packages";
+@import "views/filebrowser";
 @import "views/update";
 @import "views/importexport";
 
@@ -100,6 +101,7 @@ b {
   @include login-view;
   @include dashboard-view;
   @include packages-view;
+  @include filebrowser-view;
   @include update-view;
   @include importexport-view;
 }

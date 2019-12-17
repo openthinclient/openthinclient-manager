@@ -142,15 +142,44 @@ $ok-button-color: #2db200;
         .v-slot-propertyInformationLabel {
           visibility: hidden;
           position: absolute;
-          top: 20px;
-          right: 20px;
+          top: -.33em;
+          right: 3px;
           z-index: 1;
           max-width: 45ch;
           height: auto;
-          padding: .33em 1em;
+          padding: .33em 35px .33em 20px;
+          line-height: 1.5;
           font-weight: 400;
           background: $info-popup-color;
           color: #fff;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+
+          &::before {
+            content: "\e71c";
+            font-family: Vaadin-Icons;
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: calc(100% - .33em);
+            padding: 0.33em 5px 0;
+            background: #0064a2;
+          }
+          .kblink {
+            display: inline-block;
+            &::before {
+              content: "\e7de";
+              font-family: Vaadin-Icons;
+              margin-right: 1ch;
+            }
+            &:not(:last-child) {
+              marign-top: .5ex;
+            }
+          }
+
+          * {
+            margin: 0;
+            padding: 0;
+          }
         }
         .v-slot-borderless-colored:hover + .v-slot-propertyInformationLabel,
         .v-slot-propertyInformationLabel:hover {
@@ -472,6 +501,11 @@ $ok-button-color: #2db200;
 
               .v-button-referenceItemIconButton {
                 color: #d1001a;
+              }
+
+              .v-button-referenceItemLink {
+                text-decoration: none;
+                color: #000;
               }
             }
           }

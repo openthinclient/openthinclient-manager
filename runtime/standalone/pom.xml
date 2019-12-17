@@ -5,11 +5,23 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-runtime</artifactId>
-        <version>2019.1.1</version>
+        <version>2019.1.2</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>manager-runtime-standalone</artifactId>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>2.0.1.Final</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- dependency>
@@ -45,8 +57,8 @@
 		<dependency>
 		    <groupId>org.atteo</groupId>
 		    <artifactId>evo-inflector</artifactId>
-		    <version>1.2.1</version>
-		</dependency>
+		    <version>1.2.2</version>
+		</dependency>        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -54,6 +66,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-remote-shell</artifactId>
+            <version>1.5.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,38 +84,38 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-apacheds</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-nfs</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-syslog</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-tftp</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <!-- Missing config -->
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-util</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
 
         <!--
@@ -111,7 +124,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-first-start-wizard</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
 
         <!--
@@ -122,7 +135,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-control</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
 
         <!--
@@ -131,16 +144,15 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-web-webapp</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
-
         <!--
             THE PACKAGED DESKTOP CONSOLE
         -->
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-desktop-application</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1</version>
             <classifier>dist</classifier>
             <type>jar</type>
             <exclusions>
@@ -157,8 +169,9 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-jnlp-download-servlet</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -172,7 +185,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.5</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -205,7 +218,6 @@
                     </execution>
                 </executions>
 	        </plugin>
-
         </plugins>
     </build>
 

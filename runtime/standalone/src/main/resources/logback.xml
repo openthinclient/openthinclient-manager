@@ -14,9 +14,11 @@
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <file>${LOG_PATH}/openthinclient-manager.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
-            <maxHistory>30</maxHistory>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>20</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
@@ -32,9 +34,11 @@
             <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
         </encoder>
         <file>${LOG_PATH}/syslog.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
-            <maxHistory>30</maxHistory>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>20</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 

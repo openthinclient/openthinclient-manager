@@ -12,11 +12,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DefaultLDAPClientService extends AbstractLDAPService<Client> implements ClientService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLDAPClientService.class);
+  private static final String REPLACEMENT = "\\\\$0";
+  private static final Pattern QUOTE_TO_LDAP = Pattern.compile("[\\\\,=()]");
 
   public DefaultLDAPClientService(RealmService realmService) {
     super(Client.class, realmService);
@@ -35,7 +38,21 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
         throw new RuntimeException(e);
       }
     }).collect(Collectors.toSet());
+  }
 
+  @Override
+  public Set<ClientMetaData> findByLocation(String locationName) {
+
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMetaData.class,
+            new Filter("(l=l=*{0}*)", QUOTE_TO_LDAP.matcher(locationName).replaceAll(REPLACEMENT)),
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
   }
 
   private Client initSchema(Client client) {

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-web</artifactId>
-        <version>2019.1.1</version>
+        <version>2019.1.2</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-common</artifactId>
-            <version>2019.1.1</version>
+            <version>2019.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,6 +88,11 @@
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>openthinclient-advisor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- parsing ldif files -->
         <dependency>
@@ -98,7 +103,7 @@
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-ldif-core</artifactId>
-            <version>2.0.3.RELEASE</version>
+            <version>2.3.2.RELEASE</version>
         </dependency>
 
     </dependencies>
