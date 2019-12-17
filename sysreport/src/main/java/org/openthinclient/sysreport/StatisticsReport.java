@@ -149,9 +149,6 @@ public class StatisticsReport extends AbstractReport {
     @JsonProperty
     String licenseState;
 
-    @JsonProperty("admin-user-login-count")
-    private int adminUserLoginCount;
-
     public int getApplicationGroupCount() {
       return applicationGroupCount;
     }
