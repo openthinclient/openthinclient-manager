@@ -28,3 +28,13 @@ function loadBrowserFrame(browserSelector, url) {
     }
   })
 }
+
+function addMACAdressHandler() {
+  document.querySelectorAll('input.key-macaddress').forEach(mac => {
+      mac.onkeyup = ev => {
+        if(ev.key == 'Enter' && mac.value.indexOf(':') == -1 && mac.value.length == 12) {
+          mac.value = mac.value.split(/(..)/).filter(Boolean).join(':')
+        }
+      }
+  })
+}
