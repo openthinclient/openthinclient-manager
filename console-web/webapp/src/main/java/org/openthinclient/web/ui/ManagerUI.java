@@ -256,6 +256,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         public void afterViewChange(ViewChangeEvent event) {
           searchTextField.setValue(null);
           JavaScript.getCurrent().execute("disableSpellcheck()");
+          JavaScript.getCurrent().execute("addMACAdressHandler()");
 
           if(event.getNavigator().getState() != null) {
             deviceSideBar.updateFilterGrid(event.getNewView(), event.getParameters());

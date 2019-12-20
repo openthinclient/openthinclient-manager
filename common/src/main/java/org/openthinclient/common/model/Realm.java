@@ -20,7 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-//import com.sun.jndi.ldap.LdapURL;
+import com.sun.jndi.ldap.LdapURL;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
@@ -143,18 +143,16 @@ public class Realm extends Profile implements Serializable {
 
 		final String urlString = getValue("Directory.Secondary.LDAPURLs");
 
-//		try {
-			// TODO openjdk12
-//			final LdapURL ldapUrl = new LdapURL(urlString);
-			// TODO openjdk12
-//			secLcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-//			secLcd.setHostname(ldapUrl.getHost());
-//			short ldapPort = (short) ldapUrl.getPort();
-//			// use DEFAULT_SECONDARY_LDAPPORT if unset
-//			if (-1 == ldapPort)
-//				ldapPort = DEFAULT_SECONDARY_LDAPPORT;
-//			secLcd.setPortNumber(ldapPort);
-//			secLcd.setBaseDN(ldapUrl.getDN());
+		try {
+			final LdapURL ldapUrl = new LdapURL(urlString);
+			secLcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+			secLcd.setHostname(ldapUrl.getHost());
+			short ldapPort = (short) ldapUrl.getPort();
+			// use DEFAULT_SECONDARY_LDAPPORT if unset
+			if (-1 == ldapPort)
+				ldapPort = DEFAULT_SECONDARY_LDAPPORT;
+			secLcd.setPortNumber(ldapPort);
+			secLcd.setBaseDN(ldapUrl.getDN());
 			final String principal = getValue("Directory.Secondary.ReadOnly.Principal");
 			final String secret = getValue("Directory.Secondary.ReadOnly.Secret");
 
@@ -170,9 +168,9 @@ public class Realm extends Profile implements Serializable {
 			// always read only
 			secLcd.setReadOnly(true);
 
-//		} catch (final NamingException e) {
-//			e.printStackTrace();
-//		}
+		} catch (final NamingException e) {
+			e.printStackTrace();
+		}
 		return secLcd;
 	}
 

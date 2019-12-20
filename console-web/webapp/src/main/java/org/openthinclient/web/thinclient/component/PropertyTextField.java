@@ -26,6 +26,7 @@ public class PropertyTextField<T extends OtcTextProperty> extends TextField impl
   public PropertyTextField(T bean) {
 
     setStyleName("profileItemTextfield");
+    addStyleName("key-" + bean.getKey());
     setReadOnly(bean.getConfiguration().isDisabled());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());

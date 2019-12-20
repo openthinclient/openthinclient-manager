@@ -8,7 +8,7 @@
     <version>1.0.2</version>
   </parent>
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
-  <version>2019.1.2</version>
+  <version>2019.1.3</version>
   <artifactId>apacheds-server-jndi</artifactId>
   <name>ApacheDS Server JNDI</name>
   <description>
