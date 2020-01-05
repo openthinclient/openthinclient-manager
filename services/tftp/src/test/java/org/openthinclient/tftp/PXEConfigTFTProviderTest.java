@@ -251,6 +251,11 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
+    public Set<ClientMetaData> findClientMetaByHwAddress(String hwAddressString) {
+      return null;
+    }
+
+    @Override
     public void reloadAllSchemas() {
 
     }

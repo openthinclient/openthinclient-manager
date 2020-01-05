@@ -45,6 +45,7 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     });
   }
 
+
   @Override
   public Set<T> findAll() {
     long start = System.currentTimeMillis();

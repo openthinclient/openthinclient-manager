@@ -33,6 +33,12 @@ public class ModelMapper {
     return application;
   }
 
+  public Application translateIgnoreMembers(Realm realm, org.openthinclient.common.model.Application source) {
+    final Application application = new Application();
+    translate(realm, source, application);
+    return application;
+  }
+
   public Client translate(Realm realm, org.openthinclient.common.model.Client source) {
 
     Client client = new Client();

@@ -55,6 +55,22 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
     }).collect(Collectors.toSet());
   }
 
+
+  @Override
+  public Set<ClientMetaData> findClientMetaByHwAddress(String hwAddressString) {
+
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMetaData.class,
+            new Filter("(&(macAddress={0})(l=*))", hwAddressString),
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
+  }
+
   private Client initSchema(Client client) {
     try {
       client.initSchemas(client.getRealm());

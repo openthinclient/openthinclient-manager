@@ -2,9 +2,11 @@ package org.openthinclient.api.rest.impl;
 
 import org.openthinclient.api.rest.model.*;
 import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
+import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.UserService;
@@ -30,25 +32,31 @@ public class ProfileRepository {
   private final ClientService clientService;
   private final UserService userService;
   private final HardwareTypeService hardwareTypeService;
+  ApplicationService applicationService;
   private final ModelMapper mapper;
 
   @Autowired
-  public ProfileRepository(ClientService clientService, UserService userService, HardwareTypeService hardwareTypeService) {
+  public ProfileRepository(ClientService clientService, UserService userService, HardwareTypeService hardwareTypeService, ApplicationService applicationService) {
     this.clientService = clientService;
     this.userService = userService;
     this.hardwareTypeService = hardwareTypeService;
+    this.applicationService = applicationService;
     mapper = new ModelMapper();
   }
 
   @RequestMapping("/clients/{hwAddress}")
   public ResponseEntity<Client> getClient(@PathVariable("hwAddress") String hwAddress) {
 
+    long l = System.currentTimeMillis();
     Optional<org.openthinclient.common.model.Client> optional = findClient(hwAddress);
 
     if (optional.isPresent()) {
         org.openthinclient.common.model.Client source = optional.get();
         Client client = mapper.translate(source.getRealm(), source);
-        return ResponseEntity.ok(resolveConfiguration(source.getRealm(), client));
+      long l1 = System.currentTimeMillis();
+      ResponseEntity<Client> ok = ResponseEntity.ok(resolveConfiguration(source.getRealm(), client));
+      System.out.println("resolveConfiguration = " + (System.currentTimeMillis()-l1) + ", gesamt="+(System.currentTimeMillis()-l));
+        return ok;
     }
     return notFound();
   }
@@ -209,28 +217,64 @@ public class ProfileRepository {
 
   }
 
+  /**
+   * API: 'members'-Attribute in Application kann weggelassen werden -> es interessiert ja nur der angefragte (mac-Address)-Client
+   *
+   * PERFOMANCE: - wenn Schema nicht geladen werden müsste um nicht gespeicherte Attribute zu laden könnte Geschwindigkleit gewonnen werden
+   *
+   *
+   * @param hwAddress
+   * @return
+   */
   @RequestMapping("/clients/{hwAddress}/applications")
   public ResponseEntity<List<Application>> getApplications(@PathVariable("hwAddress") String hwAddress) {
-    final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
 
-    if (!opt.isPresent()) {
+    // find client-name
+    long x = System.currentTimeMillis();
+    Optional<ClientMetaData> clientMetaByHwAddress = clientService.findClientMetaByHwAddress(hwAddress.toLowerCase()).stream().findFirst();
+    if (!clientMetaByHwAddress.isPresent()) {
       return notFound();
     }
+    String dn = clientMetaByHwAddress.get().getDn();
+    long xt = (System.currentTimeMillis()-x);
 
-    final org.openthinclient.common.model.Client client = opt.get();
+    // find app by client
+    long ax = System.currentTimeMillis();
+    final Set<org.openthinclient.common.model.Application> appsByClient = applicationService.findByUniqueMember(dn);
+    long axt = (System.currentTimeMillis()-ax);
 
-    final Stream<org.openthinclient.common.model.Application> localApplications = client.getApplications().stream();
+    // map
+    long max = System.currentTimeMillis();
+    final List<Application> res = appsByClient.stream().map((source) -> mapper.translateIgnoreMembers(source.getRealm(), source)).collect(Collectors.toList());
+    long maxl = (System.currentTimeMillis()-max);
+    System.out.println("dauer = " + (System.currentTimeMillis()-x) + ", client-load:" + xt + ", app-load=" + axt+ ", app-mapping=" + maxl+ ", (group-rprocess=" + 0);
 
-    final Realm realm = client.getRealm();
-    final List<Application> res = localApplications.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
+    // --
+//    long l = System.currentTimeMillis();
+//    final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
+//    if (!opt.isPresent()) {
+//      return notFound();
+//    }
+//    final org.openthinclient.common.model.Client client = opt.get();
+//    long ct = (System.currentTimeMillis()-l);
+//
+//    long a = System.currentTimeMillis();
+//    final Stream<org.openthinclient.common.model.Application> localApplications = client.getApplications().stream();
+//    long al = (System.currentTimeMillis()-a);
+//
+//    long amap = System.currentTimeMillis();
+//    final Realm realm = client.getRealm();
+//    final List<Application> res = localApplications.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
+//    long amapl = (System.currentTimeMillis()-amap);
 
     // process all application groups recursively
-
-    for (ApplicationGroup applicationGroup : client.getApplicationGroups()) {
-      addApplications(realm, applicationGroup, res);
-    }
-
-
+//    long grp = System.currentTimeMillis();
+//    for (ApplicationGroup applicationGroup : client.getApplicationGroups()) {
+//      addApplications(realm, applicationGroup, res);
+//    }
+//    long grpl = (System.currentTimeMillis()-grp);
+//
+//    System.out.println("dauer = " + (System.currentTimeMillis()-l) + ", client-load:" + ct + ", app-load=" + al+ ", app-mapping=" + amapl+ ", group-rprocess=" + grpl);
     return ResponseEntity.ok(res);
 
   }

@@ -27,4 +27,5 @@ public interface ApplicationService extends DirectoryObjectService<Application> 
    */
   Set<Application> findAllUsingSchema(Schema<?> schema);
 
+  Set<Application> findByUniqueMember(String dn);
 }
