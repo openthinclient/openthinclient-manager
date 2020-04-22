@@ -17,7 +17,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_
 public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<SelectOption> implements PropertyComponent {
 
   private Binder<T> binder;
-  private T bean;
 
   public PropertySelect(T bean) {
 
@@ -29,8 +28,6 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     setEnabled(!bean.getConfiguration().isDisabled());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);

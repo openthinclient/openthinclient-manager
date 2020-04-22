@@ -79,8 +79,7 @@ public class ProfilePropertiesBuilder {
   private void bindModel2Properties(Profile profile, List<OtcPropertyGroup> propertyGroups) {
     propertyGroups.forEach(otcPropertyGroup -> {
       otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
-        // Object o = profile.getConfiguration().getAdditionalProperties().get(otcProperty.getKey()); // json
-        String profileValue = profile.getValue(otcProperty.getKey());
+        String profileValue = profile.getValueLocal(otcProperty.getKey());
         ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), profileValue);
         otcProperty.setConfiguration(ic);
       });
@@ -120,7 +119,7 @@ public class ProfilePropertiesBuilder {
       return;
     }
 
-    String value = profile.getValue(node.getKey());
+    String currentValue = profile.getValueLocal(node.getKey());
 
     if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
@@ -134,7 +133,8 @@ public class ProfilePropertiesBuilder {
                   node.getLabel(),
                   prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
-                  value != null ? value : ((ChoiceNode) node).getValue(),
+                  currentValue,
+                  getBooleanValue(((ChoiceNode) node).getValue()),
                   selectOptions[0],
                   selectOptions[1]
           ));
@@ -143,16 +143,18 @@ public class ProfilePropertiesBuilder {
                   node.getLabel(),
                   prepareTip(node.getTip(), node.getKBArticle()),
                   node.getKey(),
-                  value != null ? value : ((ChoiceNode) node).getValue(),
+                  currentValue,
+                  ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof PasswordNode) {
          group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
-                                              value != null ? value : ((EntryNode) node).getValue()));
+                                              ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
         group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
-                                              value != null ? value : ((EntryNode) node).getValue()));
+                                              currentValue,
+                                              ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
@@ -167,14 +169,14 @@ public class ProfilePropertiesBuilder {
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setDisplayHeaderLabel(false);
 
-    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", directoryObject.getName(), directoryObject.getName());
+    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", directoryObject.getName(), directoryObject.getName(), null);
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[^ #].*"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9 {}\\[\\]/()#.:*&`'~|?@$\\^%_-]+"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), ".*[^ #]"));
     group.addProperty(property);
 
-    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", directoryObject.getDescription(), directoryObject.getDescription()));
+    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", directoryObject.getDescription(), directoryObject.getDescription(), null));
 
     return group;
   }
@@ -193,6 +195,7 @@ public class ProfilePropertiesBuilder {
              null,
             "type",
              schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
+             null,
              selectOptions);
     ItemConfiguration itemConfiguration = new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName);
     itemConfiguration.disable();
@@ -240,6 +243,13 @@ public class ProfilePropertiesBuilder {
       }
     }
     return Optional.empty();
+  }
+
+  private boolean getBooleanValue(String str) {
+    if (str != null) {
+      return str.matches(REGEX_TRUTHY);
+    }
+    return false;
   }
 
   /**

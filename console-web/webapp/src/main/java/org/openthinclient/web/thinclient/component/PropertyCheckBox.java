@@ -5,19 +5,16 @@ import com.vaadin.ui.CheckBox;
 import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 
 /**
- * Currently unused, because of ugly schema format
+ * PropertyCheckBox for OtcBooleanProperty
  */
 public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox implements PropertyComponent {
 
   Binder<T> binder;
-  private T bean;
 
   public PropertyCheckBox(T bean) {
 
     setStyleName("profileItemCheckbox");
     setReadOnly(bean.getConfiguration().isDisabled());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);

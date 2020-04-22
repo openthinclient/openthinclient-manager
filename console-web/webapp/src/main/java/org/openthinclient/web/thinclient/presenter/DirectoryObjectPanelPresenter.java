@@ -281,7 +281,7 @@ public class DirectoryObjectPanelPresenter {
       igp.emptyValidationMessages();
       igp.propertyComponents().forEach(propertyComponent -> {
         OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-        bean.getConfiguration().setValue(bean.getInitialValue());
+        bean.getConfiguration().setValue(bean.getInitialValue()); // TODO: JNE initial-value = default aber nicht vorheriger Wert
         propertyComponent.getBinder().readBean(bean);
       });
     });

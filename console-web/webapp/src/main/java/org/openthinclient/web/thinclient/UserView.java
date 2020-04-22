@@ -197,7 +197,7 @@ public final class UserView extends AbstractThinclientView {
     configuration.setDisplayHeaderLabel(false);
 
     // Name
-    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
+    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName(), null);
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
     nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
     nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), null, 32));
@@ -218,7 +218,7 @@ public final class UserView extends AbstractThinclientView {
     configuration.addProperty(name);
 
     // Description
-    OtcTextProperty desc = new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL), null, "description", user.getDescription());
+    OtcTextProperty desc = new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL), null, "description", user.getDescription(), null);
     ItemConfiguration descConfig = new ItemConfiguration("description", user.getDescription());
     if (secondaryDirectory) descConfig.disable();
     desc.setConfiguration(descConfig);

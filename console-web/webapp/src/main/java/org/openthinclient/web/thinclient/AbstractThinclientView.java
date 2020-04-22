@@ -383,7 +383,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
                 if (propertyKey.equals("name")) org = profile.getName();
                 else if (propertyKey.equals("description")) org = profile.getDescription();
                 else if (propertyKey.equals("type") && profile.getRealm() != null) org = profile.getSchema(profile.getRealm()).getName();
-                else org = profile.getValue(propertyKey);
+                else org = profile.getValueLocal(propertyKey);
                 String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
                 if (!StringUtils.equals(org, current)) {
                   if (current != null) {

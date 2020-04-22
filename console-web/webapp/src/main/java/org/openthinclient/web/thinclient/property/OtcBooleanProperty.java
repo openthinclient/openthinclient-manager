@@ -6,7 +6,10 @@ import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 
 /**
- *
+ * OtcBoolean-property type
+ * - initial unset values (null) will be displayed by schema-default-value: null -> true|false
+ * - if initial value was unset (null) AND is not changed by UI, it will be set to null value: true|false -> null
+ * - an already set value (true|false) will be handled as true or false
  */
 public class OtcBooleanProperty extends OtcProperty {
 
@@ -17,8 +20,8 @@ public class OtcBooleanProperty extends OtcProperty {
   private String labelOfFalse;
   private final static String JUST_ONE_WORD = "\\s*\\S+\\s*";
 
-  public OtcBooleanProperty(String label, String tip, String key, String initialValue, SelectOption falseOption, SelectOption trueOption) {
-    super(label, tip, key, initialValue);
+  public OtcBooleanProperty(String label, String tip, String key, String initialValue, Boolean defaultSchemaValue, SelectOption falseOption, SelectOption trueOption) {
+    super(label, tip, key, initialValue, defaultSchemaValue.toString());
     this.valueOfTrue  = trueOption.getValue();
     this.valueOfFalse = falseOption.getValue();
 
@@ -42,20 +45,24 @@ public class OtcBooleanProperty extends OtcProperty {
     return config;
   }
 
-  public boolean isValue() {
-    if (config.getValue() == null || config.getValue().length() == 0) { // use default value
-      return getInitialValue().equals(valueOfTrue);
+  public Boolean isValue() {
+    if (config.getValue() == null || config.getValue().length() == 0) { // handle un-set value
+      return getInitialValue() == null ? Boolean.valueOf(getDefaultSchemaValue()) : getInitialValue().equals(valueOfTrue);
     } else {
       return config.getValue().equals(valueOfTrue);
     }
   }
 
-  public void setValue(boolean value) {
-    this.config.setValue(value ? valueOfTrue : valueOfFalse);
+  public void setValue(Boolean value) {
+    if (value == null || value.equals(Boolean.valueOf(getDefaultSchemaValue()))) {
+      this.config.setValue(null);
+    } else {
+      this.config.setValue(value ? valueOfTrue : valueOfFalse);
+    }
   }
 
-  public String getLabelFor(boolean value) {
-    return value? labelOfTrue : labelOfFalse;
+  public String getLabelFor(Boolean value) {
+    return value != null && value ? labelOfTrue : labelOfFalse;
   }
 
   @Override
@@ -63,8 +70,9 @@ public class OtcBooleanProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
-        .append("initialValue", getInitialValue())
         .append("value", isValue())
+        .append("initialValue", getInitialValue())
+        .append("defaultSchemaValue", getDefaultSchemaValue())
         .toString();
   }
 

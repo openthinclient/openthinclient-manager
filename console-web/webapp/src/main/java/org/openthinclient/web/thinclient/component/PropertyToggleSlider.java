@@ -10,7 +10,6 @@ import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider implements PropertyComponent {
 
   Binder<T> binder;
-  T bean;
 
   public PropertyToggleSlider(T bean) {
 
@@ -21,8 +20,6 @@ public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider i
 
     setStyleName("profileItemCheckbox");
     setReadOnly(bean.getConfiguration().isDisabled());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);
