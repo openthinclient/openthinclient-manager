@@ -286,6 +286,20 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     }
   }
 
+    /**
+     * Determine the server address to use.
+     *
+     * @param localAddress the address of the socket which received the request.
+     * @param message the DHCP message this server is responding to
+     * @return
+     */
+    protected InetSocketAddress determineServerAddress(
+            InetSocketAddress localAddress, DhcpMessage message) {
+        // Individually bound services, can use the local address.
+        // Others may need to override.
+        return localAddress;
+    }
+
   /*
    * @see
    * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST
@@ -308,19 +322,47 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       logger.info("Got PXE REQUEST"
               + getLogDetail(localAddress, clientAddress, request));
 
+    // clientAdress must be set
+    if (isZeroAddress(clientAddress.getAddress())) {
+      if (logger.isDebugEnabled())
+        logger.debug("Ignoring PXE REQUEST from 0.0.0.0"
+            + getLogDetail(localAddress, clientAddress, request));
+      return null;
+    }
+
     // we don't react to requests here, unless they go to port 4011
     if (!assertCorrectPort(localAddress, 4011, request))
       return null;
 
     // find conversation
     final RequestID id = new RequestID(request);
-    final Conversation conversation = conversations.get(id);
+    Conversation conversation = conversations.get(id);
 
     if (null == conversation) {
-      if (logger.isInfoEnabled())
-        logger.info("Got PXE REQUEST for which there is no conversation"
-                + getLogDetail(localAddress, clientAddress, request));
-      return null;
+      if(ArchType.isUEFI(request)) {
+        // Some UEFI PXE implementations don't set the correct transaction id
+        // in their last request. In order to be able to serve those devices
+        // we simply begin a new "conversation" and send the last ACK with the
+        // PXE boot data.
+        String hwAddressString = request.getHardwareAddress().getNativeRepresentation();
+        Client client = getClient(hwAddressString, clientAddress, request);
+        if(client == null) {
+          // client not eligible for PXE proxy service
+          return null;
+        }
+        logger.info("Got UEFI PXE REQUEST for which there is no conversation. Serving anyway."
+            + getLogDetail(localAddress, clientAddress, request));
+        conversation = new Conversation(request);
+        synchronized (conversation) {
+            conversation.setClient(client);
+            InetSocketAddress serverAddress = determineServerAddress(localAddress, request);
+            conversation.setApplicableServerAddress(serverAddress);
+        }
+      } else {
+        logger.info("Got BIOS PXE REQUEST for which there is no conversation"
+            + getLogDetail(localAddress, clientAddress, request));
+        return null;
+      }
     }
 
     synchronized (conversation) {
@@ -352,19 +394,22 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         return null; // not me!
       }
 
-      final DhcpMessage reply = initGeneralReply(
-              conversation.getApplicableServerAddress(), request);
+      final InetSocketAddress serverAddress = conversation.getApplicableServerAddress();
+      final DhcpMessage reply = initGeneralReply(serverAddress, request);
 
       reply.setMessageType(MessageType.DHCPACK);
 
       final OptionsField options = reply.getOptions();
 
+      final VendorClassIdentifier vci = new VendorClassIdentifier();
+      vci.setString("PXEClient");
+      options.add(vci);
+
       reply.setNextServerAddress(getNextServerAddress(
-              Config.BootOptions.TFTPBootserver,
-              conversation.getApplicableServerAddress(), client));
+              Config.BootOptions.TFTPBootserver, serverAddress, client));
 
       final String rootPath = getNextServerAddress(Config.BootOptions.NFSRootserver,
-              conversation.getApplicableServerAddress(), client).getHostAddress()
+              serverAddress, client).getHostAddress()
               + ":" + Config.BootOptions.NFSRootPath.get(client);
       options.add(new RootPath(rootPath));
 

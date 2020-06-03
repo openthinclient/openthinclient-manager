@@ -45,6 +45,32 @@ public class EavesdroppingPXEService extends AbstractPXEService {
     super(realmService, clientService, unrecognizedClientService);
   }
 
+  protected InetSocketAddress determineServerAddress(
+			InetSocketAddress localAddress, DhcpMessage message) {
+		try {
+      // determine server interface address to use
+      InetAddress ifAddress = null;
+      final InetAddress ca = message.getAssignedClientAddress();
+      final byte assignedAddressBytes[] = ca.getAddress();
+      outer : for (final Enumeration e = NetworkInterface
+          .getNetworkInterfaces(); e.hasMoreElements();) {
+        final NetworkInterface nif = (NetworkInterface) e.nextElement();
+        for (final InterfaceAddress ia : nif.getInterfaceAddresses())
+          if (isInSubnet(assignedAddressBytes,
+              ia.getAddress().getAddress(), ia.getNetworkPrefixLength())) {
+            ifAddress = ia.getAddress();
+            break outer;
+          }
+      }
+      if(null != ifAddress) {
+        return new InetSocketAddress(ifAddress, 67);
+      }
+    } catch (final SocketException e) {
+      logger.error("Error while determining network interface.", e);
+    }
+    return null;
+  }
+
 	/*
 	 * @see
 	 * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER
@@ -172,33 +198,10 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 
 				trackUnrecognizedClient(conversation.getDiscover(), hostname, offer
 						.getAssignedClientAddress().getHostAddress());
-			} else
-				try {
-					// determine server interface address to use
-					InetAddress ifAddress = null;
-					final InetAddress ca = offer.getAssignedClientAddress();
-					final byte assignedAddressBytes[] = ca.getAddress();
-					outer : for (final Enumeration e = NetworkInterface
-							.getNetworkInterfaces(); e.hasMoreElements();) {
-						final NetworkInterface nif = (NetworkInterface) e.nextElement();
-						for (final InterfaceAddress ia : nif.getInterfaceAddresses())
-							if (isInSubnet(assignedAddressBytes,
-									ia.getAddress().getAddress(), ia.getNetworkPrefixLength())) {
-								ifAddress = ia.getAddress();
-								break outer;
-							}
-					}
-
-					if (null == ifAddress) {
-						logger.error("InterfaceAddress not found for " + offer + ", "
-								+ conversation);
-						return null;
-					}
-
-					final InetSocketAddress applicableServerAddress = new InetSocketAddress(
-							ifAddress, 67);
-
-					// we'll need this later
+			} else {
+			  InetSocketAddress applicableServerAddress = determineServerAddress(localAddress, offer);
+			  if (applicableServerAddress != null) {
+			    // we'll need this later
 					conversation.setApplicableServerAddress(applicableServerAddress);
 
 					// prepare PXE proxy offer
@@ -210,13 +213,11 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 						logger.info("Sending PXE proxy offer " + offer);
 
 					return reply;
-				} catch (final SocketException e) {
-					logger.error("Can't determine network interface for " + offer + ", "
-							+ conversation, e);
-
-					// fall out
-				}
-
+			  } else {
+			    logger.error("InterfaceAddress not found for " + offer + ", "
+            + conversation);
+			  }
+			}
 			return null;
 		}
 	}
