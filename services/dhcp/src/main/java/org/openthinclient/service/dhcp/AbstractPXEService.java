@@ -166,6 +166,17 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     return true;
   }
 
+  private String getBootfileName(DhcpMessage message, Client client) {
+    switch(ArchType.fromMessage(message)) {
+    case UEFI32:
+      return "syslinux32.efi";
+    case UEFI64:
+      return "syslinux64.efi";
+    default:
+      return Config.BootOptions.BootfileName.get(client);
+    }
+  }
+
   /**
    * Track an unrecognized client.
    *
@@ -413,7 +424,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
               + ":" + Config.BootOptions.NFSRootPath.get(client);
       options.add(new RootPath(rootPath));
 
-      reply.setBootFileName(Config.BootOptions.BootfileName.get(client));
+      reply.setBootFileName(getBootfileName(request, client));
 
       if (logger.isInfoEnabled())
         logger
