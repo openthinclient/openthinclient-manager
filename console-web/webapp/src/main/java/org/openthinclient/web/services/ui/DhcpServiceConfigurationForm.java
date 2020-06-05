@@ -13,6 +13,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,8 @@ class DhcpServiceConfigurationForm extends FormLayout {
                                         (conf, policy) -> conf.getPxe().setPolicy(policy));
 
     final Button saveButton = new Button(mc.getMessage(ConsoleWebMessages.UI_BUTTON_SAVE), e -> {
+      Audit.logSave("Service settings");
+
       binder.writeBeanIfValid((DhcpServiceConfiguration)managedDhcpService.getService().getConfiguration());
 
       // save the appropriate service configuration.

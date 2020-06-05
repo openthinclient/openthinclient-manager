@@ -42,10 +42,29 @@
         </rollingPolicy>
     </appender>
 
+    <!-- audit log -->
+    <appender name="auditlogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d %m%n</pattern>
+        </encoder>
+        <file>${LOG_PATH}/audit.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/audit.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>20</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
     <!-- log all events, avoiding the main log file -->
     <logger name="EventLogger" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="syslogAppender"/>
+    </logger>
+
+    <logger name="Audit" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="auditlogAppender"/>
     </logger>
 
     <!--<logger name="org.openthinclient.ldap.TypeMapping" level="DEBUG" />-->

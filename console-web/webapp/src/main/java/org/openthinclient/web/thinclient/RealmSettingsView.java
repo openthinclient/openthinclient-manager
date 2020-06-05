@@ -13,6 +13,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -143,6 +144,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
     try {
       ((Realm) profile).getDirectory().save(profile);
       ((Realm) profile).refresh();
+      Audit.logSave("Realm settings");
     } catch (DirectoryException e) {
       throw new ProfileNotSavedException("Cannot save object " + profile, e);
     }

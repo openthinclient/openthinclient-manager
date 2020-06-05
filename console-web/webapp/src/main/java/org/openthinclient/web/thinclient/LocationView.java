@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -162,6 +163,7 @@ public final class LocationView extends AbstractThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     locationService.save((Location) profile);
+    Audit.logSave(profile);
   }
 
   @Override
