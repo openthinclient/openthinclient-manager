@@ -70,7 +70,6 @@ public class OtcOptionProperty extends OtcProperty {
     } else {
       value = val;
     }
-
     return options.stream().filter(selectOption -> selectOption.getValue().equals(value)).findFirst().orElse(null);
   }
 

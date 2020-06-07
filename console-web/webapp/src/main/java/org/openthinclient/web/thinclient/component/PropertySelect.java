@@ -26,6 +26,12 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     setItemCaptionGenerator(SelectOption::getLabel);
     setTextInputAllowed(bean.getOptions().size() > 10);
     setEnabled(!bean.getConfiguration().isDisabled());
+    if (bean.getDefaultSchemaValue() != null) {
+      SelectOption selectOption = bean.getSelectOption(bean.getDefaultSchemaValue());
+      if (selectOption != null) {
+        setPlaceholder(selectOption.getLabel());
+      }
+    }
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
