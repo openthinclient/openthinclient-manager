@@ -386,12 +386,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
                 else org = profile.getValueLocal(propertyKey);
                 String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
 
-                // set current-value to null if current-value equals defaultSchema-value (ensures to take effect of schema-defaults-value-changes)
-                if (current != null && current.equals(otcProperty.getDefaultSchemaValue())) {
-                  LOGGER.info(" Change value for " + propertyKey + " to 'null' because it equals to default-schema-value '" + otcProperty.getDefaultSchemaValue() + "'");
-                  current = null;
-                }
-
                 if (!StringUtils.equals(org, current)) {
                   if (current != null) {
                     LOGGER.info(" Apply value for " + propertyKey + "=" + (isPasswordProperty ? "***" : org) + " with new value '" + (isPasswordProperty ? "***" : current) + "'");

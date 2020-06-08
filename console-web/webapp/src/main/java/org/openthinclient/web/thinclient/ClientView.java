@@ -346,9 +346,6 @@ public final class ClientView extends AbstractThinclientView {
             String current;
             if (bean.getValue() == null || bean.getValue().length() == 0) {
               current = null;
-            } else if (bean.getValue().equals(otcProperty.getDefaultSchemaValue())) {
-              LOGGER.info(" Change value for " + propertyKey + " to 'null' because it equals to default-schema-value '" + otcProperty.getDefaultSchemaValue() + "'");
-              current = null;
             } else {
               current = bean.getValue();
             }
