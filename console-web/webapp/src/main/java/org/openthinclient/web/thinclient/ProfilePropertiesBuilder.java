@@ -122,32 +122,16 @@ public class ProfilePropertiesBuilder {
     String currentValue = profile.getValueLocal(node.getKey());
 
     if (node instanceof ChoiceNode) {
-        List<Option> options = ((ChoiceNode) node).getOptions();
-        Optional<List<Option>> booleanOptions = getBooleanOptions(options);
-
-        if (booleanOptions.isPresent()) {
-          SelectOption[] selectOptions = booleanOptions.get().stream()
-                                          .map(o -> new SelectOption(o.getLabel(), o.getValue()))
-                                          .toArray(SelectOption[]::new);
-          group.addProperty(new OtcBooleanProperty(
-                  node.getLabel(),
-                  prepareTip(node.getTip(), node.getKBArticle()),
-                  node.getKey(),
-                  currentValue,
-                  getBooleanValue(((ChoiceNode) node).getValue()),
-                  selectOptions[0],
-                  selectOptions[1]
-          ));
-        } else {
-          group.addProperty(new OtcOptionProperty(
-                  node.getLabel(),
-                  prepareTip(node.getTip(), node.getKBArticle()),
-                  node.getKey(),
-                  currentValue,
-                  ((ChoiceNode) node).getValue(),
-                  options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
-          ); //
-        }
+        group.addProperty(new OtcOptionProperty(
+                node.getLabel(),
+                prepareTip(node.getTip(), node.getKBArticle()),
+                node.getKey(),
+                currentValue,
+                ((ChoiceNode) node).getValue(),
+                ((ChoiceNode) node).getOptions().stream()
+                        .map(o -> new SelectOption(o.getLabel(), o.getValue()))
+                        .collect(Collectors.toList())
+        ));
       } else if (node instanceof PasswordNode) {
          group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               ((EntryNode) node).getValue()));
@@ -224,32 +208,6 @@ public class ProfilePropertiesBuilder {
           mc.getMessage(UI_PROFILE_TIP_LINK));
     }
     return tip;
-  }
-
-  final String REGEX_TRUTHY = "(?i)yes|ja|on|true";
-  final String REGEX_BOOLY = REGEX_TRUTHY + "|no|nein|off|false";
-
-  /**
-   *  Return an optional 2 element array of {false, true} options.
-   *  If given options do not look boolean, return an empty Optional.
-   */
-  private Optional<List<Option>> getBooleanOptions(List<Option> options) {
-    if(options.size() == 2 && options.get(0).getValue().matches(REGEX_BOOLY)) {
-      String value2 = options.get(1).getValue();
-      if(value2.matches(REGEX_TRUTHY)) {
-        return Optional.of(options);
-      } else if(value2.matches(REGEX_BOOLY)) {
-        return Optional.of(Arrays.asList(options.get(1), options.get(0)));
-      }
-    }
-    return Optional.empty();
-  }
-
-  private boolean getBooleanValue(String str) {
-    if (str != null) {
-      return str.matches(REGEX_TRUTHY);
-    }
-    return false;
   }
 
   /**
