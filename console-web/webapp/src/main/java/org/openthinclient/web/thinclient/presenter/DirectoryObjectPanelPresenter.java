@@ -8,6 +8,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
@@ -92,6 +93,7 @@ public class DirectoryObjectPanelPresenter {
             Realm realm = directoryObject.getRealm();
             try {
               realm.getDirectory().delete(directoryObject);
+              Audit.logDelete(directoryObject);
             } catch (DirectoryException e) {
               // TODO: handle exception
               // delete failed

@@ -47,7 +47,7 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
 
       // copy properties
       Set<String> keys = profile.getProperties().getMap().keySet();
-      keys.forEach(s -> copy.setValue(s, profile.getValue(s)));
+      keys.forEach(s -> copy.setValue(s, profile.getValueLocal(s)));
 
       // client
       if (profile instanceof Client) {

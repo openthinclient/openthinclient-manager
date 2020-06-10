@@ -8,6 +8,7 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -164,6 +165,7 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     applicationGroupService.save((ApplicationGroup) profile);
+    Audit.logSave(profile);
   }
 
   @Override

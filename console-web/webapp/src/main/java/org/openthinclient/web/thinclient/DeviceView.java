@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -153,6 +154,7 @@ public final class DeviceView extends AbstractThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     deviceService.save((Device) profile);
+    Audit.logSave(profile);
   }
 
   @Override

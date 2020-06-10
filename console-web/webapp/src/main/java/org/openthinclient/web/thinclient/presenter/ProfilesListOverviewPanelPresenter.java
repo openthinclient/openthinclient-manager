@@ -19,6 +19,7 @@ import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
@@ -136,6 +137,7 @@ public class ProfilesListOverviewPanelPresenter {
               Realm realm = item.getRealm();
               try {
                 realm.getDirectory().delete(item);
+                Audit.logDelete(item);
               } catch (DirectoryException e) {
                 thinclientView.showError(e);
               }

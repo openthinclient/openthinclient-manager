@@ -17,20 +17,22 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_
 public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<SelectOption> implements PropertyComponent {
 
   private Binder<T> binder;
-  private T bean;
 
   public PropertySelect(T bean) {
 
     super(null, bean.getOptions());
-    setEmptySelectionAllowed(false);
     setStyleName("profileItemSelect");
     setItemCaptionGenerator(SelectOption::getLabel);
     setTextInputAllowed(bean.getOptions().size() > 10);
     setEnabled(!bean.getConfiguration().isDisabled());
+    if (bean.getDefaultSchemaValue() != null) {
+      SelectOption selectOption = bean.getSelectOption(bean.getDefaultSchemaValue());
+      if (selectOption != null) {
+        setPlaceholder(selectOption.getLabel());
+      }
+    }
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);

@@ -7,6 +7,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
@@ -93,6 +94,7 @@ public class PackageDetailsListPresenter {
           // FIXME this is the wrong place to execute this kind of logic.
           for (Application affectedApplication : affectedApplications) {
             applicationService.delete(affectedApplication);
+            Audit.logDeleteUninstall(affectedApplication);
           }
 
           execute(op, false);

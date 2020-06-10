@@ -14,6 +14,7 @@ import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -99,6 +100,7 @@ public class ProxyConfigurationView extends Panel implements View {
         cleanupValues();
         try {
           managerHome.save(PackageManagerConfiguration.class);
+          Audit.logSave("Proxy settings");
           downloadManager.setProxy(finalProxyConfiguration);
           successLabel.setVisible(true);
           super.resetValues();

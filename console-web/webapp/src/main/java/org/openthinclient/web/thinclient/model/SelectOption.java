@@ -5,8 +5,6 @@ public class SelectOption {
   String label;
   String value;
 
-  public SelectOption() { }
-
   public SelectOption(String label, String value) {
     this.label = label;
     this.value = value;

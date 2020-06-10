@@ -19,7 +19,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_
 public class PropertyPasswordField<T extends OtcPasswordProperty> extends TextField implements PropertyComponent {
 
   private Binder<T> binder;
-  private T bean;
 
   public PropertyPasswordField(T bean) {
 
@@ -28,8 +27,6 @@ public class PropertyPasswordField<T extends OtcPasswordProperty> extends TextFi
     setReadOnly(bean.getConfiguration().isDisabled());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);
