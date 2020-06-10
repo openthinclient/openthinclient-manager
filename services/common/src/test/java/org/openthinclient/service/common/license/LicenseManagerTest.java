@@ -70,6 +70,7 @@ public class LicenseManagerTest {
 
     // Test
     License lic = licenseManager.getLicense();
+    assertNotNull(lic);
     assertEquals(lic.server, managerHome.getMetadata().getServerID());
     assertEquals(Integer.valueOf(42), lic.getCount());
 
