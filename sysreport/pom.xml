@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager</artifactId>
-        <version>2019.1.4</version>
+        <version>2020.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>manager-sysreport</artifactId>

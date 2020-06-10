@@ -3,7 +3,7 @@
     <parent>
         <artifactId>manager-console-web</artifactId>
         <groupId>org.openthinclient</groupId>
-        <version>2019.1.4</version>
+        <version>2020.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
