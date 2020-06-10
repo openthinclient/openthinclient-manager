@@ -275,28 +275,28 @@ public final class ClientView extends AbstractThinclientView {
     });
 
     // MAC-Address
-    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
+    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress(), null);
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
     //IP address
-    OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber());
+    OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber(), null);
     ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
     ipaddressConfiguration.disable();
     ipaddress.setConfiguration(ipaddressConfiguration);
     configuration.addProperty(ipaddress);
 
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
     locationConfig.setRequired(true);
     locationProp.setConfiguration(locationConfig);
     configuration.addProperty(locationProp);
 
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null);
     hwtypeConfig.setRequired(true);
     hwProp.setConfiguration(hwtypeConfig);
@@ -343,7 +343,14 @@ public final class ClientView extends AbstractThinclientView {
               case "description": org = client.getDescription(); break;
               default:            org = client.getValue(propertyKey); break;
             }
-            String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
+
+            String current;
+            if (bean.getValue() == null || bean.getValue().length() == 0) {
+              current = null;
+            } else {
+              current = bean.getValue();
+            }
+
             if (!StringUtils.equals(org, current)) {
               if (current != null) {
                 LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");

@@ -21,17 +21,15 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_
 public class PropertyTextField<T extends OtcTextProperty> extends TextField implements PropertyComponent {
 
   private Binder<T> binder;
-  private T bean;
 
   public PropertyTextField(T bean) {
 
     setStyleName("profileItemTextfield");
     addStyleName("key-" + bean.getKey());
     setReadOnly(bean.getConfiguration().isDisabled());
+    setPlaceholder(bean.getDefaultSchemaValue());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);
