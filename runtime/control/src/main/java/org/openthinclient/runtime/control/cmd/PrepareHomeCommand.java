@@ -93,7 +93,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
 
     @Option(name = "--db", required = false, metaVar = "TYPE", usage = "Type of the database that shall be used.")
-    public DatabaseConfiguration.DatabaseType dbType = DatabaseConfiguration.DatabaseType.H2;
+    public DatabaseConfiguration.DatabaseType dbType = DatabaseConfiguration.DatabaseType.APACHE_DERBY;
 
     @Option(name = "--db-host", required = false, metaVar = "HOST", usage = "Hostname to be used for the database connection. Only required for MySQL database connections")
     public String dbHostname = "localhost";

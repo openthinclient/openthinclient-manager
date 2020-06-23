@@ -18,9 +18,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 
@@ -49,7 +47,16 @@ public class ConfigureDatabaseStep extends AbstractStep {
       final FormLayout mainForm = new FormLayout();
 
       select = new NativeSelect<DatabaseConfiguration.DatabaseType>(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE));
-      select.setItems(DatabaseConfiguration.DatabaseType.values());
+      select.setItems(Arrays.asList(DatabaseConfiguration.DatabaseType.APACHE_DERBY, DatabaseConfiguration.DatabaseType.MYSQL));
+      select.setItemCaptionGenerator( e-> {
+        if(e == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+          return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE_APACHE_DERBY);
+        } else if(e == DatabaseConfiguration.DatabaseType.MYSQL) {
+            return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE_MYSQL);
+        } else {
+            return String.valueOf(e);
+        }
+      });
       select.setEmptySelectionAllowed(false);
 
       databaseTypeBinder = new Binder();
@@ -73,7 +80,8 @@ public class ConfigureDatabaseStep extends AbstractStep {
       contents.addComponent(this.configFormContainer);
 
       // initialize the main form
-      onDatabaseTypeChanged(systemSetupModel.getDatabaseModel().getType());
+      select.setSelectedItem(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
+      onDatabaseTypeChanged(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
 
       setContent(contents);
 
@@ -87,8 +95,6 @@ public class ConfigureDatabaseStep extends AbstractStep {
          configFormContainer.addComponent(mySQLConnectionConfigurationForm);
       } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
          configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_DERBY), ContentMode.HTML));
-      } else {
-        configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_H2), ContentMode.HTML));
       }
    }
 
@@ -108,8 +114,6 @@ public class ConfigureDatabaseStep extends AbstractStep {
           return true;
         case MYSQL:
            return validateMySQLConnection();
-        case H2:
-           return true;
       }
 
       // there are no other database types. This code should never be reached.
@@ -162,7 +166,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
          mySQLConnectionConfigurationBinder = new Binder<>();
          mySQLConnectionConfigurationBinder.setBean(this.configuration);
-         
+
          TextField hostName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname");
          mySQLConnectionConfigurationBinder.bind(hostName, DatabaseModel.MySQLConfiguration::getHostname, DatabaseModel.MySQLConfiguration::setHostname);
          addComponent(hostName);
