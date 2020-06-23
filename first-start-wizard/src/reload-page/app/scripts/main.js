@@ -1,6 +1,6 @@
 (function() {
   var ajaxCall = {
-    url: '/health',
+    url: '/actuator/health',
     type: 'GET',
     tryCount: 0,
     retryLimit: 200,
