@@ -4,6 +4,10 @@
   @include otc-wizard;
 }
 
+.otc-wizard .v-label-undef-w {
+  white-space: unset;
+}
+
 .v-panel-content-resume-panel {
     margin-left: 30px;
     margin-right: 30px;
