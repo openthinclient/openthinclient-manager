@@ -44,7 +44,6 @@
 		<apacheds.version>1.0.2</apacheds.version>
 		<levigo-utils.version>2.0.4</levigo-utils.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <apache.shiro-core.version>1.2.3</apache.shiro-core.version>
         <!--
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
@@ -215,7 +214,7 @@
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
-				<version>3.2</version>
+				<version>3.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
@@ -263,13 +262,6 @@
 				<groupId>org.apache.directory.shared</groupId>
 				<artifactId>shared-asn1</artifactId>
 				<version>0.9.5.5</version>
-			</dependency>
-
-			<!-- APACHE SHIRO -->
-			<dependency>
-				<groupId>org.apache.shiro</groupId>
-				<artifactId>shiro-core</artifactId>
-				<version>${apache.shiro-core.version}</version>
 			</dependency>
 
             <!-- SLF4J -->
