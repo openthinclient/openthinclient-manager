@@ -163,6 +163,13 @@
             <version>2.5</version>
         </dependency>
 
+        <!-- simple Wake-on-LAN -->
+        <dependency>
+            <groupId>com.jamierf</groupId>
+            <artifactId>wol</artifactId>
+            <version>0.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

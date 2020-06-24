@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.jamierf.wol.WakeOnLan;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -147,6 +148,7 @@ public final class ClientView extends AbstractThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    presenter.addPanelCaptionComponent(createWOLButton(profile));
     presenter.addPanelCaptionComponent(createVNCButton(profile));
     presenter.addPanelCaptionComponent(createLOGButton(profile));
     presenter.hideCopyButton();
@@ -212,6 +214,17 @@ public final class ClientView extends AbstractThinclientView {
         return new ArrayList<>();
       }
     };
+  }
+
+  private Component createWOLButton(Profile profile) {
+    Button button = new Button();
+    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
+    button.setIcon(VaadinIcons.POWER_OFF);
+    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    button.addStyleName(ValoTheme.BUTTON_SMALL);
+    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    button.addClickListener(ev -> wakeOnLan((Client) profile));
+    return button;
   }
 
   private Component createVNCButton(Profile profile) {
@@ -466,6 +479,18 @@ public final class ClientView extends AbstractThinclientView {
       text.setSizeFull();
       subContent.addComponent(text);
 
+    }
+  }
+
+  private void wakeOnLan(Client profile) {
+    try {
+      String macAddress = profile.getMacAddress();
+      LOGGER.info("Sending WOL packet to " + macAddress);
+      WakeOnLan.wake(macAddress);
+      Notification.show(mc.getMessage(ConsoleWebMessages.UI_PROFILE_WOL_SUCCESS));
+    } catch(Exception ex) {
+      LOGGER.error("Failed to send WOL packet", ex);
+      Notification.show(mc.getMessage(ConsoleWebMessages.UI_PROFILE_WOL_ERROR), Notification.Type.ERROR_MESSAGE);
     }
   }
 
