@@ -24,18 +24,15 @@ public class InstallationDirectoryUtil {
    */
   public static void cleanupManagerHomeDirectory(Path managerHomeDirectory) {
     Path installFile = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
-    if (Files.exists(installFile)) {
-      LOG.info("Found existing installation file {}, delete manangerHome content and restart installation.", installFile);
-      try {
-        Files.walk(managerHomeDirectory)
-            .sorted(Comparator.reverseOrder())
-            .map(Path::toFile)
-            .forEach(File::delete);
-      } catch (IOException e) {
-        LOG.error("Cannot cleanup manager-home directory '" + managerHomeDirectory.toAbsolutePath() + "' to prepare installation.", e);
-      }
+    LOG.info("Delete manager home", installFile);
+    try {
+      Files.walk(managerHomeDirectory)
+          .sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
+    } catch (IOException e) {
+      LOG.error("Cannot cleanup manager home directory '" + managerHomeDirectory.toAbsolutePath() + "' to prepare installation.", e);
     }
-
   }
 
   /**
@@ -64,6 +61,7 @@ public class InstallationDirectoryUtil {
     Path installProgress = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
     LOG.debug("Creating new installation file");
     try {
+      Files.createDirectories(managerHomeDirectory);
       Files.createFile(installProgress);
     } catch (IOException e) {
       LOG.error("Cannot create file " + installProgress, e);
