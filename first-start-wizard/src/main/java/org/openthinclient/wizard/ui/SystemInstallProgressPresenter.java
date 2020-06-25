@@ -73,19 +73,17 @@ public class SystemInstallProgressPresenter {
 
     if (installModel.getInstallSystemTask().getInstallState() == InstallState.FINISHED) {
       view.setDescription(mc.getMessage(UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_FINISHED_MESSAGE));
-      view.enableRestartButton(() -> {
-        LOG.info("\n\n==============================================\n" + " Starting\n"
-            + "==============================================\n\n");
+      LOG.info("\n\n==============================================\n" + " Starting\n"
+          + "==============================================\n\n");
 
-        // Restarting the whole application.
-        // When running using the runtime standalone this will restart the whole application and
-        // boot into the normal manager mode.
-        publisher.publishEvent(new RestartApplicationEvent(this));
+      // Restarting the whole application.
+      // When running using the runtime standalone this will restart the whole application and
+      // boot into the normal manager mode.
+      publisher.publishEvent(new RestartApplicationEvent(this));
 
-        // redirecting the user to the server restart page. This page will continously check whether the server successfully restarted.
-        // Once started, the page will forward the user to the administration frontend.
-        UI.getCurrent().getPage().setLocation("/restart/server-restart.html");
-      });
+      // redirecting the user to the server restart page. This page will continously check whether the server successfully restarted.
+      // Once started, the page will forward the user to the administration frontend.
+      UI.getCurrent().getPage().setLocation("/restart/server-restart.html");
     }
 
   }
@@ -98,8 +96,6 @@ public class SystemInstallProgressPresenter {
     void setDescription(String description);
 
     InstallItemView addItemView();
-
-    void enableRestartButton(Runnable onButtonClicked);
   }
 
   public interface InstallItemView {

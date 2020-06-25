@@ -23,7 +23,6 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
   private final List<InstallItemViewImpl> statusLabels;
   private final Label titleLabel;
   private final Label descriptionLabel;
-  private final Button restartButton;
 
   protected IMessageConveyor mc;
   
@@ -38,12 +37,6 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     this.descriptionLabel = createLargeLabel("");
     addComponent(this.descriptionLabel);
 
-    this.restartButton = new Button(mc.getMessage(UI_FIRSTSTART_INSTALL_BUTTON_RESTART));
-    this.restartButton.setStyleName(ValoTheme.BUTTON_HUGE);
-    this.restartButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-    this.restartButton.setVisible(false);
-    addComponent(this.restartButton);
-
     statusLabels = new ArrayList<>();
   }
 
@@ -57,16 +50,6 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     final Label l = new Label(label);
     l.setStyleName(ValoTheme.LABEL_LARGE);
     return l;
-  }
-
-  @Override
-  public void enableRestartButton(Runnable onButtonClicked) {
-    if (!restartButton.isVisible()) {
-
-      restartButton.setVisible(true);
-      restartButton.setEnabled(true);
-      restartButton.addClickListener((e) -> onButtonClicked.run());
-    }
   }
 
   @Override
