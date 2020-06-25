@@ -42,8 +42,7 @@ public class CheckInternetConnection extends AbstractCheck<Boolean> {
     final HttpConnectionTester connectionTester = new HttpConnectionTester(proxyConfiguration);
 
     final List<HttpConnectionTester.Result> results = Stream.of(
-            "http://archive.openthinclient.org",
-            "http://www.google.com"
+            "http://archive.openthinclient.org"
     )
             .map(URI::create)
             .map(HttpConnectionTester.Request::new)
