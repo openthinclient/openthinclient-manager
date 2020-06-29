@@ -9,13 +9,7 @@
  <body>
   <vaadin-tab-sheet responsive size-full>
 
-   <tab caption="Installed Packages" selected>
-    <vaadin-vertical-layout caption="Installed Packages" size-full margin-top margin="false">
-     <view-package-list-master-details-view size-full _id="installedPackages" :expand />
-    </vaadin-vertical-layout>
-   </tab>
-
-   <tab caption="Updateable Packages">
+   <tab caption="Updateable Packages" selected>
     <vaadin-vertical-layout caption="Updateable Packages" size-full margin-top margin="false">
      <view-package-list-master-details-view size-full _id="updateablePackages" :expand />
     </vaadin-vertical-layout>
@@ -24,6 +18,12 @@
    <tab caption="Available Packages">
     <vaadin-vertical-layout caption="Available Packages" size-full margin-top margin="false">
      <view-package-list-master-details-view size-full _id="availablePackages" :expand />
+    </vaadin-vertical-layout>
+   </tab>
+
+   <tab caption="Installed Packages">
+    <vaadin-vertical-layout caption="Installed Packages" size-full margin-top margin="false">
+     <view-package-list-master-details-view size-full _id="installedPackages" :expand />
     </vaadin-vertical-layout>
    </tab>
 
