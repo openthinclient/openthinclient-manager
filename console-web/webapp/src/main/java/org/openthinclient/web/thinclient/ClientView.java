@@ -30,6 +30,7 @@ import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
+import org.openthinclient.web.thinclient.property.OtcMacProperty;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -288,8 +289,10 @@ public final class ClientView extends AbstractThinclientView {
     });
 
     // MAC-Address
-    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress(), null);
-    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
+    OtcMacProperty macaddress = new OtcMacProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress(), null, unrecognizedClientService);
+    String mac = profile.getMacAddress();
+    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", mac);
+    macaddressConfiguration.setRequired(mac == null);
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);

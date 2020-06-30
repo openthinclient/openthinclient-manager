@@ -174,6 +174,9 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       // TODO enable svabe-button of parent
 //      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
+    } else if (property instanceof OtcMacProperty) {
+      PropertyMacSelect<OtcMacProperty> field = new PropertyMacSelect<>((OtcMacProperty) property);
+      return field;
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
   }
