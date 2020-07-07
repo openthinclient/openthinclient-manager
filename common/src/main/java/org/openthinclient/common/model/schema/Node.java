@@ -97,15 +97,28 @@ public abstract class Node implements Iterable<Node>, Serializable {
   }
 
   /**
-   * Get the child with a given name or <code>null</code> if no child with the
-   * given name exists.
+   * Get a (grand-)child for a (dotted) path or <code>null</code>.
+   *
+   * Multiple nodes with the same name and names with dots are allowed. The
+   * first (grand-)child that matches path is returned, other nodes that might
+   * also match won't be searched (it is the XMLs authors job to maintain
+   * coherent node names).
    */
-  public Node getChild(String name) {
-    for (Node child : children) {
-      if (child.getName().equals(name))
-        return child;
+  public Node getChild(String path) {
+    for(Node child : children) {
+      String name = child.getName();
+      if (path.startsWith(name)) {
+        int length = name.length();
+        if (length == path.length()) {
+          return child;
+        } else if (path.charAt(length) == '.') {
+          Node node = child.getChild(path.substring(length + 1));
+          if(node != null) {
+            return node;
+          }
+        }
+      }
     }
-
     return null;
   }
 

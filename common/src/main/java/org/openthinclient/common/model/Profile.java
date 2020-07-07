@@ -227,7 +227,7 @@ public abstract class Profile extends DirectoryObject {
 			final Set<String> set = new HashSet<String>();
 
 			for (final String propertyName : getProperties().getMap().keySet())
-				if (schema.getNodeForPath(propertyName) == null) {
+				if (schema.getChild(propertyName) == null) {
 					warnings.put(propertyName, WARNING_REMOVED_OPTION);
 					set.add(propertyName);
 				}

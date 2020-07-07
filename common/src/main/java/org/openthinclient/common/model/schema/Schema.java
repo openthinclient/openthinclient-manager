@@ -88,30 +88,7 @@ public class Schema<T extends Profile> extends Node
    * @see org.openthinclient.common.model.Profile#contains(java.lang.String)
    */
   public boolean contains(String key) {
-    return null != getNodeForPath(key);
-  }
-
-  public Node getNodeForPath(String path) {
-    Node node = this;
-    final StringTokenizer st = new StringTokenizer(path, ".");
-    String nodeName;
-    if (st.hasMoreTokens()) {
-      // accept a path starting AT the current node or BELOW it
-      nodeName = st.nextToken();
-      if (nodeName.equals(node.getName()) && st.hasMoreTokens())
-        nodeName = st.nextToken();
-
-      do {
-        node = node.getChild(nodeName);
-        if (st.hasMoreTokens())
-          nodeName = st.nextToken();
-        else
-          break;
-      } while (node != null);
-
-      return node;
-    } else
-      return null;
+    return null != getChild(key);
   }
 
   /*
@@ -135,7 +112,7 @@ public class Schema<T extends Profile> extends Node
    * boolean)
    */
   public String getValue(String key) {
-    final Node n = getNodeForPath(key);
+    final Node n = getChild(key);
     return null != n && n instanceof EntryNode
             ? ((EntryNode) n).getValue()
             : null;
