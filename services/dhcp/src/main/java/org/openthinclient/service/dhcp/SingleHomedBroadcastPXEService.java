@@ -1,5 +1,6 @@
 package org.openthinclient.service.dhcp;
 
+import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
@@ -21,7 +22,7 @@ import java.util.Enumeration;
  * proxy service is bound to the default address. Replies are sent from a fixed
  * server address which can be configured statically. If no static address is
  * configured, the first non-loopback local interface is used.
- * 
+ *
  * @author levigo
  */
 public class SingleHomedBroadcastPXEService extends BasePXEService {
@@ -31,16 +32,9 @@ public class SingleHomedBroadcastPXEService extends BasePXEService {
     super(realmService, clientService, unrecognizedClientService);
   }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openthinclient.dhcp.BasePXEService#determineServerAddress(java.net.
-	 * InetSocketAddress)
-	 */
 	@Override
 	protected InetSocketAddress determineServerAddress(
-			InetSocketAddress localAddress) {
+			InetSocketAddress localAddress, DhcpMessage message) {
 		return new InetSocketAddress(serverAddress, 67);
 	}
 
@@ -71,7 +65,7 @@ public class SingleHomedBroadcastPXEService extends BasePXEService {
 
 	/**
 	 * Determine a configured static server address.
-	 * 
+	 *
 	 * @return
 	 */
 	private InetAddress getConfiguredServerAddress() {
