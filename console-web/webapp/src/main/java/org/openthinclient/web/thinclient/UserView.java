@@ -194,7 +194,7 @@ public final class UserView extends AbstractThinclientView {
 
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
 
-    OtcPropertyGroup configuration = new OtcPropertyGroup(null);
+    OtcPropertyGroup configuration = new OtcPropertyGroup();
 
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName(), null);
@@ -284,7 +284,7 @@ public final class UserView extends AbstractThinclientView {
     ProfilePanel profilePanel = new ProfilePanel(panelCaption, profile.getClass());
     // put property-group to panel
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
-    ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
+    ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup()));
     if (userIsNew) {
       // hide, if user will be created
       ppp.hideCopyButton();

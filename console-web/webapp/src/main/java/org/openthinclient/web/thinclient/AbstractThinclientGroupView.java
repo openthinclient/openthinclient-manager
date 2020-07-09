@@ -95,7 +95,7 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
     DirectoryObjectPanelPresenter presenter = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
 
     OtcPropertyGroup propertyGroup = createMetadataPropertyGroup(directoryObject, isNew);
-    presenter.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
+    presenter.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup()));
 
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, directoryObject));
     if (isNew) {

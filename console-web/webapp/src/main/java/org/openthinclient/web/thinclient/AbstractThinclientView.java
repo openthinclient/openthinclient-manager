@@ -492,7 +492,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     ppp.hideDeleteButton();
 
     // put property-group to panel
-    ppp.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
+    ppp.setItemGroups(Arrays.asList(group, new OtcPropertyGroup()));
     ppp.onValuesWritten(profilePanel1 -> saveValues(ppp, profile));
 
     return profilePanel;

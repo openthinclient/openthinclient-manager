@@ -83,8 +83,9 @@ public class ItemGroupPanel extends VerticalLayout {
    * @param level
    */
   public void addProperty(OtcPropertyGroup propertyGroup, int level) {
-    if (propertyGroup.getLabel() != null) {
-      Label groupLabel = new Label(propertyGroup.getLabel());
+    String label = propertyGroup.getLabel();
+    if (label != null) {
+      Label groupLabel = new Label(label);
       groupLabel.setStyleName("propertyGroupLabel-" + level);
       addComponent(groupLabel);
     }

@@ -165,7 +165,6 @@ public class DirectoryObjectPanelPresenter {
     OtcPropertyGroup metaData = groups.get(0);
     ItemGroupPanel metaDataIGP = new ItemGroupPanel(metaData);
     ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(metaDataIGP);
-    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
     mdIgppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
     rows.addComponent(metaDataIGP);
 
@@ -175,7 +174,6 @@ public class DirectoryObjectPanelPresenter {
     if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
       ItemGroupPanel general = new ItemGroupPanel(root.getOtcProperties());
       ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(general);
-      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
       igppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
       rows.addComponent(general);
     }
@@ -183,7 +181,6 @@ public class DirectoryObjectPanelPresenter {
     root.getGroups().forEach(group -> {
       ItemGroupPanel view = new ItemGroupPanel(group);
       ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(view);
-      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
       igpp.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
       rows.addComponent(view);
     });

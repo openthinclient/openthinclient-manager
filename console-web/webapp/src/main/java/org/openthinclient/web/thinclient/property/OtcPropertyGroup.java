@@ -5,25 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import org.openthinclient.web.thinclient.component.ItemGroupPanel;
-import org.openthinclient.web.thinclient.component.PropertyComponent;
 
-/**
- *
- */
+import org.openthinclient.common.model.schema.Node;
+import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+
 public class OtcPropertyGroup {
 
-  private final String label;
+  private String label;
+  private String tip;
   private List<OtcProperty> otcProperties = new ArrayList<>();
   private List<OtcPropertyGroup> groups   = new ArrayList<>();
 
-  private Consumer<ItemGroupPanel> valueWrittenConsumer;
-
-  public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
+  public OtcPropertyGroup(String label, String tip) {
     this.label = label;
-    if (otcProperties != null) {
-      Arrays.asList(otcProperties).forEach(o -> this.otcProperties.add((OtcProperty) o));
-    }
+    this.tip = tip;
+  }
+
+  public OtcPropertyGroup() {
+    new OtcPropertyGroup(null, null);
   }
 
   public List<OtcProperty> getOtcProperties() {
@@ -32,6 +31,10 @@ public class OtcPropertyGroup {
 
   public String getLabel() {
     return label;
+  }
+
+  public String getTip() {
+    return tip;
   }
 
   public List<OtcPropertyGroup> getGroups() {
@@ -64,18 +67,6 @@ public class OtcPropertyGroup {
     List<OtcPropertyGroup> all = new ArrayList<>(groups);
     groups.forEach(group -> all.addAll(group.getAllOtcPropertyGroups()));
     return all;
-  }
-
-  public void onValueWritten(Consumer<ItemGroupPanel> consumer) {
-    valueWrittenConsumer = consumer;
-  }
-
-  public Consumer<ItemGroupPanel> getValueWrittenConsumer() {
-    return valueWrittenConsumer;
-  }
-
-  public void addGroup(int index, OtcPropertyGroup group) {
-      this.groups.add(index, group);
   }
 
 }

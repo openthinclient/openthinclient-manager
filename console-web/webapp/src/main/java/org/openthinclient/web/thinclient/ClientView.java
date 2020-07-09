@@ -262,7 +262,7 @@ public final class ClientView extends AbstractThinclientView {
     OtcPropertyGroup configuration = createClientMetadataPropertyGroup(profile, presenter);
 
     // put property-group to panel
-    presenter.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+    presenter.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup()));
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, p));
 
     return profilePanel;
