@@ -5,7 +5,6 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.web.thinclient.component.CollapseablePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
@@ -176,23 +175,6 @@ public class ProfilePanel extends CssLayout {
     infoLabel.removeStyleName("form_error");
     infoLabel.addStyleName("form_success");
     infoLabel.setVisible(true);
-  }
-
-  // ---
-
-
-
-  /**
-   * Collapse all other item-groups expect the calling itemGroup
-   * @param cp CollapseablePanel
-   */
-  public void handleItemGroupVisibility(CollapseablePanel cp) {
-    rows.forEach(component -> {
-      CollapseablePanel igp = (CollapseablePanel) component;
-      if (!igp.equals(cp)) {
-          igp.collapseItems();
-      }
-    });
   }
 
   /**

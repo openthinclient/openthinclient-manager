@@ -1,81 +1,41 @@
 package org.openthinclient.web.thinclient.component;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import org.apache.directory.server.dhcp.options.OptionsField;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 /**
  * Group of properties
  */
-public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel {
+public class ItemGroupPanel extends VerticalLayout {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanel.class);
-
-  private final IMessageConveyor mc;
-  private NativeButton head;
-
-  boolean itemsVisible = false;
   private Map<PropertyComponent, Component> propertyComponents = new HashMap<>();
-  /** index to start collapsing/expanding items */
-  private int itemStartIndex = 1;
 
   public ItemGroupPanel(OtcPropertyGroup propertyGroup) {
-
-    mc = new MessageConveyor(UI.getCurrent().getLocale());
-
     setMargin(false);
     setSpacing(false);
     setStyleName("itemGroupPanel");
-    head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
-    head.setStyleName("headButton");
-    head.setSizeFull();
-
-    if (propertyGroup.isDisplayHeaderLabel()) {
+    String label = propertyGroup.getLabel();
+    if(label != null) {
+      Label head = new Label(label);
+      head.setStyleName("itemGroupHeader");
+      head.setSizeFull();
       addComponent(head);
-    } else {
-      addStyleName("headButtonHidden");
-      itemStartIndex = 0;
     }
 
     // compose properties
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, 0));
     // compose sub-group-properties
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
-
-    if (propertyGroup.isCollapseOnDisplay()) {
-      collapseItems();
-    }
   }
 
   public ItemGroupPanel(List<OtcProperty> otcProperties) {
-    mc = new MessageConveyor(UI.getCurrent().getLocale());
-
     setMargin(false);
     setSpacing(false);
     setStyleName("itemGroupPanel");
-    head = new NativeButton(mc.getMessage(UI_THINCLIENT_SETTINGS));
-    head.setStyleName("headButton");
-    head.setSizeFull();
-
-    addStyleName("headButtonHidden");
-    itemStartIndex = 0;
 
     // compose only properties
     otcProperties.forEach(p -> addProperty(p, 0));
@@ -132,77 +92,26 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
   }
 
-
-  public void collapseItems() {
-    itemsVisible = false;
-    head.removeStyleName("itemsVisible");
-    int componentCount = getComponentCount();
-    for(int i=itemStartIndex; i<componentCount; i++) {
-      getComponent(i).setVisible(false);
-    }
-  }
-
-  public void expandItems() {
-    itemsVisible = true;
-    head.addStyleName("itemsVisible");
-    int componentCount = getComponentCount();
-    for(int i=itemStartIndex; i<componentCount; i++) {
-      getComponent(i).setVisible(true);
-    }
-  }
-
   /**
-   * Create form-components form property and add valueChangeListener
+   * Create form-component from property
    * @param property  OtcProperty
    * @return PropertyComponent for given property-type
    */
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcPasswordProperty) {
-      PropertyPasswordField<OtcPasswordProperty> field = new PropertyPasswordField<>((OtcPasswordProperty) property);
-      // TODO enable svabe-button of paren
-//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
-      return field;
-
+      return new PropertyPasswordField<>((OtcPasswordProperty) property);
     } else if (property instanceof OtcTextProperty) {
-      PropertyTextField<OtcTextProperty> field = new PropertyTextField<>((OtcTextProperty) property);
-      // TODO enable svabe-button of paren
-//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
-      return field;
-
+      return new PropertyTextField<>((OtcTextProperty) property);
     } else if (property instanceof OtcOptionProperty) {
-      PropertySelect<OtcOptionProperty> field = new PropertySelect<>((OtcOptionProperty) property);
-      // TODO enable svabe-button of parent
-//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
-      return field;
+      return new PropertySelect<>((OtcOptionProperty) property);
     } else if (property instanceof OtcMacProperty) {
-      PropertyMacSelect<OtcMacProperty> field = new PropertyMacSelect<>((OtcMacProperty) property);
-      return field;
+      return new PropertyMacSelect<>((OtcMacProperty) property);
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
   }
 
   public List<PropertyComponent> propertyComponents() {
     return new ArrayList<>(propertyComponents.keySet());
-  }
-
-  public boolean isItemsVisible() {
-    return itemsVisible;
-  }
-
-//  public NativeButton getSave() {
-//    return save;
-//  }
-//
-//  public NativeButton getReset() {
-//    return reset;
-//  }
-//
-//  public Label getInfoLabel() {
-//    return infoLabel;
-//  }
-
-  public NativeButton getHead() {
-    return head;
   }
 
   /**
@@ -231,9 +140,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
    * Empty all validation messages
    */
   public void emptyValidationMessages() {
-    propertyComponents.forEach((propertyComponent, component) -> {
-      component.setVisible(false);
-    });
+    propertyComponents.forEach( (propertyComponent, component) -> component.setVisible(false) );
   }
 
 }

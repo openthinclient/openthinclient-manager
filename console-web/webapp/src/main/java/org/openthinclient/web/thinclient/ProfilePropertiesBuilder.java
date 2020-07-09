@@ -141,7 +141,7 @@ public class ProfilePropertiesBuilder {
                                               ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
-        OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
+        OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabelOrNull());
         node.getChildren().forEach(n -> extractChildren(n, group1, profile));
         group.addGroup(group1);
       }
@@ -151,7 +151,6 @@ public class ProfilePropertiesBuilder {
   public OtcPropertyGroup createDirectoryObjectMetaDataGroup(DirectoryObject directoryObject) {
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
-    group.setDisplayHeaderLabel(false);
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", directoryObject.getName(), directoryObject.getName(), null);
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));

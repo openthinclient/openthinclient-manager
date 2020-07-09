@@ -220,7 +220,7 @@ public abstract class Node implements Iterable<Node>, Serializable {
     return labels;
   }
 
-  public String getLabel() {
+  public String getLabelOrNull() {
     for (Label label : labels) {
       if (label.getLang().equals(Locale.getDefault().getLanguage())) {
         String labelText = label.getLabel();
@@ -229,7 +229,12 @@ public abstract class Node implements Iterable<Node>, Serializable {
         }
       }
     }
-    return name;
+    return null;
+  }
+
+  public String getLabel() {
+    String label = getLabelOrNull();
+    return label == null ? name : label;
   }
 
   public List<Label> getTips() {

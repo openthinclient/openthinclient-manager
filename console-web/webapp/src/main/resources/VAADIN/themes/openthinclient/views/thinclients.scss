@@ -356,16 +356,10 @@ $ok-button-color: #2db200;
           margin-bottom: 4px;
         }
 
-        .headButton {
+        .itemGroupHeader {
+          padding: 0 8px;
           color: #000;
           font-weight: bold;
-          background-color: white;
-          border: 0;
-          width: 100%;
-
-          &.itemsVisible {
-            font-weight: bold;
-          }
         }
 
         .v-slot-profileItemTextfield {

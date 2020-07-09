@@ -195,7 +195,6 @@ public final class UserView extends AbstractThinclientView {
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(null);
-    configuration.setDisplayHeaderLabel(false);
 
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName(), null);

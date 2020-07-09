@@ -38,7 +38,6 @@ public class ItemGroupPanelPresenter {
 
 //    view.getSave().addClickListener(this::save);
 //    view.getReset().addClickListener(this::reset);
-    view.getHead().addClickListener(this::handleItemVisibility);
   }
 
   // Click listeners for the buttons
@@ -87,16 +86,6 @@ public class ItemGroupPanelPresenter {
       bean.getConfiguration().setValue(bean.getInitialValue());
       propertyComponent.getBinder().readBean(bean);
     });
-  }
-
-  public void handleItemVisibility(Button.ClickEvent clickEvent) {
-    // acually: never collapse items
-//    if (view.isItemsVisible()) {
-//      view.collapseItems();
-//    } else {
-//      view.expandItems();
-//      profilePanel.handleItemGroupVisibility(view);
-//    }
   }
 
   public void setValuesWrittenConsumer(Consumer<ItemGroupPanel> consumer) {

@@ -19,9 +19,6 @@ public class OtcPropertyGroup {
 
   private Consumer<ItemGroupPanel> valueWrittenConsumer;
 
-  private boolean displayHeaderLabel = true;
-  private boolean collapseOnDisplay = false;
-
   public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
     this.label = label;
     if (otcProperties != null) {
@@ -79,30 +76,6 @@ public class OtcPropertyGroup {
 
   public void addGroup(int index, OtcPropertyGroup group) {
       this.groups.add(index, group);
-  }
-
-  public boolean isCollapseOnDisplay() {
-    return collapseOnDisplay;
-  }
-
-  public void setCollapseOnDisplay(boolean collapseOnDisplay) {
-    this.collapseOnDisplay = collapseOnDisplay;
-  }
-
-  /**
-   * Dislay the clickable (expand/collapse) header-label (i.e. 'Settings') of a property-group, default is true
-   * @return displayHeaderLabel
-   */
-  public boolean isDisplayHeaderLabel() {
-    return displayHeaderLabel;
-  }
-
-  /**
-   * Dislay the clickable (expand/collapse) header-label (i.e. 'Settings') of a property-group or not
-   * @param displayHeaderLabel default is true
-   */
-  public void setDisplayHeaderLabel(boolean displayHeaderLabel) {
-    this.displayHeaderLabel = displayHeaderLabel;
   }
 
 }

@@ -30,7 +30,6 @@ public class ReferencePanelPresenter {
     this.view = view;
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
-//    view.getHead().addClickListener(this::handleItemVisibility);
   }
 
   /**
