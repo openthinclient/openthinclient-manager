@@ -1,7 +1,5 @@
 package org.openthinclient.web.thinclient;
 
-import java.io.InputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,13 +10,13 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.*;
-import org.openthinclient.common.model.schema.ChoiceNode.Option;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.property.*;
+import org.openthinclient.web.thinclient.util.KBArticleLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,27 +28,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
-
-  private static String KBURLPrefix = getKBURLPrefix();
-  private static String getKBURLPrefix() {
-    java.util.Properties props = new java.util.Properties();
-    try {
-      InputStream in = ClassLoader.getSystemResourceAsStream("application.properties");
-      props.load(in);
-      in.close();
-    } catch(IOException ex) {
-      LOGGER.error("Could not read application properties");
-      return null;
-    }
-    String version = props.getProperty("application.version", null);
-    if(version == null) {
-      LOGGER.error("Could not read application version");
-      return null;
-    }
-    return "https://wiki.openthinclient.org/display/_PK/OMD"
-                + version.replaceAll("(\\d+)\\.(\\d+).*","$1$2")
-                + "/";
-  }
 
   IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -189,24 +166,14 @@ public class ProfilePropertiesBuilder {
   }
 
   private String prepareTip(String tip, String kbArticle) {
-    if(KBURLPrefix == null) {
+    String kbArticleLink = KBArticleLink.getLink(kbArticle);
+    if (tip == null) {
+      return kbArticleLink != null ? kbArticleLink : null;
+    } else if (kbArticleLink == null) {
       return tip;
-    }
-    if(tip == null) {
-      if(kbArticle == null) {
-        return null;
-      }
-      tip = "";
     } else {
-      tip = "<div>"+tip+"</div>";
+      return tip + kbArticleLink;
     }
-    if(kbArticle != null) {
-      tip = String.format("%s<a href=\"%s%s%s\" class=\"kblink\" target=\"_blank\">%s</a>",
-          tip, KBURLPrefix, kbArticle,
-          UI.getCurrent().getLocale().getLanguage().equals("de")? "" : "#googtrans(de|en)",
-          mc.getMessage(UI_PROFILE_TIP_LINK));
-    }
-    return tip;
   }
 
   /**
