@@ -61,10 +61,6 @@ public class DirectoryObjectPanelPresenter {
     restButtonRegistration = view.getResetButton().addClickListener(this::reset);
   }
 
-  public void expandMetaData() {
-//    view.getMetaDataItemGroupPanel().expandItems();
-  }
-
   public void handleDeleteAction(Button.ClickEvent event) {
 
     VerticalLayout content = new VerticalLayout();
@@ -185,11 +181,6 @@ public class DirectoryObjectPanelPresenter {
       rows.addComponent(view);
     });
 
-  }
-
-  public void setPanelMetaInformation(List<Component> components) {
-    view.setPanelMetaInformation(components);
-    view.showMetaInformation();
   }
 
   public void hideCopyButton() {

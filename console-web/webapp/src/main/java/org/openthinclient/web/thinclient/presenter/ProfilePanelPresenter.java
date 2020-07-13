@@ -53,9 +53,6 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       if (profile instanceof Client) {
         Client client = (Client) profile;
         Client copyClient = (Client) copy;
-//        copyClient.setHardwareType(client.getHardwareType());
-//        copyClient.setLocation(client.getValue("location"));
-//        copyClient.setMacAddress(client.getValue("macaddress"));
         copyClient.setClientGroups(client.getClientGroups());
         copyClient.setApplicationGroups(client.getApplicationGroups());
         copyClient.setApplications(client.getApplications());

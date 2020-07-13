@@ -487,7 +487,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     // show metadata properties, default is hidden
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
-    ppp.expandMetaData();
     ppp.hideCopyButton();
     ppp.hideDeleteButton();
 
@@ -527,19 +526,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
         }
       });
     });
-  }
-
-  /**
-   * Creates a list with HorizontalLayout component which contains only a description label of profile
-   * @param directoryObject DirectoryObject
-   * @return List<Component>
-   */
-  protected List<Component> createDefaultMetaInformationComponents(DirectoryObject directoryObject) {
-    List<Component> information = new ArrayList<>();
-    HorizontalLayout desc = new HorizontalLayout();
-    desc.addComponent(new Label(directoryObject.getDescription()));
-    information.add(desc);
-    return information;
   }
 
   // Overview panel setup

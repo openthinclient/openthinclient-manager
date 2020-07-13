@@ -123,9 +123,6 @@ public final class PrinterView extends AbstractThinclientView {
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-    // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-
     // attach save-action
 //    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel

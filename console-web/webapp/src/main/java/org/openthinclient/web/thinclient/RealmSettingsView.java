@@ -94,9 +94,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
     presenter.hideCopyButton();
     presenter.hideDeleteButton();
 
-    // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-
     // remove name ("RealmConfiguration") - it's an internal value that should not be displayed
     otcPropertyGroups.get(0).removeProperty("name");
     // remove type
