@@ -24,9 +24,9 @@ public class ItemGroupPanel extends VerticalLayout {
       head.addComponents(new Label(propertyGroup.getLabel()));
       if (propertyGroup.getTip() != null) {
         Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-        button.addStyleNames("info-button", "borderless");
+        button.addStyleNames("context-info-button", "borderless");
         Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
-        info.setStyleName("propertyInformationLabel");
+        info.setStyleName("context-info-label");
         head.addComponents(button, info);
       }
       head.setStyleName("itemGroupHeader");
@@ -67,10 +67,10 @@ public class ItemGroupPanel extends VerticalLayout {
     // info
     if (property.getTip() != null) {
       Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-      showSettingInfoButton.addStyleNames("info-button", "borderless");
+      showSettingInfoButton.addStyleNames("context-info-button", "borderless");
 
       Label currentSettingInfo = new Label(property.getTip(), ContentMode.HTML);
-      currentSettingInfo.setStyleName("propertyInformationLabel");
+      currentSettingInfo.setStyleName("context-info-label");
       proprow.addComponents(showSettingInfoButton, currentSettingInfo);
     }
 
@@ -94,9 +94,9 @@ public class ItemGroupPanel extends VerticalLayout {
       row.addComponents(new Label(propertyGroup.getLabel()));
       if (propertyGroup.getTip() != null) {
         Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-        button.addStyleNames("info-button", "borderless");
+        button.addStyleNames("context-info-button", "borderless");
         Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
-        info.setStyleName("propertyInformationLabel");
+        info.setStyleName("context-info-label");
         row.addComponents(button, info);
       }
       row.addStyleNames("propertyGroupLabel", "propertyGroupLabel-" + level);

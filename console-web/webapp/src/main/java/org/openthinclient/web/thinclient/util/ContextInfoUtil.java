@@ -11,9 +11,9 @@ import java.io.InputStream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_TIP_LINK;
 
-public class KBArticleLink {
+public class ContextInfoUtil {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(KBArticleLink.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContextInfoUtil.class);
 
 	private static IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 	private static String KBURLPrefix = getKBURLPrefix();
@@ -48,4 +48,14 @@ public class KBArticleLink {
 		}
 	}
 
+	public static String prepareTip(String tip, String kbArticle) {
+		String kbArticleLink = getLink(kbArticle);
+		if (tip == null) {
+			return kbArticleLink != null ? kbArticleLink : null;
+		} else if (kbArticleLink == null) {
+			return tip;
+		} else {
+			return tip + kbArticleLink;
+		}
+	}
 }

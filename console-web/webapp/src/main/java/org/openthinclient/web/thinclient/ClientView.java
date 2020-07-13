@@ -234,7 +234,6 @@ public final class ClientView extends AbstractThinclientView {
     button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
-//    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
     return button;
   }

@@ -4,8 +4,11 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.util.ContextInfoUtil;
+
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME;
@@ -22,6 +25,8 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
   public ProfilePanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, Profile profile) {
 
     super(thinclientView, view, profile);
+    Schema schema = profile.getSchema(profile.getRealm());
+    view.setContextInfo(ContextInfoUtil.prepareTip(schema.getTip(), schema.getKBArticle()));
     this.profile = profile;
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());

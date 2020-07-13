@@ -3,12 +3,13 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -17,13 +18,14 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
  */
 public class ProfilePanel extends CssLayout {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
-
   private VerticalLayout rows;
 
   private CssLayout panelCaption;
+  private AbstractLayout panelButtons;
   private Button copyAction;
   private Button deleteProfileAction;
+  private Button contextInfoButton;
+  private Label contextInfoLabel;
 
   IMessageConveyor mc;
 
@@ -36,26 +38,27 @@ public class ProfilePanel extends CssLayout {
 
     panelCaption = new CssLayout();
     panelCaption.addStyleName("settings-caption");
+
     Label label = new Label(name);
     panelCaption.addComponent(label);
 
-    copyAction = new Button();
-    copyAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_COPY));
-    copyAction.setIcon(VaadinIcons.COPY_O);
-    copyAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    copyAction.addStyleName(ValoTheme.BUTTON_SMALL);
-    copyAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    panelCaption.addComponent(copyAction);
+    panelButtons = new CssLayout();
+    panelButtons.addStyleName("panelButtons");
+    panelCaption.addComponent(panelButtons);
 
-    deleteProfileAction = new Button();
-    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
-    deleteProfileAction.setIcon(VaadinIcons.TRASH);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    panelCaption.addComponent(deleteProfileAction);
+    copyAction = addPanelButton(VaadinIcons.COPY_O, UI_PROFILE_PANEL_BUTTON_ALT_TEXT_COPY);
+
+    deleteProfileAction = addPanelButton(VaadinIcons.TRASH, UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE);
+
+    contextInfoButton = addPanelButton(VaadinIcons.INFO_CIRCLE_O);
+    contextInfoButton.addStyleName("context-info-button");
+    contextInfoButton.setVisible(false);
+
+    contextInfoLabel = new Label(null, ContentMode.HTML);
+    contextInfoLabel.addStyleName("context-info-label");
+    panelCaption.addComponent(contextInfoLabel);
 
     addComponent(panelCaption);
-
 
     addComponent(rows = new VerticalLayout());
     rows.setMargin(false);
@@ -65,11 +68,25 @@ public class ProfilePanel extends CssLayout {
     addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
 
     addComponent(createActionsBar());
+  }
 
+  public Button addPanelButton(Resource icon) {
+    return addPanelButton(icon, null);
+  }
+
+  public Button addPanelButton(Resource icon, ConsoleWebMessages description) {
+    Button button = new Button();
+    if(description != null) {
+      button.setDescription(mc.getMessage(description));
+    }
+    button.setIcon(icon);
+    button.addStyleNames(ValoTheme.BUTTON_BORDERLESS_COLORED, ValoTheme.BUTTON_ICON_ONLY);
+    panelCaption.addComponent(button);
+    return button;
   }
 
   public void addPanelCaptionComponent(Component component) {
-    panelCaption.addComponent(component, panelCaption.getComponentCount() - 2);
+    panelButtons.addComponent(component);
   }
 
   private Label infoLabel;
@@ -115,6 +132,11 @@ public class ProfilePanel extends CssLayout {
     infoLabel.removeStyleName("form_error");
     infoLabel.addStyleName("form_success");
     infoLabel.setVisible(true);
+  }
+
+  public void setContextInfo(String tip) {
+    contextInfoLabel.setValue(tip);
+    contextInfoButton.setVisible(tip != null);
   }
 
   public Button getCopyAction() {

@@ -16,7 +16,7 @@ import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.property.*;
-import org.openthinclient.web.thinclient.util.KBArticleLink;
+import org.openthinclient.web.thinclient.util.ContextInfoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +101,7 @@ public class ProfilePropertiesBuilder {
     if (node instanceof ChoiceNode) {
         group.addProperty(new OtcOptionProperty(
                 node.getLabel(),
-                prepareTip(node.getTip(), node.getKBArticle()),
+                ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()),
                 node.getKey(),
                 currentValue,
                 ((ChoiceNode) node).getValue(),
@@ -110,15 +110,15 @@ public class ProfilePropertiesBuilder {
                         .collect(Collectors.toList())
         ));
       } else if (node instanceof PasswordNode) {
-         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
+        group.addProperty(new OtcTextProperty(node.getLabel(), ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               currentValue,
                                               ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
-        OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabelOrNull(), prepareTip(node.getTip(), node.getKBArticle()));
+        OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabelOrNull(), ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()));
         node.getChildren().forEach(n -> extractChildren(n, group1, profile));
         group.addGroup(group1);
       }
@@ -163,17 +163,6 @@ public class ProfilePropertiesBuilder {
     group.addProperty(optionProperty);
 
     return group;
-  }
-
-  private String prepareTip(String tip, String kbArticle) {
-    String kbArticleLink = KBArticleLink.getLink(kbArticle);
-    if (tip == null) {
-      return kbArticleLink != null ? kbArticleLink : null;
-    } else if (kbArticleLink == null) {
-      return tip;
-    } else {
-      return tip + kbArticleLink;
-    }
   }
 
   /**

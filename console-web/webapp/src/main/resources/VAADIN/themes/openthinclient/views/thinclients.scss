@@ -97,6 +97,7 @@ $ok-button-color: #2db200;
 
     .settings-caption,
     .references-caption > * {
+      position: relative;
       display: flex;
       min-height: 36px;
       padding: 0 1ch;
@@ -107,8 +108,12 @@ $ok-button-color: #2db200;
       line-height: 1.33;
       font-size: $v-font-size-headline;
 
-      :first-child {
+      & > :first-child {
         flex: 1;
+      }
+
+      .panelButtons {
+        display: contents;
       }
 
       .v-button-borderless-colored {
@@ -120,6 +125,75 @@ $ok-button-color: #2db200;
       display: flex;
       flex-flow: column nowrap;
       height: 100%;
+
+      .context-info-button {
+        width: auto;
+        padding-left: 1ch;
+        color: silver;
+        font-size: 14px;
+
+        &:hover {
+          color: $info-popup-color;
+        }
+      }
+
+      .context-info-label {
+        visibility: hidden;
+        position: absolute;
+        top: calc(50% - 1em - 2px);
+        right: 3px;
+        z-index: 1;
+        min-width: 25ch;
+        max-width: 45ch;
+        height: auto;
+        padding: .33em 35px .33em 20px;
+        font-size: 14px;
+        line-height: 1.5;
+        font-weight: 400;
+        background: $info-popup-color;
+        color: #fff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+
+        &::before {
+          content: "\e71c";
+          font-family: Vaadin-Icons;
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: calc(100% - .33em);
+          padding: 0.33em 5px 0;
+          background: #0064a2;
+        }
+        .kblink {
+          display: inline-block;
+          &:hover {
+            text-decoration: none;
+          }
+          &::before {
+            content: "\e7de";
+            font-family: Vaadin-Icons;
+            margin-right: 1ch;
+          }
+          &:not(:last-child) {
+            marign-top: .5ex;
+          }
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+        }
+      }
+
+      .settings-caption .context-info-label {
+        right: 7px;
+      }
+
+      // info toggle "logic"
+      .context-info-button:hover + .context-info-label,
+      .context-info-label:hover {
+        visibility: visible;
+      }
 
       .panelRows {
         flex: 1;
@@ -135,67 +209,6 @@ $ok-button-color: #2db200;
         // remove required and error markers
         .v-caption {
           display: none;
-        }
-
-        // info button
-        .info-button {
-          display: flex;
-          justify-content: center;
-          color: silver;
-
-          &:hover {
-            color: $info-popup-color;
-          }
-        }
-
-        // info popup
-        .propertyInformationLabel {
-          visibility: hidden;
-          position: absolute;
-          top: -.33em;
-          right: 3px;
-          z-index: 1;
-          max-width: 45ch;
-          height: auto;
-          padding: .33em 35px .33em 20px;
-          line-height: 1.5;
-          font-weight: 400;
-          background: $info-popup-color;
-          color: #fff;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-
-          &::before {
-            content: "\e71c";
-            font-family: Vaadin-Icons;
-            position: absolute;
-            top: 0;
-            right: 0;
-            height: calc(100% - .33em);
-            padding: 0.33em 5px 0;
-            background: #0064a2;
-          }
-          .kblink {
-            display: inline-block;
-            &::before {
-              content: "\e7de";
-              font-family: Vaadin-Icons;
-              margin-right: 1ch;
-            }
-            &:not(:last-child) {
-              marign-top: .5ex;
-            }
-          }
-
-          * {
-            margin: 0;
-            padding: 0;
-          }
-        }
-
-        // info toggle "logic"
-        .info-button:hover + .propertyInformationLabel,
-        .propertyInformationLabel:hover {
-          visibility: visible;
         }
       }
 
