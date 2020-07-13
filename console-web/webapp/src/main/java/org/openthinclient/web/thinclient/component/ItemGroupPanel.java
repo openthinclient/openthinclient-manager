@@ -18,11 +18,18 @@ public class ItemGroupPanel extends VerticalLayout {
     setMargin(false);
     setSpacing(false);
     setStyleName("itemGroupPanel");
-    String label = propertyGroup.getLabel();
-    if(label != null) {
-      Label head = new Label(label);
+
+    if (propertyGroup.getLabel() != null) {
+      AbstractLayout head = new CssLayout();
+      head.addComponents(new Label(propertyGroup.getLabel()));
+      if (propertyGroup.getTip() != null) {
+        Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
+        button.addStyleNames("info-button", "borderless");
+        Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
+        info.setStyleName("propertyInformationLabel");
+        head.addComponents(button, info);
+      }
       head.setStyleName("itemGroupHeader");
-      head.setSizeFull();
       addComponent(head);
     }
 
@@ -47,9 +54,8 @@ public class ItemGroupPanel extends VerticalLayout {
    * @param level
    */
   public void addProperty(OtcProperty property, int level) {
-    HorizontalLayout proprow = new HorizontalLayout();
-    proprow.setSpacing(false);
-    proprow.setStyleName("property-" + level);
+    Layout proprow = new CssLayout();
+    proprow.addStyleNames("property", "property-" + level);
 
     // label and property-component
     Label propertyLabel = new Label(property.getLabel());
@@ -61,7 +67,7 @@ public class ItemGroupPanel extends VerticalLayout {
     // info
     if (property.getTip() != null) {
       Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-      showSettingInfoButton.setStyleName("borderless-colored");
+      showSettingInfoButton.addStyleNames("info-button", "borderless");
 
       Label currentSettingInfo = new Label(property.getTip(), ContentMode.HTML);
       currentSettingInfo.setStyleName("propertyInformationLabel");
@@ -83,11 +89,18 @@ public class ItemGroupPanel extends VerticalLayout {
    * @param level
    */
   public void addProperty(OtcPropertyGroup propertyGroup, int level) {
-    String label = propertyGroup.getLabel();
-    if (label != null) {
-      Label groupLabel = new Label(label);
-      groupLabel.setStyleName("propertyGroupLabel-" + level);
-      addComponent(groupLabel);
+    if (propertyGroup.getLabel() != null) {
+      AbstractLayout row = new CssLayout();
+      row.addComponents(new Label(propertyGroup.getLabel()));
+      if (propertyGroup.getTip() != null) {
+        Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
+        button.addStyleNames("info-button", "borderless");
+        Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
+        info.setStyleName("propertyInformationLabel");
+        row.addComponents(button, info);
+      }
+      row.addStyleNames("propertyGroupLabel", "propertyGroupLabel-" + level);
+      addComponent(row);
     }
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
