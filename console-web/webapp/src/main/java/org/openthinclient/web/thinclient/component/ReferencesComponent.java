@@ -21,8 +21,7 @@ public class ReferencesComponent extends CssLayout {
     multiSelectPopupBtn = new Button();
     multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
     multiSelectPopupBtn.setIcon(VaadinIcons.PLUS_CIRCLE_O);
-    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 
     CssLayout hl = new CssLayout();
     hl.addStyleName("referenceComponentCaption");

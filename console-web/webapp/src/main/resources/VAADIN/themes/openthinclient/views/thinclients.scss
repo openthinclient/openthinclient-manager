@@ -385,20 +385,20 @@ $ok-button-color: #2db200;
         width: 100%;
         height: 100%;
         overflow-y: auto;
-        padding-left: 1ch;
+        padding: 0 1ch;
         margin-bottom: 1em;
 
         .referenceComponent {
           display: block;
           border-bottom: 1px solid var(--section-color);
 
-          .v-button-multiSelectPopupButton,
-          .v-button-referenceItemIconButton {
+          .multiSelectPopupButton,
+          .referenceItemIconButton {
             height: auto;
           }
 
-          .v-button-multiSelectPopupButton:not(:hover),
-          .v-button-referenceItemIconButton:not(:hover) {
+          .multiSelectPopupButton:not(:hover),
+          .referenceItemIconButton:not(:hover) {
             border-color: transparent;
             background: none;
           }
@@ -408,42 +408,68 @@ $ok-button-color: #2db200;
             justify-content: space-between;
 
             .referenceLabel {
+              width: 100%;
+              padding-right: 15px;
               font-weight: bold;
             }
-            .v-button-multiSelectPopupButton {
+            .multiSelectPopupButton {
+              padding: 0;
               color: #00b400;
+              filter: saturate(0) opacity(.2);
+              transition: filter .25s ease-in-out;
+            }
+            .referenceLabel:hover + .multiSelectPopupButton {
+              filter: saturate(1) opacity(.5);
+            }
+            .multiSelectPopupButton:hover {
+              filter: saturate(1) opacity(1);
             }
           }
 
           .referenceLine {
             display: block;
-            padding-left: 3ch;
 
             .referenceItem {
-              display: flex;
-              justify-content: space-between;
+              display: grid;
+              grid-template-columns: 1fr auto;
+              justify-items: start;
 
-              .v-label {
-                flex: 1;
+              .referenceItemLink {
+                width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
-              }
-
-              .v-button-referenceItemIconButton {
-                color: #d1001a;
-              }
-
-              .v-button-referenceItemLink {
+                text-align: left;
                 text-decoration: none;
                 color: #000;
+              }
+              .referenceItemLink:hover {
+                text-decoration: underline;
+              }
+              .referenceItemIconButton {
+                padding: 0;
+                color: #d1001a;
+                filter: saturate(0) opacity(.2);
+                transition: filter .25s ease-in-out;
+              }
+              .referenceItemLink:hover + .referenceItemIconButton {
+                filter: saturate(1) opacity(.5);
+              }
+
+              .referenceItemIconButton:hover {
+                filter: saturate(1) opacity(1);
+              }
+            }
+
+            &.subline-content {
+              padding-left: 1ch;
+
+              .v-button {
+                font-weight: 300;
               }
             }
           }
           &.has-subline-content .referenceLine:not(.subline-content) .v-label {
             font-weight: bolder;
-          }
-          .referenceLine.subline-content {
-            padding-left: 6ch;
           }
         }
       }
