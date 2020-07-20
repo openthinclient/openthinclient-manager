@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager</artifactId>
-		<version>2020.1-SNAPSHOT</version>
+		<version>2020.1-BETA</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

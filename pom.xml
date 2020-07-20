@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<name>openthinclient.org Manager</name>
-	<version>2020.1-SNAPSHOT</version>
+	<version>2020.1-BETA</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
