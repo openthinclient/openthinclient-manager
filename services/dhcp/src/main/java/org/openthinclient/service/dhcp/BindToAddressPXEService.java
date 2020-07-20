@@ -32,18 +32,6 @@ public class BindToAddressPXEService extends BasePXEService {
 		super(realmService, clientService, unrecognizedClientService);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openthinclient.dhcp.BasePXEService#determineServerAddress(java.net.InetSocketAddress)
-	 */
-	@Override
-	protected InetSocketAddress determineServerAddress(
-			InetSocketAddress localAddress) {
-		// since we bound individually, we can use the local address.
-		return localAddress;
-	}
-
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException {

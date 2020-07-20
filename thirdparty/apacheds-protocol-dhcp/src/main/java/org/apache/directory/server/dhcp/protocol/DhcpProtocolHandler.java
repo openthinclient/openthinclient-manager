@@ -20,6 +20,7 @@ package org.apache.directory.server.dhcp.protocol;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.service.DhcpService;
@@ -40,11 +41,6 @@ import org.slf4j.LoggerFactory;
 public class DhcpProtocolHandler implements IoHandler {
 	private static final Logger logger = LoggerFactory
 			.getLogger(DhcpProtocolHandler.class);
-
-	/**
-	 * Default DHCP client port
-	 */
-	public static final int CLIENT_PORT = 68;
 
 	/**
 	 * Default DHCP server port
@@ -99,12 +95,15 @@ public class DhcpProtocolHandler implements IoHandler {
 
 		final DhcpMessage request = (DhcpMessage) message;
 
+		final InetSocketAddress remoteAddress = (InetSocketAddress) session.getRemoteAddress();
+
 		final DhcpMessage reply = dhcpService.getReplyFor(
 				(InetSocketAddress) session.getServiceAddress(),
-				(InetSocketAddress) session.getRemoteAddress(), request);
+				remoteAddress, request);
 
 		if (null != reply) {
-			final InetSocketAddress isa = determineMessageDestination(request, reply);
+			final InetSocketAddress isa = determineMessageDestination(
+					request, reply, remoteAddress.getPort());
 			((BroadcastIoSession) session).write(reply, isa);
 		}
 	}
@@ -128,7 +127,7 @@ public class DhcpProtocolHandler implements IoHandler {
 	 * @return
 	 */
 	private InetSocketAddress determineMessageDestination(DhcpMessage request,
-			DhcpMessage reply) {
+			DhcpMessage reply, int requestSourcePort) {
 
 		final MessageType mt = reply.getMessageType();
 		if (!isNullAddress(request.getRelayAgentAddress()))
@@ -141,7 +140,7 @@ public class DhcpProtocolHandler implements IoHandler {
 		if (!isNullAddress(request.getCurrentClientAddress()))
 			// have a current address? unicast to it.
 			return new InetSocketAddress(request.getCurrentClientAddress(),
-					CLIENT_PORT);
+					ArchType.isUEFI(request)? requestSourcePort : 68);
 		else
 			return new InetSocketAddress("255.255.255.255", 68);
 	}
