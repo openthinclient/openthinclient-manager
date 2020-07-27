@@ -1,6 +1,7 @@
 @import "passwordfield";
 @import "../valo/valo";
 @import "common";
+@import "combobox";
 @import "mainmenu";
 @import "header";
 @import "views/thinclients";
@@ -94,6 +95,7 @@ b {
   }
   @include valo;
   @include common;
+  @include combobox;
   @include mainmenu;
   @include header;
   @include thinclients-view;

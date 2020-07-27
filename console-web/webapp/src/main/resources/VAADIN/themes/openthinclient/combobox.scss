@@ -1,0 +1,69 @@
+@mixin combobox {
+  .v-filterselect .v-filterselect-button {
+    border-left: none;
+  }
+
+  .v-filterselect-suggestpopup:not(span) {
+    box-shadow: 0 1px 4px 1px #e1e5e8;
+
+    td:not(.v-filterselect-item-value)::before {
+      content: "Default";
+      font-weight: 300;
+      color: silver;
+    }
+
+    td.gwt-MenuItem-selected:not(.v-filterselect-item-value)::before {
+      color: white;
+    }
+
+    div.v-filterselect-prevpage,
+    div.v-filterselect-nextpage {
+      // undo defaut style
+      opacity: 1;
+      transform: scaleX(1);
+
+      position: static;
+      width: 100%;
+      height: 1.33em;
+      line-height: 1.33;
+      background: white;
+      font-weight: bold;
+      color: gray;
+
+      &:hover {
+        color: black;
+        background: #f0f4f7;
+      }
+    }
+
+    div.v-filterselect-prevpage::before,
+    div.v-filterselect-nextpage::before {
+      font-family: Vaadin-Icons;
+      text-shadow: 0 0 1px;
+    }
+
+    div.v-filterselect-prevpage {
+      border-bottom: 1px solid #e1e5e8;
+      &::before {
+        content: "\e6ed";
+      }
+    }
+
+    div.v-filterselect-nextpage {
+      border-top: 1px solid #e1e5e8;;
+      &::before {
+        content: "\e6ea";
+      }
+    }
+
+    // undo defaut style
+    div.v-filterselect-suggestmenu {
+      box-shadow: none;
+      border-radius: 0;
+    }
+
+    .v-filterselect-status {
+      display: none;
+    }
+  }
+}
