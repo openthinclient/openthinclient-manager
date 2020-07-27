@@ -145,6 +145,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
     showMainScreen();
 
+    JavaScript.getCurrent().execute("installGridTooltips()");
     JavaScript.getCurrent().execute("installInfoButtonFunction()");
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
