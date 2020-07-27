@@ -196,6 +196,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     showMainScreen();
 
     JavaScript.getCurrent().execute("installGridTooltips()");
+    JavaScript.getCurrent().execute("installInfoButtonFunction()");
 
     buildSearchTextField();
     createUserProfileWindow();

@@ -145,6 +145,8 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
     showMainScreen();
 
+    JavaScript.getCurrent().execute("installInfoButtonFunction()");
+
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
 
     userProfileWindow = new UserProfileSubWindow(userService);

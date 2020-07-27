@@ -22,13 +22,7 @@ public class ItemGroupPanel extends VerticalLayout {
     if (propertyGroup.getLabel() != null) {
       AbstractLayout head = new CssLayout();
       head.addComponents(new Label(propertyGroup.getLabel()));
-      if (propertyGroup.getTip() != null) {
-        Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-        button.addStyleNames("context-info-button", "borderless");
-        Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
-        info.setStyleName("context-info-label");
-        head.addComponents(button, info);
-      }
+      addContextInfoComponents(head, propertyGroup.getTip());
       head.setStyleName("itemGroupHeader");
       addComponent(head);
     }
@@ -65,14 +59,7 @@ public class ItemGroupPanel extends VerticalLayout {
     proprow.addComponent(pc);
 
     // info
-    if (property.getTip() != null) {
-      Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-      showSettingInfoButton.addStyleNames("context-info-button", "borderless");
-
-      Label currentSettingInfo = new Label(property.getTip(), ContentMode.HTML);
-      currentSettingInfo.setStyleName("context-info-label");
-      proprow.addComponents(showSettingInfoButton, currentSettingInfo);
-    }
+    addContextInfoComponents(proprow, property.getTip());
 
     // and validation
     Label validationLabel = new Label(property.getLabel());
@@ -92,18 +79,21 @@ public class ItemGroupPanel extends VerticalLayout {
     if (propertyGroup.getLabel() != null) {
       AbstractLayout row = new CssLayout();
       row.addComponents(new Label(propertyGroup.getLabel()));
-      if (propertyGroup.getTip() != null) {
-        Button button = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-        button.addStyleNames("context-info-button", "borderless");
-        Label info = new Label(propertyGroup.getTip(), ContentMode.HTML);
-        info.setStyleName("context-info-label");
-        row.addComponents(button, info);
-      }
+      addContextInfoComponents(row, propertyGroup.getTip());
       row.addStyleNames("propertyGroupLabel", "propertyGroupLabel-" + level);
       addComponent(row);
     }
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
+  }
+
+  private void addContextInfoComponents(Layout layout, String tip) {
+    if(tip == null) return;
+    Button button = new Button();
+    button.addStyleNames("context-info-button", "borderless");
+    Label info = new Label(tip, ContentMode.HTML);
+    info.setStyleName("context-info-label");
+    layout.addComponents(button, info);
   }
 
   /**

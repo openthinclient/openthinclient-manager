@@ -50,7 +50,7 @@ public class ProfilePanel extends CssLayout {
 
     deleteProfileAction = addPanelButton(VaadinIcons.TRASH, UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE);
 
-    contextInfoButton = addPanelButton(VaadinIcons.INFO_CIRCLE_O);
+    contextInfoButton = addPanelButton(null);
     contextInfoButton.addStyleName("context-info-button");
     contextInfoButton.setVisible(false);
 
