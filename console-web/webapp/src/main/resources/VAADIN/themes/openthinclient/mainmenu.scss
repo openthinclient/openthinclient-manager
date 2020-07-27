@@ -172,8 +172,8 @@
           background: none;
           color: #747474;
 
-          ::placeholder {
-            color: #747474;
+          &::placeholder {
+            opacity: .8;
           }
         }
 
