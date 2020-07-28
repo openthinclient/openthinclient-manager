@@ -41,7 +41,7 @@ function installInfoButtonFunction() {
 
 function installGridTooltips() {
   document.documentElement.onmouseover = ({target}) => {
-    if( ( target.matches('.v-grid-cell, .referenceItem .v-label, .v-filterselect-suggestmenu td span')
+    if( ( target.matches('.v-grid-cell, .referenceItemLink, .v-filterselect-suggestmenu td span')
           && target.scrollWidth > target.clientWidth )
       ||( target.matches('.overviewPanel .table .v-button')
           && [...target.querySelectorAll('.v-button-caption > *')].some(n => n.scrollWidth > n.clientWidth))) {

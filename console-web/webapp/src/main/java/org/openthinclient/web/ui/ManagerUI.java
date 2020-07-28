@@ -82,7 +82,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO
 @SpringUI
 @SpringViewDisplay
 @Push(PushMode.MANUAL)
-@com.vaadin.annotations.JavaScript({"UIFunctions.js"})
+@com.vaadin.annotations.JavaScript({"vaadin://js/UIFunctions.js"})
 public final class ManagerUI extends UI implements ViewDisplay, View {
 
   /**
