@@ -304,14 +304,14 @@ public final class ClientView extends AbstractThinclientView {
     configuration.addProperty(ipaddress);
 
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
     locationConfig.setRequired(true);
     locationProp.setConfiguration(locationConfig);
     configuration.addProperty(locationProp);
 
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null);
     hwtypeConfig.setRequired(true);
     hwProp.setConfiguration(hwtypeConfig);
