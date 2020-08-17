@@ -93,6 +93,9 @@ b {
   .v-widget.v-button {
     height: auto;
   }
+  .v-grid {
+    background: #fff;
+  }
   @include valo;
   @include common;
   @include combobox;

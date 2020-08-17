@@ -20,6 +20,10 @@ public class PackageManagerMainView extends PackageManagerMainDesign {
         return updateablePackages;
     }
 
+  public SourcesListView getSourcesListView() {
+    return sourcesList;
+  }
+
   /**
    * Set localized caption to tabs<br/>
    * NOTE: this method relies on Component-structure at file PackageManagerMainDesign.html

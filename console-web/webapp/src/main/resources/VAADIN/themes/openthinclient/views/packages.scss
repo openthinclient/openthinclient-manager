@@ -12,6 +12,21 @@
       height: calc(100% - 36px) !important;
     }
 
+    .v-tabsheet-tabcontainer {
+      table, tbody, tr {
+        width: 100%;
+      }
+
+      .v-tabsheet-tabitemcell-repositories {
+        float: right;
+
+        .v-caption::before {
+          content: "\e764";
+          font-family: Vaadin-Icons;
+        }
+      }
+    }
+
     // darker grid headers
     .v-grid-header .v-grid-cell {
       background: black;

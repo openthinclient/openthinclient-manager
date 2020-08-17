@@ -21,6 +21,7 @@ import org.openthinclient.web.pkgmngr.ui.presenter.*;
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
+import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   private final PackageListMasterDetailsPresenter availablePackagesPresenter;
   private final PackageListMasterDetailsPresenter installedPackagesPresenter;
   private final PackageListMasterDetailsPresenter updateablePackagesPresenter;
+  private final SourcesListPresenter sourcesListPresenter;
   private final PackageManager packageManager;
   private final SchemaService schemaService;
   private final ClientService clientService;
@@ -76,6 +78,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     this.availablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.INSTALL, mainView.getAvailablePackagesView());
     this.updateablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UPDATE, mainView.getUpdateablePackagesView());
     this.installedPackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UNINSTALL, mainView.getInstalledPackagesView());
+    this.sourcesListPresenter = new SourcesListPresenter(mainView.getSourcesListView());
 
     setSizeFull();
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
@@ -108,6 +111,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     bindPackageLists();
+    this.sourcesListPresenter.setPackageManager(packageManager);
   }
 
   private void bindPackageLists() {

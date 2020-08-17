@@ -9,7 +9,13 @@
  <body>
   <vaadin-tab-sheet responsive size-full>
 
-   <tab caption="Updateable Packages" selected>
+ <tab style-name="repositories" description="Repositories">
+    <vaadin-vertical-layout size-full margin-top margin="false">
+        <view-sources-list-view size-full _id="sourcesList" :expand />
+    </vaadin-vertical-layout>
+   </tab>
+
+     <tab caption="Updateable Packages" selected>
     <vaadin-vertical-layout caption="Updateable Packages" size-full margin-top margin="false">
      <view-package-list-master-details-view size-full _id="updateablePackages" :expand />
     </vaadin-vertical-layout>
