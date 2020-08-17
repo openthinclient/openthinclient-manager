@@ -37,7 +37,7 @@ public class OtcMacProperty extends OtcProperty {
   }
 
   public List<String> getOptions() {
-    return unrecognizedClientService.findAll().stream().map(UnrecognizedClient::getMacAddress).collect(Collectors.toList());
+    return unrecognizedClientService.findAll().stream().limit(50).map(UnrecognizedClient::getMacAddress).collect(Collectors.toList());
   }
 
   @Override
