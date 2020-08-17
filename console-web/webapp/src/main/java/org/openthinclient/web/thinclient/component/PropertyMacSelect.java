@@ -18,15 +18,19 @@ public class PropertyMacSelect<T extends OtcMacProperty> extends ComboBox<String
   public PropertyMacSelect(T bean) {
 
     super(null, bean.getOptions());
-    setStyleName("profileItemSelect");
+    addStyleNames("profileItemSelect", "macselect");
     setTextInputAllowed(true);
     setEnabled(!bean.getConfiguration().isDisabled());
     setPlaceholder(bean.getInitialValue());
+    setEmptySelectionAllowed(bean.getInitialValue() != null);
+    setEmptySelectionCaption(bean.getInitialValue());
+
     setNewItemProvider(item -> {
         if(item == null) {
           return Optional.empty();
         }
-        if(item.matches("[0-9a-zA-Z]{12}")) {
+        item = item.trim();
+        if(item.matches("[0-9a-fA-F]{12}")) {
           item = String.join(":", item.split("(?<=\\G..)"));
         }
         return Optional.of(item);

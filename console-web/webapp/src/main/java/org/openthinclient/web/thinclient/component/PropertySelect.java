@@ -26,6 +26,7 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     setStyleGenerator(item -> "value");
     setTextInputAllowed(bean.getOptions().size() > 10);
     setEnabled(!bean.getConfiguration().isDisabled());
+    setEmptySelectionAllowed(!bean.getConfiguration().isRequired());
     if (bean.getDefaultSchemaValue() != null) {
       SelectOption selectOption = bean.getSelectOption(bean.getDefaultSchemaValue());
       if (selectOption != null) {
@@ -50,7 +51,7 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
   }
 
   @Override
-  public Binder getBinder() {
+  public Binder<T> getBinder() {
     return binder;
   }
 

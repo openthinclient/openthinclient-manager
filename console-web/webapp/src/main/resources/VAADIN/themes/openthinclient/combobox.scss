@@ -3,10 +3,15 @@
     border-left: none;
   }
 
-  .v-filterselect-suggestpopup:not(span) {
+  .thinclientview .profilePanel .property .v-filterselect-focus:not(.macselect):not(.v-filterselect-no-input) .v-filterselect-input {
+    padding-left: 3ch;
+    background: url("/VAADIN/themes/openthinclient/icon/filter.svg") .66ch/1em no-repeat;
+  }
+
+  .v-filterselect-suggestpopup-profileItemSelect {
     box-shadow: 0 1px 4px 1px #e1e5e8;
 
-    td:not(.v-filterselect-item-value)::before {
+    &:not(.v-filterselect-suggestpopup-macselect) td:not(.v-filterselect-item-value)::before {
       content: "Default";
       font-weight: 300;
       color: silver;
@@ -26,13 +31,13 @@
       width: 100%;
       height: 1.33em;
       line-height: 1.33;
-      background: white;
+      background: #ddd;
       font-weight: bold;
-      color: gray;
+      color: #333;
 
       &:hover {
-        color: black;
-        background: #f0f4f7;
+        color: #000;
+        background: #ccc;
       }
     }
 
