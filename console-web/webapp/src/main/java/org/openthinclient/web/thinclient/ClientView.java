@@ -9,9 +9,12 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.BorderStyle;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.common.model.*;
@@ -21,6 +24,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
+import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -83,8 +87,6 @@ public final class ClientView extends AbstractThinclientView {
   private LocationService locationService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
-  @Autowired
-  private ClientGroupService clientGroupService;
   @Autowired
   private SchemaProvider schemaProvider;
   @Autowired
@@ -292,7 +294,7 @@ public final class ClientView extends AbstractThinclientView {
     String mac = profile.getMacAddress();
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", mac);
     macaddressConfiguration.setRequired(mac == null);
-    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
+    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^\\s*([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})\\s*$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
@@ -444,43 +446,48 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   private void showClientLogs(Client profile) {
-    String macAddress = profile.getMacAddress();
     Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
-    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
+    (new FileContentWindow(logs, profile.getName(), profile.getMacAddress())).open();
   }
 
-  class FileContentWindow extends Window {
+  class FileContentWindow extends Popup {
 
-    public FileContentWindow(Path doc,String filter) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    public FileContentWindow(Path doc, String name, String macAddress) {
+      super(mc.getMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_CAPTION, name, macAddress), "logview");
 
-      addCloseListener(event -> {
-        UI.getCurrent().removeWindow(this);
-      });
+      setWidth("642px");
+      setMaximized(true);
 
-      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_VIEWFILE_CAPTION, doc.getFileName()));
-      setHeight("400px");
-      setWidth("500px");
-      setModal(true);
-      center();
-
-      VerticalLayout subContent = new VerticalLayout();
-      subContent.setMargin(true);
-      subContent.setSizeFull();
-      setContent(subContent);
-
-      TextArea text = new TextArea();
+      List<String> lines = new ArrayList<>();
       try {
-        List<String> collect = Files.readAllLines(doc.toAbsolutePath()).stream().filter(l -> l.contains(filter)).collect(Collectors.toList());
-        if (collect.size() == 0) collect.add("NoEntrysForTC" + filter);
-        text.setValue(String.join("\n", collect));
-      } catch (IOException e) {
-        throw new RuntimeException("Cannot read file " + doc.toAbsolutePath());
+        List<String> srcLines = Files.readAllLines(doc.toAbsolutePath());
+        ListIterator<String> lineIter = srcLines.listIterator(srcLines.size());
+        int linesLeft = 2048;
+        while (lineIter.hasPrevious() && linesLeft > 0) {
+          String[] parts = StringEscapeUtils.escapeHtml(lineIter.previous()).split("(?! +)(?<= )", 6);
+          if (parts[3].startsWith(macAddress)) {
+            linesLeft--;
+            StringBuilder line = new StringBuilder();
+            line.append(String.format("<div class=\"logline %s\">", parts[2].trim())).append(parts[0]).append(parts[1])
+                .append(parts[2]).append(parts[5]).append("</div>");
+            lines.add(0, line.toString());
+          }
+        }
+        if (lines.size() != 0) {
+          addContent(new Label(String.join("\n", lines), ContentMode.HTML));
+        } else {
+          setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_EMPTY);
+        }
+      } catch (IOException ex) {
+        setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_ERROR);
+        LOGGER.error("Cannot read file " + doc.toAbsolutePath(), ex);
       }
+    }
 
-      text.setSizeFull();
-      subContent.addComponent(text);
-
+    private void setMessage(ConsoleWebMessages messageKey, Object... args) {
+      Label messageLabel = new Label(mc.getMessage(messageKey, args));
+      messageLabel.addStyleName("message");
+      addContent(messageLabel);
     }
   }
 
