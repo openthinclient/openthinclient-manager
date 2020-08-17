@@ -1,11 +1,9 @@
 package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import java.util.Base64;
@@ -13,6 +11,7 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
+import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -187,48 +186,6 @@ public class LicenseView extends Panel implements View {
           new Label(mc.getMessage(licenseErrorMessage(error.type)))
         );
       }
-    }
-  }
-
-  public class Popup {
-    private Window popup;
-    private CssLayout contentLayout = new CssLayout();
-    private CssLayout buttonsLayout = new CssLayout();
-    private String width;
-
-    public Popup(ConsoleWebMessages title_key, String... styleNames) {
-      contentLayout.addStyleName("content");
-      contentLayout.addStyleNames(styleNames);
-      buttonsLayout.addStyleName("buttons");
-      CssLayout wrapper = new CssLayout(contentLayout, buttonsLayout);
-      wrapper.addStyleName("wrapper");
-      popup = new Window(mc.getMessage(title_key), wrapper);
-      popup.addStyleName("otc-popup");
-      popup.setModal(true);
-      popup.addCloseShortcut(KeyCode.ESCAPE);
-      popup.addCloseListener(ev -> UI.getCurrent().removeWindow(popup));
-    }
-    public void open() {
-      if(buttonsLayout.getComponentCount() == 0) {
-        buttonsLayout.addComponent(new Button(mc.getMessage(UI_BUTTON_CLOSE), ev -> popup.close()));
-      }
-      popup.setWindowMode(WindowMode.NORMAL);
-      popup.setSizeUndefined();
-      popup.setWidth(width);
-      popup.center();
-      UI.getCurrent().addWindow(popup);
-    }
-    public void close() {
-      popup.close();
-    }
-    public void addContent(Component... content) {
-      this.contentLayout.addComponents(content);
-    }
-    public void addButton(Button... buttons) {
-      this.buttonsLayout.addComponents(buttons);
-    }
-    public void setWidth(String width) {
-      this.width = width;
     }
   }
 
