@@ -23,11 +23,12 @@ public class InstallationDirectoryUtil {
    * @param managerHomeDirectory the base directory
    */
   public static void cleanupManagerHomeDirectory(Path managerHomeDirectory) {
-    Path installFile = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
-    LOG.info("Delete manager home", installFile);
+    LOG.info("Delete manager home", managerHomeDirectory);
+    Path logFile = Paths.get(managerHomeDirectory.toString(), "logs", "openthinclient-manager.log");
     try {
       Files.walk(managerHomeDirectory)
           .sorted(Comparator.reverseOrder())
+          .filter(path -> !logFile.startsWith(path))
           .map(Path::toFile)
           .forEach(File::delete);
     } catch (IOException e) {
