@@ -4,6 +4,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
         >
 
+    <!-- packages to be removed from the database -->
+    <property name="obsolete_packages" value="('openthinclient-manager', 'openthinclient-server-tftp', 'openthinclient-server-ldap', 'openthinclient-server-dhcp', 'openthinclient-server-nfs')"/>
+
     <changeSet id="1" author="François Fernandès" dbms="h2,derby">
     
           <addPrimaryKey columnNames="id"
@@ -183,6 +186,17 @@
         <sql><![CDATA[
             UPDATE otc_source SET enabled=false;
             INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2020', 'http://archive.openthinclient.org/openthinclient/v2020', null, 'ENABLED');
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="Remove obsolete packages" author="Marc Häfner" runAlways="true">
+        <comment>
+            Remove obsolete packages directly in DB
+            (package-manger may remove files that are also declared and used by other packages)
+        </comment>
+        <sql><![CDATA[
+            DELETE FROM otc_package_installed_content WHERE package_id IN (SELECT id FROM otc_package WHERE name IN ${obsolete_packages});
+            DELETE FROM otc_package WHERE name IN ${obsolete_packages};
         ]]></sql>
     </changeSet>
 
