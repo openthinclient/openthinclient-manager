@@ -26,7 +26,7 @@ public class CheckEnvironmentModel {
     
     // FIXME: We need the current locale here, but UI.getCurrent() doesn't work 
     //        because CheckEnvironmentModel is instantiated via Sprinf-Bean, without UI
-    Locale locale = Locale.GERMAN;
+    Locale locale = Locale.ENGLISH;
     
     checkStates = new ArrayList<>();
     checkStates.add(new CheckStatus(new CheckNetworkInferfaces(locale, systemInventory)));
