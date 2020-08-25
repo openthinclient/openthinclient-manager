@@ -465,6 +465,11 @@ public final class ClientView extends AbstractThinclientView {
         int linesLeft = 2048;
         while (lineIter.hasPrevious() && linesLeft > 0) {
           String[] parts = StringEscapeUtils.escapeHtml(lineIter.previous()).split("(?! +)(?<= )", 6);
+          if(parts.length < 6) {
+            // Malformed lines (e.g. trailing lines of a well-formed log entry) are ignored since we
+            // can't easily attribute them to a specific client.
+            continue;
+          }
           if (parts[3].startsWith(macAddress)) {
             linesLeft--;
             StringBuilder line = new StringBuilder();
