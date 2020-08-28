@@ -10,25 +10,18 @@ import java.util.*;
 public class ReferencesComponent extends CssLayout {
 
   private CssLayout referenceLine;
-//  private ComboBox<Item> itemComboBox;
-  private Button multiSelectPopupBtn;
+  private Button referenceComponentCaption;
   private NavigableMap<String, ItemButtonComponent> itemComponents = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   private Map<String, CssLayout> sublineComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
     addStyleName("referenceComponent");
 
-    multiSelectPopupBtn = new Button();
-    multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
-    multiSelectPopupBtn.setIcon(VaadinIcons.PLUS_CIRCLE_O);
-    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-
-    CssLayout hl = new CssLayout();
-    hl.addStyleName("referenceComponentCaption");
-    Label label = new Label(labelText);
-    label.addStyleName("referenceLabel");
-    hl.addComponents(label, multiSelectPopupBtn);
-    addComponent(hl);
+    referenceComponentCaption = new Button(labelText);
+    referenceComponentCaption.addStyleNames("referenceComponentCaption");
+    referenceComponentCaption.setIcon(VaadinIcons.COG_O);
+    referenceComponentCaption.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    addComponent(referenceComponentCaption);
 
     // components
     referenceLine = new CssLayout();
@@ -52,7 +45,7 @@ public class ReferencesComponent extends CssLayout {
   }
 
   public Button getMultiSelectPopupBtn() {
-    return multiSelectPopupBtn;
+    return referenceComponentCaption;
   }
 
   /**

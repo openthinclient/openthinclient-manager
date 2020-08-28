@@ -28,15 +28,6 @@ public class ItemButtonComponent extends CssLayout {
       navigator.navigateTo(navigationState);
     });
     addComponent(referencedItemsButton);
-
-    if (!isReadOnly) {
-      itemButton = new Button();
-      itemButton.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
-      itemButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-      itemButton.addStyleName("referenceItemIconButton");
-      itemButton.setVisible(false);
-      addComponent(itemButton);
-    }
   }
 
   public void addClickListener(Button.ClickListener clickListener) {

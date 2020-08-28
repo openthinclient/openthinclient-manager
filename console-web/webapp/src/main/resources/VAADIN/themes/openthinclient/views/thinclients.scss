@@ -398,36 +398,31 @@ $ok-button-color: #2db200;
           display: block;
           border-bottom: 1px solid var(--section-color);
 
-          .multiSelectPopupButton,
-          .referenceItemIconButton {
-            height: auto;
-          }
-
-          .multiSelectPopupButton:not(:hover),
-          .referenceItemIconButton:not(:hover) {
-            border-color: transparent;
-            background: none;
-          }
-
           .referenceComponentCaption {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template: "caption icon" / 1fr auto;
+            color: #000;
 
-            .referenceLabel {
-              width: 100%;
-              padding-right: 15px;
+            .v-button-wrap {
+              display: contents;
+            }
+
+            .v-button-caption {
+              grid-area: caption;
+              margin: 0;
+              text-align: left;
               font-weight: bold;
             }
-            .multiSelectPopupButton {
-              padding: 0;
-              color: #00b400;
+
+            .v-icon {
+              grid-area: icon;
               filter: saturate(0) opacity(.2);
               transition: filter .25s ease-in-out;
             }
-            .referenceLabel:hover + .multiSelectPopupButton {
+            &:hover .v-icon {
               filter: saturate(1) opacity(.5);
             }
-            .multiSelectPopupButton:hover {
+           .v-icon:hover {
               filter: saturate(1) opacity(1);
             }
           }
@@ -451,19 +446,6 @@ $ok-button-color: #2db200;
               }
               .referenceItemLink:hover {
                 text-decoration: underline;
-              }
-              .referenceItemIconButton {
-                padding: 0;
-                color: #d1001a;
-                filter: saturate(0) opacity(.2);
-                transition: filter .25s ease-in-out;
-              }
-              .referenceItemLink:hover + .referenceItemIconButton {
-                filter: saturate(1) opacity(.5);
-              }
-
-              .referenceItemIconButton:hover {
-                filter: saturate(1) opacity(1);
               }
             }
 
