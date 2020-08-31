@@ -2,6 +2,7 @@ package org.openthinclient.web.dashboard;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -76,7 +77,7 @@ public class DashboardView extends Panel implements View {
 
   @PostConstruct
   public void init() {
-    VerticalLayout root = new VerticalLayout();
+    Layout root = new CssLayout();
     root.addComponents(buildContent(), new PrivacyNoticeInfo());
     setContent(root);
   }
@@ -84,13 +85,6 @@ public class DashboardView extends Panel implements View {
   private Component buildContent() {
     dashboardPanels = new CssLayout();
     dashboardPanels.addStyleName("dashboard-panels");
-    Responsive.makeResponsive(dashboardPanels);
-
-    UnregisteredClientsPanel ucp = new UnregisteredClientsPanel(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS),
-                                                    new ThemeResource("icon/thinclient.svg"));
-    dashboardPanels.addComponent(ucp);
-
-    dashboardPanels.addComponent(new UpdatePanel());
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
 	  helpPanel.addStyleName("size-1x2");
@@ -100,7 +94,13 @@ public class DashboardView extends Panel implements View {
 	  toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
-    dashboardPanels.addComponents(helpPanel, toolsPanel, new NewsBrowser());
+    dashboardPanels.addComponents(
+      new UpdatePanel(),
+      new UnregisteredClientsPanel(),
+      helpPanel,
+      toolsPanel,
+      new NewsBrowser()
+    );
 
     return dashboardPanels;
   }
@@ -189,63 +189,56 @@ public class DashboardView extends Panel implements View {
 
   class UnregisteredClientsPanel extends ContentPanel {
 
-    public UnregisteredClientsPanel(String title, Resource resource) {
-      super(title, resource);
+    public UnregisteredClientsPanel() {
+      super(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS));
       addStyleName("unregistered-clients");
-      setSpacing(false);
-      // setHeight(120, Unit.PIXELS);
-      addImageStyleName("dashboard-panel-image-circle");
 
-      // Selection ComboBox
       macCombo = new ComboBox<>();
       macCombo.setPlaceholder(mc.getMessage(UI_THINCLIENT_MAC));
       macCombo.setEmptySelectionAllowed(false);
       try {
         macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-      } catch (Exception e) {
-        LOGGER.warn("Cannot load content: " + e.getMessage());
+      } catch (Exception ex) {
+        LOGGER.error("Failed to set initial content for MAC combo.", ex);
       }
       macCombo.setItemCaptionGenerator(UnrecognizedClient::getMacAddress);
       macCombo.addValueChangeListener(event ->
           UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
       );
 
-      HorizontalLayout hl = new HorizontalLayout();
-      Button btn = new Button(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
-      btn.addStyleName("dashboard-panel-unregistered-clients-button");
-      btn.setIcon(VaadinIcons.REFRESH);
-      btn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-      btn.addClickListener(event -> {
+      Button updateButton = new Button(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS_UPDATE_BUTTON));
+      updateButton.addStyleName("dashboard-panel-unregistered-clients-button");
+      updateButton.setIcon(VaadinIcons.REFRESH);
+      updateButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+      updateButton.addClickListener(event -> {
         try {
           macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-        } catch (Exception e) {
-          LOGGER.warn("Cannot load content: " + e.getMessage());
+        } catch (Exception ex) {
+          LOGGER.error("Update button failed to set content for MAC combo.", ex);
         }
       });
-      Button btnCleanClients = new Button();
-      btnCleanClients.addStyleName("dashboard-panel-unregistered-clients-clean-button");
-      btnCleanClients.setIcon(VaadinIcons.TRASH);
-      btnCleanClients.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-      btnCleanClients.addClickListener(event -> {
-        // TODO: ist doch voll arm, das wollen wir nicht wirklich hier (eigener Service?)
+
+      Button forgetButton = new Button(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS_FORGET_BUTTON));
+      forgetButton.addStyleName("dashboard-panel-unregistered-clients-clean-button");
+      forgetButton.setIcon(VaadinIcons.TRASH);
+      forgetButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+      forgetButton.addClickListener(event -> {
         try {
           unrecognizedClientService.findAll().forEach(directoryObject -> {
             Realm realm = directoryObject.getRealm();
             try {
               realm.getDirectory().delete(directoryObject);
             } catch (DirectoryException e) {
-              LOGGER.info("Cannot delete unrecognizedClient: " + directoryObject + ": " + e.getMessage());
+              LOGGER.error("Cannot delete unrecognizedClient: " + directoryObject, e);
             }
           });
           macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-        } catch (Exception e) {
-          LOGGER.warn("Cannot load content: " + e.getMessage());
+        } catch (Exception ex) {
+          LOGGER.error("Forget button failed to set content for MAC combo.", ex);
         }
       });
 
-      hl.addComponents(btn, btnCleanClients);
-      addComponent(hl);
-      addComponent(macCombo);
+      addComponents(macCombo, updateButton, forgetButton);
 
     }
   }
