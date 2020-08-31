@@ -96,8 +96,8 @@
       .dashboard-panel-title::before {
         content: "";
         display: inline-block;
-        height: 2em;
-        width: 2em;
+        min-height: 2em;
+        min-width: 2em;
         margin-right: 1ch;
         background: #509dc9  url("/VAADIN/themes/openthinclient/icon/thinclient.svg") 0 0 / contain;
         border-radius: 50%;
@@ -107,6 +107,17 @@
       }
       .v-filterselect {
         width: 100%;
+      }
+      .v-button {
+        width: min-content;
+        margin: 0 1ch;
+        border: 1px solid #f8f8f8;
+        padding: 0 1ch;
+        background: #f8f8f8;
+
+        &:hover {
+          border: 1px outset #ccc;
+        }
       }
     }
 
