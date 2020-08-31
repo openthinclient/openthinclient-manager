@@ -110,6 +110,44 @@
       }
     }
 
+    .dashboard-panel.license-info {
+
+      .dashboard-panel-title::before {
+        display: inline-block;
+        margin-right: 1ch;
+        content: "\e964";
+        font-family: Vaadin-Icons;
+        font-size: 2em;
+        vertical-align: middle;
+        color: #509dc9;
+      }
+
+      .client-count {
+        & > :first-child {
+          font-size: 2em;
+          display: block;
+        }
+        &.warn > :first-child {
+          text-shadow: 0 0 1px yellow;
+        }
+        &.too-many > :first-child {
+          text-shadow: 0 0 1px red;
+        }
+      }
+
+      .license-status::before {
+        padding-right: 1ch;
+        font-family: Vaadin-Icons;
+      }
+      .license-status.ok::before {
+        content: "\e75b";
+      }
+      .license-status.problem::before {
+        content: "\e748";
+        text-shadow: 0 0 1px yellow;
+      }
+    }
+
     .dashboard-panel.update-notification {
       .manager-updates, .package-updates {
         display: grid;

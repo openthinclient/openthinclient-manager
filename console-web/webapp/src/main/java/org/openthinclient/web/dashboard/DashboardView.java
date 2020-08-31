@@ -21,7 +21,10 @@ import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.service.update.UpdateChecker;
+import org.openthinclient.service.common.license.License;
+import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.PrivacyNoticeInfo;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -52,6 +55,8 @@ public class DashboardView extends Panel implements View {
 
   @Autowired
   private ClientService clientService;
+  @Autowired
+  private LicenseManager licenseManager;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired
@@ -96,6 +101,7 @@ public class DashboardView extends Panel implements View {
 
     dashboardPanels.addComponents(
       new UpdatePanel(),
+      new LicensePanel(),
       new UnregisteredClientsPanel(),
       helpPanel,
       toolsPanel,
@@ -103,6 +109,53 @@ public class DashboardView extends Panel implements View {
     );
 
     return dashboardPanels;
+  }
+
+  class LicensePanel extends ContentPanel {
+    private static final String licenseManagerURL = "/ui/settings#!license";
+
+    public LicensePanel() {
+      super(mc.getMessage(UI_DASHBOARDVIEW_LICENSE_INFO_CAPTION));
+      addStyleName("license-info");
+
+      License license = licenseManager.getLicense();
+
+      Integer maxCount = 49;
+      if(license != null) {
+        maxCount = license.getCount();
+      }
+      Integer clientCount = clientService.count();
+      String countText = mc.getMessage(UI_DASHBOARDVIEW_LICENSE_INFO_CLIENT_COUNT, clientCount, maxCount);
+      Label countLabel = new Label(countText, ContentMode.HTML);
+      countLabel.addStyleName("client-count");
+      if (maxCount < clientCount) {
+        countLabel.addStyleName("too-many");
+      } else if (maxCount - clientCount < 11) {
+        countLabel.addStyleName("warn");
+      }
+
+      License.State licenseState = licenseManager.getLicenseState(clientCount);
+      ConsoleWebMessages licenseStatusKey;
+      String licenseStatusClass;
+      if (licenseState != License.State.OK) {
+        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_PROBLEM;
+        licenseStatusClass = "problem";
+      } else if (license == null) {
+        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_NO_LICENSE_REQUIRED;
+        licenseStatusClass = "ok";
+      } else {
+        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_OK;
+        licenseStatusClass = "ok";
+      }
+      Label licenseLabel = new Label(mc.getMessage(licenseStatusKey));
+      licenseLabel.addStyleNames("license-status", licenseStatusClass);
+
+      Link licenseManagerLink = new Link(
+        mc.getMessage(UI_DASHBOARDVIEW_LICENSE_INFO_LINK),
+        new ExternalResource(licenseManagerURL));
+
+      addComponents(countLabel, licenseLabel, licenseManagerLink);
+    }
   }
 
   class UpdatePanel extends ContentPanel {
