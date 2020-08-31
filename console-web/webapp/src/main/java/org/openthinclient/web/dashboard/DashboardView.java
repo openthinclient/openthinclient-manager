@@ -15,9 +15,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
-import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -37,7 +35,6 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.function.Supplier;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -54,10 +51,6 @@ public class DashboardView extends Panel implements View {
 
   @Autowired
   private ClientService clientService;
-  @Autowired
-  private ApplicationService applicationService;
-  @Autowired
-  private DeviceService deviceService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired
@@ -93,19 +86,6 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addStyleName("dashboard-panels");
     Responsive.makeResponsive(dashboardPanels);
 
-    InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
-                                                           new ThemeResource("icon/thinclient.svg"),
-                                                           getInfoContent(() -> clientService.count()));
-
-    InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
-                                                            new ThemeResource("icon/application.svg"),
-                                                            getInfoContent(() -> applicationService.count()));
-    InfoContentPanel devicesInfo = new InfoContentPanel(mc.getMessage(UI_DEVICE_HEADER),
-                                                        new ThemeResource("icon/device.svg"),
-                                                        getInfoContent(() -> deviceService.count()));
-
-    dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
-
     UnregisteredClientsPanel ucp = new UnregisteredClientsPanel(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS),
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
@@ -123,31 +103,6 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addComponents(helpPanel, toolsPanel, new NewsBrowser());
 
     return dashboardPanels;
-  }
-
-  private String getInfoContent(Supplier<Integer> contentSupplier) {
-    String info = "";
-    try {
-      info = String.valueOf(contentSupplier.get());
-    } catch (Exception e) {
-      LOGGER.warn("Cannot load content: " + e.getMessage());
-    }
-    return info;
-  }
-
-  class InfoContentPanel extends ContentPanel {
-
-    public InfoContentPanel(String message, ThemeResource themeResource, String caption) {
-      super(message, themeResource);
-      // setHeight(70, Unit.PIXELS);
-      addImageStyleName("dashboard-panel-image-circle");
-
-      if (caption != null) {
-        Label label = new Label(caption);
-        label.addStyleName("content-panel-number-large");
-        addComponent(label);
-      }
-    }
   }
 
   class UpdatePanel extends ContentPanel {
