@@ -68,7 +68,7 @@ public class License {
       return State.INVALID;
     } else if(createdDate.plusDays(31).isBefore(now)) {
       return State.REQUIRED_TOO_OLD;
-    } else if(createdDate.plusDays(2).isBefore(now)) {
+    } else if(createdDate.plusDays(7).isBefore(now)) {
       return clientCount >= 50? State.REQUIRED_OLD: State.OLD;
     } else if(expiredDate.isBefore(now)) {
       return clientCount >= 50? State.REQUIRED_EXPIRED: State.EXPIRED;
