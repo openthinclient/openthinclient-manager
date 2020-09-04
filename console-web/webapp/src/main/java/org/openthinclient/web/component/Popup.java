@@ -37,6 +37,13 @@ public class Popup {
     popup.setModal(true);
     popup.addCloseShortcut(KeyCode.ESCAPE);
     popup.addCloseListener(ev -> UI.getCurrent().removeWindow(popup));
+    popup.addWindowModeChangeListener(ev -> {
+      if(ev.getWindowMode() == WindowMode.MAXIMIZED) {
+        popup.addStyleName("maximized");
+      } else {
+        popup.removeStyleName("maximized");
+      }
+    });
   }
   public void open() {
     if(buttonsLayout.getComponentCount() == 0) {

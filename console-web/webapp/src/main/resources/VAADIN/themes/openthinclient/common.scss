@@ -2,6 +2,18 @@
   .otc-popup {
     border-radius: 0;
 
+    // never fully maximze
+    &.maximized {
+      background: transparent;
+      border: 0 solid transparent;
+      border-width: 2ex 4ch;
+      box-shadow: none;
+
+      > .popupContent {
+        background: white;
+      }
+    }
+
     .v-window-maximizebox {
       display: none;
     }
