@@ -1,4 +1,8 @@
 @mixin common {
+  .v-window-modalitycurtain {
+    opacity: .6;
+  }
+
   .otc-popup {
     border-radius: 0;
 

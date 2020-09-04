@@ -734,7 +734,8 @@ $ok-button-color: #2db200;
         left: $menu-width;
         bottom: 0;
         right: 0;
-        background: rgba(128, 128, 128, .33);
+        background: #222;
+        opacity: .6;
       }
 
       .references-panel {
