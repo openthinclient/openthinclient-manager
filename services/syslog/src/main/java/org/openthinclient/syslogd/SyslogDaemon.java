@@ -204,7 +204,7 @@ public abstract class SyslogDaemon implements Runnable {
 
 			try {
 				Pattern messagePattern = Pattern
-						.compile("^<(\\d{1,3})>(\\p{ASCII}{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+"
+						.compile("^<(\\d+)>(\\p{Alpha}+\\s+\\d+\\s+\\d+:\\d+:\\d+)\\s+"
 								+ "(\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2})\\s*"
 								+ "(.*)$");
 
