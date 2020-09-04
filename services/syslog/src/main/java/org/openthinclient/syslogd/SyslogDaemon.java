@@ -50,6 +50,13 @@ public abstract class SyslogDaemon implements Runnable {
 		LOG_UUCP(8, "uucp"), // UUCP subsystem
 		LOG_CRON(9, "cron"), // clock daemon
 
+		LOG_AUTHPRIV(10, "authpriv"), // security messages
+		LOG_AUTFTP(11, "ftp"), // FTP daemon
+		LOG_NTP(12, "ntp"), // NTP subsystem#
+		LOG_SECURITY(13, "security"), // security audit logger
+		LOG_CONSOLE(14, "console"), // console log alerts
+		LOG_SOLARIS_CRON(15, "solaris-cron"), // scheduling logs
+
 		// other codes through 15 reserved for system use
 		LOG_LOCAL0(16, "local0"), // reserved for local use
 		LOG_LOCAL1(17, "local1"), // reserved for local use
