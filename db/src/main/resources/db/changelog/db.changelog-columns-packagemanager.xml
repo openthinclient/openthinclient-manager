@@ -5,7 +5,16 @@
         >
 
     <!-- packages to be removed from the database -->
-    <property name="obsolete_packages" value="('openthinclient-manager', 'openthinclient-server-tftp', 'openthinclient-server-ldap', 'openthinclient-server-dhcp', 'openthinclient-server-nfs')"/>
+    <property name="obsolete_packages" value="(
+        'openthinclient-manager', 
+        'openthinclient-server-tftp', 
+        'openthinclient-server-ldap', 
+        'openthinclient-server-dhcp', 
+        'openthinclient-server-nfs', 
+        'tcos-scripts', 
+        'tcos-devices', 
+        'desktop'
+        )"/>
 
     <changeSet id="1" author="François Fernandès" dbms="h2,derby">
     
@@ -190,6 +199,7 @@
     </changeSet>
 
     <changeSet id="Remove obsolete packages" author="Marc Häfner" runAlways="true">
+        <validCheckSum>ANY</validCheckSum>
         <comment>
             Remove obsolete packages directly in DB
             (package-manger may remove files that are also declared and used by other packages)
