@@ -194,7 +194,7 @@
         <comment>Disable all sources, updating to source v2020</comment>
         <sql><![CDATA[
             UPDATE otc_source SET enabled=false;
-            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2020', 'http://archive.openthinclient.org/openthinclient/v2020', null, 'ENABLED');
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2020', 'http://archive.openthinclient.org/openthinclient/v2020/packages', null, 'ENABLED');
         ]]></sql>
     </changeSet>
 

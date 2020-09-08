@@ -20,7 +20,7 @@ import java.util.Optional;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class InstallableDistributions {
 
-  public static final URI OFFICIAL_DISTRIBUTIONS_XML = URI.create("http://archive.openthinclient.org/openthinclient/distributions.xml");
+  public static final URI OFFICIAL_DISTRIBUTIONS_XML = URI.create("http://archive.openthinclient.org/openthinclient/v2020/first-start-profiles/distributions.xml");
   public static final String LOCAL_DISTRIBUTIONS_XML = "/org/openthinclient/distributions.xml";
 
   public static JAXBContext CONTEXT;
