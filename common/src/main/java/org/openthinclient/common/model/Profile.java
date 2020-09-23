@@ -171,8 +171,7 @@ public abstract class Profile extends DirectoryObject {
 	 * @throws SchemaLoadingException
 	 */
 	public Schema getSchema(Realm realm) throws SchemaLoadingException {
-		if (null == schema)
-			loadSchema(realm);
+		loadSchema(realm);
 		return schema;
 	}
 
@@ -181,8 +180,7 @@ public abstract class Profile extends DirectoryObject {
 	 * @throws SchemaLoadingException
 	 */
 	public void initSchemas(Realm realm) throws SchemaLoadingException {
-		if (null == schema)
-			loadSchema(realm);
+		loadSchema(realm);
 
 		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited)
