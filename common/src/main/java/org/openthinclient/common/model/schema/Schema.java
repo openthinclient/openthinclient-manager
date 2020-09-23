@@ -41,9 +41,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "schema")
 @XmlRootElement(name = "schema")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Schema<T extends Profile> extends Node
-        implements
-        Comparable<Schema> {
+public class Schema extends Node implements Comparable<Schema> {
   private static final long serialVersionUID = 109860938274823423L;
   private final String subtype;
   private Class type;
@@ -140,7 +138,7 @@ public class Schema<T extends Profile> extends Node
     throw new IllegalArgumentException("Can't set the value here.");
   }
 
-  public Class<T> getType() {
+  public Class getType() {
     return type;
   }
 

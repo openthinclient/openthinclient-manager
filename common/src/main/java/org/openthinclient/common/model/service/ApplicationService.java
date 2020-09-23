@@ -25,6 +25,6 @@ public interface ApplicationService extends DirectoryObjectService<Application> 
    * @param schema the {@link Schema} for which applications should be searched for
    * @return a {@link java.util.Set} of {@link Application} using the specified {@link Schema}
    */
-  Set<Application> findAllUsingSchema(Schema<?> schema);
+  Set<Application> findAllUsingSchema(Schema schema);
 
 }
