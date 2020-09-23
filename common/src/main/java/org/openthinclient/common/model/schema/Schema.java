@@ -150,10 +150,6 @@ public class Schema extends Node implements Comparable<Schema> {
     return subtype;
   }
 
-  public long getVersion() {
-    return getUID();
-  }
-
   public int compareTo(Schema compareSchema) {
     final Collator collator = Collator.getInstance();
     return collator.compare(this.getLabel(), compareSchema.getLabel());
