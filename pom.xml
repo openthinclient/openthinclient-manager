@@ -163,12 +163,8 @@
         -->
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+			<url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
-		<repository>
-			<id>openthinclient.org</id>
-			<url>http://openthinclient.sourceforge.net/maven2</url>
-		</repository>
 		<repository>
 			<id>openthinclient.org-public</id>
 			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
@@ -182,7 +178,7 @@
 		</repository>
 		<repository>
 			<id>ej-technologies</id>
-			<url>http://maven.ej-technologies.com/repository</url>
+			<url>https://maven.ej-technologies.com/repository</url>
 		</repository>
 	</repositories>
 
