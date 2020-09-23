@@ -61,10 +61,10 @@ public final class RealmSettingsView extends AbstractThinclientView {
    }
 
   @Override
-  public HashSet getAllItems() throws AllItemsListException {
+  public HashSet<Realm> getAllItems() throws AllItemsListException {
      try {
        Set<Realm> allRealms = getRealmService().findAllRealms();
-       HashSet hashSet = new HashSet();
+       HashSet<Realm> hashSet = new HashSet<>();
        hashSet.addAll(allRealms);
        return hashSet;
      } catch (Exception e) {
