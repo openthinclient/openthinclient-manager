@@ -164,14 +164,8 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-     LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
-    try {
-      DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
-      ProfilePanel profilePanel = createProfilePanel(realmConfiguration);
-      ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(realmConfiguration);
-      displayProfilePanel(profilePanel, profileReferencesPanel);
-    } catch (BuildProfileException e) {
-      showError(e);
-    }
+    LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
+    DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
+    showProfile(realmConfiguration);
   }
 }
