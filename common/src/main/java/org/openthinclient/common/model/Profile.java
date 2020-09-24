@@ -194,7 +194,9 @@ public abstract class Profile extends DirectoryObject {
 	private void loadSchema(Realm realm) throws SchemaLoadingException {
 		final String schemaName = getSchemaName();
 
-		schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+		if(realm != null) {
+			schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+		}
 
 		if (null == schema)
 			throw new SchemaLoadingException("Schema wasn't found for " + getClass()
