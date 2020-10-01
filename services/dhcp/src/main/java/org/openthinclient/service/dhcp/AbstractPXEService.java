@@ -50,11 +50,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -184,32 +185,38 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
    * @param hostname      the client's host name (if known)
    * @param clientAddress the client's ip address (if known)
    */
-  protected void trackUnrecognizedClient(DhcpMessage discover, String hostname,
-                                         String clientAddress) {
+  protected void trackUnrecognizedClient(DhcpMessage discover, String ipHostNumber) {
+    if (!isTrackUnrecognizedPXEClients())
+      return;
+
     final String hwAddressString = discover.getHardwareAddress()
             .getNativeRepresentation().toLowerCase();
 
     try {
-      if (isTrackUnrecognizedPXEClients())
-        if (unrecognizedClientService.findByHwAddress(hwAddressString).isEmpty()) {
-          final VendorClassIdentifier vci = (VendorClassIdentifier) discover
-                  .getOptions().get(VendorClassIdentifier.class);
+      VendorClassIdentifier vci = (VendorClassIdentifier) discover.getOptions()
+              .get(VendorClassIdentifier.class);
 
-          final UnrecognizedClient uc = new UnrecognizedClient();
+      // NOTE: This description will be used in the UI to sort the clients.
+      String description = String.format("last seen: %s (%s)", Instant.now(),
+                                         vci != null ? vci.getString() : "");
 
-          // invent a client name, if it is not yet known.
-          if (null == hostname)
-            hostname = hwAddressString;
-
-          uc.setName(hostname);
-
-          uc.setMacAddress(hwAddressString);
-          uc.setIpHostNumber(clientAddress);
-          uc.setDescription((vci != null ? vci.getString() : "")
-                  + " first seen: " + new Date());
-
-          unrecognizedClientService.add(uc);
+      unrecognizedClientService.findByHwAddress(hwAddressString).forEach(uc -> {
+        try {
+          uc.getRealm().getDirectory().delete(uc);
+        } catch (DirectoryException e) {
+          logger.error("Cannot delete unrecognizedClient: " + uc, e);
+          return;
         }
+      });
+
+      UnrecognizedClient uc = new UnrecognizedClient();
+
+      uc.setName(hwAddressString);
+      uc.setMacAddress(hwAddressString);
+      uc.setIpHostNumber(ipHostNumber);
+      uc.setDescription(description);
+
+      unrecognizedClientService.add(uc);
     } catch (final RuntimeException e) {
       logger.error("Can't track unrecognized client", e);
     }

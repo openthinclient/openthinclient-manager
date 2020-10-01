@@ -3,7 +3,6 @@ package org.openthinclient.web.dashboard;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.ExternalResource;
@@ -15,7 +14,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
@@ -70,7 +68,6 @@ public class DashboardView extends Panel implements View {
   private EventBus.SessionEventBus eventBus;
   private final IMessageConveyor mc;
   private CssLayout dashboardPanels;
-  private ComboBox<UnrecognizedClient> macCombo;
 
   @Autowired
   public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -241,6 +238,7 @@ public class DashboardView extends Panel implements View {
   }
 
   class UnregisteredClientsPanel extends ContentPanel {
+    private ComboBox<String> macCombo;
 
     public UnregisteredClientsPanel() {
       super(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS));
@@ -249,74 +247,59 @@ public class DashboardView extends Panel implements View {
       macCombo = new ComboBox<>();
       macCombo.setPlaceholder(mc.getMessage(UI_THINCLIENT_MAC));
       macCombo.setEmptySelectionAllowed(false);
-      try {
-        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-      } catch (Exception ex) {
-        LOGGER.error("Failed to set initial content for MAC combo.", ex);
-      }
-      macCombo.setItemCaptionGenerator(UnrecognizedClient::getMacAddress);
-      macCombo.addValueChangeListener(event ->
-          UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
-      );
+      macCombo.setNewItemProvider(input -> {
+        openClientView(input);
+        return Optional.empty();
+      });
+      macCombo.addValueChangeListener(event -> openClientView(event.getValue()));
+      this.updatePXEClientList();
 
       Button updateButton = new Button(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS_UPDATE_BUTTON));
       updateButton.addStyleName("dashboard-panel-unregistered-clients-button");
       updateButton.setIcon(VaadinIcons.REFRESH);
       updateButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-      updateButton.addClickListener(event -> {
-        try {
-          macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-        } catch (Exception ex) {
-          LOGGER.error("Update button failed to set content for MAC combo.", ex);
-        }
-      });
+      updateButton.addClickListener( event -> this.updatePXEClientList() );
 
       Button forgetButton = new Button(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS_FORGET_BUTTON));
       forgetButton.addStyleName("dashboard-panel-unregistered-clients-clean-button");
       forgetButton.setIcon(VaadinIcons.TRASH);
       forgetButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
       forgetButton.addClickListener(event -> {
-        try {
-          unrecognizedClientService.findAll().forEach(directoryObject -> {
-            Realm realm = directoryObject.getRealm();
-            try {
-              realm.getDirectory().delete(directoryObject);
-            } catch (DirectoryException e) {
-              LOGGER.error("Cannot delete unrecognizedClient: " + directoryObject, e);
-            }
-          });
-          macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-        } catch (Exception ex) {
-          LOGGER.error("Forget button failed to set content for MAC combo.", ex);
-        }
+        unrecognizedClientService.findAll().forEach(directoryObject -> {
+          Realm realm = directoryObject.getRealm();
+          try {
+            realm.getDirectory().delete(directoryObject);
+          } catch (DirectoryException e) {
+            LOGGER.error("Cannot delete unrecognizedClient: " + directoryObject, e);
+          }
+        });
+        this.updatePXEClientList();
       });
 
       addComponents(macCombo, updateButton, forgetButton);
 
+      eventBus.subscribeWithWeakReference(this);
+    }
+
+    private void openClientView(String macaddress) {
+      macaddress = macaddress.trim();
+      if (macaddress.matches("^[0-9a-fA-F]{12}$")) {
+        macaddress = String.join(":", macaddress.split("(?<=\\G..)"));
+      } else if (!macaddress.matches("^([0-9A-Fa-f]{2}[:]){5}[0-9A-Fa-f]{2}$")) {
+        return;
+      }
+      if(clientService.findByHwAddress(macaddress).size() == 0) {
+        UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + macaddress);
+      }
+    }
+
+    private void updatePXEClientList() {
+      macCombo.setItems(unrecognizedClientService.getLastSeenMACs(50));
+    }
+
+    @EventBusListenerMethod
+    public void updatePXEClientList(final DashboardEvent.PXEClientListRefreshEvent event) {
+      this.updatePXEClientList();
     }
   }
-
-  @EventBusListenerMethod
-  public void updatePXEClientList(final DashboardEvent.PXEClientListRefreshEvent event) {
-    try {
-      Set<UnrecognizedClient> clients = unrecognizedClientService.findAll();
-      LOGGER.debug("Update PXE-client list, size {}", clients.size());
-      macCombo.setDataProvider(new ListDataProvider<>(clients));
-    } catch (Exception e) {
-      LOGGER.warn("Cannot load content: " + e.getMessage());
-    }
-  }
-
-  @Override
-  public void attach() {
-    super.attach();
-    eventBus.subscribe(this);
-  }
-
-  @Override
-  public void detach() {
-    eventBus.unsubscribe(this);
-    super.detach();
-  }
-
 }
