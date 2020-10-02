@@ -1,7 +1,7 @@
 package org.openthinclient.web.thinclient.model;
 
-import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.Validator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -23,7 +23,7 @@ public class ItemConfiguration {
   private boolean required = false;
   private boolean disabled = false;
 
-  private List<AbstractValidator> validators = new ArrayList<>();
+  private List<Validator> validators = new ArrayList<>();
 
   public ItemConfiguration(String key, String value) {
     this.key = key;
@@ -73,11 +73,11 @@ public class ItemConfiguration {
   }
 
 
-  public List<AbstractValidator> getValidators() {
+  public List<Validator> getValidators() {
     return validators;
   }
 
-  public void addValidator(AbstractValidator validator) {
+  public void addValidator(Validator validator) {
     this.validators.add(validator);
   }
 
