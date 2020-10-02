@@ -61,7 +61,7 @@ public class UpdateManagerView extends Panel implements View {
      root = new CssLayout();
      root.setStyleName("updateview");
      setContent(root);
-     eventBus.subscribe(this);
+     eventBus.subscribeWithWeakReference(this);
   }
 
   @Override
