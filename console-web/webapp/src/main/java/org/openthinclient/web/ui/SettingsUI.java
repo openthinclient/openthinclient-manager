@@ -66,7 +66,7 @@ import java.util.Locale;
 @Theme("openthinclient")
 @SpringUI(path = "/settings")
 @Push(PushMode.MANUAL)
-@com.vaadin.annotations.JavaScript({"UIFunctions.js"})
+@com.vaadin.annotations.JavaScript({"vaadin://js/UIFunctions.js"})
 public final class SettingsUI extends UI implements ViewDisplay {
 
   /**
