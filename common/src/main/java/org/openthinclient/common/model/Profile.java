@@ -159,6 +159,7 @@ public abstract class Profile extends DirectoryObject {
 	 */
 	public void setSchema(Schema schema) {
 		this.schema = schema;
+		getProperties().setDescription(schema.getName());
 	}
 
 	/**
