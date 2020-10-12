@@ -41,6 +41,8 @@ public class UpdateManagerView extends Panel implements View {
   @Value("${application.version}")
   private String applicationVersion;
 
+  private EventBus eventBus;
+
   private MessageConveyor mc;
   private CssLayout root;
 
@@ -54,6 +56,7 @@ public class UpdateManagerView extends Panel implements View {
   private UI ui;
 
   public UpdateManagerView(EventBus.SessionEventBus eventBus) {
+     this.eventBus = eventBus;
 
      mc = new MessageConveyor(UI.getCurrent().getLocale());
      setSizeFull();
@@ -61,7 +64,18 @@ public class UpdateManagerView extends Panel implements View {
      root = new CssLayout();
      root.setStyleName("updateview");
      setContent(root);
-     eventBus.subscribeWithWeakReference(this);
+  }
+
+  @Override
+  public void attach() {
+      super.attach();
+      eventBus.subscribe(this);
+  }
+
+  @Override
+  public void detach() {
+      eventBus.unsubscribe(this);
+      super.detach();
   }
 
   @Override
