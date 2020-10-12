@@ -40,7 +40,7 @@ public class RuntimeProcessExecutor {
             LOGGER.info("Launch Application with id={} and params={}", install4jID, args.toArray(new String[args.size()]));
             ApplicationLauncher.launchApplication(install4jID, args.toArray(new String[args.size()]), false, new ApplicationLauncher.Callback() {
                 public void exited(int exitValue) {
-                  LOGGER.error("Installer failed with exit code: " + exitValue);
+                  LOGGER.info("Installer exited with code {}", exitValue);
                   callback.accept(exitValue);
                 }
 
