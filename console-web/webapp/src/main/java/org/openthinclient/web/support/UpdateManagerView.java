@@ -195,11 +195,15 @@ public class UpdateManagerView extends Panel implements View {
 
   @EventBusListenerMethod
   private void updateRunnerFinished(UpdateRunnerEvent event) {
-    this.updateRunnerButton.setEnabled(true);
     if(event.failed()) {
-      this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_EXIT));
+      this.updateRunnerButton.setEnabled(true);
+      if(event.getExitValue() == 107) {
+        this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_NONE));
+      } else {
+        this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_ERROR));
+      }
     } else {
-      this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_SUCCESS));
+      this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_INSTALLING));
     }
     ui.push();
   }
