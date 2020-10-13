@@ -157,6 +157,7 @@ public class ProfileRepositoryTest {
 
         // client with location and realm
         Realm realm = new Realm();
+        realm.setSchemaProvider(schemaProvider);
         realm.setSchema(schemaProvider.getSchema(Realm.class, null));
         realm.setValue("BootOptions.TFTPBootserver", "${myip}"); // will be added to client configuration
         realm.setValue("BootOptions.NFSRootserver", "${myip}");  // will be added to client configuration

@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<name>openthinclient.org Manager</name>
-	<version>2020.2-BETA</version>
+	<version>2020.2-BETA2</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
@@ -163,12 +163,8 @@
         -->
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+			<url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
-		<repository>
-			<id>openthinclient.org</id>
-			<url>http://openthinclient.sourceforge.net/maven2</url>
-		</repository>
 		<repository>
 			<id>openthinclient.org-public</id>
 			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
@@ -182,7 +178,7 @@
 		</repository>
 		<repository>
 			<id>ej-technologies</id>
-			<url>http://maven.ej-technologies.com/repository</url>
+			<url>https://maven.ej-technologies.com/repository</url>
 		</repository>
 	</repositories>
 
@@ -382,7 +378,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>8.0.13</version>
+				<version>8.0.21</version>
 			</dependency>
 
 		</dependencies>

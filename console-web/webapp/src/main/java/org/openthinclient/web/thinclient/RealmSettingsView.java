@@ -61,10 +61,10 @@ public final class RealmSettingsView extends AbstractThinclientView {
    }
 
   @Override
-  public HashSet getAllItems() throws AllItemsListException {
+  public HashSet<Realm> getAllItems() throws AllItemsListException {
      try {
        Set<Realm> allRealms = getRealmService().findAllRealms();
-       HashSet hashSet = new HashSet();
+       HashSet<Realm> hashSet = new HashSet<>();
        hashSet.addAll(allRealms);
        return hashSet;
      } catch (Exception e) {
@@ -164,14 +164,8 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-     LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
-    try {
-      DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
-      ProfilePanel profilePanel = createProfilePanel(realmConfiguration);
-      ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(realmConfiguration);
-      displayProfilePanel(profilePanel, profileReferencesPanel);
-    } catch (BuildProfileException e) {
-      showError(e);
-    }
+    LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
+    DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
+    showProfile(realmConfiguration);
   }
 }

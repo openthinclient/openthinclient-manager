@@ -35,7 +35,7 @@ public class DefaultLDAPApplicationService extends AbstractLDAPService<Applicati
   }
 
   @Override
-  public Set<Application> findAllUsingSchema(Schema<?> schema) {
+  public Set<Application> findAllUsingSchema(Schema schema) {
     long start = System.currentTimeMillis();
     final String schemaName = schema.getName();
     Set<Application> collect = findAll(Application.class) //

@@ -1,10 +1,9 @@
 package org.openthinclient.web.thinclient.property;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 
@@ -37,7 +36,7 @@ public class OtcMacProperty extends OtcProperty {
   }
 
   public List<String> getOptions() {
-    return unrecognizedClientService.findAll().stream().limit(50).map(UnrecognizedClient::getMacAddress).collect(Collectors.toList());
+    return unrecognizedClientService.getLastSeenMACs(50);
   }
 
   @Override

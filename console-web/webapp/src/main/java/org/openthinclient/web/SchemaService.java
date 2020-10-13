@@ -39,7 +39,7 @@ public class SchemaService {
     this.realmService = realmService;
   }
 
-  public Stream<? extends Schema<?>> findAffectedSchemas(InstallPlan installPlan) {
+  public Stream<? extends Schema> findAffectedSchemas(InstallPlan installPlan) {
 
     return installPlan.getPackageUninstallSteps() //
             .flatMap(this::getInstalledContents) //
@@ -65,7 +65,7 @@ public class SchemaService {
     return contents.stream();
   }
 
-  private Schema<?> loadSchema(PackageInstalledContent packageInstalledContent) {
+  private Schema loadSchema(PackageInstalledContent packageInstalledContent) {
 
     final Path path = packageInstalledContent.getPath();
 

@@ -20,10 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.openthinclient.common.model.schema.Schema;
@@ -43,17 +39,9 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 public abstract class Profile extends DirectoryObject {
 	private static final long serialVersionUID = 1L;
 
-	private static final String PROPERTY_SCHEMA_VERSION = "schema_version";
-
-	public static final String WARNING_REMOVED_OPTION = "WARNING_REMOVED_OPTION";
-
-	public static final String WARNING_NEW_FIELD = "WARNING_NEW_FIELD";
-
 	private transient Schema schema;
 
 	private transient Properties properties;
-
-	private transient final Map<String, String> warnings = new HashMap<String, String>();
 
 	/*
 	 * @see org.openthinclient.Profile#getValue(javax.swing.tree.String, boolean)
@@ -171,11 +159,7 @@ public abstract class Profile extends DirectoryObject {
 	 */
 	public void setSchema(Schema schema) {
 		this.schema = schema;
-
-		if (schema != null) {
-			setValue(PROPERTY_SCHEMA_VERSION, String.valueOf(schema.getVersion()));
-			getProperties().setDescription(schema.getName());
-		}
+		getProperties().setDescription(schema.getName());
 	}
 
 	/**
@@ -188,8 +172,7 @@ public abstract class Profile extends DirectoryObject {
 	 * @throws SchemaLoadingException
 	 */
 	public Schema getSchema(Realm realm) throws SchemaLoadingException {
-		if (null == schema)
-			loadSchema(realm);
+		loadSchema(realm);
 		return schema;
 	}
 
@@ -198,8 +181,7 @@ public abstract class Profile extends DirectoryObject {
 	 * @throws SchemaLoadingException
 	 */
 	public void initSchemas(Realm realm) throws SchemaLoadingException {
-		if (null == schema)
-			loadSchema(realm);
+		loadSchema(realm);
 
 		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited)
@@ -213,29 +195,13 @@ public abstract class Profile extends DirectoryObject {
 	private void loadSchema(Realm realm) throws SchemaLoadingException {
 		final String schemaName = getSchemaName();
 
-		schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+		if(realm != null) {
+			schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+		}
 
 		if (null == schema)
 			throw new SchemaLoadingException("Schema wasn't found for " + getClass()
 					+ (null != schemaName ? ", schemaName=" + schemaName : ""));
-
-		// check versions
-		final String propertiesVersion = getValue(PROPERTY_SCHEMA_VERSION);
-		final String schemaVersion = String.valueOf(schema.getVersion());
-
-		if (propertiesVersion == null || !propertiesVersion.equals(schemaVersion)) {
-			final Set<String> set = new HashSet<String>();
-
-			for (final String propertyName : getProperties().getMap().keySet())
-				if (schema.getChild(propertyName) == null) {
-					warnings.put(propertyName, WARNING_REMOVED_OPTION);
-					set.add(propertyName);
-				}
-			for (final String propertyName : set)
-				getProperties().getMap().remove(propertyName);
-
-			setValue(PROPERTY_SCHEMA_VERSION, String.valueOf(schema.getVersion()));
-		}
 	}
 
 	/**
@@ -269,13 +235,5 @@ public abstract class Profile extends DirectoryObject {
 					new TreeMap<String, String>());
 
 		return properties;
-	}
-
-	/**
-	 * @param key
-	 * @return
-	 */
-	public String getWarning(String key) {
-		return warnings.get(key);
 	}
 }
