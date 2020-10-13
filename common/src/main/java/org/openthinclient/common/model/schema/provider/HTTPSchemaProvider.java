@@ -139,14 +139,4 @@ public class HTTPSchemaProvider extends AbstractSchemaProvider {
 
 		return schemas;
 	}
-
-	@Override
-	public void reload() {
-		super.reload();
-		try {
-			loadAllSchemas("application");
-		} catch (SchemaLoadingException e) {
-			e.printStackTrace();
-		}
-	}
 }

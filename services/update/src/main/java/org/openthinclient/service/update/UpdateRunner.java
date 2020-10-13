@@ -30,7 +30,7 @@ public class UpdateRunner {
       PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
       RuntimeProcessExecutor.executeManagerUpdateCheck(updateProcess, configuration.getProxyConfiguration(), exitValue -> {
         isRunning = false;
-        applicationContext.publishEvent(new UpdateRunnerEvent(this, exitValue != 0));
+        applicationContext.publishEvent(new UpdateRunnerEvent(this, exitValue));
       });
     }).start();
   }

@@ -51,7 +51,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
     }
   }
 
-  protected Map<String, Map<String, Schema>> typeCache = new HashMap<>();
+  protected final Map<String, Map<String, Schema>> typeCache = new HashMap<>();
 
   /**
    * @see SchemaProvider
@@ -64,7 +64,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
               .lastIndexOf('.') + 1);
 
       if (!typeCache.containsKey(profileTypeName))
-        getSchemaNames(profileType);
+        updateTypeCache(profileTypeName);
 
       final Map<String, Schema> schemas = typeCache.get(profileTypeName);
 
@@ -89,27 +89,10 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
     String profileTypeName = profileType.getName().toLowerCase();
     profileTypeName = profileTypeName.substring(profileTypeName
             .lastIndexOf('.') + 1);
-    if (!typeCache.containsKey(profileTypeName)) {
-      final List<Schema> schemas = new ArrayList<>();
+    if (!typeCache.containsKey(profileTypeName))
+      updateTypeCache(profileTypeName);
 
-      // get contents of directory named after the profile type name
-      schemas.addAll(loadAllSchemas(profileTypeName));
-
-      // get the default schema for the profile type
-      schemas.addAll(loadDefaultSchema(profileTypeName));
-
-      // cache 'em all
-      Map<String, Schema> schemasByName = typeCache.get(profileTypeName);
-      if (null == schemasByName) {
-        schemasByName = new HashMap<>();
-        typeCache.put(profileTypeName, schemasByName);
-      }
-
-      for (final Schema schema : schemas)
-        schemasByName.put(schema.getName(), schema);
-    }
-
-    final Map schemas = typeCache.get(profileTypeName);
+    final Map<String, Schema> schemas = typeCache.get(profileTypeName);
     if (null == schemas) {
       logger.error("No schemas found for " + profileType);
       return new String[0];
@@ -140,8 +123,28 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
     }
   }
 
+  private void updateTypeCache(String profileTypeName) {
+    final List<Schema> schemas = new ArrayList<>();
+
+    // get contents of directory named after the profile type name
+    schemas.addAll(loadAllSchemas(profileTypeName));
+
+    // get the default schema for the profile type
+    schemas.addAll(loadDefaultSchema(profileTypeName));
+
+    // cache 'em all
+    Map<String, Schema> schemasByName = typeCache.get(profileTypeName);
+    if (null == schemasByName) {
+      schemasByName = new HashMap<>();
+      typeCache.put(profileTypeName, schemasByName);
+    }
+
+    for (final Schema schema : schemas)
+      schemasByName.put(schema.getName(), schema);
+  }
+
   @Override
   public void reload() {
-    typeCache = new HashMap<>();
+    typeCache.clear();
   }
 }

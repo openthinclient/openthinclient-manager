@@ -6,6 +6,8 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.TypeMapping;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,5 +55,23 @@ public class DefaultLDAPUnrecognizedClientService extends AbstractLDAPService<Un
     }
 
     return unrecognizedClient;
+  }
+
+  public List<String> getLastSeenMACs(long amount) {
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory()
+              .list(UnrecognizedClient.class)
+              .stream()
+              .sorted(Comparator.comparing(
+                          UnrecognizedClient::getDescription,
+                          String::compareTo
+                      ).reversed())
+            .limit(amount)
+            .map(uc -> uc.getMacAddress());
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toList());
   }
 }

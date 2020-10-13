@@ -399,12 +399,18 @@ $ok-button-color: #2db200;
           border-bottom: 1px solid var(--section-color);
 
           .referenceComponentCaption {
-            display: grid;
-            grid-template: "caption icon" / 1fr auto;
+            display: block;
             color: #000;
 
+            // disable empty elements that act as unwanted spacers
+            &::before,
+            &::after {
+              display: none;
+            }
+
             .v-button-wrap {
-              display: contents;
+              display: grid;
+              grid-template: "caption icon" / 1fr auto;
             }
 
             .v-button-caption {

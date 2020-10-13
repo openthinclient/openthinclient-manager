@@ -3,14 +3,18 @@ package org.openthinclient.service.update;
 import org.springframework.context.ApplicationEvent;
 
 public class UpdateRunnerEvent extends ApplicationEvent {
-  private boolean failed;
+  private Integer exitValue;
 
-  UpdateRunnerEvent(Object source, boolean failed) {
+  UpdateRunnerEvent(Object source, Integer exitValue) {
     super(source);
-    this.failed = failed;
+    this.exitValue = exitValue;
   }
 
   public boolean failed() {
-    return this.failed;
+    return this.exitValue != 0;
+  }
+
+  public Integer getExitValue() {
+    return this.exitValue;
   }
 }

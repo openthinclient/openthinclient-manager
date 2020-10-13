@@ -29,17 +29,17 @@ public class SchemaTest {
   }
 
   @SuppressWarnings("unchecked")
-  protected <T extends Profile> Schema<T> read(String path) throws Exception {
+  protected <T extends Profile> Schema read(String path) throws Exception {
 
     // this is essentially a copy of AbstractSchemaProvider.loadSchema
 
     final Unmarshaller unmarshaller = CONTEXT.createUnmarshaller();
-    return (Schema<T>) unmarshaller.unmarshal(getClass().getResourceAsStream(path));
+    return (Schema) unmarshaller.unmarshal(getClass().getResourceAsStream(path));
   }
 
   @Test
   public void testBrowserSchema() throws Exception {
-    final Schema<Application> schema = read("/schemas/browser/schema/application/browser.xml");
+    final Schema schema = read("/schemas/browser/schema/application/browser.xml");
 
     assertEquals("browser", schema.getName());
     assertLabel("en", "Browser", schema);
@@ -64,7 +64,7 @@ public class SchemaTest {
 
   @Test
   public void testCupsClientSchema() throws Exception {
-    final Schema<Application> schema = read("/schemas/cups-client/schema/printer/cups-client.xml");
+    final Schema schema = read("/schemas/cups-client/schema/printer/cups-client.xml");
 
     assertEquals("cups-client", schema.getName());
     assertLabel("en", "CUPS client", schema);
@@ -84,7 +84,7 @@ public class SchemaTest {
 
   @Test
   public void testRealmSchema() throws Exception {
-    final Schema<Application> schema = read("/schemas/tcos-devices/schema/realm.xml");
+    final Schema schema = read("/schemas/tcos-devices/schema/realm.xml");
 
     assertEquals("realm", schema.getName());
 

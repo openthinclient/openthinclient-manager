@@ -8,6 +8,14 @@
     background: url("/VAADIN/themes/openthinclient/icon/filter.svg") .66ch/1em no-repeat;
   }
 
+  .v-filterselect-suggestpopup {
+    .v-filterselect-suggestmenu {
+      td.gwt-MenuItem {
+        padding: 0 7px;
+      }
+    }
+  }
+
   .v-filterselect-suggestpopup-profileItemSelect {
     box-shadow: 0 1px 4px 1px #e1e5e8;
 

@@ -3,6 +3,9 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.jamierf.wol.WakeOnLan;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.Validator;
+import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -295,6 +298,17 @@ public final class ClientView extends AbstractThinclientView {
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", mac);
     macaddressConfiguration.setRequired(mac == null);
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^\\s*([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})\\s*$"));
+    macaddressConfiguration.addValidator(new Validator<String>() {
+      public ValidationResult apply(String value, ValueContext context) {
+        if(!value.equalsIgnoreCase(mac)) {
+          Optional<Client> client = clientService.findByHwAddress(value.trim()).stream().findFirst();
+          if(client.isPresent()) {
+            return ValidationResult.error(mc.getMessage(UI_MAC_ADDRESS_ALREADY_EXISTS, client.get().getName()));
+          }
+        }
+        return ValidationResult.ok();
+      }
+    });
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 

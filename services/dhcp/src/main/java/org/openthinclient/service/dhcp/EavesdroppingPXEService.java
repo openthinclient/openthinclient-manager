@@ -188,16 +188,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 
 			// track unrecognized clients
 			if (conversation.getClient() == null) {
-				final HostName hostnameOption = (HostName) offer.getOptions().get(
-						HostName.class);
-				String hostname;
-				if (null != hostnameOption)
-					hostname = hostnameOption.getString();
-				else
-					hostname = offer.getAssignedClientAddress().getHostAddress();
-
-				trackUnrecognizedClient(conversation.getDiscover(), hostname, offer
-						.getAssignedClientAddress().getHostAddress());
+				trackUnrecognizedClient(conversation.getDiscover(),
+						offer.getAssignedClientAddress().getHostAddress());
 			} else {
 			  InetSocketAddress applicableServerAddress = determineServerAddress(localAddress, offer);
 			  if (applicableServerAddress != null) {
