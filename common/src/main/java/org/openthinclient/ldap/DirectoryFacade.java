@@ -95,6 +95,7 @@ public class DirectoryFacade {
 					break;
 				case SSL :
 					env.put(Context.SECURITY_PROTOCOL, "ssl");
+					env.put("java.naming.ldap.factory.socket", "org.openthinclient.ldap.NoSSLSocketFactory");
 					break;
 				case START_TLS :
 					// not yet...
