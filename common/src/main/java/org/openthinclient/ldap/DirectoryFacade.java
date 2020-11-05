@@ -134,6 +134,12 @@ public class DirectoryFacade {
 
 			env.put(Context.PROVIDER_URL, connectionDescriptor.getLDAPUrl());
 
+			if(connectionDescriptor.getProviderType().equals(
+					LDAPConnectionDescriptor.ProviderType.SUN)) {
+				env.put("com.sun.jndi.ldap.connect.timeout", "5000");
+				env.put("com.sun.jndi.ldap.read.timeout", "3000");
+			}
+
 			try {
 				final InetAddress[] hostAddresses = InetAddress
 						.getAllByName(connectionDescriptor.getHostname());
