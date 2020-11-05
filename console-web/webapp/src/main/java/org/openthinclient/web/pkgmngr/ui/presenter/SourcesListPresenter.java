@@ -180,7 +180,7 @@ public class SourcesListPresenter {
 
         final Source newSource = new Source();
         try {
-            newSource.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/"));
+            newSource.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2020/packages/"));
         } catch (MalformedURLException e) {
             // should never happen, as the URL is hardcoded
         }
