@@ -69,23 +69,6 @@ public class InstallableDistributionsTest {
     assertFalse("Serialized model differs: " + diff.toString(), diff.hasDifferences());
   }
 
-  @Test
-  public void testReadDefaultDistributionsXml() throws Exception {
-
-    final InstallableDistributions defaultDistributions = InstallableDistributions.getDefaultDistributions();
-
-    assertNotNull(defaultDistributions);
-
-    assertEquals(1, defaultDistributions.getInstallableDistributions().size());
-    final InstallableDistribution distributionPales = defaultDistributions.getInstallableDistributions().get(0);
-
-    assertEquals(new URL("http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/"), distributionPales.getSourcesList().getSources().get(0).getUrl());
-    assertTrue("Pales distribution enabled", distributionPales.getSourcesList().getSources().get(0).isEnabled());
-    assertEquals("base", distributionPales.getMinimumPackages().get(0));
-    assertTrue(distributionPales.isPreferred());
-
-  }
-
   /**
    * This test will ensure that a default preferred distribution is available. If not, other logic
    * will fail

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <distributions>
     <distribution name="openthinclient Pales" preferred="true">
-        <description>Version 2.1 of the openthinclient operating system</description>
+        <description>The openthinclient operating system</description>
         <sources>
             <source enabled="true">
-                <description>openthinclient.org Pales, Rolling</description>
-                <url>http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/</url>
+                <description>openthinclient</description>
+                <url>http://archive.openthinclient.org/openthinclient/v2020/packages/</url>
             </source>
         </sources>
-
+        
         <install-package>base</install-package>
-        <install-package>desktop</install-package>
     </distribution>
 </distributions>

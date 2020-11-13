@@ -7,6 +7,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
@@ -27,9 +28,10 @@ public class PackageDetailsListPresenter {
   private final SchemaService schemaService;
   private final ApplicationService applicationService;
   private final ClientService clientService;
+  private final NFSService nfsService;
 
   public PackageDetailsListPresenter(Mode mode, PackageActionOverviewPresenter packageActionOverviewPresenter, PackageManager packageManager, SchemaService schemaService, ApplicationService applicationService,
-                                     ClientService clientService) {
+                                     ClientService clientService, NFSService nfsService) {
     this.mode = mode;
     this.packageActionOverviewPresenter = packageActionOverviewPresenter;
     packageActionOverviewPresenter.setMode(mode);
@@ -37,6 +39,7 @@ public class PackageDetailsListPresenter {
     this.schemaService = schemaService;
     this.applicationService = applicationService;
     this.clientService = clientService;
+    this.nfsService = nfsService;
 
     // initially clear our views
     setPackages(null);
@@ -120,7 +123,12 @@ public class PackageDetailsListPresenter {
     final ProgressReceiverDialog dialog = new ProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
     final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
     dialog.watch(future);
-    future.addCallback(result -> clientService.reloadAllSchemas(), ex -> {});
+    future.addCallback(result -> {
+      clientService.reloadAllSchemas();
+      if(nfsService != null && nfsService.isRunning()) {
+        nfsService.restartService();
+      }
+    }, ex -> {});
 
     dialog.open(true);
   }

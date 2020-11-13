@@ -14,6 +14,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
+import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
@@ -55,6 +56,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   private final PackageManager packageManager;
   private final SchemaService schemaService;
   private final ClientService clientService;
+  private final NFSService nfsService;
 
   private final Registration handler;
   private final ApplicationService applicationService;
@@ -65,6 +67,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
                                          final PackageManagerExecutionEngine packageManagerExecutionEngine,
                                          final SchemaService schemaService, ApplicationService applicationService,
                                          final ClientService clientService,
+                                         final NFSService nfsService,
                                          final EventBus.SessionEventBus eventBus,
                                          final DashboardNotificationService notificationService) {
 
@@ -72,6 +75,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     this.schemaService = schemaService;
     this.applicationService = applicationService;
     this.clientService = clientService;
+    this.nfsService = nfsService;
     this.mc = new MessageConveyor(UI.getCurrent().getLocale());
     this.mainView = new PackageManagerMainView();
 
@@ -125,21 +129,21 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     final PackageActionOverviewView packageActionOverviewView = new PackageActionOverviewView();
     masterDetailsView.getDetailsContainer().addComponent(packageActionOverviewView);
 
-    final PackageDetailsListPresenter packageDetailsListPresenter = new PackageDetailsListPresenter(mode, new PackageActionOverviewPresenter(packageActionOverviewView), packageManager, schemaService, applicationService, clientService);
+    final PackageDetailsListPresenter packageDetailsListPresenter = new PackageDetailsListPresenter(mode, new PackageActionOverviewPresenter(packageActionOverviewView), packageManager, schemaService, applicationService, clientService, nfsService);
 
     Consumer<Collection<Package>> presenter = packageDetailsListPresenter::setPackages;
     if (mode == PackageDetailsListPresenter.Mode.INSTALL) {
       // in case of the installation mode, we're using the AvailablePackageListMasterDetailsPresenter
       // as it does some additional filtering of the package list, specific to the handling of
       // packages that may be installed
-      return new AvailablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService);
+      return new AvailablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
     }
     if (mode == PackageDetailsListPresenter.Mode.UPDATE) {
       // similar to the installation mode, update has some specific behaviour that will be handled
       // using the following Presenter
-      return new UpdateablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService);
+      return new UpdateablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
     }
-    return new PackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService);
+    return new PackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
   }
 
   private void bindPackageList(PackageListMasterDetailsPresenter presenter, Callable<Collection<Package>> packagesProvider) {

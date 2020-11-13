@@ -17,6 +17,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
@@ -43,7 +44,7 @@ public class PackageListMasterDetailsPresenter {
   protected final PackageManager packageManager;
   protected final IMessageConveyor mc;
 
-  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService) {
+  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, NFSService nfsService) {
     this.view = view;
     this.dataProvider = new ListDataProvider<>(new ArrayList<>());
     this.view.setDataProvider(this.dataProvider);
@@ -82,7 +83,7 @@ public class PackageListMasterDetailsPresenter {
 
     this.view.onShowPackageDetails((pkg) -> {
       final PackageDetailsView packageDetailsView = new PackageDetailsView();
-      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager, clientService);
+      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager, clientService, nfsService);
       // setting the package will automatically trigger the view to be shown
       presenter.setPackage(pkg);
     });
