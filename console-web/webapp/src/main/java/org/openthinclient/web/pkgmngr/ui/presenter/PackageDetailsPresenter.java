@@ -20,6 +20,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
@@ -32,11 +33,13 @@ public class PackageDetailsPresenter {
     private final PackageManager packageManager;
     private final MessageConveyor mc;
     private final ClientService clientService;
+    private final NFSService nfsService;
 
-    public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService) {
+    public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService, NFSService nfsService) {
         this.view = view;
         this.packageManager = packageManager;
         this.clientService = clientService;
+        this.nfsService = nfsService;
         mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
 
@@ -139,6 +142,9 @@ public class PackageDetailsPresenter {
 
     private void onOperationSuccess(PackageManagerOperationReport packageManagerOperationReport) {
       clientService.reloadAllSchemas();
+      if(nfsService != null && nfsService.isRunning()) {
+        nfsService.restartService();
+      }
     }
 
 

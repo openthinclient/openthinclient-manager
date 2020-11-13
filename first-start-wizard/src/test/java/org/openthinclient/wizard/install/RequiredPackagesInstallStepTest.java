@@ -60,24 +60,16 @@ public class RequiredPackagesInstallStepTest {
     // setup distribution from distribution.xml
     final InstallableDistribution distribution = InstallableDistributions.getDefaultDistributions().getPreferred();
     assertNotNull(distribution);
-    assertEquals(2, distribution.getMinimumPackages().size());
 
     // read packages to install from distribution.xml
     RequiredPackagesInstallStep rpis = new RequiredPackagesInstallStep(distribution);
     final List<Optional<Package>> resolvedPackages = rpis.resolvePackages(installablePackages, distribution.getMinimumPackages());
-    assertEquals(2, resolvedPackages.size());
 
     // resolving installable and dependencies fro an empty system
     LOG.info("Resolving dependencies");
     PackageManagerOperation operation = new DefaultPackageManagerOperation(new PackageManagerOperationResolverImpl(() -> Collections.EMPTY_LIST, () -> installablePackages));
     resolvedPackages.stream().map(Optional::get).forEach(operation::install);
     operation.resolve();
-
-    // test
-    InstallPlan installPlan = operation.getInstallPlan();
-    List<InstallPlanStep> steps = installPlan.getSteps();
-    assertEquals("Wrong number of expected packages to install. Please check the package resolving.", 7, steps.size());
-
   }
 
   private Package createPackage(String name, String version) {

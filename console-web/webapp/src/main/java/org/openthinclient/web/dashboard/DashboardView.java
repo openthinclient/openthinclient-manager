@@ -47,7 +47,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class DashboardView extends Panel implements View {
 
   public final static String NAME = "";
-  private static final String NEWS_URL = "https://openthinclient.com/manager_news/?";
+  private static final String NEWS_URL = "https://openthinclient.com/manager_news/";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DashboardView.class);
 
@@ -232,8 +232,9 @@ public class DashboardView extends Panel implements View {
 
       addComponents(frame, fallback);
 
-      JavaScript.getCurrent().execute(String.format("loadBrowserFrame('.news-browser .v-browserframe', '%s')",
-                                                    NEWS_URL + applicationVersion));
+      JavaScript.getCurrent().execute(
+          String.format("loadBrowserFrame('.news-browser .v-browserframe', '%s?%s/%s')",
+                        NEWS_URL, applicationVersion, UI.getCurrent().getLocale().getLanguage()));
     }
   }
 
