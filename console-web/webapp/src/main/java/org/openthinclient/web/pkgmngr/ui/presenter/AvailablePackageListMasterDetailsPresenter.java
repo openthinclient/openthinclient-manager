@@ -5,16 +5,16 @@ import com.vaadin.server.SerializablePredicate;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AvailablePackageListMasterDetailsPresenter extends PackageListMasterDetailsPresenter {
-  public AvailablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, NFSService nfsService) {
-    super(view, detailsPresenter, packageManager, clientService, nfsService);
+  public AvailablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext applicationContext) {
+    super(view, detailsPresenter, packageManager, clientService, applicationContext);
 
     // enable the "show all versions" filtering checkbox
     view.getPackageFilerCheckbox().setVisible(true);

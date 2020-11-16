@@ -14,7 +14,6 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
-import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
@@ -28,6 +27,7 @@ import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -56,7 +56,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   private final PackageManager packageManager;
   private final SchemaService schemaService;
   private final ClientService clientService;
-  private final NFSService nfsService;
+  private final ApplicationContext applicationContext;
 
   private final Registration handler;
   private final ApplicationService applicationService;
@@ -67,15 +67,14 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
                                          final PackageManagerExecutionEngine packageManagerExecutionEngine,
                                          final SchemaService schemaService, ApplicationService applicationService,
                                          final ClientService clientService,
-                                         final NFSService nfsService,
                                          final EventBus.SessionEventBus eventBus,
-                                         final DashboardNotificationService notificationService) {
+                                         final ApplicationContext applicationContext) {
 
     this.packageManager = packageManager;
     this.schemaService = schemaService;
     this.applicationService = applicationService;
     this.clientService = clientService;
-    this.nfsService = nfsService;
+    this.applicationContext = applicationContext;
     this.mc = new MessageConveyor(UI.getCurrent().getLocale());
     this.mainView = new PackageManagerMainView();
 
@@ -129,21 +128,29 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     final PackageActionOverviewView packageActionOverviewView = new PackageActionOverviewView();
     masterDetailsView.getDetailsContainer().addComponent(packageActionOverviewView);
 
-    final PackageDetailsListPresenter packageDetailsListPresenter = new PackageDetailsListPresenter(mode, new PackageActionOverviewPresenter(packageActionOverviewView), packageManager, schemaService, applicationService, clientService, nfsService);
+    final PackageDetailsListPresenter
+    packageDetailsListPresenter = new PackageDetailsListPresenter(
+                                      mode,
+                                      new PackageActionOverviewPresenter(packageActionOverviewView),
+                                      packageManager,
+                                      schemaService,
+                                      applicationService,
+                                      clientService,
+                                      applicationContext);
 
     Consumer<Collection<Package>> presenter = packageDetailsListPresenter::setPackages;
     if (mode == PackageDetailsListPresenter.Mode.INSTALL) {
       // in case of the installation mode, we're using the AvailablePackageListMasterDetailsPresenter
       // as it does some additional filtering of the package list, specific to the handling of
       // packages that may be installed
-      return new AvailablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
+      return new AvailablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, applicationContext);
     }
     if (mode == PackageDetailsListPresenter.Mode.UPDATE) {
       // similar to the installation mode, update has some specific behaviour that will be handled
       // using the following Presenter
-      return new UpdateablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
+      return new UpdateablePackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, applicationContext);
     }
-    return new PackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, nfsService);
+    return new PackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager, clientService, applicationContext);
   }
 
   private void bindPackageList(PackageListMasterDetailsPresenter presenter, Callable<Collection<Package>> packagesProvider) {

@@ -20,11 +20,12 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
-import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.pkgmngr.event.PackageEvent;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.viritin.button.MButton;
 
 public class PackageDetailsPresenter {
@@ -33,13 +34,13 @@ public class PackageDetailsPresenter {
     private final PackageManager packageManager;
     private final MessageConveyor mc;
     private final ClientService clientService;
-    private final NFSService nfsService;
+    private final ApplicationContext aplicationContext;
 
-    public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService, NFSService nfsService) {
+    public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService, ApplicationContext aplicationContext) {
         this.view = view;
         this.packageManager = packageManager;
         this.clientService = clientService;
-        this.nfsService = nfsService;
+        this.aplicationContext = aplicationContext;
         mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
 
@@ -128,25 +129,16 @@ public class PackageDetailsPresenter {
     private void execute(PackageManagerOperation op, boolean install) {
         final ProgressReceiverDialog dialog = new ProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
         final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
-        future.addCallback(
-                this::onOperationSuccess,
-                this::onOperationError);
         dialog.watch(future);
+        future.addCallback(report -> {
+          clientService.reloadAllSchemas();
+          aplicationContext.publishEvent(new PackageEvent(report));
+        }, ex -> {});
 
         view.hide();
 
         dialog.open(true);
     }
-
-    private void onOperationError(Throwable throwable) { }
-
-    private void onOperationSuccess(PackageManagerOperationReport packageManagerOperationReport) {
-      clientService.reloadAllSchemas();
-      if(nfsService != null && nfsService.isRunning()) {
-        nfsService.restartService();
-      }
-    }
-
 
     private void doInstallPackage(Package otcPackage) {
         final PackageManagerOperation op = packageManager.createOperation();

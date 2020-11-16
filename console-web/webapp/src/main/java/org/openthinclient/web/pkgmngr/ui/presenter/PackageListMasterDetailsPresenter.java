@@ -17,13 +17,13 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.progress.ListenableProgressFuture;
-import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
+import org.springframework.context.ApplicationContext;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -44,7 +44,7 @@ public class PackageListMasterDetailsPresenter {
   protected final PackageManager packageManager;
   protected final IMessageConveyor mc;
 
-  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, NFSService nfsService) {
+  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext applicationContext) {
     this.view = view;
     this.dataProvider = new ListDataProvider<>(new ArrayList<>());
     this.view.setDataProvider(this.dataProvider);
@@ -83,7 +83,12 @@ public class PackageListMasterDetailsPresenter {
 
     this.view.onShowPackageDetails((pkg) -> {
       final PackageDetailsView packageDetailsView = new PackageDetailsView();
-      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager, clientService, nfsService);
+      final PackageDetailsPresenter
+      presenter = new PackageDetailsPresenter(
+                    new PackageDetailsWindow(packageDetailsView, packageDetailsView),
+                    packageManager,
+                    clientService,
+                    applicationContext);
       // setting the package will automatically trigger the view to be shown
       presenter.setPackage(pkg);
     });

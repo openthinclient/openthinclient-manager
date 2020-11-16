@@ -1,8 +1,10 @@
 package org.openthinclient.manager.standalone.config.service;
 
 import org.openthinclient.service.nfs.NFSService;
+import org.openthinclient.web.pkgmngr.event.PackageEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -22,5 +24,10 @@ public class NFSServiceConfiguration {
     if(service != null && service.isRunning()) {
       service.restartService();
     }
+  }
+
+  @EventListener
+  public void onPackageEvent(PackageEvent ev) {
+    restartNFSService();
   }
 }
