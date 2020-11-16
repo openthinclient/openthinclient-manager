@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;
+import org.openthinclient.manager.standalone.config.Migrations;
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
 import org.openthinclient.service.common.home.impl.DefaultManagerHome;
 import org.openthinclient.service.common.home.impl.XMLManagerHomeMetadata;
@@ -27,7 +28,7 @@ public class MigrationsTest {
     assertNull(metadata.getServerID());
 
 
-    Migrations.runEarlyMigrations(home);
+    (new Migrations()).setServerId(home);
 
     assertNotNull(home.getMetadata().getServerID());
   }
@@ -45,7 +46,7 @@ public class MigrationsTest {
     final DefaultManagerHome home = new DefaultManagerHome(dir.toFile());
 
     assertNull(home.getMetadata().getServerID());
-    Migrations.runEarlyMigrations(home);
+    (new Migrations()).setServerId(home);
 
     assertNotNull(home.getMetadata().getServerID());
 
