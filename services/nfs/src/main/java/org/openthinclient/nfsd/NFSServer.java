@@ -482,7 +482,7 @@ public class NFSServer extends NFSServerStub {
 					if (i + 1 < tmpArray.length)
 						idMapNextByCurrent.put(tmpArray[i], tmpArray[i + 1]);
 					else
-						idMapNextByCurrent.put(tmpArray[i], 0);
+						idMapNextByCurrent.put(tmpArray[i], 0x7fffffff);
 
 				// Walk through dirMap and fill entries to return
 				for (final Iterator i = dirMapFileById.entrySet().iterator(); i
