@@ -24,7 +24,7 @@ public class LicenseManagerTestConfiguration {
     final Path tempDir = Files.createTempDirectory(testDataDirectory, getClass().getSimpleName());
 
     final DefaultManagerHome managerHome = new DefaultManagerHome(tempDir.toFile());
-    managerHome.getMetadata().setServerID("0815-777-12345");
+    managerHome.getMetadata().setServerID("ff00ff00-00e1-0000-0000-123123abcdef");
 
     return managerHome;
 

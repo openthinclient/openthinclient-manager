@@ -2,7 +2,6 @@ package org.openthinclient.service.common.license;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +31,7 @@ public class LicenseManagerTest {
   private ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   // taken from license-sever
-  final String json = "{\"license\":\"/dOBTApfd5RJop5ux53ltUHo5Tpihx7wVAEKEHedRmZFggI2TOEcU9gH8uvHuaM3mUSpyP2OkAmV26uKTtkAY0yKNtsr2hE/byv7gS7pHUGQ8LTJBXa20xnnd7YpnCKbZrgSpLVFE33oZGIdeeT9eyFtcK9OH1cQ/JNfGllTliC57D0FPKmqNE0sr2tze8R0Qyv3SzY9j+sFcIPEJO5MErXsJtlmnlyvdhqZ8VWCf/kuT6MEE7NKXKgrcL3Tp9YYyzyBMHibMU8EI4RazishApCYA7kf20h0ySzYJtLR1M9dbiSSByhN67YP6KalHBYieMvJ+MEuvo/qeISYxbCdpCugk8nQYPsFhae8CiRAsts37eYVmOsli74O6Ja1xcYcGlxRer2rVAQu/K8E31V1toaK3QGOpQe7+G6ICCGCfh3/qla4NDrYlFYZ1ZLkw+kOyxuJ2DOOIIO7RgmOal0SiW9RcDg0DHo2SOsND1hNw0jOhMhkftBAbYY/5sS2i93lnpQZPmPvzvl/5qW78QtFTxzqOhooP5TfFol/CfxdLmhZno7eMaWxiakK8WyWoNyuDAre/4iVBx0vm6I4Irn1RCV77p+R49jHZvEzbdj2N71ltgUhts+HuTTyku6D/GmPq1jGXQ8vXFnEK2O7v2xUkWC2AgohAs7Dnnos9Nh0mLoDi03tFflCX/uPEAnAlJfPYK91SwlgG2nDH+wdMfH5ykKGu8wdkBgOy3HyW3XId1uS4fKPKzvY/eM7l8R/cKSrMB4Gzw2AapnN5LF6YeS6xiLng+QMY4R4PG9ALsOwVSVowQ6ZDzzb3cTnYsZ8HBBN2U+7RWvl9t9vkJuF60nojqQT4AuqB9EHiJzvm8i4zUAhpokgELiyyKYCqfazc2e2yJl8GGtem1OgSJHqMh+dyvsZEAoWTynhoYBRCTO2HOoWamhGHfCIaWm/x9EDMIqVLjJRAb1MapaEXFnBYWC/crAluw7qhsRGvvz3pp/iLnMURN4Ii8rrr9qBTx6zrEK9xGSDufMRCcLSCXkaS5p8IqL0sBmysQtHoX6U0ZCv0jK9zdY6iGHwG2geoNZ2EMxsnecX5h8PqOM5636BDkVK1xzqOhooP5TfFol/CfxdLmhZno7eMaWxiakK8WyWoNyuJp2evDAXhcK3fXsEn3JajyV77p+R49jHZvEzbdj2N71ltgUhts+HuTTyku6D/GmPexnnki3xW9jjh6mVRbgTYWC2AgohAs7Dnnos9Nh0mLoDi03tFflCX/uPEAnAlJfP792DjIQ9fL4W/WPXQFxfa7/1yw7pbiBsKfEV+7zaFBQdSXifqW2eO/uBr47SPugxbgKSVJUNbhWRhT4eLQq/1ZyXd3aMheJ234IYf2497wi0GOM16DR2iV1nNmZP/wtTu8VZkZd5AegNg6+ejeFbGA==\",\"encryption_key\":\"VRRf+ZTE/r/vvRTNsJA8PqlK+FWofoWQd+qUeXcvNi/2sZsvLK68pfJ5/UbiF70YemPfKllV+ID7cUiLX4KgBvAryGVK9fi+i0d2n4VKZEQEHWdspzJ/DWtxPTrfNHJ47A7ssK11DNDH7Na/XIKP84pba2AcVfMSIJOb14OW9GGxWvlxxgNHQITWT5FI24AdtCnBn+/YzDkFMQ3QCewK5Unr478hNozyTUZC2aXpVWJhQtueu6qNv7oIPIFFGbjJXZifmDQJDB895lHSQTS8Sm3/WykOLrDRkBJX+qkbLse++vuDxrYgHsZmx0Bbu5OpAoDXWssuAQyQw8fHhDMp1g==\"}";
+  final String json = "{\"license\":\"4JOL6HRBeoOz6q6vvPlbQqbGWf+K6ukKolI+n7SioohNJYoHXljD1eX3JYx8JPoZ8q1o9KrUq/0riOrTZZKTKQ0AMlNx+ZEtclO1sIrDnz13zKVJ0OEaIyEoM76HoOLEgl3B8fPIj11Zh7Bp5Xv2Mxqgu2h4bQJh6rfQlsS6VjwJPU4311NnDLrC9L3UzIOhNIACLYC4jcReqVEBJnjWnZc53hLJOj5AdwDahy1jKmBUZiTX6MjHqh4baiIX9u2pZR69WYckjaIKFrW3XTusSC7yM7mij4V7ZTst0Oem1iZMV7Gb2ud2fUfnN9WHiMsS8vGc5X1SXndb09/q3aIlQfzAGUr0edALRXKj2fzdy7WV5mkxW1XHsC6NXD87iaa0tp0etaAWV+31+5Ueu+E8dDk6iuVL58kEVr7TDxyX+EleF3jverhEhPS0Vzw4sUQdNoqL7lskocy+D7GkhbM6hHqSBIc9sPUVVFuhe7mk73E2gIQ57eqa7UIjOAP3GZM9hYW6s1z0MwuFvPnx2lsb6P56dUUHNC5wGGIuY6AwwK6Ai/q0HcbtkD7Q2ETTr+KbvKawP9YyMjsy6w5J0oRnozCBeo/5pmLPGlXoregzMB7gvLO/EYTr/ZVMOpvJI1T8R5w1ZDBGkHUoPdbz0k0kig==\",\"encryption_key\":\"iPXo1BFzrPqPFlAZohm6QIDKZwIZh/jnNfMBvXwfycVl/kGrqBGRLlkbopuUtvKJSS10cXlEP5vKo+lRDCSiVhMQhwvF2jaVNPbp0BIZM1d8IR2u5mAQO3sG3vkHeoj/AfZUxd9zt5fIrDi678q53l9df3M0HLXLjDa7pcAS3ruoefJE2nvK4I3o3Qi0wTfTXlqE0RbOtapDjyr2a4Qq9vJJFTBg2vUCg43ob7sikjFKPvBHXyFbsKuEHKQXR1V3aW59HdFBX9zFZ0o6NNHb0QXd4lx79UnOUScNOIpWxxoLziazSZO7d5XIdtGE5vO+jPjNtDDqFrqhblm4q2wKkw==\"}";
 
   @Before
   public void before() {
@@ -48,7 +47,8 @@ public class LicenseManagerTest {
     assertNull(license);
 
     EncryptedLicense encryptedLicense = mapper.readValue(json, EncryptedLicense.class);
-    licenseManager.setLicense(encryptedLicense);
+    boolean success = licenseManager.setLicense(encryptedLicense);
+    assertTrue(success);
 
     List<EncryptedLicense> licenseList = licenseRepository.findAll();
     assertNotNull(licenseList);
@@ -66,20 +66,20 @@ public class LicenseManagerTest {
     assertNull(license);
 
     EncryptedLicense encryptedLicense = mapper.readValue(json, EncryptedLicense.class);
-    licenseManager.setLicense(encryptedLicense);
+    boolean success = licenseManager.setLicense(encryptedLicense);
+    assertTrue(success);
 
-    // Test
     License lic = licenseManager.getLicense();
     assertNotNull(lic);
     assertEquals(lic.server, managerHome.getMetadata().getServerID());
-    assertEquals(Integer.valueOf(42), lic.getCount());
+    assertEquals(Integer.valueOf(100), lic.getCount());
 
-    assertEquals("Duravit AG", lic.getName());
-    assertEquals("sybille.robel@duravit.de      ", lic.email);
-    assertEquals("*Server-ID: 0815-777-12345*\r\n\r\n||Bezeichnung||Restlaufzeit||Anzahl||\r\n|Kauflizenz Software und Support| |  10 St.||Inklusivlizenz bei Hardwarekauf|23 Monate|   1 St.|\r\n|Inklusivlizenz bei Hardwarekauf|19 Monate|   1 St.|\r\n|Inklusivlizenz bei Hardwarekauf|17 Monate|   3 St.|\r\n|Inklusivlizenz bei Hardwarekauf|15 Monate|  11 St.|\r\n|Inklusivlizenz bei Hardwarekauf|14 Monate|   1 St.|\r\n|Inklusivlizenz bei Hardwarekauf|13 Monate|   5 St.|\r\n|Inklusivlizenz bei Hardwarekauf|10 Monate|   2 St.|\r\n|Inklusivlizenz bei Hardwarekauf| 9 Monate|   5 St.|\r\n|Inklusivlizenz bei Hardwarekauf| 7 Monate|   1 St.|\r\n|Inklusivlizenz bei Hardwarekauf| 5 Monate|   1 St.|\r\n|Inklusivlizenz bei Hardwarekauf| 4 Monate|   1 St.|\r\n|*Summe aller Lizenzen für diesen Standort (aktuell)*| |*42 St.*|", lic.getDetails());
-    assertEquals("2019-07-01", lic.getSoftExpiredDate().toString());
-    assertEquals("2019-08-01", lic.getExpiredDate().toString());
-    assertEquals("2019-06-12", lic.getCreatedDate().toString());
+    assertEquals("Lizenz-Test 1 GmbH", lic.getName());
+    assertEquals(null, lic.email);
+    assertEquals("*Server-ID: ff00ff00-00e1-0000-0000-123123abcdef*\r\n\r\n||Bezeichnung||Restlaufzeit||Anzahl||\r\n|Kauflizenz Software und Support| | 100 St.||*Summe aller Lizenzen für diesen Standort (aktuell)*| |*100 St.*|", lic.getDetails());
+    assertEquals("2020-01-18", lic.getSoftExpiredDate().toString());
+    assertEquals("2020-02-18", lic.getExpiredDate().toString());
+    assertEquals("2020-02-15", lic.getCreatedDate().toString());
 
   }
 
@@ -90,7 +90,8 @@ public class LicenseManagerTest {
     assertNull(license);
 
     EncryptedLicense encryptedLicense = mapper.readValue(json, EncryptedLicense.class);
-    licenseManager.setLicense(encryptedLicense);
+    boolean success = licenseManager.setLicense(encryptedLicense);
+    assertTrue(success);
 
     // Test: TODO: add testcases which make sense
     assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(1));
@@ -106,11 +107,16 @@ public class LicenseManagerTest {
     assertNull(license);
 
     EncryptedLicense encryptedLicense = mapper.readValue(json, EncryptedLicense.class);
-    licenseManager.setLicense(encryptedLicense); // first
+
+    // first time
+    boolean success = licenseManager.setLicense(encryptedLicense);
+    assertTrue(success);
 
     Thread.sleep(1000);
 
-    licenseManager.setLicense(encryptedLicense); // second
+    // second time
+    success = licenseManager.setLicense(encryptedLicense);
+    assertTrue(success);
 
     List<EncryptedLicense> licenseList = licenseRepository.findAll();
     assertNotNull(licenseList);
