@@ -53,7 +53,10 @@ public class LicenseUpdater {
         licenseManager.logError(LicenseError.ErrorType.NO_LICENSE);
       } else {
         LOG.info("New license information received.");
-        licenseManager.setLicense(encryptedLicense);
+        boolean success = licenseManager.setLicense(encryptedLicense);
+        if(!success) {
+          LOG.error("Could not set license");
+        }
       }
     } catch(StatusCodeException ex) {
       LOG.info("Failed to update license information. Server responded with "+ ex.getStatusCode() + " " + ex.getReasonPhrase());
