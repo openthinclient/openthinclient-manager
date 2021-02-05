@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager</artifactId>
-		<version>2020.2</version>
+		<version>2021.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -27,12 +27,12 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>manager-util-http</artifactId>
-			<version>2020.2</version>
+			<version>2021.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>manager-util-install</artifactId>
-			<version>2020.2</version>
+			<version>2021.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
