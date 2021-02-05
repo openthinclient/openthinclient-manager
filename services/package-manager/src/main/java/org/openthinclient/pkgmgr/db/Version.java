@@ -25,18 +25,22 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
-/**
- * @author levigo
- */
 @Embeddable
 @Access(AccessType.FIELD)
-public class Version implements Comparable, Serializable {
+public class Version implements Comparable<Version>, Serializable {
 
     private static final long serialVersionUID = 3258135760426317876L;
-    private static final Pattern SPECIFIER_PATTERN = Pattern.compile("(?:(\\d+)\\:)?([\\w\\+\\.\\:\\-~]+)");
+    private static final Pattern SPECIFIER_PATTERN = Pattern.compile("^" + "(?:(\\d+)\\:)?" // epoch
+            + "(\\d[A-Za-z0-9\\.\\+-~]*?)"  // upstream version
+            + "(?:-([A-Za-z0-9\\+\\.~]+))?" // debian revision
+            + "$");
+    private static final Pattern TOKENS = Pattern.compile("(\\d+|\\D+)");
+
     @Column(name = "version_epoch")
     private int epoch = 0;
     @Column(name = "version_upstream")
@@ -45,62 +49,122 @@ public class Version implements Comparable, Serializable {
     private String debianRevision;
     private transient int hashCode = -1;
 
+    private static int compareNullableRevision(String version1, String version2) {
+        // a non-specified version is always smaller than a specified one
+        if (version1 != null && version2 != null) {
+            return compareRevision(version1, version2);
+        } else if (version1 != null) {
+            return 1;
+        } else if(version2 != null) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Compare to revision specifiers according to the rules laid down in the debian specification:
      * <br> <a href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">
      */
-    private static int compareRevision(String v1, String v2) {
-        int i1 = 0, i2 = 0;
-        int digitStart1 = -1;
-        int digitStart2 = -1;
-        while (i1 < v1.length() && i2 < v2.length()) {
-            // compare non-digit
-            while (i1 < v1.length() && i2 < v2.length() && !Character.isDigit(v1.charAt(i1)) && !Character.isDigit(v2.charAt(i2)) && v1.charAt(i1) == v2
-                    .charAt(i2)) {
-                i1++;
-                i2++;
+    private static int compareRevision(String version1, String version2) {
+        boolean version1StartsWithDigit = (
+            version1.length() > 0 && Character.isDigit(version1.charAt(0))
+        );
+        boolean version2StartsWithDigit = (
+            version2.length() > 0 && Character.isDigit(version2.charAt(0))
+        );
+
+        // Parts currently compared
+        // Note: Empty string equals zero in numerical comparision.
+        String version1Part = "";
+        String version2Part = "";
+
+        // Whether to compare numerically or lexically
+        boolean doCompareNumeric = false;
+
+        // Initialize iterators
+        Iterator<String> version1Parts = versionPartsIterator(version1);
+        Iterator<String> version2Parts = versionPartsIterator(version2);
+
+        // Determine whether to start numerical or lexical comparision
+        // and initialize parts accordingly.
+        if (version1StartsWithDigit == version2StartsWithDigit) {
+            doCompareNumeric = version1StartsWithDigit;
+            version1Part = version1Parts.next();
+            version2Part = version2Parts.next();
+        } else if (version1StartsWithDigit) {
+            version2Part = version2Parts.next();
+        } else if (version2StartsWithDigit) {
+            version1Part = version1Parts.next();
+        }
+
+        // Compare parts, alternating between numerical and lexical
+        // comparision.
+        while (!version1Part.isEmpty() || !version2Part.isEmpty()) {
+            int result;
+            if (doCompareNumeric) {
+                result = compareNumeric(version1Part, version2Part);
+            } else {
+                result = compareLexical(version1Part, version2Part);
             }
-
-            if (i1 >= v1.length() || i2 >= v2.length() || (!Character.isDigit(v1.charAt(i1)) && Character.isDigit(v2.charAt(i2))))
-                break;
-
-            digitStart1 = i1;
-            digitStart2 = i2;
-
-            // Compare digits. Find out where the digits end
-            while (i1 < v1.length() && Character.isDigit(v1.charAt(i1)))
-                i1++;
-            while (i2 < v2.length() && Character.isDigit(v2.charAt(i2)))
-                i2++;
-
-            // extract numeric values. the empty string counts as zero.
-            int d1 = i1 > digitStart1 ? Integer.parseInt(v1.substring(digitStart1, i1)) : 0;
-            int d2 = i2 > digitStart2 ? Integer.parseInt(v2.substring(digitStart2, i2)) : 0;
-
-            if (d1 < d2)
-                return -1;
-            if (d1 > d2)
-                return 1;
-
-            digitStart1 = digitStart2 = -1;
+            if (result != 0) {
+                return result;
+            }
+            version1Part = version1Parts.next();
+            version2Part = version2Parts.next();
+            doCompareNumeric = !doCompareNumeric;
         }
-
-        // does the length differ?
-        if (i1 < v1.length() && i2 >= v2.length())
-            return 1; // shorter -> smaller!
-        if (i1 >= v1.length() && i2 < v2.length())
-            return -1; // longer -> larger!
-
-        if (digitStart1 >= 0) {
-            // does the character differ?
-            // we use the natural (unicode) collation order. No need to get fancy.
-            if (v1.charAt(i1) < v2.charAt(i2))
-                return -1;
-            if (v1.charAt(i1) > v2.charAt(i2))
-                return 1;
-        }
-
         return 0;
+    }
+
+    /**
+     * Infinite iterator. Returns digit and non-digit parts alternately.
+     * If source string is exhausted, returns empty strings.
+     */
+    private static Iterator<String> versionPartsIterator(String version) {
+        Matcher matcher = TOKENS.matcher(version);
+        return Stream.generate(
+            () -> matcher.find()? matcher.group(0) : ""
+        ).iterator();
+    }
+
+    /**
+     * Numerical comparision. Empty strings count as zero.
+     */
+    private static int compareNumeric(String part1, String part2) {
+        int number1 = part1.isEmpty()? 0 : Integer.parseInt(part1);
+        int number2 = part2.isEmpty()? 0 : Integer.parseInt(part2);
+        return number1 - number2;
+    }
+
+    /**
+     * Modified lexical comparision as per Debian spec
+     */
+    private static int compareLexical(String part1, String part2) {
+        Iterator<Integer> iter1 = codePointIterator(part1);
+        Iterator<Integer> iter2 = codePointIterator(part2);
+        int length = Math.max(part1.length(), part2.length());
+        for (int i = 0; i < length; i++) {
+            int result = iter1.next() - iter2.next();
+            if (result != 0) {
+                return result;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Infinite iterator of code points for modified lexical comparision.
+     * Translations:
+     *      characters        -> their code point
+     *      after exhaustion  -> -1
+     *      tilde             -> -2
+    */
+    private static Iterator<Integer> codePointIterator(String source) {
+        return Stream.concat(
+                    source.codePoints().boxed().map(i -> i == 126 ? -2 : i),
+                    Stream.generate(() -> -1)
+                ).iterator();
     }
 
     /**
@@ -120,13 +184,8 @@ public class Version implements Comparable, Serializable {
                 throw new IllegalArgumentException(I18N.getMessage("Version.cantParseVersion") + ": " + specifier);
             if (m.group(1) != null)
                 epoch = Integer.parseInt(m.group(1));
-            String version = m.group(2);
-            int index = version.lastIndexOf('-');
-            if (index > 0) {
-                upstreamVersion = version.substring(0, index);
-                debianRevision = version.substring(index + 1);
-            } else
-                upstreamVersion = version;
+            upstreamVersion = m.group(2);
+            debianRevision = m.group(3);
         } catch (IllegalStateException e) {
             e.printStackTrace();
             throw new IllegalArgumentException(I18N.getMessage("Version.cantParseVersion") + ": ", e);
@@ -189,7 +248,7 @@ public class Version implements Comparable, Serializable {
      */
     @Override
     public boolean equals(Object o) {
-        return o instanceof Version && compareTo(o) == 0;
+        return o instanceof Version && compareTo((Version)o) == 0;
     }
 
     @Override
@@ -205,44 +264,18 @@ public class Version implements Comparable, Serializable {
      * the debian specification: <br>
      * <a
      * href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">
-     *
-     * @param o
-     * @return
      */
-    public int compareTo(Object o) {
-        if (!(o instanceof Version))
-            throw new IllegalArgumentException("Version can't be compared to a " + o.getClass());
+    public int compareTo(Version v) {
+        int result;
 
-        Version v = (Version) o;
+        result = epoch - v.epoch;
+        if (result != 0)
+            return result;
 
-        // compare epoch
-        if (epoch < v.epoch)
-            return -1;
-        if (epoch > v.epoch)
-            return 1;
+        result = compareNullableRevision(upstreamVersion, v.upstreamVersion);
+        if (result != 0)
+            return result;
 
-        // a non-specified version is always smaller than a specified one
-        if (upstreamVersion != null && v.upstreamVersion == null)
-            return 1;
-        if (upstreamVersion == null && v.upstreamVersion != null)
-            return -1;
-
-        if (upstreamVersion != null && v.upstreamVersion != null) {
-            int r = compareRevision(upstreamVersion, v.upstreamVersion);
-            if (r != 0)
-                return r;
-        }
-
-        // a non-specified version is always smaller than a specified one
-        if (debianRevision != null && v.debianRevision == null)
-            return 1;
-        if (debianRevision == null && v.debianRevision != null)
-            return -1;
-
-        if (debianRevision != null && v.debianRevision != null)
-            return compareRevision(debianRevision, v.debianRevision);
-        else
-            return 0;
+        return compareNullableRevision(debianRevision, v.debianRevision);
     }
-
 }
