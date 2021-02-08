@@ -38,7 +38,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	private Set<ClientGroup> clientGroups;
 	private HardwareType hardwareType;
 
-	private String ipAddress;
+	private String ipHostNumber;
 	private String macAddress;
 	private Location location;
 
@@ -51,9 +51,9 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	}
 
 	public String getIpHostNumber() {
-		if (null == ipAddress)
+		if (null == ipHostNumber)
 			return "0.0.0.0";
-		return ipAddress;
+		return ipHostNumber;
 	}
 
 	public Location getLocation() {
@@ -113,8 +113,8 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	}
 
 	public void setIpHostNumber(String ipHostNumber) {
-		final String oldIpAddress = this.ipAddress;
-		this.ipAddress = ipHostNumber;
+		final String oldIpAddress = this.ipHostNumber;
+		this.ipHostNumber = ipHostNumber;
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
@@ -132,7 +132,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	public String toString() {
 		final StringBuffer sb = new StringBuffer("[Client name=").append(getName())
 				.append(", description=").append(getDescription()).append(", ip=")
-				.append(ipAddress).append(", location=").append(location).append(
+				.append(ipHostNumber).append(", location=").append(location).append(
 						" applicationGroups={");
 		if (applicationGroups != null) {
 			for (final ApplicationGroup g : applicationGroups)

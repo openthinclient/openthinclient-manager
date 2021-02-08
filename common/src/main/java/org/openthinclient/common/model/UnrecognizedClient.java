@@ -26,7 +26,7 @@ package org.openthinclient.common.model;
 public class UnrecognizedClient extends DirectoryObject {
 	private static final long serialVersionUID = 1L;
 
-	private String ipAddress;
+	private String ipHostNumber;
 	private String macAddress;
 
 	public String getMacAddress() {
@@ -40,14 +40,14 @@ public class UnrecognizedClient extends DirectoryObject {
 	}
 
 	public void setIpHostNumber(String ipHostNumber) {
-		final String oldIpAddress = this.ipAddress;
-		this.ipAddress = ipHostNumber;
+		final String oldIpAddress = this.ipHostNumber;
+		this.ipHostNumber = ipHostNumber;
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
 	public String getIpHostNumber() {
-		if (null == ipAddress)
+		if (null == ipHostNumber)
 			return "0.0.0.0";
-		return ipAddress;
+		return ipHostNumber;
 	}
 }

@@ -412,6 +412,13 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         return null; // not me!
       }
 
+      client.setIpHostNumber(clientAddress.getAddress().toString().split("/")[1]);
+      // Run in background because clientService.save(…) takes its time and some
+      // clients would abort PXE boot before the delayed ACK reaches them.
+      new Thread(() -> {
+        clientService.save(client);
+      }).start();
+
       final InetSocketAddress serverAddress = conversation.getApplicableServerAddress();
       final DhcpMessage reply = initGeneralReply(serverAddress, request);
 

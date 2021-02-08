@@ -38,18 +38,18 @@ public class ClientMetaData extends Profile {
 
 	private transient Schema schema;
 
-	private String ipAddress;
+	private String ipHostNumber;
 	private String macAddress;
 
 	public String getIpHostNumber() {
-		if (null == ipAddress)
+		if (null == ipHostNumber)
 			return "0.0.0.0";
-		return ipAddress;
+		return ipHostNumber;
 	}
 
 	public void setIpHostNumber(String ipHostNumber) {
-		final String oldIpAddress = this.ipAddress;
-		this.ipAddress = ipHostNumber;
+		final String oldIpAddress = this.ipHostNumber;
+		this.ipHostNumber = ipHostNumber;
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
@@ -68,7 +68,7 @@ public class ClientMetaData extends Profile {
 		final StringBuffer sb = new StringBuffer("[ClientMetaData name=")
 				.append(getName())
 				.append(", description=").append(getDescription())
-				.append(", ip=").append(ipAddress);
+				.append(", ip=").append(ipHostNumber);
 		return sb.toString();
 	}
 

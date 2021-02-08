@@ -41,7 +41,6 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
-import org.openthinclient.web.thinclient.util.ClientIPAddressFinder;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
@@ -427,11 +426,6 @@ public final class ClientView extends AbstractThinclientView {
     long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
     LOGGER.info("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
-
-    // determine current IP-address
-    if (profile != null && profile.getMacAddress() != null) {
-      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
-    }
 
     return (T) profile;
   }

@@ -471,7 +471,7 @@ public class LDAPDirectory implements Directory {
 	 * @param object the object to save
 	 * @throws DirectoryException
 	 */
-	public void save(Object object) throws DirectoryException {
+	public synchronized void save(Object object) throws DirectoryException {
 		assertInitialized();
 		mapping.save(object, null);
 		mapping.refresh(object);
