@@ -51,32 +51,4 @@ public class ApplianceConfiguration {
   public boolean isEnabled() {
     return enabled;
   }
-
-  public String getNoVNCConsoleHostname() {
-    return properties.getProperty("novnc.server.host");
-  }
-
-  public Integer getNoVNCConsolePort() {
-    return Integer.valueOf(properties.getProperty("novnc.server.port", "5900"));
-  }
-
-  public boolean isNoVNCConsoleEncrypted() {
-    return Boolean.valueOf(properties.getProperty("novnc.server.encrypt", "false"));
-  }
-
-  public boolean isNoVNCConsoleAutoconnect() {
-    return Boolean.valueOf(properties.getProperty("novnc.server.autoconnect", "true"));
-  }
-
-  public boolean isNoVNCConsoleAllowfullscreen() {
-    return Boolean.valueOf(properties.getProperty("novnc.server.allowfullscreen", "true"));
-  }
-
-  public int getNoVNCTicketExpirySeconds() {
-    return Integer.valueOf(properties.getProperty("novnc.server.ticketExpirySeconds", "120"));
-  }
-
-  public String getNoVNCResizeMode() {
-    return properties.getProperty("novnc.server.resizeMode", "scale");
-  }
 }

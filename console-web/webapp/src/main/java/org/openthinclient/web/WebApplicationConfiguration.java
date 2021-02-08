@@ -7,7 +7,6 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.spring.annotation.UIScope;
 import org.openthinclient.api.logs.LogMvcConfiguration;
-import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
@@ -43,7 +42,6 @@ import java.util.concurrent.TimeUnit;
         WebApplicationSecurityConfiguration.class,
         VaadinCustomizationConfiguration.class,
         RestApiConfiguration.class,
-        ApplianceRestApiConfiguration.class,
         LogMvcConfiguration.class,
         SystemReportingConfiguration.class
 })

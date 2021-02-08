@@ -17,7 +17,6 @@ import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,8 +38,6 @@ public class ProfileRepositoryTest {
   UserService userService;
   @Mock
   HardwareTypeService hardwareTypeService;
-  @Mock
-  ApplianceConfiguration applianceConfiguration;
   @Mock
   ManagerHome managerHome;
 

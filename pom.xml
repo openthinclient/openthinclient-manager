@@ -71,7 +71,6 @@
 		<module>services</module>
 		<module>console-web</module>
 		<module>first-start-wizard</module>
-		<!--<module>console-desktop</module>-->
 		<module>runtime</module>
 		<module>sysreport</module>
 	</modules>

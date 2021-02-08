@@ -19,7 +19,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -94,8 +93,6 @@ public final class ClientView extends AbstractThinclientView {
   private SchemaProvider schemaProvider;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
-  @Autowired
-  private TokenManager tokenManager;
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
 
@@ -534,8 +531,7 @@ public final class ClientView extends AbstractThinclientView {
         "&port=" + noVNCConsolePort +
         "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
         "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
-        "&autoconnect=" + noVNCConsoleAutoconnect+
-        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+        "&autoconnect=" + noVNCConsoleAutoconnect
     );
 
     Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
