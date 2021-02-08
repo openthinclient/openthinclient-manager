@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-core</artifactId>
-            <version>4.0.0.RELEASE</version>
+            <version>4.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ldap</groupId>
