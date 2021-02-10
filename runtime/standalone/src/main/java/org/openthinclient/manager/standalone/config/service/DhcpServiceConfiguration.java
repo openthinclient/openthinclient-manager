@@ -14,8 +14,6 @@ import org.openthinclient.service.dhcp.RemotedBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
-
 
 /**
  * DhcpServiceConfiguration
@@ -35,13 +33,5 @@ public class DhcpServiceConfiguration {
   @Bean
   public Remoted remote(DHCPService dhcpService) {
     return new RemotedBean(dhcpService);
-  }
-
-  @Bean(name = "/service/httpinvoker/dhcp-remoted-bean")
-  public HttpInvokerServiceExporter httpInvokerDhcpService(Remoted remoted) {
-    final HttpInvokerServiceExporter serviceExporter = new HttpInvokerServiceExporter();
-    serviceExporter.setService(remoted);
-    serviceExporter.setServiceInterface(Remoted.class);
-    return serviceExporter;
   }
 }
