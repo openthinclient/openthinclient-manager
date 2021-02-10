@@ -16,11 +16,7 @@
     <modules>
         <module>api</module>
         <module>webapp</module>
-        <module>model</module>
         <module>support</module>
-        <module>module-package-management</module>
-        <module>module-dashboard</module>
-        <module>module-configuration</module>
     </modules>
 
     <dependencies>
