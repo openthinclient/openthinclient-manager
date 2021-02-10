@@ -71,21 +71,21 @@ public class Migrations {
   public void init() {
     if(tcosLibs2020IsInstalled()) {
       updateLocationTimezone();
-      removeObsoleteackageFiles(obsoleteWithTcosLibs2020PackageNames);
+      removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
 
-    removeObsoleteackageFiles(obsoletePackageNames);
+    removeObsoletePackageFiles(obsoletePackageNames);
   }
 
   @EventListener
   public void onPackageEvent(PackageEvent ev) {
     if(tcosLibs2020Updated(ev.getReports())) {
       updateLocationTimezone();
-      removeObsoleteackageFiles(obsoleteWithTcosLibs2020PackageNames);
+      removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
   }
 
-  private void removeObsoleteackageFiles(String[] packageNames) {
+  private void removeObsoletePackageFiles(String[] packageNames) {
     Path root = pkgManager.getConfiguration().getInstallDir().toPath();
     Path pkgPath = root.resolve("sfs/package");
     for(String pkgName: packageNames) {
@@ -124,7 +124,6 @@ public class Migrations {
   }
 
   private boolean tcosLibs2020Updated(List<PackageReport> reports) {
-    LOG.info("tcosLibs2020Updated?", reports);
     return reports.stream().anyMatch(report -> (
               isTcosLibs2020(report.getPackage())
               && ( report.getType().equals(PackageReportType.UPGRADE)
