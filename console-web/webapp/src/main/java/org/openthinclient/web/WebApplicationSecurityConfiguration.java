@@ -190,6 +190,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
                   .antMatchers("/api/v1/**")
                   .antMatchers("/openthinclient/files/**")
                   .antMatchers("/download/**")
+                  .antMatchers("/ws/**")
     ;
   }
 
