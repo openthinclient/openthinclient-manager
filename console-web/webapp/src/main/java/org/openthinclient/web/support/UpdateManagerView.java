@@ -140,7 +140,7 @@ public class UpdateManagerView extends Panel implements View {
     this.updateRunnerContainer = new CssLayout();
     updateRunnerContainer.addStyleName("update-runner");
     this.updateRunnerButton = new Button(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_BUTTON));
-    this.updateRunnerButtonLabel = new Label();
+    this.updateRunnerButtonLabel = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_INFO), ContentMode.HTML);
     Label description = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_DESCRIPTION));
     description.addStyleName("description");
     updateRunnerContainer.addComponents(updateRunnerButton, updateRunnerButtonLabel, description);
