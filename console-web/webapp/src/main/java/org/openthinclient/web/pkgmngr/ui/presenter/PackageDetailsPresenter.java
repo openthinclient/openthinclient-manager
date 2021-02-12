@@ -34,13 +34,13 @@ public class PackageDetailsPresenter {
     private final PackageManager packageManager;
     private final MessageConveyor mc;
     private final ClientService clientService;
-    private final ApplicationContext aplicationContext;
+    private final ApplicationContext applicationContext;
 
     public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService, ApplicationContext aplicationContext) {
         this.view = view;
         this.packageManager = packageManager;
         this.clientService = clientService;
-        this.aplicationContext = aplicationContext;
+        this.applicationContext = aplicationContext;
         mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
 
@@ -132,7 +132,7 @@ public class PackageDetailsPresenter {
         dialog.watch(future);
         future.addCallback(report -> {
           clientService.reloadAllSchemas();
-          aplicationContext.publishEvent(new PackageEvent(report));
+          applicationContext.publishEvent(new PackageEvent(report));
         }, ex -> {});
 
         view.hide();
