@@ -9,18 +9,10 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.service.dhcp.DHCPService;
-import org.openthinclient.service.dhcp.Remoted;
-import org.openthinclient.service.dhcp.RemotedBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
-/**
- * DhcpServiceConfiguration
- *
- * @author simon
- * @author joe
- */
 @Configuration
 public class DhcpServiceConfiguration {
 
@@ -28,10 +20,5 @@ public class DhcpServiceConfiguration {
   @DependsOn("apacheDsService")
   public DHCPService dhcpService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws Exception {
     return new DHCPService(realmService, clientService, unrecognizedClientService);
-  }
-
-  @Bean
-  public Remoted remote(DHCPService dhcpService) {
-    return new RemotedBean(dhcpService);
   }
 }

@@ -49,9 +49,6 @@ public class FileServiceServlet extends HttpServlet {
     this.basedir = basedir;
   }
 
-  /*
-   * @see org.openthinclient.ejb.FileService#listFiles(java.lang.String)
-   */
   public String[] listFiles(String dirName) throws IOException {
     File dir = makeFile(dirName);
 
@@ -61,9 +58,6 @@ public class FileServiceServlet extends HttpServlet {
     return dir.list();
   }
 
-  /*
-   * @see org.openthinclient.ejb.FileService#getFile(java.lang.String)
-   */
   public ByteArrayInputStream getFile(String fileName) throws IOException {
     File file = makeFile(fileName);
 
