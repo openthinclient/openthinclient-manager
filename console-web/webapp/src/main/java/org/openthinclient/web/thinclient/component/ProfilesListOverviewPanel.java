@@ -162,7 +162,6 @@ public class ProfilesListOverviewPanel extends Panel {
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     selectAll.setValue(false);
-    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
     dataProvider.setFilter(directoryObject -> {
       if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
         return true;

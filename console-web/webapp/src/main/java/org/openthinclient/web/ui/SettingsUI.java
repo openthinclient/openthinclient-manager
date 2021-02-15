@@ -4,25 +4,15 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
 import com.vaadin.shared.communication.PushMode;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
@@ -34,14 +24,9 @@ import org.openthinclient.service.common.license.LicenseChangeEvent;
 import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.component.LicenseMessageBar;
-import org.openthinclient.web.dashboard.DashboardView;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.support.UpdateManagerView;
-import org.openthinclient.web.thinclient.*;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.slf4j.Logger;
@@ -57,10 +42,6 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -103,17 +84,11 @@ public final class SettingsUI extends UI implements ViewDisplay {
   private Registration taskActivatedRegistration;
   private Panel springViewDisplay;
 
-  private CssLayout dashboardPanels;
-  private Window notificationsWindow;
-  private ConsoleWebMessages i18nTitleKey;
   private IMessageConveyor mc;
   private AbstractOrderedLayout root;
-  private Label titleLabel;
   private LicenseMessageBar licenseMessageBar;
 
-  private Window searchResultWindow;
   private UserProfileSubWindow userProfileWindow;
-  private Grid<DirectoryObject> resultObjectGrid;
 
   protected void onPackageManagerTaskFinalized(
       ListenableProgressFuture<?> listenableProgressFuture) {

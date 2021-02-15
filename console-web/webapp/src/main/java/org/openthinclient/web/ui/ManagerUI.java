@@ -4,7 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -18,7 +17,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
@@ -71,7 +69,6 @@ import org.vaadin.spring.security.VaadinSecurity;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -79,7 +76,6 @@ import java.util.Optional;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO_RESULT;
 
 @Theme("openthinclient")
-@Title("openthinclient.org")
 @SpringUI
 @SpringViewDisplay
 @Push(PushMode.MANUAL)
@@ -135,9 +131,6 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private Registration taskActivatedRegistration;
   private Panel springViewDisplay;
 
-  private CssLayout dashboardPanels;
-  private Window notificationsWindow;
-  private ConsoleWebMessages i18nTitleKey;
   private IMessageConveyor mc;
   private AbstractOrderedLayout root;
   private Label titleLabel;
@@ -486,24 +479,6 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     userProfileWindow = new UserProfileSubWindow(userService);
   }
 
-  private void toggleMaximized(final Component panel, final boolean maximized) {
-    for (Iterator<Component> it = root.iterator(); it.hasNext();) {
-      it.next().setVisible(!maximized);
-    }
-    dashboardPanels.setVisible(true);
-
-    for (Iterator<Component> it = dashboardPanels.iterator(); it.hasNext();) {
-      Component c = it.next();
-      c.setVisible(!maximized);
-    }
-
-    if (maximized) {
-      panel.setVisible(true);
-      panel.addStyleName("max");
-    } else {
-      panel.removeStyleName("max");
-    }
-  }
 
   class RefreshDashboardThread extends Thread {
 
