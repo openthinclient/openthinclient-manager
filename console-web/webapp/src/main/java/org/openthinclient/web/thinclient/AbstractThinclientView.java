@@ -203,9 +203,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
     List<Item> oldValues = builder.createFilteredItemsFromDO(association, clazz);
     oldValues.forEach(oldItem -> {
       if (values.contains(oldItem)) {
-        LOGGER.info("Keep oldValue as member: " + oldItem);
+        LOGGER.debug("Keep oldValue as member: " + oldItem);
       } else {
-        LOGGER.info("Remove oldValue from members: " + oldItem);
+        LOGGER.debug("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
         Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
         if (directoryObject.isPresent()) {
@@ -218,7 +218,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     values.forEach(newValue -> {
       if (!oldValues.contains(newValue)) {
-        LOGGER.info("Add newValue to members: " + newValue);
+        LOGGER.debug("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
         Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
@@ -322,9 +322,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
     List<Item> oldValues = builder.createFilteredItemsFromDO(members, clazz);
     oldValues.forEach(oldItem -> {
       if (values.contains(oldItem)) {
-        LOGGER.info("Keep oldValue as member: " + oldItem);
+        LOGGER.debug("Keep oldValue as member: " + oldItem);
       } else {
-        LOGGER.info("Remove oldValue from members: " + oldItem);
+        LOGGER.debug("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
         Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
         if (directoryObject.isPresent()) {
@@ -342,7 +342,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     values.forEach(newValue -> {
       if (newValue != null && !oldValues.contains(newValue)) {
-        LOGGER.info("Add newValue to members: " + newValue);
+        LOGGER.debug("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
         Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
@@ -368,7 +368,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
    */
   public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
 
-    LOGGER.info("Save values for profile: " + profile);
+    LOGGER.debug("Save values for profile: " + profile);
     profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
 
           // write values back from bean to profile
@@ -388,7 +388,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
                 if (!StringUtils.equals(org, current)) {
                   if (current != null) {
-                    LOGGER.info(" Apply value for " + propertyKey + "=" + (isPasswordProperty ? "***" : org) + " with new value '" + (isPasswordProperty ? "***" : current) + "'");
+                    LOGGER.debug(" Apply value for " + propertyKey + "=" + (isPasswordProperty ? "***" : org) + " with new value '" + (isPasswordProperty ? "***" : current) + "'");
                     switch (propertyKey) {
                       case "name":
                         profile.setName(current);
@@ -412,15 +412,15 @@ public abstract class AbstractThinclientView extends Panel implements View {
                     }
                   } else {
                     if (propertyKey.equals("description")) {
-                      LOGGER.info(" Apply null value for description");
+                      LOGGER.debug(" Apply null value for description");
                       profile.setDescription(null);
                     } else {
-                      LOGGER.info(" Remove empty value for " + propertyKey);
+                      LOGGER.debug(" Remove empty value for " + propertyKey);
                       profile.removeValue(propertyKey);
                     }
                   }
                 } else {
-                  LOGGER.info(" Unchanged " + propertyKey + "=" + org);
+                  LOGGER.debug(" Unchanged " + propertyKey + "=" + org);
                 }
               });
     });

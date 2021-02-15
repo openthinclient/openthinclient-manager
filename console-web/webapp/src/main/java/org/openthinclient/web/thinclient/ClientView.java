@@ -119,7 +119,7 @@ public final class ClientView extends AbstractThinclientView {
     try {
       long start = System.currentTimeMillis();
       Set all = clientService.findAllClientMetaData();
-      LOGGER.info("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
+      LOGGER.debug("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
       return  all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
@@ -340,7 +340,7 @@ public final class ClientView extends AbstractThinclientView {
    */
   public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
 
-    LOGGER.info("Save values for client: " + profile);
+    LOGGER.debug("Save values for client: " + profile);
 
     Client client = (Client) profile;
     profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
@@ -380,7 +380,7 @@ public final class ClientView extends AbstractThinclientView {
 
             if (!StringUtils.equals(org, current)) {
               if (current != null) {
-                LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+                LOGGER.debug(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
                 switch (propertyKey) {
                   case "iphostnumber": client.setIpHostNumber(current);  break;
                   case "macaddress":   client.setMacAddress(current != null ? current : "");  break;
@@ -396,15 +396,15 @@ public final class ClientView extends AbstractThinclientView {
                 }
               } else {
                 if (propertyKey.equals("description")) {
-                  LOGGER.info(" Apply null value for description");
+                  LOGGER.debug(" Apply null value for description");
                   client.setDescription(null);
                 } else {
-                  LOGGER.info(" Remove empty value for " + propertyKey);
+                  LOGGER.debug(" Remove empty value for " + propertyKey);
                   client.removeValue(propertyKey);
                 }
               }
             } else {
-              LOGGER.info(" Unchanged " + propertyKey + "=" + org);
+              LOGGER.debug(" Unchanged " + propertyKey + "=" + org);
             }
           });
     });
@@ -425,7 +425,7 @@ public final class ClientView extends AbstractThinclientView {
 //    String _name = name.replaceAll(reg, "\\\\$0");
     long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
-    LOGGER.info("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
+    LOGGER.debug("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
 
     return (T) profile;
   }
@@ -543,7 +543,7 @@ public final class ClientView extends AbstractThinclientView {
 
   @Override
   public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ deviceSideBar);
+    LOGGER.debug("sideBar: "+ deviceSideBar);
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
