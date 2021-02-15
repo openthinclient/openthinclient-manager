@@ -74,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO_RESULT;
 
@@ -323,13 +324,21 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       super.detach();
   }
 
-
   private Component buildHeader() {
-    CssLayout header = new CssLayout();
+    CssLayout header = new CssLayout(
+      getRealmLabel(),
+      searchTextField,
+      buildLogoutButton()
+    );
     header.addStyleName("header");
-    header.addComponent(searchTextField);
-    header.addComponent(buildLogoutButton());
     return header;
+  }
+
+  private Component getRealmLabel() {
+    Optional<Realm> realm = realmService.findAllRealms().stream().findFirst();
+    Label label = new Label(realm.isPresent()? realm.get().getDescription() : "");
+    label.addStyleName("realm-label");
+    return label;
   }
 
   private void buildSearchTextField() {

@@ -3,8 +3,19 @@
   .header {
     height: $header-height !important;
     display: flex;
-    justify-content: flex-end;
+    margin: auto 18px;
     align-items: center;
+
+    & > * + * {
+      margin-left: 2ch;
+    }
+
+    .realm-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .header-searchfield {
       height: 30px;

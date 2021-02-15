@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Theme("openthinclient")
 @SpringUI(path = "/settings")
@@ -89,6 +90,8 @@ public final class SettingsUI extends UI implements ViewDisplay {
   PackageManagerExecutionEngine packageManagerExecutionEngine;
   @Autowired
   private EventBus.SessionEventBus eventBus;
+  @Autowired
+  private RealmService realmService;
   @Autowired
   private ClientService clientService;
   @Autowired
@@ -242,17 +245,21 @@ public final class SettingsUI extends UI implements ViewDisplay {
         super.detach();
     }
 
-  private Component buildHeader() {
-    HorizontalLayout header = new HorizontalLayout();
-    header.setMargin(false);
-    header.addStyleName("header");
+    private Component buildHeader() {
+      CssLayout header = new CssLayout(
+        getRealmLabel(),
+        buildLogoutButton()
+      );
+      header.addStyleName("header");
+      return header;
+    }
 
-    Component logout = buildLogoutButton();
-    header.addComponent(logout);
-    header.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
-
-    return header;
-  }
+    private Component getRealmLabel() {
+      Optional<Realm> realm = realmService.findAllRealms().stream().findFirst();
+      Label label = new Label(realm.isPresent()? realm.get().getDescription() : "");
+      label.addStyleName("realm-label");
+      return label;
+    }
 
   private Component buildLogoutButton() {
 
