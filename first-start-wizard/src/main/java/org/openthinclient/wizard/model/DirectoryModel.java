@@ -13,13 +13,13 @@ public class DirectoryModel {
 
     primaryOU = new OrganizationalUnit();
     primaryOU.setName("openthinclient");
-    primaryOU.setDescription("The openthinclient root organizational unit");
+    primaryOU.setDescription("My openthinclient server");
 
     administratorUser = new User();
     administratorUser.setName("administrator");
-    administratorUser.setGivenName("Unnamed");
-    administratorUser.setSn("Administrator");
-    administratorUser.setDescription("The main system administration user");
+    administratorUser.setGivenName("");
+    administratorUser.setSn("administrator");
+    administratorUser.setDescription("");
   }
 
   public OrganizationalUnit getPrimaryOU() {
