@@ -449,29 +449,17 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   private Component buildLogoutButton() {
 
-    HorizontalLayout hl = new HorizontalLayout();
-    hl.setMargin(new MarginInfo(false, true, false, false));
-    hl.setSpacing(false);
-
     UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    Label circle = new Label(principal.getUsername().substring(0,1).toUpperCase());
-    circle.addStyleName("header-circle");
-    hl.addComponent(circle);
-
     MenuBar menuBar = new MenuBar();
-    menuBar.setWidth("100%");
-    menuBar.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
     menuBar.addStyleName(ValoTheme.MENUBAR_SMALL);
     menuBar.addStyleName("header-menu");
-
-    hl.addComponent(menuBar);
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 
-    return hl;
+    return menuBar;
   }
 
   private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
