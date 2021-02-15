@@ -633,17 +633,21 @@ $ok-button-color: #2db200;
           }
 
           .v-button {
+            flex: 1;
             line-height: 19px;
             padding: 0;
             color: inherit;
+
+            &:before {
+              display: none;
+            }
 
             &:hover {
               color: #000;
             }
 
             .v-button-caption {
-              display: inline-flex;
-              max-width: 100%;
+              display: flex;
 
               .name {
                 flex-shrink: 0;
@@ -655,13 +659,27 @@ $ok-button-color: #2db200;
                 padding-left: 8px;
                 font-style: italic;
                 color: #aaa;
-                text-overflow: "...)";
+                text-overflow: ellipsis;
+                text-overflow: "...)"; // only for FF
 
                 &::before {
                   content: "(";
                 }
                 &::after {
                   content: ")";
+                }
+              }
+            }
+
+            &.client {
+              .v-button-caption {
+                padding-right: 18ch;
+
+                .mac {
+                  position: absolute;
+                  right: 0;
+                  font-family: 'Courier New', Courier, monospace;
+                  text-transform: uppercase;
                 }
               }
             }

@@ -12,7 +12,11 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Table;
+
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.springframework.web.util.HtmlUtils;
@@ -235,24 +239,40 @@ public class ProfilesListOverviewPanel extends Panel {
     private DirectoryObject directoryObject;
     public SelectionRow(final DirectoryObject directoryObject) {
       this.directoryObject = directoryObject;
+      boolean isClient = directoryObject instanceof ClientMetaData;
+
       CssLayout row = new CssLayout();
       row.addStyleName("columns");
-      cb = new CheckBox();
-      Button button = new Button();
 
+      cb = new CheckBox();
+
+      Button button = new Button();
       button.setCaptionAsHtml(true);
-      StringBuilder caption = new StringBuilder("<span class=\"name\">")
-          .append(HtmlUtils.htmlEscape(directoryObject.getName()))
-          .append("</span>");
+      if (isClient) {
+        button.addStyleName("client");
+      }
+
+      StringBuilder caption = new StringBuilder();
+      caption.append("<span class=\"name\">")
+              .append(HtmlUtils.htmlEscape(directoryObject.getName()))
+              .append("</span>");
       String description = directoryObject.getDescription();
       if (description != null) {
         caption.append("\n\n<span class=\"description\">")
-                .append(HtmlUtils.htmlEscape(description))
+        .append(HtmlUtils.htmlEscape(description))
+        .append("</span>");
+      }
+      if (isClient) {
+        caption.append("\n\n<span class=\"mac\">")
+                .append(((ClientMetaData)directoryObject).getMacAddress())
                 .append("</span>");
       }
       button.setCaption(caption.toString());
 
-      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+      button.addStyleNames(
+        ValoTheme.BUTTON_BORDERLESS_COLORED,
+        "profile-button"
+      );
       button.addClickListener(e -> itemButtonClicked(directoryObject));
       row.addComponents(cb, button);
       // The composition root MUST be set
