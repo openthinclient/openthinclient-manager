@@ -168,7 +168,22 @@ public class ProfilesListOverviewPanel extends Panel {
         return true;
       } else {
         final String what = event.getValue().toLowerCase();
-        return Stream.of(directoryObject.getName(), directoryObject.getDescription())
+
+        String[] data;
+        if (directoryObject instanceof ClientMetaData) {
+          ClientMetaData client = (ClientMetaData)directoryObject;
+          String macAddress = client.getMacAddress();
+          data = new String[]{
+            client.getName(),
+            client.getDescription(),
+            macAddress, macAddress.replace(":", ""),
+            client.getIpHostNumber()
+          };
+        } else {
+          data = new String[]{directoryObject.getName(), directoryObject.getDescription()};
+        }
+
+        return Stream.of(data)
                 .filter(Objects::nonNull)
                 .map(String::toLowerCase)
                 .anyMatch(where -> where.contains(what));
