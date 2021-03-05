@@ -150,9 +150,11 @@ public final class ClientView extends AbstractThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    presenter.addPanelCaptionComponent(createWOLButton(profile));
-    presenter.addPanelCaptionComponent(createVNCButton(profile));
-    presenter.addPanelCaptionComponent(createLOGButton(profile));
+    if(!"00:00:00:00:00:00".equals(((Client)profile).getMacAddress())){
+      presenter.addPanelCaptionComponent(createWOLButton(profile));
+      presenter.addPanelCaptionComponent(createVNCButton(profile));
+      presenter.addPanelCaptionComponent(createLOGButton(profile));
+    }
     presenter.hideCopyButton();
 
     // replace default metadata-group with client-metadata
