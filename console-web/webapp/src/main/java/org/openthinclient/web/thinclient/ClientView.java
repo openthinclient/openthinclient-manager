@@ -298,7 +298,7 @@ public final class ClientView extends AbstractThinclientView {
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^\\s*([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})\\s*$"));
     macaddressConfiguration.addValidator(new Validator<String>() {
       public ValidationResult apply(String value, ValueContext context) {
-        if(!value.equalsIgnoreCase(mac)) {
+        if(value != null && !value.equalsIgnoreCase(mac)) {
           Optional<Client> client = clientService.findByHwAddress(value.trim()).stream().findFirst();
           if(client.isPresent()) {
             return ValidationResult.error(mc.getMessage(UI_MAC_ADDRESS_ALREADY_EXISTS, client.get().getName()));
