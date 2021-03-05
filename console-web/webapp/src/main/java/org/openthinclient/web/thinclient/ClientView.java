@@ -290,9 +290,10 @@ public final class ClientView extends AbstractThinclientView {
 //      });
     });
 
+    String mac = profile.getMacAddress();
+
     // MAC-Address
     OtcMacProperty macaddress = new OtcMacProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress(), null, unrecognizedClientService);
-    String mac = profile.getMacAddress();
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", mac);
     macaddressConfiguration.setRequired(mac == null);
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^\\s*([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})\\s*$"));
@@ -311,11 +312,13 @@ public final class ClientView extends AbstractThinclientView {
     configuration.addProperty(macaddress);
 
     //IP address
-    OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber(), null);
-    ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
-    ipaddressConfiguration.disable();
-    ipaddress.setConfiguration(ipaddressConfiguration);
-    configuration.addProperty(ipaddress);
+    if(!"00:00:00:00:00:00".equals(mac)) {
+      OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber(), null);
+      ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
+      ipaddressConfiguration.disable();
+      ipaddress.setConfiguration(ipaddressConfiguration);
+      configuration.addProperty(ipaddress);
+    }
 
     // Location
     OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
