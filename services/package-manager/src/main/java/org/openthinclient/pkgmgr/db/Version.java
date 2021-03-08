@@ -35,10 +35,13 @@ import java.util.stream.Stream;
 public class Version implements Comparable<Version>, Serializable {
 
     private static final long serialVersionUID = 3258135760426317876L;
-    private static final Pattern SPECIFIER_PATTERN = Pattern.compile("^" + "(?:(\\d+)\\:)?" // epoch
+    private static final Pattern SPECIFIER_PATTERN = Pattern.compile(
+              "^"
+            + "(?:(\\d+)\\:)?"              // epoch
             + "(\\d[A-Za-z0-9\\.\\+-~]*?)"  // upstream version
             + "(?:-([A-Za-z0-9\\+\\.~]+))?" // debian revision
-            + "$");
+            + "$"
+    );
     private static final Pattern TOKENS = Pattern.compile("(\\d+|\\D+)");
 
     @Column(name = "version_epoch")
@@ -64,7 +67,7 @@ public class Version implements Comparable<Version>, Serializable {
 
     /**
      * Compare to revision specifiers according to the rules laid down in the debian specification:
-     * <br> <a href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">
+     * <br> <a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#version">
      */
     private static int compareRevision(String version1, String version2) {
         boolean version1StartsWithDigit = (
