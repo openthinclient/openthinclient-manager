@@ -6,21 +6,14 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.StreamResource;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.Table;
 
-import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.springframework.web.util.HtmlUtils;
-import org.vaadin.viritin.button.MButton;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -29,12 +22,10 @@ import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-public class ProfilesListOverviewPanel extends Panel {
+public class ProfilesListOverviewPanel extends CssLayout {
 
   private IMessageConveyor mc;
   private CheckBox selectAll;
-//  private Grid<DirectoryObject> itemGrid;
-//  private ListSelect<DirectoryObject> multi;
   private CssLayout gridWrapper;
   private List<SelectionRow> selectionRows = new ArrayList<>();
   private ListDataProvider<DirectoryObject> dataProvider;
@@ -42,21 +33,39 @@ public class ProfilesListOverviewPanel extends Panel {
   private Button addNew;
   private Button deleteProfileAction;
   private Button ldifExportAction;
+  private boolean enabled = true;
 
   private Consumer<DirectoryObject> itemButtonClickedConsumer = null;
   private Grid.Column<DirectoryObject, Button> itemBtn;
 
-  public ProfilesListOverviewPanel(ConsoleWebMessages i18nTitleKey) {
+  public ProfilesListOverviewPanel(ConsoleWebMessages i18nTitleKey, boolean enabled) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    setCaption(mc.getMessage(i18nTitleKey));
-    addStyleName("overviewPanel");
-    setVisible(false);
+    this.enabled = enabled;
 
-    CssLayout layout = new CssLayout();
-    layout.setSizeFull();
-    setContent(layout);
+    setVisible(false);
+    addStyleName("overviewPanel");
+
+    CssLayout caption = new CssLayout();
+    caption.addStyleName("caption");
+    addComponent(caption);
+
+    addNew = new Button(mc.getMessage(ConsoleWebMessages.UI_PROFILE_PANEL_NEW));
+    addNew.addStyleNames(
+      ValoTheme.BUTTON_SMALL,
+      "create-new"
+    );
+    addNew.setVisible(enabled);
+
+    caption.addComponents(
+      new Label(mc.getMessage(i18nTitleKey)),
+      addNew
+    );
+
+    CssLayout content = new CssLayout();
+    content.addStyleName("content");
+    addComponent(content);
 
     CssLayout filterLine = new CssLayout();
     filterLine.addStyleNames("filterLine");
@@ -64,32 +73,25 @@ public class ProfilesListOverviewPanel extends Panel {
     filter.setPlaceholder(mc.getMessage(UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
     filter.addValueChangeListener(this::onFilterTextChange);
     filterLine.addComponent(filter);
-    layout.addComponent(filterLine);
+    content.addComponent(filterLine);
 
     HorizontalLayout actionLine = new HorizontalLayout();
     actionLine.addStyleNames("actionLine");
+    actionLine.setVisible(enabled);
+    content.addComponent(actionLine);
+
     selectAll = new CheckBox(mc.getMessage(UI_COMMON_SELECT_ALL));
     selectAll.addValueChangeListener(this::selectAllItems);
     actionLine.addComponent(selectAll);
 
-    addNew = new Button("");
-    addNew.setIcon(VaadinIcons.PLUS_CIRCLE_O);
-    addNew.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    addNew.addStyleName(ValoTheme.BUTTON_SMALL);
-    addNew.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    addNew.addStyleName("addNew");
-//    addNew.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(viewName + "/create"));
-    actionLine.addComponent(addNew);
-
     deleteProfileAction = new Button();
     deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
-    deleteProfileAction.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
+    deleteProfileAction.setIcon(VaadinIcons.TRASH);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     deleteProfileAction.addStyleName("deleteProfile");
     actionLine.addComponent(deleteProfileAction);
-    layout.addComponent(actionLine);
 
     ldifExportAction = new Button("");
     ldifExportAction.setDescription("Export LDIF");
@@ -98,42 +100,11 @@ public class ProfilesListOverviewPanel extends Panel {
     ldifExportAction.addStyleName(ValoTheme.BUTTON_SMALL);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     ldifExportAction.addStyleName("ldifExport");
-//    addNew.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(viewName + "/create"));
     actionLine.addComponent(ldifExportAction);
 
     gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
-
-//    multi = new ListSelect<>();
-//    multi.setItemCaptionGenerator(d -> "<a href=\"" + d.getName() + "\">" + d.getName() + "</a>");
-//    multi.addValueChangeListener(event -> {
-//      Notification.show("Number of selected items: " + event.getValue().size());
-//    });
-////    multi.setHtmlContentAllowed(true);
-//    gridWrapper.addComponent(multi);
-    layout.addComponent(gridWrapper);
-
-    // MULTI-Selection has Vaadin performance issue:
-    // https://github.com/vaadin/vaadin-grid-flow/issues/451 -
-    // Änderungen wird scheinbar nur in Flow geben: https://github.com/vaadin/vaadin-grid-flow/pull/715
-//    itemGrid = new Grid<>();
-//    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-//    itemGrid.addColumn(DirectoryObject::getName);
-//    itemBtn = itemGrid.addComponentColumn(dirObj -> {
-//      Button button = new Button(dirObj.getName());
-//      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-//      button.addClickListener(e -> itemButtonClicked(dirObj));
-//      return button;
-//    });
-//    itemGrid.addColumn(DirectoryObject::getDescription);
-//    itemGrid.removeHeaderRow(0);
-//    itemGrid.setSizeFull();
-//    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-//    // Profile-Type based style
-//    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-//    gridWrapper.addComponent(itemGrid);
-//    layout.addComponent(gridWrapper);
-
+    content.addComponent(gridWrapper);
   }
 
   private void itemButtonClicked(DirectoryObject dirObj) {
@@ -141,16 +112,6 @@ public class ProfilesListOverviewPanel extends Panel {
       itemButtonClickedConsumer.accept(dirObj);
     }
   }
-
-//  private Label createErrorLabel(Exception e) {
-//    Label emptyScreenHint = new Label(
-//        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
-//        ContentMode.HTML);
-//    emptyScreenHint.setStyleName("errorScreenHint");
-//    return emptyScreenHint;
-//  }
-
-
 
   private void selectAllItems(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
     if (booleanValueChangeEvent.getValue()) {
@@ -259,6 +220,7 @@ public class ProfilesListOverviewPanel extends Panel {
       row.addStyleName("columns");
 
       cb = new CheckBox();
+      cb.setVisible(enabled);
 
       Button button = new Button();
       button.setCaptionAsHtml(true);

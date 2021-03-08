@@ -95,12 +95,13 @@ $ok-button-color: #2db200;
       width: 100%;
     }
 
+    .profiles-overview .overviewPanel .caption,
     .settings-caption,
     .references-caption > * {
       position: relative;
       display: flex;
       min-height: 36px;
-      padding: 0 1ch;
+      padding: 0 1ch 0 20px;
       align-items: center;
       background: #2b2e33;
       color: #fff;
@@ -472,11 +473,10 @@ $ok-button-color: #2db200;
   }
 
   // colored dots before captions
-  .profiles-overview .overviewPanel .v-panel-caption,
+  .profiles-overview .overviewPanel .caption,
   .thinclientview .settings-caption,
   .thinclientview .references-caption-wrap {
     position: relative;
-    padding-left: 20px;
 
     &::before {
       content:"";
@@ -487,38 +487,6 @@ $ok-button-color: #2db200;
       width: 8px;
       border-radius: 50%;
       background: var(--section-color);
-    }
-  }
-
-  .profiles-actionrow {
-    .thinclient-action-button {
-      display: flex;
-      align-items: center;
-      padding: 4px 10px 4px 29px;
-      color: #000;
-      background: #e3e3e3;
-
-      &::before {
-        content: "\e7fe";
-        font-family: "Vaadin-Icons";
-        position: absolute;
-        top: 5px;
-        left: 10px;
-        color: #00b400;
-      }
-
-      .v-button-wrap {
-        display: contents;
-
-        img {
-          max-height: 24px;
-          filter: invert(1);
-        }
-
-        .v-button-caption {
-          margin-left: 0;
-        }
-      }
     }
   }
 
@@ -550,23 +518,31 @@ $ok-button-color: #2db200;
         }
       }
 
-      .v-panel-caption {
-        background: #2b2e33;
-        color: #fff;
-      }
+      .caption .create-new {
+        position: relative;
+        padding: 3px .5ch 3px 3ch;
+        color: #000;
+        background: #e3e3e3;
 
-      .v-panel-content {
-        overflow: hidden;
-
-        > .v-layout {
-          display: flex;
-          flex-flow: column nowrap;
-          width: 100%;
-          height: 100%;
+        &::before {
+          content: "\e7fe";
+          font-family: "Vaadin-Icons";
+          position: absolute;
+          left: 1ch;
+          color: #00b400;
         }
       }
 
+      .content {
+        display: flex;
+        flex-flow: column nowrap;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
       .filterLine {
+        position: relative;
         width: 100%;
         border: 1px solid #d9d9d9;
         border-top: none;
@@ -584,7 +560,7 @@ $ok-button-color: #2db200;
 
         input {
           width: calc(100% - 28px);
-          height: 22px;
+          height: 100%;
           margin-left: 28px;
           border: none;
         }
@@ -592,7 +568,7 @@ $ok-button-color: #2db200;
 
       .actionLine {
         display: flex;
-        padding: 0 28px 8px 6px;
+        padding: 0 8px 8px 6px;
 
         & > :first-child {
           flex: 1;

@@ -65,7 +65,6 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   @PostConstruct
   public void setup() {
     addStyleName(ApplicationView.NAME);
-    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
   }
 
   @Override

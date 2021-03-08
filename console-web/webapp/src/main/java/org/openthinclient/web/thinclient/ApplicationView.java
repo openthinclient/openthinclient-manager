@@ -78,7 +78,6 @@ public final class ApplicationView extends AbstractThinclientView {
   @PostConstruct
   public void setup() {
     addStyleName(NAME);
-    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), ICON, NAME + "/create");
   }
 
   @Override
@@ -256,7 +255,7 @@ public final class ApplicationView extends AbstractThinclientView {
   public void showOverview() {
     super.showOverview();
     overviewCL.addComponent(
-      applicationGroupView.createOverviewItemlistPanel(applicationGroupView.getViewTitleKey(), applicationGroupView.getAllItems()).getPanel()
+      applicationGroupView.createOverviewItemlistPanel(applicationGroupView.getViewTitleKey(), applicationGroupView.getAllItems(), true).getPanel()
     );
   }
 }

@@ -69,9 +69,6 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   public void setup() {
     secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
     addStyleName(UserView.NAME);
-    if (!secondaryDirectory) {
-      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
-    }
   }
 
   @Override

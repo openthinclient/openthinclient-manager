@@ -11,13 +11,11 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -80,7 +77,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
   private Component clientReferencesCaption;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-  private final HorizontalLayout actionRow;
   protected final CssLayout overviewCL;
   private final CssLayout clientCL;
 
@@ -95,11 +91,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
     view.addStyleName("maincontent");
     view.setResponsive(true);
     view.setSizeFull();
-
-    // setup action row
-    actionRow = new HorizontalLayout();
-    actionRow.addStyleName("profiles-actionrow");
-    view.addComponent(actionRow);
 
     // setup thinclient overview-state
     overviewCL = new CssLayout();
@@ -159,19 +150,11 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract Client getClient(String name);
 
-  public void addCreateActionButton(String caption, String icon, String target) {
-    Button action = new Button(caption, new ThemeResource(icon));
-    action.addStyleName("thinclient-action-button");
-    action.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(target));
-    actionRow.addComponent(action);
-  }
-
   protected void addOverviewComponent(Component c) {
     overviewCL.addComponent(c);
   }
 
   public void showError(Exception e) {
-    actionRow.removeAllComponents();
     overviewCL.removeAllComponents();
     clientSettingsVL.removeAllComponents();
     clientReferencesCL.removeAllComponents();
@@ -465,7 +448,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   public void showProfileMetadataPanel(ProfilePanel panel) {
-    actionRow.setVisible(false);
     overviewCL.setVisible(false);
     clientReferencesCL.setVisible(false);
     clientCL.setVisible(true);
@@ -529,9 +511,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   // Overview panel setup
-  public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
+  public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean enabled) {
 
-    ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
+    ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey, enabled);
     ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
@@ -600,14 +582,18 @@ public abstract class AbstractThinclientView extends Panel implements View {
   /**
    * Display overview-page with list of items
    */
-  public void showOverview() {
+  public void showOverview(boolean enabled) {
     try {
-      ProfilesListOverviewPanelPresenter overviewPanelPresenter = createOverviewItemlistPanel(getViewTitleKey(), getAllItems());
+      ProfilesListOverviewPanelPresenter overviewPanelPresenter = createOverviewItemlistPanel(getViewTitleKey(), getAllItems(), enabled);
       overviewPanelPresenter.setDeleteMandatSupplier(createDeleteMandateFunction());
       displayOverviewPanel(overviewPanelPresenter.getPanel());
     } catch(AllItemsListException e) {
       showError(e);
     }
+  }
+
+  public void showOverview() {
+    showOverview(true);
   }
 
   /**
@@ -633,7 +619,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
     clientReferencesCL.setVisible(false);
     clientCL.setVisible(false);
 
-    actionRow.setVisible(true);
     overviewCL.removeAllComponents();
     overviewCL.addComponent(overviewPanel);
     overviewCL.setVisible(true);
@@ -641,7 +626,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   /** Display the settings and references of profile, remove actions-panes */
   public void displayProfilePanel(ProfilePanel profilePanel, ProfileReferencesPanel profileReferencesPanel) {
-    actionRow.setVisible(false);
     overviewCL.setVisible(false);
     clientCL.setVisible(true);
     clientSettingsVL.removeAllComponents();

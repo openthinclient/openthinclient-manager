@@ -4,8 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -20,11 +18,8 @@ import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
@@ -39,7 +34,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -94,9 +88,6 @@ public final class UserView extends AbstractThinclientView {
     secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
 
     addStyleName(NAME);
-    if (!secondaryDirectory) {
-      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
-    }
   }
 
   @Override
@@ -131,34 +122,7 @@ public final class UserView extends AbstractThinclientView {
   }
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
-
-    ProfilePanel profilePanel = createUserProfilePanel((User) directoryObject, false);
-//    ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
-//    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
-//    // disable name-property: do not change name or validate name if user already exists (only on 'new'-user action)
-//    configuration.getProperty("name").ifPresent(otcProperty -> {
-//      OtcTextProperty name = (OtcTextProperty) otcProperty;
-//      name.getConfiguration().getValidators().clear();
-//      name.getConfiguration().disable();
-//    });
-
-    // put property-group to panel
-//    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-//    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
-//    ppp.onValuesWritten(profilePanel1 -> saveValues(ppp, directoryObject));
-
-    // MetaInformation
-
-//    ProfilePanel profileMetaPanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), directoryObject.getClass());
-////    profileMetaPanel.hideMetaInformation();
-//    // put property-group to panel
-//    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup((User) directoryObject);
-//    profileMetaPanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
-//    showProfileMetadataPanel(profileMetaPanel);
-////    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
-//    attachSaveHandler((User) directoryObject, propertyGroup, ppp);
-
-    return profilePanel;
+    return createUserProfilePanel((User) directoryObject, false);
   }
 
   @Override
@@ -376,9 +340,9 @@ public final class UserView extends AbstractThinclientView {
 
   @Override
   public void showOverview() {
-    super.showOverview();
+    super.showOverview(!secondaryDirectory);
     overviewCL.addComponent(
-      userGroupView.createOverviewItemlistPanel(userGroupView.getViewTitleKey(), userGroupView.getAllItems()).getPanel()
+      userGroupView.createOverviewItemlistPanel(userGroupView.getViewTitleKey(), userGroupView.getAllItems(), !secondaryDirectory).getPanel()
     );
   }
 }
