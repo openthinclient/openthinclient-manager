@@ -2,6 +2,8 @@ package org.openthinclient.web.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
+import com.kstruct.gethostname4j.Hostname;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.HasValue;
@@ -329,9 +331,17 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   private Component getRealmLabel() {
     Optional<Realm> realm = realmService.findAllRealms().stream().findFirst();
-    Label label = new Label(realm.isPresent()? realm.get().getDescription() : "");
-    label.addStyleName("realm-label");
-    return label;
+    String description = realm.isPresent()? realm.get().getDescription() : "";
+    String hostname = Hostname.getHostname();
+
+    Layout realmLabel = new CssLayout();
+    realmLabel.addStyleName("realm-label");
+    realmLabel.addComponents(
+      new Label(hostname),
+      new Label(description)
+    );
+
+    return realmLabel;
   }
 
   private void buildSearchTextField() {

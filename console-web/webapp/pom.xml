@@ -170,6 +170,13 @@
             <version>0.2</version>
         </dependency>
 
+        <!-- gethostname for info in header -->
+        <dependency>
+            <groupId>com.kstruct</groupId>
+            <artifactId>gethostname4j</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
