@@ -12,6 +12,8 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
+
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
@@ -26,6 +28,7 @@ import org.vaadin.spring.sidebar.SideBarSectionDescriptor;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class OTCSideBar extends ValoSideBar {
 
@@ -193,6 +196,19 @@ public class OTCSideBar extends ValoSideBar {
       dataProvider.setFilter(directoryObject -> {
         if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
           return true;
+        } else if (directoryObject instanceof ClientMetaData) {
+          ClientMetaData client = (ClientMetaData)directoryObject;
+          String macAddress = client.getMacAddress();
+          String[] data = new String[]{
+            client.getName(),
+            macAddress,
+            macAddress.replace(":", ""),
+            client.getIpHostNumber()
+          };
+          return Stream.of(data)
+                        .filter(Objects::nonNull)
+                        .map(String::toLowerCase)
+                        .anyMatch(where -> where.contains(event.getValue()));
         } else {
           return caseInsensitiveContains(directoryObject.getName(), event.getValue());
         }
