@@ -130,11 +130,11 @@ public final class HardwaretypeView extends AbstractThinclientView {
                                 values -> saveReference(hardwareType, values, Collections.emptySet(), Client.class),
                                 null, true);
 
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<? extends DirectoryObject> devices = hardwareType.getDevices();
     Set<Device> all = deviceService.findAll();
-    refPresenter.showDeviceAssociations(all, devices,
-                                        values -> saveAssociations(hardwareType, values, all, Device.class));
+    refPresenter.showReference(devices, mc.getMessage(UI_DEVICE_HEADER),
+                                all, Device.class,
+                                values -> saveReference(hardwareType, values, all, Device.class));
 
     return referencesPanel;
   }

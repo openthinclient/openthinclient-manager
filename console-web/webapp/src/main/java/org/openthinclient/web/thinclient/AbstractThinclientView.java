@@ -174,54 +174,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   /**
-   * Add/remove device associations to profile and save
-   * @param profile to be changed
-   * @param values the state of value to be saved
-   */
-  public <T extends DirectoryObject> void saveAssociations(AssociatedObjectsProvider profile, List<Item> values, Set<T> directoryObjects, Class<T> clazz) {
-
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = profile.getAssociatedObjects();
-    Set<T> association = (Set<T>) associatedObjects.get(clazz);
-
-    List<Item> oldValues = builder.createFilteredItemsFromDO(association, clazz);
-    oldValues.forEach(oldItem -> {
-      if (values.contains(oldItem)) {
-        LOGGER.debug("Keep oldValue as member: " + oldItem);
-      } else {
-        LOGGER.debug("Remove oldValue from members: " + oldItem);
-        // get values from available-values set and remove members
-        Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
-        if (directoryObject.isPresent()) {
-          association.remove(directoryObject.get());
-        } else {
-          LOGGER.info("Device (to remove) not found for " + oldItem);
-        }
-      }
-    });
-
-    values.forEach(newValue -> {
-      if (!oldValues.contains(newValue)) {
-        LOGGER.debug("Add newValue to members: " + newValue);
-        // get values from available-values set and add to members
-        Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
-        if (directoryObject.isPresent()) {
-          T t = (T) directoryObject.get();
-          if (association != null) {
-            association.add(t);
-          } else { // no associations of this type found, create new one
-            profile.setAssociatedObjects(t.getClass(), Stream.of(t).collect(Collectors.toSet()));
-          }
-        } else {
-          LOGGER.info("DirectoryObject not found for " + newValue);
-        }
-      }
-    });
-
-    saveProfile((Profile) profile, null);
-  }
-
-
-  /**
    * Add/remove members (references) to profile and save
    * @param profile to be changed
    * @param values the state of value to be saved

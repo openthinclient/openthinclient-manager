@@ -189,9 +189,10 @@ public final class ClientView extends AbstractThinclientView {
 
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
     Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    Set<Device> allDevices = deviceService.findAll();
-    refPresenter.showDeviceAssociations(allDevices, devices,
-                                        values -> saveAssociations(client, values, allDevices, Device.class));
+    Set<Device> all = deviceService.findAll();
+    refPresenter.showReference(devices, mc.getMessage(UI_DEVICE_HEADER),
+                                all, Device.class,
+                                values -> saveReference(client, values, all, Device.class));
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
