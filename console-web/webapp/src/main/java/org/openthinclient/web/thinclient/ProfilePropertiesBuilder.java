@@ -170,11 +170,10 @@ public class ProfilePropertiesBuilder {
    * @param directoryObjects
    * @return
    */
-  public static List<Item> createItems(Set<? extends DirectoryObject>... directoryObjects) {
-    return Arrays.asList(directoryObjects).stream()
-                                          .flatMap(ts -> ts.stream())
-                                          .map(t -> new Item(t.getName(), getType(t.getClass())))
-                                          .collect(Collectors.toList());
+  public static List<Item> createItems(Set<? extends DirectoryObject> directoryObjects) {
+    return directoryObjects.stream()
+            .map(directoryObject -> new Item(directoryObject.getName(), getType(directoryObject.getClass())))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -183,13 +182,12 @@ public class ProfilePropertiesBuilder {
    * @param clazz the filter predicate
    * @return list of {@link Item}
    */
-  public static List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
+  public static List<Item> createFilteredItemsFromDO(Collection<? extends DirectoryObject> members, Class<?> clazz) {
     if (members == null) {
       return new ArrayList<>();
     }
-    List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
-            .filter(member -> classList.contains(member.getClass()))
+            .filter(member -> member.getClass() == clazz)
             .map(member -> new Item(member.getName(), getType(member.getClass())))
             .collect(Collectors.toList());
   }

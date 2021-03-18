@@ -26,7 +26,7 @@ public class ReferencePanelPresenter {
    * @param allObjects - all available DirectoryObjects of a type, this item can be selected in single- or multi-selection-box
    * @param clazz - Class of DirectoryObjects
    */
-  public void showReference(Set<? extends DirectoryObject> members,
+  public void showReference(Collection<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
 
@@ -44,7 +44,7 @@ public class ReferencePanelPresenter {
    * @param memberSupplier - supplier for members of given Item
    * @param isReadOnly - display items in readonly mode
    */
-  public void showReference(Set<? extends DirectoryObject> members,
+  public void showReference(Collection<? extends DirectoryObject> members,
                             String title,
                             Set<? extends DirectoryObject> allObjects,
                             Class clazz,
@@ -55,5 +55,18 @@ public class ReferencePanelPresenter {
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
     ReferencesComponentPresenter presenter = view.addReferences(title, builder.createItems(allObjects), memberItems, memberSupplier, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
+  }
+
+  public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
+                                    String title,
+                                    Class clazz) {
+    showReference(members, title, Collections.emptySet(), clazz, values -> {}, null, true);
+  }
+
+  public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
+                                    String title,
+                                    Class clazz,
+                                    Function<Item, List<Item>> memberSupplier) {
+    showReference(members, title, Collections.emptySet(), clazz, values -> {}, memberSupplier, true);
   }
 }

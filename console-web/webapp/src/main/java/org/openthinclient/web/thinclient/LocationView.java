@@ -107,11 +107,9 @@ public final class LocationView extends AbstractThinclientView<Location> {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Location.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<ClientMetaData> clients = clientService.findByLocation(location.getName());
-    refPresenter.showReference(clients, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)",
-                              Collections.emptySet(), ClientMetaData.class,
-                              values -> saveReference(location, values, Collections.emptySet(), ClientMetaData.class),
-                              null, true);
+    refPresenter.showReferenceReadOnly(clientService.findByLocation(location.getName()),
+                                        mc.getMessage(UI_CLIENT_HEADER),
+                                        ClientMetaData.class);
 
     Set<Printer> all = printerService.findAll();
     refPresenter.showReference(location.getPrinters(),
