@@ -49,9 +49,9 @@ public class ReferencesComponentPresenter {
     this.memberSupplier = memberSupplier;
     this.isReadOnly = isReadOnly;
 
-    this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
-    // hide multiselect-popup if readonly ist enabled
-    this.view.getMultiSelectPopupBtn().setVisible(!isReadOnly);
+    if(!isReadOnly) {
+      this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
+    }
 
     itemListDataProvider = new ListDataProvider<>(allItems);
     itemListDataProvider.setSortComparator(Comparator.comparing(Item::getName, String::compareToIgnoreCase)::compare);
