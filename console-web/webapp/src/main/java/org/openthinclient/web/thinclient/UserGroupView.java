@@ -39,8 +39,6 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   @Autowired
   private ApplicationService applicationService;
   @Autowired
-  private ClientService clientService;
-  @Autowired
   private PrinterService printerService;
   @Autowired
   private UserService userService;
@@ -135,11 +133,6 @@ public final class UserGroupView extends AbstractThinclientGroupView {
     LOGGER.info("Save: " + profile);
     userGroupService.save((UserGroup) profile);
     Audit.logSave(profile);
-  }
-
-  @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
   }
 
   @Override

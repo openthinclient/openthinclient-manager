@@ -85,11 +85,6 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
-  }
-
-  @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Application.class))
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));

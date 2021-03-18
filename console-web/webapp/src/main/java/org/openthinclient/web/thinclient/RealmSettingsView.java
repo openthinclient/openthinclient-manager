@@ -101,11 +101,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return null;
-  }
-
-  @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
     Set<Realm> allRealms = getRealmService().findAllRealms();
 

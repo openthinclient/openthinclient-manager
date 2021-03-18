@@ -84,11 +84,6 @@ public final class LocationView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
-  }
-
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;

@@ -163,11 +163,6 @@ public final class PrinterView extends AbstractThinclientView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
-  }
-
-  @Override
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ deviceSideBar);
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());

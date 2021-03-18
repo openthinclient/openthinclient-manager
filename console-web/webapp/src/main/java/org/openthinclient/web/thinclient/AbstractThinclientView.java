@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -68,6 +69,8 @@ public abstract class AbstractThinclientView extends Panel implements View {
   protected ManagerHome managerHome;
   @Autowired
   private RealmService realmService;
+  @Autowired
+  private ClientService clientService;
 
   protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
@@ -146,7 +149,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
 
-  public abstract Client getClient(String name);
+  private Client getClient(String name) {
+    return clientService.findByName(name);
+  }
 
   protected void addOverviewComponent(Component c) {
     overviewCL.addComponent(c);

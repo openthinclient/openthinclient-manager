@@ -146,11 +146,6 @@ public final class DeviceView extends AbstractThinclientView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
-  }
-
-  @Override
   public String getViewName() {
     return NAME;
   }

@@ -77,11 +77,6 @@ public final class HardwaretypeView extends AbstractThinclientView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return null;
-  }
-
-  @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(HardwareType.class))
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));

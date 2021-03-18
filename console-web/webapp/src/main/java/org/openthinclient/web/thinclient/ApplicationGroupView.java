@@ -156,11 +156,6 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public Client getClient(String name) {
-    return clientService.findByName(name);
-  }
-
-  @Override
   public String getViewName() {
     return NAME;
   }
