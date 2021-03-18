@@ -11,7 +11,6 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -52,13 +51,12 @@ public final class HardwaretypeView extends AbstractThinclientView<HardwareType>
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-
-   @PostConstruct
-   private void setup() {
-     addStyleName(NAME);
-   }
+  @PostConstruct
+  private void setup() {
+    addStyleName(NAME);
+  }
 
   @Override
   public Set<HardwareType> getAllItems() {

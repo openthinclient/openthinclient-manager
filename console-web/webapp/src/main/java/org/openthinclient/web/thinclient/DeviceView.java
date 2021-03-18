@@ -53,13 +53,12 @@ public final class DeviceView extends AbstractThinclientView<Device> {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
-
-   @PostConstruct
-   private void setup() {
-     addStyleName(NAME);
-   }
+  @PostConstruct
+  private void setup() {
+    addStyleName(NAME);
+  }
 
   @Override
   public Set<Device> getAllItems() {
@@ -95,11 +94,6 @@ public final class DeviceView extends AbstractThinclientView<Device> {
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-    // set MetaInformation
-//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));

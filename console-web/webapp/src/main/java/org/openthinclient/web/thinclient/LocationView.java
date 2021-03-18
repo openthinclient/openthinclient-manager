@@ -55,12 +55,12 @@ public final class LocationView extends AbstractThinclientView<Location> {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   @PostConstruct
-   private void setup() {
-     addStyleName(NAME);
-   }
+  @PostConstruct
+  private void setup() {
+    addStyleName(NAME);
+  }
 
   @Override
   public Set<Location> getAllItems() {
@@ -114,7 +114,10 @@ public final class LocationView extends AbstractThinclientView<Location> {
                               null, true);
 
     Set<Printer> all = printerService.findAll();
-    refPresenter.showReference(location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), all, Printer.class, values -> saveReference(location, values, all, Printer.class));
+    refPresenter.showReference(location.getPrinters(),
+                                mc.getMessage(UI_PRINTER_HEADER),
+                                all, Printer.class,
+                                values -> saveReference(location, values, all, Printer.class));
 
     return referencesPanel;
   }
@@ -123,7 +126,6 @@ public final class LocationView extends AbstractThinclientView<Location> {
   protected Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
      return directoryObject -> {
        Location location = (Location) directoryObject;
-       // TODO: Performance: eigene Query bauen für: finde clients mit gegebener Location
        boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
        if (optionalClient) {
          return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED, location.getName()));

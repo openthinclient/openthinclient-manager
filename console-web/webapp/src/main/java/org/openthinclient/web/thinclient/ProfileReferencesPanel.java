@@ -1,14 +1,9 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
-import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Function;
@@ -18,15 +13,10 @@ import java.util.function.Function;
  */
 public class ProfileReferencesPanel extends CssLayout {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProfileReferencesPanel.class);
-
-
-  IMessageConveyor mc;
   CssLayout rows;
 
   public ProfileReferencesPanel(Class clazz) {
 
-    mc = new MessageConveyor(UI.getCurrent().getLocale());
     addStyleName("references-panel");
     addStyleName("references-panel-" + clazz.getSimpleName());
 

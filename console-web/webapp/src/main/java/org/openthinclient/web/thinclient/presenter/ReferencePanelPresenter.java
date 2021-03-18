@@ -1,17 +1,9 @@
 package org.openthinclient.web.thinclient.presenter;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.ProfileReferencesPanel;
 import org.openthinclient.web.thinclient.model.Item;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -20,16 +12,11 @@ import java.util.function.Function;
 
 public class ReferencePanelPresenter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencePanelPresenter.class);
-
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
   private ProfileReferencesPanel view;
-  private IMessageConveyor mc;
 
   public ReferencePanelPresenter(ProfileReferencesPanel view) {
     this.view = view;
-
-    mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   /**
@@ -69,15 +56,4 @@ public class ReferencePanelPresenter {
     ReferencesComponentPresenter presenter = view.addReferences(title, builder.createItems(allObjects), memberItems, memberSupplier, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
-
-
-  // show device associations
-  public void showDeviceAssociations(Set<Device> all, Set<? extends DirectoryObject> members, Consumer<List<Item>> profileReferenceChangeConsumer) {
-    List<Item> allDevices = builder.createItems(all);
-    List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
-    ReferencesComponentPresenter presenter = view.addReferences(mc.getMessage(ConsoleWebMessages.UI_DEVICE_HEADER),
-        allDevices, deviceMembers, null, false);
-    presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
-  }
-
 }

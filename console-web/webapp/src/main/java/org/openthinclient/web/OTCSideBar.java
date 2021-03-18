@@ -8,7 +8,6 @@ import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
@@ -163,8 +162,6 @@ public class OTCSideBar extends ValoSideBar {
       filterRow.addStyleNames("filterRow");
       filter = new TextField();
       filter.setPlaceholder("Filter");
-//     filter.setIcon(VaadinIcons.FILTER);
-//     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
       filter.addValueChangeListener(this::onFilterTextChange);
       filterRow.addComponent(filter);
       filterStatus = new Label();
@@ -235,7 +232,6 @@ public class OTCSideBar extends ValoSideBar {
       long visibleItems = dataProvider.getItems().size() - groupHeader;
       filterStatus.setCaption(visibleItems + "/" + items.size());
 
-      // TODO: Style festlegen für Anzeige Zeilenzahl
       if (visibleItems > 0) itemGrid.setHeightByRows(visibleItems);
 
       filter.setValue("");
@@ -248,7 +244,6 @@ public class OTCSideBar extends ValoSideBar {
         int pos = 0;
         for(DirectoryObject directoryObject: groupedItems) {
           if(directoryObject.getName().equals(directoryObjectName)) {
-            // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
             itemGrid.getSelectionModel().select(directoryObject);
             itemGrid.scrollTo(pos);
             break;

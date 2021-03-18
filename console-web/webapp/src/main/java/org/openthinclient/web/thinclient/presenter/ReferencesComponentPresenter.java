@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 
 public class ReferencesComponentPresenter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencesComponentPresenter.class);
-
   private IMessageConveyor mc;
 
   private ReferencesComponent view;

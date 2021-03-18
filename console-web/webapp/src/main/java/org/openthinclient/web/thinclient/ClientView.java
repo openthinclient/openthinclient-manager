@@ -8,10 +8,8 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -104,7 +102,7 @@ public final class ClientView extends AbstractThinclientView<Client> {
       long start = System.currentTimeMillis();
       Set<ClientMetaData> all = clientService.findAllClientMetaData();
       LOGGER.debug("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
-      return  all;
+      return all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
@@ -126,8 +124,6 @@ public final class ClientView extends AbstractThinclientView<Client> {
   @Override
   public ProfilePanel createProfilePanel (Client profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-
-    OtcPropertyGroup meta = otcPropertyGroups.get(0);
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
@@ -188,7 +184,9 @@ public final class ClientView extends AbstractThinclientView<Client> {
    */
   private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(Client client) {
     return item -> {
-      Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
+      Optional<ApplicationGroup> first = client.getApplicationGroups().stream()
+                                            .filter(ag -> ag.getName().equals(item.getName()))
+                                            .findFirst();
       if (first.isPresent()) {
         return first.get().getApplications().stream()
           .map(m -> new Item(m.getName(), Item.Type.APPLICATION))
@@ -255,18 +253,7 @@ public final class ClientView extends AbstractThinclientView<Client> {
     // remove default validators and add custom validator to 'name'-property
     addProfileNameAlreadyExistsValidator(configuration);
     configuration.getProperty("name").ifPresent(nameProperty -> {
-//      nameProperty.getConfiguration().getValidators().clear();
       nameProperty.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_THINCLIENT_NAME_REGEXP), "^[a-zA-Z0-9][a-zA-Z0-9\\-\\.]+[a-zA-Z0-9]$"));
-//      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
-//        @Override
-//        public ValidationResult apply(String value, ValueContext context) {
-//          DirectoryObject directoryObject = getFreshProfile(value);
-//          return (nameProperty.getInitialValue() == null &&  directoryObject == null) ||  // name-property wasn't set before and no object was found
-//                 (nameProperty.getInitialValue() != null && nameProperty.getInitialValue().equals(value) && directoryObject != null) || // name property not changed, and directorObject found, the profile changed case
-//                 (nameProperty.getInitialValue() != null && !nameProperty.getInitialValue().equals(value) && directoryObject == null)   // property changed, but no directoryObject found, name is unique
-//                 ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
-//        }
-//      });
     });
 
     String mac = profile.getMacAddress();
@@ -519,7 +506,6 @@ public final class ClientView extends AbstractThinclientView<Client> {
 
   private void openNoVncInNewBrowserWindow(String clientName) {
     String ipHostNumber = ((Client) getFreshProfile(clientName)).getIpHostNumber();
-    // TODO: following properties should be configurable (at client)
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
     String noVNCConsoleAutoconnect = "true";

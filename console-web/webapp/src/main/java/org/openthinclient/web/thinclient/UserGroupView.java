@@ -9,7 +9,6 @@ import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
@@ -94,10 +93,10 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
                                 allApplicationGroups, ApplicationGroup.class,
                                 values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class));
 
-    Set<Application> allApplicatios = applicationService.findAll();
+    Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(userGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplicatios, Application.class,
-                                values -> saveReference(userGroup, values, allApplicatios, Application.class));
+                                allApplications, Application.class,
+                                values -> saveReference(userGroup, values, allApplications, Application.class));
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(userGroup.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),

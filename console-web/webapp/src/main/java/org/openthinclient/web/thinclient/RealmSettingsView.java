@@ -2,12 +2,10 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -45,7 +43,7 @@ public final class RealmSettingsView extends AbstractThinclientView<Realm> {
   @Autowired @Qualifier("settingsSideBar")
   private OTCSideBar settingsSideBar;
 
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   @Override
   public Set<Realm> getAllItems() throws AllItemsListException {

@@ -54,7 +54,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_ERROR_DIRECTORY_EXCEPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_NAME_ALREADY_EXISTS;

@@ -1,7 +1,6 @@
 package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -56,8 +55,7 @@ public final class PrinterView extends AbstractThinclientView<Printer> {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private VerticalLayout right;
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   @PostConstruct
   private void setup() {
@@ -108,9 +106,6 @@ public final class PrinterView extends AbstractThinclientView<Printer> {
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
-    // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 

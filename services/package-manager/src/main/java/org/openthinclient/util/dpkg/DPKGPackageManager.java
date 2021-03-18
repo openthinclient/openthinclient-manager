@@ -251,7 +251,7 @@ public class DPKGPackageManager implements PackageManager {
     public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
        return executionEngine.enqueue(new RemoveFromDatabase(configuration, source, packageManagerDatabase));
    }
-    
+
     public boolean addWarning(String warning) {
         taskSummary.addWarning(warning);
         return true;
@@ -458,7 +458,7 @@ public class DPKGPackageManager implements PackageManager {
       } else {
         throw new SourceIntegrityViolationException("Cannot delete source, because there are installed packages of this source", list);
       }
-      
+
     }
 
     /**

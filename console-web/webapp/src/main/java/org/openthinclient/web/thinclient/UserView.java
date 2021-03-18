@@ -43,9 +43,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
 @ThemeIcon(UserView.ICON)
-
-  // TODO: user nur aus dem festgelegten LDAP (primary/seonary)
-  //       lesen/schreiben je nach einstellung des LDAP (Bereich Settings/RealmConfig/ Nutzer/GRuppenverwaltung)
 public final class UserView extends AbstractThinclientView<User> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
@@ -123,10 +120,10 @@ public final class UserView extends AbstractThinclientView<User> {
                                 values -> saveReference(user, values, allUserGroups, UserGroup.class),
                                 null, secondaryDirectory);
 
-    Set<Application> allApplicatios = applicationService.findAll();
+    Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplicatios, Application.class,
-                                values -> saveReference(user, values, allApplicatios, Application.class));
+                                allApplications, Application.class,
+                                values -> saveReference(user, values, allApplications, Application.class));
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
@@ -141,23 +138,6 @@ public final class UserView extends AbstractThinclientView<User> {
     return referencesPanel;
   }
 
-  /**
-   * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
-   * @param client Client which has ApplicationGroups
-   * @return List of members mapped to Item-list or empty list
-   */
-  /* private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(User user) {
-    return item -> {
-      Optional<ApplicationGroup> first = user.getApplicationGroups().stream()
-                                            .filter(ag -> ag.getName().equals(item.getName()))
-                                            .findFirst()
-      if (first.isPresent()) {
-        return ProfilePropertiesBuilder.createItems(first.get().getApplications());
-      } else {
-        return Collections.emptyList();
-      }
-    };
-  } */
   private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(User user) {
     return item -> user.getApplicationGroups().stream()
                     .filter(group -> group.getName().equals(item.getName()))
