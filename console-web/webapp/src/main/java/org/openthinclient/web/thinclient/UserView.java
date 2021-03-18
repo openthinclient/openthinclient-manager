@@ -1,7 +1,5 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.AbstractValidator;
@@ -9,7 +7,6 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -76,11 +73,8 @@ public final class UserView extends AbstractThinclientView {
 
   private boolean secondaryDirectory = false;
 
-  private final IMessageConveyor mc;
-
   public UserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
    super(UI_USER_HEADER, eventBus, notificationService);
-   mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   @PostConstruct

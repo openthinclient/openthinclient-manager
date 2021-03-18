@@ -1,9 +1,6 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -57,12 +54,10 @@ public final class HardwaretypeView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    public HardwaretypeView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_HWTYPE_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
 

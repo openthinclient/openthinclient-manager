@@ -1,7 +1,5 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.jamierf.wol.WakeOnLan;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
@@ -95,12 +93,10 @@ public final class ClientView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
 
-  private final IMessageConveyor mc;
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   public ClientView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
    super(UI_CLIENT_HEADER, eventBus, notificationService);
-   mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   @PostConstruct

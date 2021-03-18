@@ -1,9 +1,6 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
@@ -61,13 +58,11 @@ public final class PrinterView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
    private VerticalLayout right;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    public PrinterView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_PRINTER_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
   @PostConstruct

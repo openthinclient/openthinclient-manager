@@ -1,9 +1,6 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -55,11 +52,8 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
 
-  private final IMessageConveyor mc;
-
   public ApplicationGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
    super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
-   mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   @PostConstruct

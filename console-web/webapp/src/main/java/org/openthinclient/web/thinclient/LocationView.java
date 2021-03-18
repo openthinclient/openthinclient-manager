@@ -1,9 +1,6 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -60,12 +57,10 @@ public final class LocationView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    public LocationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_LOCATION_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
    @PostConstruct

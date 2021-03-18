@@ -1,10 +1,7 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
@@ -46,7 +43,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
   public static final String NAME = "realm_settings_view";
   public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
-  private IMessageConveyor mc;
 
   @Autowired
   private SchemaProvider schemaProvider;
@@ -57,7 +53,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
    public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
   @Override

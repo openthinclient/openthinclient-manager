@@ -1,11 +1,8 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -68,11 +65,8 @@ public final class ApplicationView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-  private final IMessageConveyor mc;
-
   public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
    super(UI_APPLICATION_HEADER, eventBus, notificationService);
-   mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   @PostConstruct
