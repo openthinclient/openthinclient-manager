@@ -62,7 +62,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = ClientView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 20)
 @ThemeIcon(ClientView.ICON)
-public final class ClientView extends AbstractThinclientView {
+public final class ClientView extends AbstractThinclientView<Client> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);
 
@@ -99,17 +99,17 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
-  public Set getAllItems() {
+  public Set<ClientMetaData> getAllItems() {
     try {
       long start = System.currentTimeMillis();
-      Set all = clientService.findAllClientMetaData();
+      Set<ClientMetaData> all = clientService.findAllClientMetaData();
       LOGGER.debug("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
       return  all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -124,10 +124,7 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel (Client profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
@@ -154,23 +151,20 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    Client client = (Client) item;
-
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(Client client) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Client.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-        allApplicationGroups, ApplicationGroup.class,
-        values -> saveReference(item, values, allApplicationGroups, ApplicationGroup.class),
-        getApplicationsForApplicationGroupFunction(client), false
-    );
+                                allApplicationGroups, ApplicationGroup.class,
+                                values -> saveReference(client, values, allApplicationGroups, ApplicationGroup.class),
+                                getApplicationsForApplicationGroupFunction(client), false);
 
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications, Application.class,
-                                values -> saveReference(item, values, allApplications, Application.class));
+                                values -> saveReference(client, values, allApplications, Application.class));
 
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
     Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
@@ -182,7 +176,7 @@ public final class ClientView extends AbstractThinclientView {
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
                                 allPrinters, Printer.class,
-                                values -> saveReference(item, values, allPrinters, Printer.class));
+                                values -> saveReference(client, values, allPrinters, Printer.class));
 
     return referencesPanel;
   }
@@ -409,21 +403,41 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-    // if there are special characters in directory, quote them before search
-//    String reg = "(?>[^\\w^+^\\s^-])";
-//    String _name = name.replaceAll(reg, "\\\\$0");
+  protected Client newProfile() {
+    return new Client();
+  }
+
+  @Override
+  public Client getFreshProfile(String name) {
     long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
     LOGGER.debug("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
 
-    return (T) profile;
+    return profile;
   }
 
   @Override
-  public void save(DirectoryObject profile) throws ProfileNotSavedException {
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(Client profile, Class<D> clazz) {
+    if (clazz == ClientGroup.class) {
+      return (Set<D>)profile.getClientGroups();
+    } else if (clazz == Device.class) {
+      return (Set<D>)profile.getDevices();
+    } else if (clazz == Printer.class) {
+      return (Set<D>)profile.getPrinters();
+    } else if (clazz == Application.class) {
+      return (Set<D>)profile.getApplications();
+    } else if (clazz == ApplicationGroup.class) {
+      return (Set<D>)profile.getApplicationGroups();
+    } else {
+      return Collections.emptySet();
+    }
+  }
+
+  @Override
+  public void save(Client profile) throws ProfileNotSavedException {
     LOGGER.info("Save client: " + profile);
-    clientService.save((Client) profile);
+    clientService.save(profile);
     Audit.logSave(profile);
 
     // remove MAC-address from unrecognizedClientService

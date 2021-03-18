@@ -36,7 +36,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = LocationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 80)
 @ThemeIcon(LocationView.ICON)
-public final class LocationView extends AbstractThinclientView {
+public final class LocationView extends AbstractThinclientView<Location> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 
@@ -63,14 +63,14 @@ public final class LocationView extends AbstractThinclientView {
    }
 
   @Override
-  public Set getAllItems() {
+  public Set<Location> getAllItems() {
     try {
       return locationService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -84,10 +84,7 @@ public final class LocationView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel(Location profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
@@ -106,11 +103,9 @@ public final class LocationView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(Location location) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Location.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
-
-    Location location = ((Location) item);
 
     Set<ClientMetaData> clients = clientService.findByLocation(location.getName());
     refPresenter.showReference(clients, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)",
@@ -138,14 +133,25 @@ public final class LocationView extends AbstractThinclientView {
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-    return (T) locationService.findByName(name);
+  protected Location newProfile() {
+    return new Location();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public Location getFreshProfile(String name) {
+    return locationService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(Location profile, Class<D> clazz) {
+    return (Set<D>)profile.getPrinters();
+  }
+
+  @Override
+  public void save(Location profile) {
     LOGGER.info("Save: " + profile);
-    locationService.save((Location) profile);
+    locationService.save(profile);
     Audit.logSave(profile);
   }
 

@@ -26,7 +26,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = UserGroupView.NAME, ui = ManagerUI.class)
-public final class UserGroupView extends AbstractThinclientGroupView {
+public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserGroupView.class);
 
@@ -58,7 +58,7 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public Set getAllItems() {
+  public Set<UserGroup> getAllItems() {
     return userGroupService.findAll();
   }
 
@@ -74,8 +74,7 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    UserGroup userGroup = (UserGroup) item;
+  public ProfileReferencesPanel createReferencesPanel(UserGroup userGroup) {
     Set<User> members = userGroup.getMembers();
 
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(UserGroup.class);
@@ -119,8 +118,13 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject, boolean isNew) {
-    return super.createProfilePanel(directoryObject, isNew || secondaryDirectory);
+  public ProfilePanel createProfilePanel(UserGroup profile, boolean isNew) {
+    return super.createProfilePanel(profile, isNew || secondaryDirectory);
+  }
+
+  @Override
+  protected UserGroup newProfile() {
+    return new UserGroup();
   }
 
   @Override
@@ -129,7 +133,23 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(UserGroup profile, Class<D> clazz) {
+    if (clazz == User.class) {
+      return (Set<D>)profile.getMembers();
+    } else if (clazz == ApplicationGroup.class) {
+      return (Set<D>)profile.getApplicationGroups();
+    } else if (clazz == Application.class) {
+      return (Set<D>)profile.getApplications();
+    } else if (clazz == Printer.class) {
+      return (Set<D>)profile.getPrinters();
+    } else {
+      return Collections.emptySet();
+    }
+  }
+
+  @Override
+  public void save(UserGroup profile) {
     LOGGER.info("Save: " + profile);
     userGroupService.save((UserGroup) profile);
     Audit.logSave(profile);

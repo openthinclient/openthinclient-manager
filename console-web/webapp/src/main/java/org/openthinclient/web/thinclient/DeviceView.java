@@ -34,7 +34,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = DeviceView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 50)
 @ThemeIcon(DeviceView.ICON)
-public final class DeviceView extends AbstractThinclientView {
+public final class DeviceView extends AbstractThinclientView<Device> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);
 
@@ -62,14 +62,14 @@ public final class DeviceView extends AbstractThinclientView {
    }
 
   @Override
-  public Set getAllItems() {
+  public Set<Device> getAllItems() {
     try {
       return deviceService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -83,10 +83,7 @@ public final class DeviceView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel(Device profile) throws BuildProfileException {
     Map<String, String> schemaNames = getSchemaNames();
 
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(schemaNames, profile);
@@ -112,36 +109,45 @@ public final class DeviceView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-
-    Profile profile = (Profile) item;
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(Device device) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Device.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set members = ((Device) profile).getMembers();
+    Set<? extends DirectoryObject> members = device.getMembers();
 
     Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER),
                                 allHwTypes, HardwareType.class,
-                                values -> saveReference(profile, values, allHwTypes, HardwareType.class));
+                                values -> saveReference(device, values, allHwTypes, HardwareType.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
                                 allClients, Client.class,
-                                values -> saveReference(profile, values, allClients, Client.class));
+                                values -> saveReference(device, values, allClients, Client.class));
 
     return referencesPanel;
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) deviceService.findByName(name);
+  protected Device newProfile() {
+    return new Device();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public Device getFreshProfile(String name) {
+     return deviceService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(Device profile, Class<D> clazz) {
+    return (Set<D>)profile.getMembers();
+  }
+
+  @Override
+  public void save(Device profile) {
     LOGGER.info("Save: " + profile);
-    deviceService.save((Device) profile);
+    deviceService.save(profile);
     Audit.logSave(profile);
   }
 

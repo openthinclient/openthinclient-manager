@@ -38,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = ApplicationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_APPLICATION_HEADER", order = 30)
 @ThemeIcon(ApplicationView.ICON)
-public final class ApplicationView extends AbstractThinclientView {
+public final class ApplicationView extends AbstractThinclientView<Application> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
@@ -69,14 +69,14 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public Set getAllItems() {
+  public Set<Application> getAllItems() {
     try {
      return applicationService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
    }
 
   @Override
@@ -91,10 +91,7 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-     Profile profile = (Profile) directoryObject;
-
+   public ProfilePanel createProfilePanel(Application profile) throws BuildProfileException {
      Map<String, String> schemaNames = getSchemaNames();
 
      List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(schemaNames, profile);
@@ -114,17 +111,16 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+  public ProfileReferencesPanel createReferencesPanel(Application profile) {
 
-    Profile profile = (Profile) item;
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Application.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
     refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,
-        values -> saveApplicationGroupReference(((Application) profile), values),
+        values -> saveApplicationGroupReference(profile, values),
         getApplicationsForApplicationGroupFunction(), false
      );
 
@@ -133,7 +129,7 @@ public final class ApplicationView extends AbstractThinclientView {
     Set<UserGroup> userGroups = userGroupService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
                                 userGroups, UserGroup.class,
-                                values -> saveReference(item, values, userGroups, UserGroup.class));
+                                values -> saveReference(profile, values, userGroups, UserGroup.class));
 
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
@@ -188,12 +184,23 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String profileName) {
-     return (T) applicationService.findByName(profileName);
+  protected Application newProfile() {
+    return new Application();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public Application getFreshProfile(String profileName) {
+     return applicationService.findByName(profileName);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(Application profile, Class<D> clazz) {
+    return (Set<D>)profile.getMembers();
+  }
+
+  @Override
+  public void save(Application profile) {
     LOGGER.info("Save: " + profile);
     applicationService.save((Application) profile);
     Audit.logSave(profile);

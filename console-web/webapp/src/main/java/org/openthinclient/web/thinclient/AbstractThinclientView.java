@@ -61,7 +61,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_NAME_ALR
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_NEW_PROFILE_HEADER;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION;
 
-public abstract class AbstractThinclientView extends Panel implements View {
+public abstract class AbstractThinclientView<P extends DirectoryObject> extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -127,11 +127,11 @@ public abstract class AbstractThinclientView extends Panel implements View {
     }
   }
 
-  public abstract ProfilePanel createProfilePanel(DirectoryObject item) throws BuildProfileException;
+  public abstract ProfilePanel createProfilePanel(P item) throws BuildProfileException;
 
-  public abstract ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException;
+  public abstract ProfileReferencesPanel createReferencesPanel(P profile) throws BuildProfileException;
 
-  public abstract Set getAllItems() throws AllItemsListException;
+  public abstract Set<? extends DirectoryObject> getAllItems() throws AllItemsListException;
 
   public abstract Schema getSchema(String value);
 
@@ -145,9 +145,13 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract ConsoleWebMessages getViewTitleKey();
 
-  public abstract <T extends DirectoryObject> T getFreshProfile(String profileName);
+  protected abstract P newProfile();
 
-  public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
+  public abstract P getFreshProfile(String profileName);
+
+  protected abstract <D extends DirectoryObject> Set<D> getMembers(P profile, Class<D> clazz);
+
+  public abstract void save(P profile) throws ProfileNotSavedException;
 
   private Client getClient(String name) {
     return clientService.findByName(name);
@@ -182,80 +186,12 @@ public abstract class AbstractThinclientView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class clazz) {
+  protected <T extends DirectoryObject>
+  void saveReference(P profile, List<Item> values,
+                      Set<? extends DirectoryObject> profileAndDirectoryObjects,
+                      Class<T> clazz) {
 
-    Set<T> members;
-    if (profile instanceof Application) {
-      members = (Set<T>) ((Application) profile).getMembers();
-
-    } else if (profile instanceof ApplicationGroup) {
-      if (clazz.equals(Application.class)) {
-        members = (Set<T>) ((ApplicationGroup) profile).getApplications();
-      } else {
-        members = (Set<T>) ((ApplicationGroup) profile).getMembers();
-      }
-
-    } else if (profile instanceof Printer) {
-      members = (Set<T>) ((Printer) profile).getMembers();
-
-    } else if (profile instanceof HardwareType) {
-      // TODO: nur ThinclientGruppen werden vom LDAP als 'members' behandelt, Thinclients werden ignoriert
-      Set<? extends DirectoryObject> clients = ((HardwareType) profile).getMembers();
-      clients.stream().forEach(o -> {
-        LOGGER.info("This class should be of Type Client.class: {}" + o.getClass());
-      });
-      members = (Set<T>) clients;
-
-    } else if (profile instanceof Device) {
-      members = ((Device) profile).getMembers();
-
-    } else if (profile instanceof Client) {
-        if (clazz.equals(ClientGroup.class)) {
-          members = (Set<T>) ((Client) profile).getClientGroups();
-        } else if (clazz.equals(Device.class)) {
-          members = (Set<T>) ((Client) profile).getDevices();
-        } else if (clazz.equals(Printer.class)) {
-          members = (Set<T>) ((Client) profile).getPrinters();
-        } else if (clazz.equals(Application.class)) {
-          members = (Set<T>) ((Client) profile).getApplications();
-        } else if (clazz.equals(ApplicationGroup.class)) {
-          members = (Set<T>) ((Client) profile).getApplicationGroups();
-        } else {
-          members = null;
-        }
-
-    } else if (profile instanceof Location) {
-      members = (Set<T>) ((Location) profile).getPrinters();
-
-    } else if (profile instanceof UserGroup) {
-      if (clazz.equals(User.class)) {
-        members = (Set<T>) ((UserGroup) profile).getMembers();
-      } else if (clazz.equals(ApplicationGroup.class)) {
-        members = (Set<T>) ((UserGroup) profile).getApplicationGroups();
-      } else if (clazz.equals(Application.class)) {
-        members = (Set<T>) ((UserGroup) profile).getApplications();
-      } else if (clazz.equals(Printer.class)) {
-        members = (Set<T>) ((UserGroup) profile).getPrinters();
-      } else {
-        members = null;
-      }
-
-    } else if (profile instanceof User) {
-      if (clazz.equals(UserGroup.class)) {
-        members = (Set<T>) ((User) profile).getUserGroups();
-      } else if (clazz.equals(ApplicationGroup.class)) {
-        members = (Set<T>) ((User) profile).getApplicationGroups();
-      } else if (clazz.equals(Printer.class)) {
-        members = (Set<T>) ((User) profile).getPrinters();
-      } else if (clazz.equals(Application.class)) {
-        members = (Set<T>) ((User) profile).getApplications();
-      } else {
-        members = null;
-      }
-
-    } else {
-      throw new RuntimeException("Not implemented Profile-type: " + profile);
-    }
+    Set<T> members = getMembers(profile, clazz);
 
     List<Item> oldValues = builder.createFilteredItemsFromDO(members, clazz);
     oldValues.forEach(oldItem -> {
@@ -264,7 +200,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
       } else {
         LOGGER.debug("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
-        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream()
+                                        .filter(o -> o.getName().equals(oldItem.getName()))
+                                        .findFirst();
         if (directoryObject.isPresent()) {
           DirectoryObject object = directoryObject.get();
           if (object instanceof ClientMetaData) { // we need to get a full client-profile
@@ -282,7 +220,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
       if (newValue != null && !oldValues.contains(newValue)) {
         LOGGER.debug("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
-        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream()
+                                        .filter(o -> o.getName().equals(newValue.getName()))
+                                        .findFirst();
         if (directoryObject.isPresent()) {
           DirectoryObject object = directoryObject.get();
           if (object instanceof ClientMetaData) { // we need to get a full client-profile
@@ -364,7 +304,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     });
 
     // save
-    boolean success = saveProfile(profile, profilePanelPresenter);
+    boolean success = saveProfile((P)profile, profilePanelPresenter);
     // update view
     if (success) {
       selectItem(profile);
@@ -378,9 +318,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
    * Save profile, return success status
    * @param profile Profile
    * @param panelPresenter
-   * @return true if save action completed sucessfully
+   * @return true if save action completed successfully
    */
-  public boolean saveProfile(DirectoryObject profile, DirectoryObjectPanelPresenter panelPresenter) {
+  public boolean saveProfile(P profile, DirectoryObjectPanelPresenter panelPresenter) {
     try {
       save(profile);
       LOGGER.info("Profile saved {}", profile);
@@ -397,8 +337,8 @@ public abstract class AbstractThinclientView extends Panel implements View {
     }
   }
 
-  public void showProfileMetadata(Profile profile) {
-    ProfilePanel panel = createProfileMetadataPanel(profile);
+  public void showProfileMetadata(P profile) {
+    ProfilePanel panel = createProfileMetadataPanel((Profile)profile);
     showProfileMetadataPanel(panel);
   }
 
@@ -487,40 +427,20 @@ public abstract class AbstractThinclientView extends Panel implements View {
     if (params.length > 0) {
       // handle create action
       if ("create".equals(params[0])) {
-        switch (event.getViewName()) {
-          case ApplicationView.NAME:
-            showProfileMetadata(new Application());
-            break;
-          case ClientView.NAME:
-            showProfileMetadata(new Client());
-            break;
-          case DeviceView.NAME:
-            showProfileMetadata(new Device());
-            break;
-          case HardwaretypeView.NAME:
-            showProfileMetadata(new HardwareType());
-            break;
-          case LocationView.NAME:
-            showProfileMetadata(new Location());
-            break;
-          case PrinterView.NAME:
-            showProfileMetadata(new Printer());
-            break;
-        }
-
+        showProfileMetadata(newProfile());
       // register new client with mac-address
       } else if ("register".equals(params[0])
                 && params.length == 2
                 && ClientView.NAME.equals(event.getViewName())) {
         Client client = new Client();
         client.setMacAddress(params[1]);
-        showProfileMetadata(client);
+        showProfileMetadata((P)client);
 
       // view-profile action
       } else if("edit".equals(params[0])
                 && params.length == 2
                 && params[1].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[1]);
+        P profile = getFreshProfile(params[1]);
         if (profile != null) {
           showProfile(profile);
         } else {
@@ -559,7 +479,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     return null;
   }
 
-  public void showProfile(DirectoryObject profile) {
+  public void showProfile(P profile) {
     try {
       ProfilePanel profilePanel = createProfilePanel(profile);
       ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);

@@ -33,7 +33,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = PrinterView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 60)
 @ThemeIcon(PrinterView.ICON)
-public final class PrinterView extends AbstractThinclientView {
+public final class PrinterView extends AbstractThinclientView<Printer> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
@@ -65,14 +65,14 @@ public final class PrinterView extends AbstractThinclientView {
   }
 
   @Override
-  public Set getAllItems() {
+  public Set<Printer> getAllItems() {
     try {
       return printerService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -96,10 +96,7 @@ public final class PrinterView extends AbstractThinclientView {
     return TITLE_KEY;
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel(Printer profile) throws BuildProfileException {
     Map<String, String> schemaNames = getSchemaNames();
 
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(schemaNames, profile);
@@ -121,42 +118,53 @@ public final class PrinterView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(Printer printer) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Printer.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<DirectoryObject> members = ((Printer) item).getMembers();
+    Set<DirectoryObject> members = printer.getMembers();
 
     Set<Location> allLocations = locationService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER),
                                 allLocations, Location.class,
-                                values -> saveReference(item, values, allLocations, Location.class));
+                                values -> saveReference(printer, values, allLocations, Location.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
                                 allClients, Client.class,
-                                values -> saveReference(item, values, allClients, Client.class));
+                                values -> saveReference(printer, values, allClients, Client.class));
 
     Set<User> allUsers = userService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
-                                values -> saveReference(item, values, allUsers, User.class));
+                                values -> saveReference(printer, values, allUsers, User.class));
 
     Set<UserGroup> userGroups = userGroupService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
                                 userGroups, UserGroup.class,
-                                values -> saveReference(item, values, userGroups, UserGroup.class));
+                                values -> saveReference(printer, values, userGroups, UserGroup.class));
 
     return referencesPanel;
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) printerService.findByName(name);
+  protected Printer newProfile() {
+    return new Printer();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public Printer getFreshProfile(String name) {
+     return printerService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(Printer profile, Class<D> clazz) {
+    return (Set<D>)profile.getMembers();
+  }
+
+  @Override
+  public void save(Printer profile) {
     LOGGER.info("Save: " + profile);
     printerService.save((Printer) profile);
     Audit.logSave(profile);

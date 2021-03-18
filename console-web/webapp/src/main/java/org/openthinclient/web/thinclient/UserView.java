@@ -14,6 +14,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
@@ -32,6 +33,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,10 +43,10 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
 @ThemeIcon(UserView.ICON)
-public final class UserView extends AbstractThinclientView {
 
   // TODO: user nur aus dem festgelegten LDAP (primary/seonary)
   //       lesen/schreiben je nach einstellung des LDAP (Bereich Settings/RealmConfig/ Nutzer/GRuppenverwaltung)
+public final class UserView extends AbstractThinclientView<User> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 
@@ -79,7 +81,7 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
-  public Set getAllItems() {
+  public Set<User> getAllItems() {
     try {
       Set<User> users = userService.findAll();
       getRealmService().findAllRealms().forEach(realm ->
@@ -90,7 +92,7 @@ public final class UserView extends AbstractThinclientView {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -104,39 +106,72 @@ public final class UserView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
-    return createUserProfilePanel((User) directoryObject, false);
+  public ProfilePanel createProfilePanel (User profile) {
+    return createUserProfilePanel(profile, false);
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(User user) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(User.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    User user = (User) item;
+    Set<UserGroup> userGroups = user.getUserGroups();
 
     Set<UserGroup> allUserGroups = userGroupService.findAll();
-    refPresenter.showReference(user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER),
+    refPresenter.showReference(userGroups,  mc.getMessage(UI_USERGROUP_HEADER),
                                 allUserGroups, UserGroup.class,
-                                values -> saveReference(item, values, allUserGroups, UserGroup.class),
+                                values -> saveReference(user, values, allUserGroups, UserGroup.class),
                                 null, secondaryDirectory);
 
     Set<Application> allApplicatios = applicationService.findAll();
     refPresenter.showReference(user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplicatios, Application.class,
-                                values -> saveReference(item, values, allApplicatios, Application.class));
+                                values -> saveReference(user, values, allApplicatios, Application.class));
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
-                                values -> saveReference(item, values, allApplicationGroups, ApplicationGroup.class));
+                                values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class));
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
                                 allPrinters, Printer.class,
-                                values -> saveReference(item, values, allPrinters, Printer.class));
+                                values -> saveReference(user, values, allPrinters, Printer.class));
 
     return referencesPanel;
+  }
+
+  /**
+   * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
+   * @param client Client which has ApplicationGroups
+   * @return List of members mapped to Item-list or empty list
+   */
+  /* private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(User user) {
+    return item -> {
+      Optional<ApplicationGroup> first = user.getApplicationGroups().stream()
+                                            .filter(ag -> ag.getName().equals(item.getName()))
+                                            .findFirst()
+      if (first.isPresent()) {
+        return ProfilePropertiesBuilder.createItems(first.get().getApplications());
+      } else {
+        return Collections.emptyList();
+      }
+    };
+  } */
+  private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(User user) {
+    return item -> user.getApplicationGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
+                    .orElse(Collections.emptyList());
+  }
+
+  private Function<Item, List<Item>> PrintersFromUserGroupFunction(User user) {
+    return item -> user.getUserGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(group.getPrinters()))
+                    .orElse(Collections.emptyList());
   }
 
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
@@ -199,14 +234,34 @@ public final class UserView extends AbstractThinclientView {
     return configuration;
   }
 
-
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) userService.findByName(name);
+  protected User newProfile() {
+    return new User();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public User getFreshProfile(String name) {
+     return userService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(User profile, Class<D> clazz) {
+    if (clazz == UserGroup.class) {
+      return (Set<D>)profile.getUserGroups();
+    } else if (clazz == ApplicationGroup.class) {
+      return (Set<D>)profile.getApplicationGroups();
+    } else if (clazz == Printer.class) {
+      return (Set<D>)profile.getPrinters();
+    } else if (clazz == Application.class) {
+      return (Set<D>)profile.getApplications();
+    } else {
+      return Collections.emptySet();
+    }
+  }
+
+  @Override
+  public void save(User profile) {
     LOGGER.info("Save: " + profile);
     userService.save((User) profile);
     Audit.logSave(profile);
@@ -284,7 +339,7 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
-  public void showProfile(DirectoryObject profile) {
+  public void showProfile(User profile) {
     String message = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, "").trim();
     boolean userIsNew = profile.getName().indexOf(message) == 0;
     ProfilePanel profilePanel = createUserProfilePanel((User) profile, userIsNew);

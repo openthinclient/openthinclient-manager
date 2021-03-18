@@ -86,7 +86,7 @@ public class OTCSideBar extends ValoSideBar {
     }
   }
 
-  public void selectItem(String viewName, DirectoryObject directoryObject, Set<DirectoryObject> directoryObjectSet) {
+  public void selectItem(String viewName, DirectoryObject directoryObject, Set<? extends DirectoryObject> directoryObjectSet) {
     FilterGrid filterGrid = filterGridMap.get(viewName);
 
     if (filterGrid != null) {
@@ -227,7 +227,7 @@ public class OTCSideBar extends ValoSideBar {
       return dataProvider.size(new Query<>());
     }
 
-    public void setItems(Set<DirectoryObject> items) {
+    public void setItems(Set<? extends DirectoryObject> items) {
       groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
       long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
       ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);

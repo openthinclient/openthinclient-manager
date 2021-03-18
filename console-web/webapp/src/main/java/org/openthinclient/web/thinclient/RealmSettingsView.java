@@ -4,7 +4,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -17,7 +16,6 @@ import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
@@ -36,7 +34,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 @SuppressWarnings("serial")
 @SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 10)
-public final class RealmSettingsView extends AbstractThinclientView {
+public final class RealmSettingsView extends AbstractThinclientView<Realm> {
 
   public static final String NAME = "realm_settings_view";
   public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;
@@ -50,7 +48,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   @Override
-  public HashSet<Realm> getAllItems() throws AllItemsListException {
+  public Set<Realm> getAllItems() throws AllItemsListException {
      try {
        Set<Realm> allRealms = getRealmService().findAllRealms();
        HashSet<Realm> hashSet = new HashSet<>();
@@ -72,10 +70,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel(Realm profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_SETTINGS_HEADER), profile.getClass());
@@ -96,12 +91,17 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+  public ProfileReferencesPanel createReferencesPanel(Realm realm) {
     return null;
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
+  protected Realm newProfile() {
+    return new Realm();
+  }
+
+  @Override
+  public Realm getFreshProfile(String name) {
     Set<Realm> allRealms = getRealmService().findAllRealms();
 
     Optional<Realm> first = allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst();
@@ -112,15 +112,20 @@ public final class RealmSettingsView extends AbstractThinclientView {
       } catch (DirectoryException e) {
         LOGGER.error("Failed to refresh realm: " + e.getMessage(), e);
       }
-      return (T) realm;
+      return realm;
     } else {
       // TODO: no realm found: should throw/handle 'no realm'-exception
-      return (T) new Realm();
+      return new Realm();
     }
   }
 
   @Override
-  public void save(DirectoryObject profile) throws ProfileNotSavedException {
+  protected <D extends DirectoryObject> Set<D> getMembers(Realm profile, Class<D> clazz) {
+    return Collections.emptySet();
+  }
+
+  @Override
+  public void save(Realm profile) throws ProfileNotSavedException {
     LOGGER.info("Save realm-settings: " + profile);
     try {
       ((Realm) profile).getDirectory().save(profile);
@@ -149,7 +154,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
-    DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
+    Realm realmConfiguration = getFreshProfile("RealmConfiguration");
     showProfile(realmConfiguration);
   }
 }

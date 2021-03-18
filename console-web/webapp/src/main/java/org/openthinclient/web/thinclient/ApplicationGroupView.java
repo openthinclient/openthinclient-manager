@@ -27,7 +27,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationGroupView.NAME, ui= ManagerUI.class)
 @ThemeIcon(ApplicationGroupView.ICON)
-public final class ApplicationGroupView extends AbstractThinclientGroupView {
+public final class ApplicationGroupView extends AbstractThinclientGroupView<ApplicationGroup> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGroupView.class);
 
@@ -56,8 +56,8 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) applicationGroupService.findAll();
+  public Set<ApplicationGroup> getAllItems() {
+    return applicationGroupService.findAll();
   }
 
   @Override
@@ -72,11 +72,10 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ApplicationGroup applicationGroup = (ApplicationGroup) item;
+  public ProfileReferencesPanel createReferencesPanel(ApplicationGroup applicationGroup) {
     Set<DirectoryObject> members = applicationGroup.getMembers();
 
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(ApplicationGroup.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<Application> allApplications = applicationService.findAll();
@@ -144,12 +143,27 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView {
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) applicationGroupService.findByName(name);
+  protected ApplicationGroup newProfile() {
+    return new ApplicationGroup();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public ApplicationGroup getFreshProfile(String name) {
+     return applicationGroupService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(ApplicationGroup profile, Class<D> clazz) {
+    if (clazz == Application.class) {
+      return (Set<D>)profile.getApplications();
+    } else {
+      return (Set<D>)profile.getMembers();
+    }
+  }
+
+  @Override
+  public void save(ApplicationGroup profile) {
     LOGGER.info("Save: " + profile);
     applicationGroupService.save((ApplicationGroup) profile);
     Audit.logSave(profile);

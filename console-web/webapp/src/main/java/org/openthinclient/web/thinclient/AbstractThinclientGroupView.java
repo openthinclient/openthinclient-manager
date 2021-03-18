@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-public abstract class AbstractThinclientGroupView extends AbstractThinclientView {
+public abstract class AbstractThinclientGroupView<T extends DirectoryObject> extends AbstractThinclientView<T> {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -25,7 +25,7 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
    * @param profilePanelPresenter DirectoryObjectPanelPresenter contains ItemGroupPanels with form components
    * @param profile DirectoryObject to set the values
    */
-  public void saveValues(DirectoryObjectPanelPresenter profilePanelPresenter, DirectoryObject profile) {
+  public void saveValues(DirectoryObjectPanelPresenter profilePanelPresenter, T profile) {
 
     LOGGER.info("Save values for group: " + profile);
 
@@ -74,15 +74,15 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
     }
   }
 
-  public void showProfileMetadata(DirectoryObject directoryObject) {
+  public void showProfileMetadata(T directoryObject) {
     showProfileMetadataPanel(createProfilePanel(directoryObject, true));
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
+  public ProfilePanel createProfilePanel(T directoryObject) {
     return createProfilePanel(directoryObject, false);
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject, boolean isNew) {
+  public ProfilePanel createProfilePanel(T directoryObject, boolean isNew) {
     String title = isNew? mc.getMessage(UI_PROFILE_PANEL_NEW_GROUP_HEADER) : directoryObject.getName();
     ProfilePanel profilePanel = new ProfilePanel(title, directoryObject.getClass());
     DirectoryObjectPanelPresenter presenter = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
@@ -117,18 +117,11 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
     if (params.length > 0) {
       // handle create action
       if ("create".equals(params[0])) {
-        switch (event.getViewName()) {
-        case ApplicationGroupView.NAME:
-            showProfileMetadata(new ApplicationGroup());
-            break;
-          case UserGroupView.NAME:
-            showProfileMetadata(new UserGroup());
-            break;
-        }
+        showProfileMetadata(newProfile());
       } else if("edit".equals(params[0])
                 && params.length == 2
                 && params[1].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[1]);
+        T profile = getFreshProfile(params[1]);
         if (profile != null) {
           showProfile(profile);
         } else {

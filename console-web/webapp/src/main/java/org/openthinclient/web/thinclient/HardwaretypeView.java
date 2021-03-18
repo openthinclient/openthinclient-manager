@@ -35,7 +35,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = HardwaretypeView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
 @ThemeIcon(HardwaretypeView.ICON)
-public final class HardwaretypeView extends AbstractThinclientView {
+public final class HardwaretypeView extends AbstractThinclientView<HardwareType> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractThinclientView.class);
 
@@ -61,14 +61,14 @@ public final class HardwaretypeView extends AbstractThinclientView {
    }
 
   @Override
-  public Set getAllItems() {
+  public Set<HardwareType> getAllItems() {
     try {
       return hardwareTypeService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
     }
-    return Collections.EMPTY_SET;
+    return Collections.emptySet();
   }
 
   @Override
@@ -82,10 +82,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
+  public ProfilePanel createProfilePanel(HardwareType profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
@@ -102,9 +99,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
     return profilePanel;
   }
 
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) {
-    HardwareType hardwareType = (HardwareType) directoryObject;
-
+  public ProfileReferencesPanel createReferencesPanel(HardwareType hardwareType) {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(HardwareType.class);
     ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
 
@@ -135,14 +130,29 @@ public final class HardwaretypeView extends AbstractThinclientView {
   }
 
   @Override
-  public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) hardwareTypeService.findByName(name);
+  protected HardwareType newProfile() {
+    return new HardwareType();
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public HardwareType getFreshProfile(String name) {
+     return hardwareTypeService.findByName(name);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected <D extends DirectoryObject> Set<D> getMembers(HardwareType profile, Class<D> clazz) {
+    if (clazz == Device.class ) {
+      return (Set<D>)profile.getDevices();
+    } else {
+      return (Set<D>)profile.getMembers();
+    }
+  }
+
+  @Override
+  public void save(HardwareType profile) {
     LOGGER.info("Save: " + profile);
-    hardwareTypeService.save((HardwareType) profile);
+    hardwareTypeService.save(profile);
     Audit.logSave(profile);
   }
 
