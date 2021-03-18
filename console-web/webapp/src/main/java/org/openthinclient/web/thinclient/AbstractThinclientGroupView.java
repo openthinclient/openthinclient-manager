@@ -3,8 +3,6 @@ package org.openthinclient.web.thinclient;
 import com.vaadin.navigator.ViewChangeListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
@@ -12,7 +10,6 @@ import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,10 +19,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public abstract class AbstractThinclientGroupView extends AbstractThinclientView {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-  public AbstractThinclientGroupView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-    super(i18nTitleKey, eventBus, notificationService);
-  }
 
   /**
    * Set form-values to profile

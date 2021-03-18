@@ -13,7 +13,6 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
@@ -28,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -72,10 +70,6 @@ public final class UserView extends AbstractThinclientView {
   OTCSideBar deviceSideBar;
 
   private boolean secondaryDirectory = false;
-
-  public UserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-   super(UI_USER_HEADER, eventBus, notificationService);
-  }
 
   @PostConstruct
   private void setup() {

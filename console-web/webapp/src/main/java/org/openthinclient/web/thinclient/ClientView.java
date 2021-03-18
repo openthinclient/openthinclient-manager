@@ -25,7 +25,6 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.component.Popup;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
@@ -45,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -94,10 +92,6 @@ public final class ClientView extends AbstractThinclientView {
   private OTCSideBar deviceSideBar;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
-
-  public ClientView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-   super(UI_CLIENT_HEADER, eventBus, notificationService);
-  }
 
   @PostConstruct
   public void setup() {

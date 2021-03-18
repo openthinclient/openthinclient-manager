@@ -7,7 +7,6 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcProperty;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.events.EventBus;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -54,10 +52,6 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   OTCSideBar deviceSideBar;
 
   private boolean secondaryDirectory = false;
-
-  public UserGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-   super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
-  }
 
   @PostConstruct
   public void setup() {

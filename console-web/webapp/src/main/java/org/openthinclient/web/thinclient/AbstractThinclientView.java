@@ -27,7 +27,6 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
@@ -45,7 +44,6 @@ import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -80,7 +78,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   protected final CssLayout overviewCL;
   private final CssLayout clientCL;
 
-  public AbstractThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public AbstractThinclientView() {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     setStyleName("thinclientview");

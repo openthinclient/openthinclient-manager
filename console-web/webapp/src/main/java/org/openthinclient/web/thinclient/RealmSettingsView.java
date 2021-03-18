@@ -12,7 +12,6 @@ import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -26,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.*;
@@ -50,10 +48,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
   private OTCSideBar settingsSideBar;
 
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
-
-   public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_SETTINGS_HEADER, eventBus, notificationService);
-   }
 
   @Override
   public HashSet<Realm> getAllItems() throws AllItemsListException {

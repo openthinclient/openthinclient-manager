@@ -9,7 +9,6 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -23,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import org.vaadin.viritin.button.MButton;
@@ -64,10 +62,6 @@ public final class ApplicationView extends AbstractThinclientView {
   private SchemaProvider schemaProvider;
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
-
-  public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-   super(UI_APPLICATION_HEADER, eventBus, notificationService);
-  }
 
   @PostConstruct
   public void setup() {
