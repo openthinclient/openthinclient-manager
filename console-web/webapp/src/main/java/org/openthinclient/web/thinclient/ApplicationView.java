@@ -122,11 +122,6 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();
 
-    Set<UserGroup> userGroups = userGroupService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
-                                userGroups, UserGroup.class,
-                                values -> saveReference(profile, values, userGroups, UserGroup.class));
-
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
@@ -134,6 +129,11 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
                                 values -> saveReference(profile, values, allUsers, User.class));
+
+    Set<UserGroup> userGroups = userGroupService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
+                                userGroups, UserGroup.class,
+                                values -> saveReference(profile, values, userGroups, UserGroup.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),

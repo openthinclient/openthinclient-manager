@@ -88,15 +88,15 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
                                 values -> saveReference(userGroup, values, allUsers, User.class),
                                 null, secondaryDirectory);
 
-    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-                                allApplicationGroups, ApplicationGroup.class,
-                                values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class));
-
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(userGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications, Application.class,
                                 values -> saveReference(userGroup, values, allApplications, Application.class));
+
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+                                allApplicationGroups, ApplicationGroup.class,
+                                values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class));
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(userGroup.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),

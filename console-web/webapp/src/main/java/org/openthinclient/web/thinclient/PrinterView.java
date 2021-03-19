@@ -124,11 +124,6 @@ public final class PrinterView extends AbstractThinclientView<Printer> {
                                 allLocations, Location.class,
                                 values -> saveReference(printer, values, allLocations, Location.class));
 
-    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
-                                values -> saveReference(printer, values, allClients, Client.class));
-
     Set<User> allUsers = userService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
@@ -138,6 +133,11 @@ public final class PrinterView extends AbstractThinclientView<Printer> {
     refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
                                 userGroups, UserGroup.class,
                                 values -> saveReference(printer, values, userGroups, UserGroup.class));
+
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
+                                allClients, Client.class,
+                                values -> saveReference(printer, values, allClients, Client.class));
 
     return referencesPanel;
   }

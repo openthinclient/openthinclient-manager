@@ -83,11 +83,6 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
                                 allApplications, Application.class,
                                 values -> saveApplicationGroupReference(applicationGroup, values), null, false);
 
-    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
-                                values -> saveReference(applicationGroup, values, allClients, Client.class));
-
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
@@ -100,6 +95,11 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
     refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
                                 allUserGroups, UserGroup.class,
                                 values -> saveReference(applicationGroup, values, allUserGroups, UserGroup.class));
+
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
+                                allClients, Client.class,
+                                values -> saveReference(applicationGroup, values, allClients, Client.class));
 
     return referencesPanel;
   }
