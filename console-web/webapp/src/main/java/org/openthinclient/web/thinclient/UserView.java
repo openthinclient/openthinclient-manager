@@ -243,9 +243,11 @@ public final class UserView extends AbstractThinclientView<User> {
 
   @Override
   public void save(User profile) {
-    LOGGER.info("Save: " + profile);
-    userService.save((User) profile);
-    Audit.logSave(profile);
+    if (!secondaryDirectory) {
+      LOGGER.info("Save: " + profile);
+      userService.save((User) profile);
+      Audit.logSave(profile);
+    }
   }
 
   public void showProfileMetadata(User profile) {
