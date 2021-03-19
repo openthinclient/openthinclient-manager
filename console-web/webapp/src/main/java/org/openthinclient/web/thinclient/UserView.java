@@ -128,7 +128,8 @@ public final class UserView extends AbstractThinclientView<User> {
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
-                                values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class));
+                                values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class),
+                                getApplicationsForApplicationGroupFunction(user), false);
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
