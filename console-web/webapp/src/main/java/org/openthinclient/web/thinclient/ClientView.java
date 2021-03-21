@@ -191,6 +191,13 @@ public final class ClientView extends AbstractThinclientView<Client> {
                                 allPrinters, Printer.class,
                                 values -> saveReference(client, values, allPrinters, Printer.class));
 
+    Set<Printer> locationPrinters = location.getPrinters();
+    if (locationPrinters.size() > 0) {
+      refPresenter.showReferenceReadOnly(locationPrinters,
+                                          mc.getMessage(UI_FROM_LOCATION_HEADER),
+                                          Printer.class);
+    }
+
     return referencesPanel;
   }
 
