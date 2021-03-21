@@ -31,8 +31,8 @@ public class ReferencesComponent extends CssLayout {
 
   }
 
-  public ItemButtonComponent addItemComponent(Item item, boolean isReadOnly) {
-    ItemButtonComponent buttonComponent = new ItemButtonComponent(item, isReadOnly);
+  public ItemButtonComponent addItemComponent(Item item) {
+    ItemButtonComponent buttonComponent = new ItemButtonComponent(item);
     itemComponents.put(item.getName(), buttonComponent);
     addComponentSorted(item.getName(), buttonComponent);
     return buttonComponent;

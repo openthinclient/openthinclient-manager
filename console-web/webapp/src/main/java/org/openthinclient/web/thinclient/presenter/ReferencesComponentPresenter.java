@@ -30,7 +30,6 @@ public class ReferencesComponentPresenter {
   /** item-subset which are referenced by the profile */
   private List<Item> currentReferencedItems;
   private Function<Item, List<Item>> memberSupplier;
-  private boolean isReadOnly;
 
   private CheckBox selectAll;
   private AllCheckBoxes allCheckBoxes;
@@ -47,7 +46,6 @@ public class ReferencesComponentPresenter {
     this.view = view;
     this.currentReferencedItems = referencedItems;
     this.memberSupplier = memberSupplier;
-    this.isReadOnly = isReadOnly;
 
     if(!isReadOnly) {
       this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
@@ -70,7 +68,7 @@ public class ReferencesComponentPresenter {
   }
 
   private void addItemToView(Item item) {
-    ItemButtonComponent button = view.addItemComponent(item, isReadOnly);
+    ItemButtonComponent button = view.addItemComponent(item);
     button.addClickListener(clickEvent -> this.itemsDeSelected(Arrays.asList(item)));
   }
 
@@ -192,8 +190,9 @@ public class ReferencesComponentPresenter {
   protected void addMemberDetails(Item item) {
     if (memberSupplier != null) {
       List<Item> members = memberSupplier.apply(item);
-      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member, true)).collect(Collectors.toList());
-      this.view.addReferenceSublineComponents(item.getName(), components.toArray(new ItemButtonComponent[]{}));
+      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member)).collect(Collectors.toList());
+      this.view.addReferenceSublineComponents(item.getName(),
+                                              components.toArray(new ItemButtonComponent[]{}));
     }
   }
 

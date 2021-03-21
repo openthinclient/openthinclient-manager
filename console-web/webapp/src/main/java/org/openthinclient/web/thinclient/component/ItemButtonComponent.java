@@ -15,7 +15,7 @@ public class ItemButtonComponent extends CssLayout {
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemButtonComponent.class);
   private Button itemButton;
 
-  public ItemButtonComponent(Item item, boolean isReadOnly) {
+  public ItemButtonComponent(Item item) {
     addStyleName("referenceItem");
 
     Button referencedItemsButton = new Button(item.getName());
