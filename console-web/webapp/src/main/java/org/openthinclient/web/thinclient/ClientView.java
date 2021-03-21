@@ -172,8 +172,7 @@ public final class ClientView extends AbstractThinclientView<Client> {
                                 values -> saveReference(client, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(client), false);
 
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<? extends DirectoryObject> devices = client.getDevices();
     Set<Device> all = deviceService.findAll();
     refPresenter.showReference(devices, mc.getMessage(UI_DEVICE_HEADER),
                                 all, Device.class,
