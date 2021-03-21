@@ -178,6 +178,14 @@ public final class ClientView extends AbstractThinclientView<Client> {
                                 all, Device.class,
                                 values -> saveReference(client, values, all, Device.class));
 
+
+    Set<Device> hwtypeDevices = hwtype.getDevices();
+    if (hwtypeDevices.size() > 0) {
+      refPresenter.showReferenceReadOnly(hwtypeDevices,
+                                          mc.getMessage(UI_FROM_HWTYPE_HEADER),
+                                          Device.class);
+    }
+
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
                                 allPrinters, Printer.class,
