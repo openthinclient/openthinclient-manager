@@ -141,6 +141,19 @@ public final class UserView extends AbstractThinclientView<User> {
                                 values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(user), false);
 
+    Set<UserGroup> userGroupsWithApplicationGroups = userGroups.stream()
+                                                      .filter(group -> group.getApplicationGroups().size() > 0)
+                                                      .collect(Collectors.toSet());
+    if (userGroupsWithApplications.size() > 0) {
+      Set<ApplicationGroup> appGroups = userGroupsWithApplicationGroups.stream()
+                                        .flatMap(userGroup -> userGroup.getApplicationGroups().stream())
+                                        .collect(Collectors.toSet());
+      refPresenter.showReferenceReadOnly(appGroups,
+                                          mc.getMessage(UI_FROM_USERGROUP_HEADER),
+                                          ApplicationGroup.class,
+                                          getApplicationsForUserGroupApplicationGroupFunction(user));
+    }
+
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
                                 allPrinters, Printer.class,
@@ -169,6 +182,15 @@ public final class UserView extends AbstractThinclientView<User> {
 
   private Function<Item, List<Item>> ApplicationsFromUserGroupFunction(User user) {
     return item -> user.getUserGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
+                    .orElse(Collections.emptyList());
+  }
+
+  private Function<Item, List<Item>> getApplicationsForUserGroupApplicationGroupFunction(User user) {
+    return item -> user.getUserGroups().stream()
+                    .flatMap(userGroup -> userGroup.getApplicationGroups().stream())
                     .filter(group -> group.getName().equals(item.getName()))
                     .findFirst()
                     .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
