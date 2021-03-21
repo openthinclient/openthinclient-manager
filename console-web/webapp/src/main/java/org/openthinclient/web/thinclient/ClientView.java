@@ -151,6 +151,16 @@ public final class ClientView extends AbstractThinclientView<Client> {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Client.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
+    HardwareType hwtype = client.getHardwareType();
+    refPresenter.showReferenceReadOnly(Collections.singleton(hwtype),
+                                        mc.getMessage(UI_HWTYPE),
+                                        HardwareType.class);
+
+    Location location = client.getLocation();
+    refPresenter.showReferenceReadOnly(Collections.singleton(location),
+                                        mc.getMessage(UI_LOCATION),
+                                        Location.class);
+
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications, Application.class,
