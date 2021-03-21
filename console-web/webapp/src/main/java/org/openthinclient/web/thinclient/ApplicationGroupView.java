@@ -81,7 +81,7 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications, Application.class,
-                                values -> saveApplicationGroupReference(applicationGroup, values), null, false);
+                                values -> saveApplicationGroupReference(applicationGroup, values));
 
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
