@@ -125,6 +125,16 @@ public final class UserView extends AbstractThinclientView<User> {
                                 allApplications, Application.class,
                                 values -> saveReference(user, values, allApplications, Application.class));
 
+    Set<UserGroup> userGroupsWithApplications = userGroups.stream()
+                                                .filter(group -> group.getApplications().size() > 0)
+                                                .collect(Collectors.toSet());
+    if (userGroupsWithApplications.size() > 0) {
+      refPresenter.showReferenceReadOnly(userGroupsWithApplications,
+                                          mc.getMessage(UI_FROM_USERGROUP_HEADER),
+                                          UserGroup.class,
+                                          ApplicationsFromUserGroupFunction(user));
+    }
+
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
@@ -151,6 +161,14 @@ public final class UserView extends AbstractThinclientView<User> {
 
   private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(User user) {
     return item -> user.getApplicationGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
+                    .orElse(Collections.emptyList());
+  }
+
+  private Function<Item, List<Item>> ApplicationsFromUserGroupFunction(User user) {
+    return item -> user.getUserGroups().stream()
                     .filter(group -> group.getName().equals(item.getName()))
                     .findFirst()
                     .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
