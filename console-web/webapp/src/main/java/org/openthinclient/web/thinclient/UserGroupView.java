@@ -8,6 +8,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerUI;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,7 +98,8 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
-                                values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class));
+                                values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class),
+                                getApplicationsForApplicationGroupFunction(userGroup), false);
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(userGroup.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
@@ -105,6 +108,14 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
 
     return referencesPanel;
 
+  }
+
+  private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(UserGroup userGroup) {
+    return item -> userGroup.getApplicationGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(group.getApplications()))
+                    .orElse(Collections.emptyList());
   }
 
   @Override
