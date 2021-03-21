@@ -28,7 +28,7 @@ public class ProfileReferencesPanel extends CssLayout {
 
   public ReferencesComponentPresenter addReferences(String label, List<Item> allItems, List<Item> referencedItems, Function<Item, List<Item>> memberSupplier, boolean isReadOnly) {
 
-    ReferencesComponent rc = new ReferencesComponent(label);
+    ReferencesComponent rc = new ReferencesComponent(label, isReadOnly);
     ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, memberSupplier, isReadOnly);
     rows.addComponent(rc);
     return rcp;

@@ -14,13 +14,19 @@ public class ReferencesComponent extends CssLayout {
   private NavigableMap<String, ItemButtonComponent> itemComponents = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   private Map<String, CssLayout> sublineComponents = new HashMap<>();
 
-  public ReferencesComponent(String labelText) {
+  public ReferencesComponent(String labelText, boolean isReadOnly) {
     addStyleName("referenceComponent");
+    if(isReadOnly) {
+      addStyleName("read-only");
+    }
 
     referenceComponentCaption = new Button(labelText);
     referenceComponentCaption.addStyleNames("referenceComponentCaption");
-    referenceComponentCaption.setIcon(VaadinIcons.COG_O);
     referenceComponentCaption.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    referenceComponentCaption.setEnabled(!isReadOnly);
+    if(!isReadOnly) {
+      referenceComponentCaption.setIcon(VaadinIcons.COG_O);
+    }
     addComponent(referenceComponentCaption);
 
     // components
