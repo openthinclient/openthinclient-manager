@@ -136,6 +136,16 @@ public final class UserView extends AbstractThinclientView<User> {
                                 allPrinters, Printer.class,
                                 values -> saveReference(user, values, allPrinters, Printer.class));
 
+    Set<UserGroup> userGroupsWithPrinters = userGroups.stream()
+                                              .filter(group -> group.getPrinters().size() > 0)
+                                              .collect(Collectors.toSet());
+    if (userGroupsWithPrinters.size() > 0) {
+      refPresenter.showReferenceReadOnly(userGroupsWithPrinters,
+                                          mc.getMessage(UI_FROM_USERGROUP_HEADER),
+                                          UserGroup.class,
+                                          PrintersFromUserGroupFunction(user));
+    }
+
     return referencesPanel;
   }
 
