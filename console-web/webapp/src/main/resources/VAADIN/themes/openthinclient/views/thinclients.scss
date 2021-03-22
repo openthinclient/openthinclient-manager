@@ -397,11 +397,21 @@ $ok-button-color: #2db200;
 
         .referenceComponent {
           display: block;
-          border-bottom: 1px solid var(--section-color);
+
+          &:not(.read-only) {
+            border-top: 1px solid var(--section-color);
+          }
+          &:last-child {
+            border-bottom: 1px solid var(--section-color);
+          }
 
           .referenceComponentCaption {
             display: block;
-            color: #000;
+
+            &:hover {
+              color: #000;
+            }
+
 
             // disable empty elements that act as unwanted spacers
             &::before,
@@ -431,6 +441,21 @@ $ok-button-color: #2db200;
             }
            .v-icon:hover {
               filter: saturate(1) opacity(1);
+            }
+          }
+
+          &.read-only {
+            .referenceComponentCaption {
+              color: gray;
+            }
+
+            .referenceItem .referenceItemLink {
+              padding-left: 3ch;
+              font-style: italic;
+
+              &:not(:hover) {
+                color: gray;
+              }
             }
           }
 
