@@ -90,24 +90,28 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
     if(!secondaryDirectory) {
       profileReferenceChangeConsumer = values -> saveReference(userGroup, values, allUsers, User.class);
     }
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
-                                allUsers, User.class,
+    refPresenter.showReference(members, User.class,
+                                mc.getMessage(UI_USER_HEADER),
+                                allUsers,
                                 profileReferenceChangeConsumer);
 
     Set<Application> allApplications = applicationService.findAll();
-    refPresenter.showReference(userGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplications, Application.class,
+    refPresenter.showReference(userGroup.getApplications(),
+                                mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications,
                                 values -> saveReference(userGroup, values, allApplications, Application.class));
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-                                allApplicationGroups, ApplicationGroup.class,
+    refPresenter.showReference(userGroup.getApplicationGroups(),
+                                mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+                                allApplicationGroups,
                                 values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(userGroup));
 
     Set<Printer> allPrinters = printerService.findAll();
-    refPresenter.showReference(userGroup.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
-                                allPrinters, Printer.class,
+    refPresenter.showReference(userGroup.getPrinters(),
+                                mc.getMessage(UI_PRINTER_HEADER),
+                                allPrinters,
                                 values -> saveReference(userGroup, values, allPrinters, Printer.class));
 
     return referencesPanel;

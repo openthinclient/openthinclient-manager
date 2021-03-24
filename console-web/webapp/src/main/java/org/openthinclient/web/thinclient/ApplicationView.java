@@ -112,32 +112,36 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(Application.class);
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
+    Set<DirectoryObject> members = profile.getMembers();
+
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
-    refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-        allApplicationGroups, ApplicationGroup.class,
-        values -> saveApplicationGroupReference(profile, values),
-        getApplicationsForApplicationGroupFunction()
+    refPresenter.showReference(members, ApplicationGroup.class,
+                                mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+                                allApplicationGroups,
+                                values -> saveApplicationGroupReference(profile, values),
+                                getApplicationsForApplicationGroupFunction()
      );
 
-    Set<DirectoryObject> members = ((Application) profile).getMembers();
 
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
     );
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
-                                allUsers, User.class,
+    refPresenter.showReference(members, User.class,
+                                mc.getMessage(UI_USER_HEADER),
+                                allUsers,
                                 values -> saveReference(profile, values, allUsers, User.class));
 
     Set<UserGroup> userGroups = userGroupService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
-                                userGroups, UserGroup.class,
+    refPresenter.showReference(members, UserGroup.class,
+                                mc.getMessage(UI_USERGROUP_HEADER),
+                                userGroups,
                                 values -> saveReference(profile, values, userGroups, UserGroup.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
+    refPresenter.showReference(members, Client.class,
+                                mc.getMessage(UI_CLIENT_HEADER),
+                                allClients,
                                 values -> saveReference(profile, values, allClients, Client.class));
 
     return referencesPanel;

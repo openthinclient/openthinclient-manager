@@ -117,8 +117,9 @@ public final class UserView extends AbstractThinclientView<User> {
 
     Set<UserGroup> allUserGroups = userGroupService.findAll();
 
-    refPresenter.showReference(userGroups,  mc.getMessage(UI_USERGROUP_HEADER),
-                                allUserGroups, UserGroup.class,
+    refPresenter.showReference(userGroups,
+                                mc.getMessage(UI_USERGROUP_HEADER),
+                                allUserGroups,
                                 values -> saveReference(user, values, allUserGroups, UserGroup.class),
                                 null);
 
@@ -127,8 +128,9 @@ public final class UserView extends AbstractThinclientView<User> {
     if(!secondaryDirectory) {
       profileReferenceChangeConsumer = values -> saveReference(user, values, allApplications, Application.class);
     }
-    refPresenter.showReference(user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplications, Application.class,
+    refPresenter.showReference(user.getApplications(),
+                                mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications,
                                 profileReferenceChangeConsumer);
 
     Set<UserGroup> userGroupsWithApplications = userGroups.stream()
@@ -137,13 +139,13 @@ public final class UserView extends AbstractThinclientView<User> {
     if (userGroupsWithApplications.size() > 0) {
       refPresenter.showReferenceReadOnly(userGroupsWithApplications,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
-                                          UserGroup.class,
                                           ApplicationsFromUserGroupFunction(user));
     }
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-                                allApplicationGroups, ApplicationGroup.class,
+    refPresenter.showReference(user.getApplicationGroups(),
+                                mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+                                allApplicationGroups,
                                 values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(user));
 
@@ -156,13 +158,13 @@ public final class UserView extends AbstractThinclientView<User> {
                                         .collect(Collectors.toSet());
       refPresenter.showReferenceReadOnly(appGroups,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
-                                          ApplicationGroup.class,
                                           getApplicationsForUserGroupApplicationGroupFunction(user));
     }
 
     Set<Printer> allPrinters = printerService.findAll();
-    refPresenter.showReference(user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
-                                allPrinters, Printer.class,
+    refPresenter.showReference(user.getPrinters(),
+                                mc.getMessage(UI_PRINTER_HEADER),
+                                allPrinters,
                                 values -> saveReference(user, values, allPrinters, Printer.class));
 
     Set<UserGroup> userGroupsWithPrinters = userGroups.stream()
@@ -171,7 +173,6 @@ public final class UserView extends AbstractThinclientView<User> {
     if (userGroupsWithPrinters.size() > 0) {
       refPresenter.showReferenceReadOnly(userGroupsWithPrinters,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
-                                          UserGroup.class,
                                           PrintersFromUserGroupFunction(user));
     }
 

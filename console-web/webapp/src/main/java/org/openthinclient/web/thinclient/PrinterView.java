@@ -120,23 +120,27 @@ public final class PrinterView extends AbstractThinclientView<Printer> {
     Set<DirectoryObject> members = printer.getMembers();
 
     Set<Location> allLocations = locationService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER),
-                                allLocations, Location.class,
+    refPresenter.showReference(members, Location.class,
+                                mc.getMessage(UI_LOCATION_HEADER),
+                                allLocations,
                                 values -> saveReference(printer, values, allLocations, Location.class));
 
     Set<User> allUsers = userService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
-                                allUsers, User.class,
+    refPresenter.showReference(members, User.class,
+                                mc.getMessage(UI_USER_HEADER),
+                                allUsers,
                                 values -> saveReference(printer, values, allUsers, User.class));
 
     Set<UserGroup> userGroups = userGroupService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
-                                userGroups, UserGroup.class,
+    refPresenter.showReference(members, UserGroup.class,
+                                mc.getMessage(UI_USERGROUP_HEADER),
+                                userGroups,
                                 values -> saveReference(printer, values, userGroups, UserGroup.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
+    refPresenter.showReference(members, Client.class,
+                                mc.getMessage(UI_CLIENT_HEADER),
+                                allClients,
                                 values -> saveReference(printer, values, allClients, Client.class));
 
     return referencesPanel;

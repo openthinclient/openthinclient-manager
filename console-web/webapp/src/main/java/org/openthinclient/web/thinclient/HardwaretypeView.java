@@ -102,12 +102,13 @@ public final class HardwaretypeView extends AbstractThinclientView<HardwareType>
     ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<Device> allDevices = deviceService.findAll();
-    refPresenter.showReference(hardwareType.getDevices(), mc.getMessage(UI_DEVICE_HEADER),
-                                allDevices, Device.class,
+    refPresenter.showReference(hardwareType.getDevices(),
+                                mc.getMessage(UI_DEVICE_HEADER),
+                                allDevices,
                                 values -> saveReference(hardwareType, values, allDevices, Device.class));
 
-    refPresenter.showReferenceReadOnly(hardwareType.getMembers(), mc.getMessage(UI_CLIENT_HEADER),
-                                        Client.class);
+    refPresenter.showReferenceReadOnly(hardwareType.getMembers(),
+                                        mc.getMessage(UI_CLIENT_HEADER));
 
     return referencesPanel;
   }

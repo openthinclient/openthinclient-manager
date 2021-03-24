@@ -170,7 +170,7 @@ public class ProfilePropertiesBuilder {
    * @param directoryObjects
    * @return
    */
-  public static List<Item> createItems(Set<? extends DirectoryObject> directoryObjects) {
+  public static List<Item> createItems(Collection<? extends DirectoryObject> directoryObjects) {
     return directoryObjects.stream()
             .map(directoryObject -> new Item(directoryObject.getName(), getType(directoryObject.getClass())))
             .collect(Collectors.toList());

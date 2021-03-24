@@ -79,26 +79,30 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<Application> allApplications = applicationService.findAll();
-    refPresenter.showReference(applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplications, Application.class,
+    refPresenter.showReference(applicationGroup.getApplications(),
+                                mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications,
                                 values -> saveApplicationGroupReference(applicationGroup, values));
 
     Set<User> allUsers = userService.findAll();
     getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
     );
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
-                                allUsers, User.class,
+    refPresenter.showReference(members, User.class,
+                                mc.getMessage(UI_USER_HEADER),
+                                allUsers,
                                 values -> saveReference(applicationGroup, values, allUsers, User.class));
 
     Set<UserGroup> allUserGroups = userGroupService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
-                                allUserGroups, UserGroup.class,
+    refPresenter.showReference(members, UserGroup.class,
+                                mc.getMessage(UI_USERGROUP_HEADER),
+                                allUserGroups,
                                 values -> saveReference(applicationGroup, values, allUserGroups, UserGroup.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
+    refPresenter.showReference(members, Client.class,
+                                mc.getMessage(UI_CLIENT_HEADER),
+                                allClients,
                                 values -> saveReference(applicationGroup, values, allClients, Client.class));
 
     return referencesPanel;

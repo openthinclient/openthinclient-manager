@@ -110,13 +110,15 @@ public final class DeviceView extends AbstractThinclientView<Device> {
     Set<? extends DirectoryObject> members = device.getMembers();
 
     Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER),
-                                allHwTypes, HardwareType.class,
+    refPresenter.showReference(members, HardwareType.class,
+                                mc.getMessage(UI_HWTYPE_HEADER),
+                                allHwTypes,
                                 values -> saveReference(device, values, allHwTypes, HardwareType.class));
 
     Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
-                                allClients, Client.class,
+    refPresenter.showReference(members, Client.class,
+                                mc.getMessage(UI_CLIENT_HEADER),
+                                allClients,
                                 values -> saveReference(device, values, allClients, Client.class));
 
     return referencesPanel;

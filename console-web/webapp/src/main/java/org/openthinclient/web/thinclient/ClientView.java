@@ -153,49 +153,48 @@ public final class ClientView extends AbstractThinclientView<Client> {
 
     HardwareType hwtype = client.getHardwareType();
     refPresenter.showReferenceReadOnly(Collections.singleton(hwtype),
-                                        mc.getMessage(UI_HWTYPE),
-                                        HardwareType.class);
+                                        mc.getMessage(UI_HWTYPE));
 
     Location location = client.getLocation();
     refPresenter.showReferenceReadOnly(Collections.singleton(location),
-                                        mc.getMessage(UI_LOCATION),
-                                        Location.class);
+                                        mc.getMessage(UI_LOCATION));
 
     Set<Application> allApplications = applicationService.findAll();
-    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-                                allApplications, Application.class,
+    refPresenter.showReference(client.getApplications(),
+                                mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications,
                                 values -> saveReference(client, values, allApplications, Application.class));
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-                                allApplicationGroups, ApplicationGroup.class,
+    refPresenter.showReference(client.getApplicationGroups(),
+                                mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+                                allApplicationGroups,
                                 values -> saveReference(client, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(client));
 
     Set<? extends DirectoryObject> devices = client.getDevices();
-    Set<Device> all = deviceService.findAll();
-    refPresenter.showReference(devices, mc.getMessage(UI_DEVICE_HEADER),
-                                all, Device.class,
-                                values -> saveReference(client, values, all, Device.class));
+    Set<Device> allDevices = deviceService.findAll();
+    refPresenter.showReference(devices,
+                                mc.getMessage(UI_DEVICE_HEADER),
+                                allDevices,
+                                values -> saveReference(client, values, allDevices, Device.class));
 
 
     Set<Device> hwtypeDevices = hwtype.getDevices();
     if (hwtypeDevices.size() > 0) {
       refPresenter.showReferenceReadOnly(hwtypeDevices,
-                                          mc.getMessage(UI_FROM_HWTYPE_HEADER),
-                                          Device.class);
+                                          mc.getMessage(UI_FROM_HWTYPE_HEADER));
     }
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
-                                allPrinters, Printer.class,
+                                allPrinters,
                                 values -> saveReference(client, values, allPrinters, Printer.class));
 
     Set<Printer> locationPrinters = location.getPrinters();
     if (locationPrinters.size() > 0) {
       refPresenter.showReferenceReadOnly(locationPrinters,
-                                          mc.getMessage(UI_FROM_LOCATION_HEADER),
-                                          Printer.class);
+                                          mc.getMessage(UI_FROM_LOCATION_HEADER));
     }
 
     return referencesPanel;
