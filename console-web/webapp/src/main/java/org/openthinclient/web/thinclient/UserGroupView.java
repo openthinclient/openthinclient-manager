@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,10 +86,13 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
     getRealmService().findAllRealms().forEach(realm ->
       allUsers.removeAll(realm.getAdministrators().getMembers())
     );
+    Consumer<List<Item>> profileReferenceChangeConsumer = null;
+    if(!secondaryDirectory) {
+      profileReferenceChangeConsumer = values -> saveReference(userGroup, values, allUsers, User.class);
+    }
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
-                                values -> saveReference(userGroup, values, allUsers, User.class),
-                                null, secondaryDirectory);
+                                profileReferenceChangeConsumer);
 
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(userGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
@@ -99,7 +103,7 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
     refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
                                 values -> saveReference(userGroup, values, allApplicationGroups, ApplicationGroup.class),
-                                getApplicationsForApplicationGroupFunction(userGroup), false);
+                                getApplicationsForApplicationGroupFunction(userGroup));
 
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(userGroup.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),

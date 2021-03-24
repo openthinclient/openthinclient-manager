@@ -117,7 +117,7 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
     refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,
         values -> saveApplicationGroupReference(profile, values),
-        getApplicationsForApplicationGroupFunction(), false
+        getApplicationsForApplicationGroupFunction()
      );
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();

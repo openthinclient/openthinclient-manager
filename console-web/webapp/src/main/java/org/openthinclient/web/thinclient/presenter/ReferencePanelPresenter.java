@@ -31,7 +31,7 @@ public class ReferencePanelPresenter {
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
 
     // values -> saveReference(profile, values, allObjects, clazz)
-    showReference(members, title, allObjects, clazz, profileReferenceChangeConsumer,null, false);
+    showReference(members, title, allObjects, clazz, profileReferenceChangeConsumer, null);
   }
 
   /**
@@ -49,9 +49,9 @@ public class ReferencePanelPresenter {
                             Set<? extends DirectoryObject> allObjects,
                             Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer,
-                            Function<Item, List<Item>> memberSupplier,
-                            boolean isReadOnly) {
+                            Function<Item, List<Item>> memberSupplier) {
 
+    boolean isReadOnly = (profileReferenceChangeConsumer == null);
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
     ReferencesComponentPresenter presenter = view.addReferences(title, builder.createItems(allObjects), memberItems, memberSupplier, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
@@ -60,13 +60,13 @@ public class ReferencePanelPresenter {
   public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
                                     String title,
                                     Class clazz) {
-    showReference(members, title, Collections.emptySet(), clazz, values -> {}, null, true);
+    showReference(members, title, Collections.emptySet(), clazz, null, null);
   }
 
   public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
                                     String title,
                                     Class clazz,
                                     Function<Item, List<Item>> memberSupplier) {
-    showReference(members, title, Collections.emptySet(), clazz, values -> {}, memberSupplier, true);
+    showReference(members, title, Collections.emptySet(), clazz, null, memberSupplier);
   }
 }

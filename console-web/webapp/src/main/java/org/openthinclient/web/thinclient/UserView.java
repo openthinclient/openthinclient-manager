@@ -33,6 +33,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -115,15 +116,20 @@ public final class UserView extends AbstractThinclientView<User> {
     Set<UserGroup> userGroups = user.getUserGroups();
 
     Set<UserGroup> allUserGroups = userGroupService.findAll();
+
     refPresenter.showReference(userGroups,  mc.getMessage(UI_USERGROUP_HEADER),
                                 allUserGroups, UserGroup.class,
                                 values -> saveReference(user, values, allUserGroups, UserGroup.class),
-                                null, secondaryDirectory);
+                                null);
 
     Set<Application> allApplications = applicationService.findAll();
+    Consumer<List<Item>> profileReferenceChangeConsumer = null;
+    if(!secondaryDirectory) {
+      profileReferenceChangeConsumer = values -> saveReference(user, values, allApplications, Application.class);
+    }
     refPresenter.showReference(user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications, Application.class,
-                                values -> saveReference(user, values, allApplications, Application.class));
+                                profileReferenceChangeConsumer);
 
     Set<UserGroup> userGroupsWithApplications = userGroups.stream()
                                                 .filter(group -> group.getApplications().size() > 0)
@@ -139,7 +145,7 @@ public final class UserView extends AbstractThinclientView<User> {
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
                                 allApplicationGroups, ApplicationGroup.class,
                                 values -> saveReference(user, values, allApplicationGroups, ApplicationGroup.class),
-                                getApplicationsForApplicationGroupFunction(user), false);
+                                getApplicationsForApplicationGroupFunction(user));
 
     Set<UserGroup> userGroupsWithApplicationGroups = userGroups.stream()
                                                       .filter(group -> group.getApplicationGroups().size() > 0)
