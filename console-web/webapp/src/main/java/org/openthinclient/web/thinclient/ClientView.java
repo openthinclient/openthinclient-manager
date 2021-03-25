@@ -141,12 +141,12 @@ public final class ClientView extends AbstractThinclientView<Client> {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     HardwareType hwtype = client.getHardwareType();
-    refPresenter.showReferenceReadOnly(Collections.singleton(hwtype),
-                                        mc.getMessage(UI_HWTYPE));
+    refPresenter.showReference(Collections.singleton(hwtype),
+                                mc.getMessage(UI_HWTYPE));
 
     Location location = client.getLocation();
-    refPresenter.showReferenceReadOnly(Collections.singleton(location),
-                                        mc.getMessage(UI_LOCATION));
+    refPresenter.showReference(Collections.singleton(location),
+                                mc.getMessage(UI_LOCATION));
 
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(client.getApplications(),
@@ -171,8 +171,8 @@ public final class ClientView extends AbstractThinclientView<Client> {
 
     Set<Device> hwtypeDevices = hwtype.getDevices();
     if (hwtypeDevices.size() > 0) {
-      refPresenter.showReferenceReadOnly(hwtypeDevices,
-                                          mc.getMessage(UI_FROM_HWTYPE_HEADER));
+      refPresenter.showReference(hwtypeDevices,
+                                  mc.getMessage(UI_FROM_HWTYPE_HEADER));
     }
 
     Set<Printer> allPrinters = printerService.findAll();
@@ -182,8 +182,8 @@ public final class ClientView extends AbstractThinclientView<Client> {
 
     Set<Printer> locationPrinters = location.getPrinters();
     if (locationPrinters.size() > 0) {
-      refPresenter.showReferenceReadOnly(locationPrinters,
-                                          mc.getMessage(UI_FROM_LOCATION_HEADER));
+      refPresenter.showReference(locationPrinters,
+                                  mc.getMessage(UI_FROM_LOCATION_HEADER));
     }
 
     return referencesPanel;

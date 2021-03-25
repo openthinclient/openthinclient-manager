@@ -101,8 +101,8 @@ public final class LocationView extends AbstractThinclientView<Location> {
                                 allPrinters,
                                 values -> saveReference(location, values, allPrinters, Printer.class));
 
-    refPresenter.showReferenceReadOnly(clientService.findByLocation(location.getName()),
-                                        mc.getMessage(UI_CLIENT_HEADER));
+    refPresenter.showReference(clientService.findByLocation(location.getName()),
+                                mc.getMessage(UI_CLIENT_HEADER));
 
     return referencesPanel;
   }

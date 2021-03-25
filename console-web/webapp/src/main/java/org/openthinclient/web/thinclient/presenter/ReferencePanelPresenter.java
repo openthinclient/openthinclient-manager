@@ -19,8 +19,8 @@ public class ReferencePanelPresenter {
     this.view = view;
   }
 
-  public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
-                                    String title) {
+  public void showReference(Collection<? extends DirectoryObject> members,
+                            String title) {
     showReference(members, title, Collections.emptySet(), null, null);
   }
 
