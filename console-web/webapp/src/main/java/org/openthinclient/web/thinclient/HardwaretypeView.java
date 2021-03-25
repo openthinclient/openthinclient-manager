@@ -30,7 +30,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = HardwaretypeView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
 @ThemeIcon(HardwaretypeView.ICON)
-public final class HardwaretypeView extends AbstractDirectoryObjectView<HardwareType> {
+public final class HardwaretypeView extends AbstractProfileView<HardwareType> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
 

@@ -57,7 +57,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = ClientView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 20)
 @ThemeIcon(ClientView.ICON)
-public final class ClientView extends AbstractDirectoryObjectView<Client> {
+public final class ClientView extends AbstractProfileView<Client> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);
 
@@ -209,7 +209,7 @@ public final class ClientView extends AbstractDirectoryObjectView<Client> {
     };
   }
 
-  private Component createWOLButton(Profile profile) {
+  private Component createWOLButton(Client profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
     button.setIcon(VaadinIcons.POWER_OFF);
@@ -220,7 +220,7 @@ public final class ClientView extends AbstractDirectoryObjectView<Client> {
     return button;
   }
 
-  private Component createVNCButton(Profile profile) {
+  private Component createVNCButton(Client profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
     button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
@@ -230,7 +230,7 @@ public final class ClientView extends AbstractDirectoryObjectView<Client> {
     return button;
   }
 
-  private Component createLOGButton(Profile profile) {
+  private Component createLOGButton(Client profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
     button.setIcon(VaadinIcons.FILE_TEXT_O);
@@ -242,7 +242,7 @@ public final class ClientView extends AbstractDirectoryObjectView<Client> {
   }
 
   @Override
-  protected ProfilePanel createProfileMetadataPanel(Profile p) {
+  protected ProfilePanel createProfileMetadataPanel(Client p) {
 
     Client profile = (Client) p;
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_CLIENT_HEADER), profile.getClass());
@@ -315,13 +315,13 @@ public final class ClientView extends AbstractDirectoryObjectView<Client> {
     return configuration;
   }
 
-  @Override
   /**
    * Set form-values to client
    * @param profilePanelPresenter ProfilePanelPresenter contains ItemGroupPanels with form components
    * @param client Profile to set the values
    */
-  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
+  @Override
+  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Client profile) {
 
     LOGGER.debug("Save values for client: " + profile);
 

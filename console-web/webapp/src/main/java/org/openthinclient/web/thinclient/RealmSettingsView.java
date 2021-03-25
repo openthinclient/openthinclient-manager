@@ -28,7 +28,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 @SuppressWarnings("serial")
 @SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 10)
-public final class RealmSettingsView extends AbstractDirectoryObjectView<Realm> {
+public final class RealmSettingsView extends AbstractProfileView<Realm> {
 
   public static final String NAME = "realm_settings_view";
   public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;

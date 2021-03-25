@@ -28,7 +28,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = PrinterView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 60)
 @ThemeIcon(PrinterView.ICON)
-public final class PrinterView extends AbstractDirectoryObjectView<Printer> {
+public final class PrinterView extends AbstractProfileView<Printer> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
