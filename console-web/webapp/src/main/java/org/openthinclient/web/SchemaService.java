@@ -127,7 +127,7 @@ public class SchemaService {
       }
   }
 
-    public enum ProfileType {
+  public enum ProfileType {
     APPLICATION("application", Application.class), //
     HARDWARE_TYPE("hardwaretype", HardwareType.class), //
     DEVICE("device", Device.class), //
@@ -136,9 +136,9 @@ public class SchemaService {
     PRINTER("printer", Printer.class);
 
     private final String profileName;
-    private final Class<?> profileClass;
+    private final Class<? extends Profile> profileClass;
 
-    ProfileType(String profileName, Class<?> profileClass) {
+    ProfileType(String profileName, Class<? extends Profile> profileClass) {
       this.profileName = profileName;
       this.profileClass = profileClass;
     }
@@ -151,7 +151,7 @@ public class SchemaService {
       return null;
     }
 
-    public Class<?> getProfileClass() {
+    public Class<? extends DirectoryObject> getProfileClass() {
       return profileClass;
     }
 

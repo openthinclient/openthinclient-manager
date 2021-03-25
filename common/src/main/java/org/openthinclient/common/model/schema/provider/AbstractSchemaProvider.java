@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.common.model.schema.provider;
 
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.schema.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +57,8 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
   /**
    * @see SchemaProvider
    */
-  public Schema getSchema(Class profileType, String schemaName)
-          throws SchemaLoadingException {
+  @Override
+  public Schema getSchema(Class<? extends DirectoryObject> profileType, String schemaName) {
     try {
       String profileTypeName = profileType.getName().toLowerCase();
       profileTypeName = profileTypeName.substring(profileTypeName
@@ -73,7 +74,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 
       return schemas.get(profileTypeName);
     } catch (final Exception e) {
-      logger.error("Schema couldn't be loaded! " + e);
+      logger.error(String.format("Schema %s couldn't be loaded!", schemaName), e);
     }
     return null;
   }
@@ -83,9 +84,8 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
    * type.
    * @see SchemaProvider
    */
-  @SuppressWarnings("unchecked")
-  public String[] getSchemaNames(Class profileType)
-          throws SchemaLoadingException {
+  @Override
+  public String[] getSchemaNames(Class<? extends DirectoryObject> profileType) {
     String profileTypeName = profileType.getName().toLowerCase();
     profileTypeName = profileTypeName.substring(profileTypeName
             .lastIndexOf('.') + 1);
@@ -94,7 +94,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 
     final Map<String, Schema> schemas = typeCache.get(profileTypeName);
     if (null == schemas) {
-      logger.error("No schemas found for " + profileType);
+      logger.error("No schemas found for {}", profileType);
       return new String[0];
     }
     final String[] keys = new String[schemas.keySet().size()];
