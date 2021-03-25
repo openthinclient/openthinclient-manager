@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 public class ReferencePanelPresenter {
 
-  protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
   private ProfileReferencesPanel view;
 
   public ReferencePanelPresenter(ProfileReferencesPanel view) {
@@ -70,8 +69,12 @@ public class ReferencePanelPresenter {
                             Function<Item, List<Item>> memberSupplier) {
 
     boolean isReadOnly = (profileReferenceChangeConsumer == null);
-    List<Item> memberItems = builder.createItems(members);
-    ReferencesComponentPresenter presenter = view.addReferences(title, builder.createItems(allObjects), memberItems, memberSupplier, isReadOnly);
+    List<Item> memberItems = ProfilePropertiesBuilder.createItems(members);
+    ReferencesComponentPresenter presenter = view.addReferences(title,
+                                                                ProfilePropertiesBuilder.createItems(allObjects),
+                                                                memberItems,
+                                                                memberSupplier,
+                                                                isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 

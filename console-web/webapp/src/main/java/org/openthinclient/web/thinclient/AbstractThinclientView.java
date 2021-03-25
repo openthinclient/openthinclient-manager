@@ -204,7 +204,7 @@ public abstract class AbstractThinclientView<P extends DirectoryObject> extends 
 
     Set<T> members = getMembers(profile, clazz);
 
-    List<Item> oldValues = builder.createFilteredItemsFromDO(members, clazz);
+    List<Item> oldValues = ProfilePropertiesBuilder.createFilteredItemsFromDO(members, clazz);
     oldValues.forEach(oldItem -> {
       if (values.contains(oldItem)) {
         LOGGER.debug("Keep oldValue as member: " + oldItem);
