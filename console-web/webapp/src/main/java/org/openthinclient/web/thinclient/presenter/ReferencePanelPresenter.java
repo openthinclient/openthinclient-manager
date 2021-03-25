@@ -37,7 +37,7 @@ public class ReferencePanelPresenter {
   }
 
   public void showReference(Collection<? extends DirectoryObject> members,
-                            Class clazz,
+                            Class<? extends DirectoryObject> clazz,
                             String title, Set<? extends DirectoryObject> allObjects,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
     showReference(filterByClass(members, clazz),
@@ -45,7 +45,7 @@ public class ReferencePanelPresenter {
   }
 
   public void showReference(Collection<? extends DirectoryObject> members,
-                            Class clazz,
+                            Class<? extends DirectoryObject> clazz,
                             String title,
                             Set<? extends DirectoryObject> allObjects,
                             Consumer<List<Item>> profileReferenceChangeConsumer,
@@ -78,7 +78,7 @@ public class ReferencePanelPresenter {
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 
-  private Collection<? extends DirectoryObject> filterByClass(Collection<? extends DirectoryObject> members, Class clazz) {
+  private Collection<? extends DirectoryObject> filterByClass(Collection<? extends DirectoryObject> members, Class<? extends DirectoryObject> clazz) {
     return members.stream().filter(clazz::isInstance).collect(Collectors.toSet());
   }
 }

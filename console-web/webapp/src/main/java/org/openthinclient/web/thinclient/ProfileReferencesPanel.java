@@ -1,6 +1,8 @@
 package org.openthinclient.web.thinclient;
 
 import com.vaadin.ui.*;
+
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
@@ -15,7 +17,7 @@ public class ProfileReferencesPanel extends CssLayout {
 
   CssLayout rows;
 
-  public ProfileReferencesPanel(Class clazz) {
+  public ProfileReferencesPanel(Class<? extends DirectoryObject> clazz) {
 
     addStyleName("references-panel");
     addStyleName("references-panel-" + clazz.getSimpleName());

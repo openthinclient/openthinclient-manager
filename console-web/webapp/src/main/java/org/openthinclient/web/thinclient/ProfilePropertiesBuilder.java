@@ -242,7 +242,7 @@ public class ProfilePropertiesBuilder {
   }
 
 
-  private static Item.Type getType(Class clazz) {
+  private static Item.Type getType(Class<? extends DirectoryObject> clazz) {
 
     Item.Type itemType;
     if (clazz.equals(Client.class) || clazz.equals(ClientMetaData.class)) {
