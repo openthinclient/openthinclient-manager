@@ -2,8 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -20,7 +18,6 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -45,8 +42,6 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
   private UserService userService;
   @Autowired
   private UserGroupService userGroupService;
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
 
@@ -61,14 +56,8 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(ApplicationGroup.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(ApplicationGroup.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<ApplicationGroup> getItemClass() {
+    return ApplicationGroup.class;
   }
 
   @Override

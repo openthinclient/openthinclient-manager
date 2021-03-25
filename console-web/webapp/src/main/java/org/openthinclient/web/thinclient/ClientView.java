@@ -16,8 +16,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
@@ -52,7 +50,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -83,8 +80,6 @@ public final class ClientView extends AbstractThinclientView<Client> {
   @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
-  private SchemaProvider schemaProvider;
-  @Autowired
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
@@ -111,14 +106,8 @@ public final class ClientView extends AbstractThinclientView<Client> {
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(Client.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(Client.class))
-                 .collect(Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<Client> getItemClass() {
+    return Client.class;
   }
 
   @Override

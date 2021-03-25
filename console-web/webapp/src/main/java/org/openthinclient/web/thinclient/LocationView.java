@@ -2,8 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
@@ -27,8 +25,6 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -48,8 +44,6 @@ public final class LocationView extends AbstractThinclientView<Location> {
   private ClientService clientService;
   @Autowired
   private LocationService locationService;
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired
   private PrinterService printerService;
   @Autowired @Qualifier("deviceSideBar")
@@ -74,14 +68,8 @@ public final class LocationView extends AbstractThinclientView<Location> {
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(Location.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(Location.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<Location> getItemClass() {
+    return Location.class;
   }
 
   public ProfilePanel createProfilePanel(Location profile) throws BuildProfileException {

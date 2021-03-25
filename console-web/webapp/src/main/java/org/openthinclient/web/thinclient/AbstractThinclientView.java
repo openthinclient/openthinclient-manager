@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
@@ -54,6 +55,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_ERROR_DIRECTORY_EXCEPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_NAME_ALREADY_EXISTS;
@@ -66,6 +68,8 @@ public abstract class AbstractThinclientView<P extends DirectoryObject> extends 
 
   @Autowired
   protected ManagerHome managerHome;
+  @Autowired
+  private SchemaProvider schemaProvider;
   @Autowired
   private RealmService realmService;
   @Autowired
@@ -132,9 +136,15 @@ public abstract class AbstractThinclientView<P extends DirectoryObject> extends 
 
   public abstract Set<? extends DirectoryObject> getAllItems() throws AllItemsListException;
 
-  public abstract Schema getSchema(String value);
+  protected Schema getSchema(String schemaName) {
+    return schemaProvider.getSchema(getItemClass(), schemaName);
+  }
 
-  public abstract Map<String, String> getSchemaNames();
+  protected Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(getItemClass()))
+                 .collect(Collectors.toMap(name -> name,
+                                            name -> getSchema(name).getLabel()));
+  }
 
   public abstract String getViewName();
 
@@ -143,6 +153,8 @@ public abstract class AbstractThinclientView<P extends DirectoryObject> extends 
   }
 
   public abstract ConsoleWebMessages getViewTitleKey();
+
+  protected abstract Class<P> getItemClass();
 
   protected abstract P newProfile();
 

@@ -2,8 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -25,8 +23,6 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -46,8 +42,6 @@ public final class HardwaretypeView extends AbstractThinclientView<HardwareType>
   private DeviceService deviceService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
@@ -70,14 +64,8 @@ public final class HardwaretypeView extends AbstractThinclientView<HardwareType>
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(HardwareType.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(HardwareType.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<HardwareType> getItemClass() {
+    return HardwareType.class;
   }
 
   public ProfilePanel createProfilePanel(HardwareType profile) throws BuildProfileException {

@@ -4,8 +4,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
@@ -38,8 +34,6 @@ public final class RealmSettingsView extends AbstractThinclientView<Realm> {
   public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
 
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired @Qualifier("settingsSideBar")
   private OTCSideBar settingsSideBar;
 
@@ -58,14 +52,8 @@ public final class RealmSettingsView extends AbstractThinclientView<Realm> {
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(Realm.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(Realm.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<Realm> getItemClass() {
+    return Realm.class;
   }
 
   public ProfilePanel createProfilePanel(Realm profile) throws BuildProfileException {

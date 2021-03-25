@@ -8,8 +8,6 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -36,7 +34,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -64,8 +61,6 @@ public final class UserView extends AbstractThinclientView<User> {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
@@ -94,14 +89,8 @@ public final class UserView extends AbstractThinclientView<User> {
   }
 
   @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(User.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(User.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  protected Class<User> getItemClass() {
+    return User.class;
   }
 
   public ProfilePanel createProfilePanel (User profile) {

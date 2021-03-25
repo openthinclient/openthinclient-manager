@@ -2,8 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
@@ -26,7 +24,6 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -54,8 +51,6 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
   private UserService userService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
-  @Autowired
-  private SchemaProvider schemaProvider;
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
@@ -75,16 +70,10 @@ public final class ApplicationView extends AbstractThinclientView<Application> {
     return Collections.emptySet();
    }
 
-  @Override
-  public Schema getSchema(String schemaName) {
-    return schemaProvider.getSchema(Application.class, schemaName);
-  }
-
-  @Override
-  public Map<String, String> getSchemaNames() {
-    return Stream.of(schemaProvider.getSchemaNames(Application.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
-  }
+   @Override
+   protected Class<Application> getItemClass() {
+     return Application.class;
+   }
 
   @Override
    public ProfilePanel createProfilePanel(Application profile) throws BuildProfileException {
