@@ -21,19 +21,25 @@ public class ReferencePanelPresenter {
 
   public void showReference(Collection<? extends DirectoryObject> members,
                             String title) {
-    showReference(members, title, Collections.emptySet(), null, null);
+    showReference(members, title, Collections.emptySet(), null, null, true);
   }
 
-  public void showReferenceReadOnly(Collection<? extends DirectoryObject> members,
+  public void showReferenceAddendum(Collection<? extends DirectoryObject> members,
+                                    String title) {
+    showReference(members, title, Collections.emptySet(), null, null, false);
+  }
+
+  public void showReferenceAddendum(Collection<? extends DirectoryObject> members,
                                     String title,
                                     Function<Item, List<Item>> memberSupplier) {
-    showReference(members, title, Collections.emptySet(), null, memberSupplier);
+    showReference(members, title, Collections.emptySet(), null, memberSupplier, false);
   }
+
 
   public void showReference(Collection<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
-    showReference(members, title, allObjects, profileReferenceChangeConsumer, null);
+    showReference(members, title, allObjects, profileReferenceChangeConsumer, null, true);
   }
 
   public void showReference(Collection<? extends DirectoryObject> members,
@@ -41,7 +47,7 @@ public class ReferencePanelPresenter {
                             String title, Set<? extends DirectoryObject> allObjects,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
     showReference(filterByClass(members, clazz),
-                  title, allObjects, profileReferenceChangeConsumer, null);
+                  title, allObjects, profileReferenceChangeConsumer, null, true);
   }
 
   public void showReference(Collection<? extends DirectoryObject> members,
@@ -51,7 +57,15 @@ public class ReferencePanelPresenter {
                             Consumer<List<Item>> profileReferenceChangeConsumer,
                             Function<Item, List<Item>> memberSupplier) {
     showReference(filterByClass(members, clazz),
-                  title, allObjects, profileReferenceChangeConsumer, null);
+                  title, allObjects, profileReferenceChangeConsumer, null, true);
+  }
+
+  public void showReference(Collection<? extends DirectoryObject> members,
+                            String title,
+                            Set<? extends DirectoryObject> allObjects,
+                            Consumer<List<Item>> profileReferenceChangeConsumer,
+                            Function<Item, List<Item>> memberSupplier) {
+      showReference(members, title, allObjects, profileReferenceChangeConsumer, memberSupplier, true);
   }
 
   /**
@@ -61,12 +75,14 @@ public class ReferencePanelPresenter {
    * @param allObjects - all available DirectoryObjects of a type, this item can be selected in multi-selection-box
    * @param profileReferenceChangeConsumer - consumer to call after changing a reference, i.e. 'save'-action
    * @param memberSupplier - supplier for members of given Item
+   * @param isReferenceStart - whether this starts a new reference section (and needs to be visually separated)
    */
   public void showReference(Collection<? extends DirectoryObject> members,
                             String title,
                             Set<? extends DirectoryObject> allObjects,
                             Consumer<List<Item>> profileReferenceChangeConsumer,
-                            Function<Item, List<Item>> memberSupplier) {
+                            Function<Item, List<Item>> memberSupplier,
+                            boolean isReferenceStart) {
 
     boolean isReadOnly = (profileReferenceChangeConsumer == null);
     List<Item> memberItems = ProfilePropertiesBuilder.createItems(members);
@@ -74,7 +90,8 @@ public class ReferencePanelPresenter {
                                                                 ProfilePropertiesBuilder.createItems(allObjects),
                                                                 memberItems,
                                                                 memberSupplier,
-                                                                isReadOnly);
+                                                                isReadOnly,
+                                                                isReferenceStart);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 

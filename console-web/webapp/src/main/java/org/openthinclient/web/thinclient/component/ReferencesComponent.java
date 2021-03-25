@@ -14,10 +14,13 @@ public class ReferencesComponent extends CssLayout {
   private NavigableMap<String, ItemButtonComponent> itemComponents = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   private Map<String, CssLayout> sublineComponents = new HashMap<>();
 
-  public ReferencesComponent(String labelText, boolean isReadOnly) {
+  public ReferencesComponent(String labelText, boolean isReadOnly, boolean isReferenceStart) {
     addStyleName("referenceComponent");
     if(isReadOnly) {
       addStyleName("read-only");
+    }
+    if(isReferenceStart) {
+      addStyleName("reference-start");
     }
 
     referenceComponentCaption = new Button(labelText);

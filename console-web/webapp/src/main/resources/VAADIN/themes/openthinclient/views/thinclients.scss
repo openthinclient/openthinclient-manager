@@ -392,17 +392,29 @@ $ok-button-color: #2db200;
         width: 100%;
         height: 100%;
         overflow-y: auto;
-        padding: 0 1ch;
         margin-bottom: 1em;
 
         .referenceComponent {
           display: block;
 
-          &:not(.read-only) {
+          &.reference-start {
             border-top: 1px solid var(--section-color);
           }
           &:last-child {
             border-bottom: 1px solid var(--section-color);
+          }
+
+
+          &:not(.reference-start) {
+            padding-left: 3ch;
+
+            .referenceItem .referenceItemLink {
+              font-style: italic;
+
+              &:not(:hover) {
+                color: gray;
+              }
+            }
           }
 
           .referenceComponentCaption {
@@ -441,21 +453,6 @@ $ok-button-color: #2db200;
             }
            .v-icon:hover {
               filter: saturate(1) opacity(1);
-            }
-          }
-
-          &.read-only {
-            .referenceComponentCaption {
-              color: gray;
-            }
-
-            .referenceItem .referenceItemLink {
-              padding-left: 3ch;
-              font-style: italic;
-
-              &:not(:hover) {
-                color: gray;
-              }
             }
           }
 

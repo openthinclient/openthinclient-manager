@@ -126,7 +126,7 @@ public final class UserView extends AbstractThinclientView<User> {
                                                 .filter(group -> group.getApplications().size() > 0)
                                                 .collect(Collectors.toSet());
     if (userGroupsWithApplications.size() > 0) {
-      refPresenter.showReferenceReadOnly(userGroupsWithApplications,
+      refPresenter.showReferenceAddendum(userGroupsWithApplications,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
                                           ApplicationsFromUserGroupFunction(user));
     }
@@ -145,7 +145,7 @@ public final class UserView extends AbstractThinclientView<User> {
       Set<ApplicationGroup> appGroups = userGroupsWithApplicationGroups.stream()
                                         .flatMap(userGroup -> userGroup.getApplicationGroups().stream())
                                         .collect(Collectors.toSet());
-      refPresenter.showReferenceReadOnly(appGroups,
+      refPresenter.showReferenceAddendum(appGroups,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
                                           getApplicationsForUserGroupApplicationGroupFunction(user));
     }
@@ -160,7 +160,7 @@ public final class UserView extends AbstractThinclientView<User> {
                                               .filter(group -> group.getPrinters().size() > 0)
                                               .collect(Collectors.toSet());
     if (userGroupsWithPrinters.size() > 0) {
-      refPresenter.showReferenceReadOnly(userGroupsWithPrinters,
+      refPresenter.showReferenceAddendum(userGroupsWithPrinters,
                                           mc.getMessage(UI_FROM_USERGROUP_HEADER),
                                           PrintersFromUserGroupFunction(user));
     }
