@@ -10,7 +10,7 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -38,7 +38,7 @@ public class DirectoryObjectPanelPresenter {
 
   private final IMessageConveyor mc;
 
-  AbstractThinclientView thinclientView;
+  AbstractDirectoryObjectView directoryObjectView;
   ProfilePanel view;
   DirectoryObject directoryObject;
   Function<DirectoryObject, DeleteMandate> deleteMandatSupplier;
@@ -47,9 +47,9 @@ public class DirectoryObjectPanelPresenter {
   Registration saveButtonRegistration;
   Registration restButtonRegistration;
 
-  public DirectoryObjectPanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
+  public DirectoryObjectPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilePanel view, DirectoryObject directoryObject) {
 
-    this.thinclientView = thinclientView;
+    this.directoryObjectView = directoryObjectView;
     this.view = view;
     this.directoryObject = directoryObject;
 
@@ -99,8 +99,8 @@ public class DirectoryObjectPanelPresenter {
             // update display
             window.close();
             UI.getCurrent().removeWindow(window);
-            thinclientView.navigateTo(null);
-            thinclientView.selectItem(null);
+            directoryObjectView.navigateTo(null);
+            directoryObjectView.selectItem(null);
           }));
       content.addComponent(hl);
     }
@@ -114,7 +114,7 @@ public class DirectoryObjectPanelPresenter {
 
       // check if name already exists
       String newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, directoryObject.getName());
-      for (int i = 1; thinclientView.getFreshProfile(newName) != null; i++) {
+      for (int i = 1; directoryObjectView.getFreshProfile(newName) != null; i++) {
         newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME_WITH_NUMBER, i, directoryObject.getName());
       }
 
@@ -139,11 +139,11 @@ public class DirectoryObjectPanelPresenter {
         copyUser.setPrinters(user.getPrinters());
       }
 
-      thinclientView.save(copy);
+      directoryObjectView.save(copy);
 
       // display
-      thinclientView.navigateTo(copy);
-      thinclientView.selectItem(copy);
+      directoryObjectView.navigateTo(copy);
+      directoryObjectView.selectItem(copy);
     } catch (Exception e) {
       // TODO: handle exception
       // save failed

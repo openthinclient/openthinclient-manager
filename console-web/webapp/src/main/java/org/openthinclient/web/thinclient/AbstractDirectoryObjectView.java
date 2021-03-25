@@ -62,7 +62,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_NAME_ALR
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_NEW_PROFILE_HEADER;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION;
 
-public abstract class AbstractThinclientView<P extends DirectoryObject> extends Panel implements View {
+public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -84,10 +84,10 @@ public abstract class AbstractThinclientView<P extends DirectoryObject> extends 
   protected final CssLayout overviewCL;
   private final CssLayout clientCL;
 
-  public AbstractThinclientView() {
+  public AbstractDirectoryObjectView() {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    setStyleName("thinclientview");
+    setStyleName("item-view");
     setSizeFull();
 
     // clientSettingsVL main content

@@ -28,29 +28,29 @@ $ok-button-color: #2db200;
     color: #fff;
   }
 
-  .thinclientview.client_view {
+  .item-view.client_view {
     --section-color: #1ca6e7;
   }
-  .thinclientview.application_view {
+  .item-view.application_view {
     --section-color: #8500b3;
   }
-  .thinclientview.user_view {
+  .item-view.user_view {
     --section-color: #00b2b2;
   }
-  .thinclientview.device_view {
+  .item-view.device_view {
     --section-color: #ff5d26;
   }
-  .thinclientview.printer_view {
+  .item-view.printer_view {
     --section-color: #8c4600;
   }
-  .thinclientview.hardwaretype_view {
+  .item-view.hardwaretype_view {
     --section-color: #fe2725;
   }
-  .thinclientview.location_view {
+  .item-view.location_view {
     --section-color: #ffff00;
   }
 
-  .thinclientview {
+  .item-view {
     --section-color: #1ca6e7;
 
     border: none;
@@ -65,7 +65,7 @@ $ok-button-color: #2db200;
       }
     }
 
-    .v-panel-content-thinclientview {
+    .v-panel-content-item-view {
       padding: 18px;
       overflow: hidden;
     }
@@ -496,8 +496,8 @@ $ok-button-color: #2db200;
 
   // colored dots before captions
   .profiles-overview .overviewPanel .caption,
-  .thinclientview .settings-caption,
-  .thinclientview .references-caption-wrap {
+  .item-view .settings-caption,
+  .item-view .references-caption-wrap {
     position: relative;
 
     &::before {

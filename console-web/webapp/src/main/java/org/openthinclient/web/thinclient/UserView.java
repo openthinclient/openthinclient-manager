@@ -41,7 +41,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
 @ThemeIcon(UserView.ICON)
-public final class UserView extends AbstractThinclientView<User> {
+public final class UserView extends AbstractDirectoryObjectView<User> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 

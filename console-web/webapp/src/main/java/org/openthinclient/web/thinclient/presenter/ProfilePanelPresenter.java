@@ -6,7 +6,7 @@ import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.util.ContextInfoUtil;
 
 import java.util.Set;
@@ -22,9 +22,9 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
   private Profile profile;
   private IMessageConveyor mc;
 
-  public ProfilePanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, Profile profile) {
+  public ProfilePanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilePanel view, Profile profile) {
 
-    super(thinclientView, view, profile);
+    super(directoryObjectView, view, profile);
     if(profile != null && profile.getRealm() != null) {
       Schema schema = profile.getSchema(profile.getRealm());
       view.setContextInfo(ContextInfoUtil.prepareTip(schema.getTip(), schema.getKBArticle()));
@@ -43,7 +43,7 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
 
       // check if name already exists
       String newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, profile.getName());
-      for (int i = 1; thinclientView.getFreshProfile(newName) != null; i++) {
+      for (int i = 1; directoryObjectView.getFreshProfile(newName) != null; i++) {
         newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME_WITH_NUMBER, i, profile.getName());
       }
 
@@ -78,11 +78,11 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
         copyHardwareType.setDevices(hardwareType.getDevices());
       }
 
-      thinclientView.save(copy);
+      directoryObjectView.save(copy);
 
       // display
-      thinclientView.navigateTo(copy);
-      thinclientView.selectItem(copy);
+      directoryObjectView.navigateTo(copy);
+      directoryObjectView.selectItem(copy);
 
     } catch (Exception e) {
       // TODO: handle exception

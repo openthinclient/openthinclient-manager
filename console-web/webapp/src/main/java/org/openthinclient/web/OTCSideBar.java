@@ -15,7 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.ApplicationGroupView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.UserGroupView;
@@ -68,10 +68,10 @@ public class OTCSideBar extends ValoSideBar {
   }
 
   public void updateFilterGrid(View view, String directoryObjectName) {
-    if (!(view instanceof AbstractThinclientView)) {
+    if (!(view instanceof AbstractDirectoryObjectView)) {
       return;
     }
-    String viewName = ((AbstractThinclientView) view).getParentViewName();
+    String viewName = ((AbstractDirectoryObjectView) view).getParentViewName();
     itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
     FilterGrid filterGrid = filterGridMap.get(viewName);
     if(filterGrid != null) {
@@ -132,8 +132,8 @@ public class OTCSideBar extends ValoSideBar {
         if (nameType.isPresent()) {
           Class sideBarItemClass = nameType.get().getValue();
           Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
-          if (bean instanceof AbstractThinclientView) {
-            FilterGrid filterGrid = new FilterGrid(item, (AbstractThinclientView) bean);
+          if (bean instanceof AbstractDirectoryObjectView) {
+            FilterGrid filterGrid = new FilterGrid(item, (AbstractDirectoryObjectView) bean);
             compositionRoot.addComponent(filterGrid);
             itemsMap.put(item, filterGrid);
             if(item instanceof SideBarItemDescriptor.ViewItemDescriptor) {
@@ -154,7 +154,7 @@ public class OTCSideBar extends ValoSideBar {
     private List<? extends DirectoryObject> groupedItems;
     private Grid<DirectoryObject> itemGrid;
 
-    public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
+    public FilterGrid(SideBarItemDescriptor item, AbstractDirectoryObjectView bean) {
       setVisible(false);
       addStyleNames("filterGrid");
 
@@ -176,7 +176,7 @@ public class OTCSideBar extends ValoSideBar {
       SingleSelectionModel<DirectoryObject> singleSelect = (SingleSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
       singleSelect.setDeselectAllowed(false);
       itemGrid.addColumn(DirectoryObject::getName);
-      itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
+      itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractDirectoryObjectView) bean).getViewName(), selectionEvent));
       itemGrid.removeHeaderRow(0);
       itemGrid.setSizeFull();
       itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
@@ -297,9 +297,9 @@ public class OTCSideBar extends ValoSideBar {
       Class sideBarItemClass = nameType.get().getValue();
       LOGGER.debug("Fetch menu-items for {}", sideBarItemClass);
       Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
-      if (bean instanceof AbstractThinclientView) {
+      if (bean instanceof AbstractDirectoryObjectView) {
         try {
-          return ((AbstractThinclientView) bean).getAllItems();
+          return ((AbstractDirectoryObjectView) bean).getAllItems();
         } catch (AllItemsListException e) {
           LOGGER.error("Cannot fetch all items for " + item.getItemId() + ": " + e.getMessage());
           return new HashSet<>();
@@ -332,7 +332,7 @@ public class OTCSideBar extends ValoSideBar {
           if (compositionRoot != null && itemsMap.containsKey(descriptor)) {
             showGridItems(descriptor);
           } else {
-            // cannot find sidbarItem to attach subItems, maybe no thinclientView
+            // cannot find sidbarItem to attach subItems, maybe no directoryObjectView
           }
 
         } finally {
@@ -398,7 +398,7 @@ public class OTCSideBar extends ValoSideBar {
       View newView = event.getNewView();
 
       if (this.viewName.equals(event.getViewName()) || // settings section
-          (newView instanceof AbstractThinclientView && viewName.equals(((AbstractThinclientView) newView).getParentViewName())) // managing section
+          (newView instanceof AbstractDirectoryObjectView && viewName.equals(((AbstractDirectoryObjectView) newView).getParentViewName())) // managing section
          ) {
           removeStyleName(STYLE_UNSELECTED);
           addStyleName(STYLE_SELECTED);

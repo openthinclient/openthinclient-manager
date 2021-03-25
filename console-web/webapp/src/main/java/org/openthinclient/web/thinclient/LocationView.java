@@ -32,7 +32,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = LocationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 80)
 @ThemeIcon(LocationView.ICON)
-public final class LocationView extends AbstractThinclientView<Location> {
+public final class LocationView extends AbstractDirectoryObjectView<Location> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 

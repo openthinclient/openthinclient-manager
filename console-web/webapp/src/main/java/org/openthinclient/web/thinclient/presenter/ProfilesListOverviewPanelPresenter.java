@@ -21,7 +21,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -45,7 +45,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE_NO
 
 public class ProfilesListOverviewPanelPresenter {
 
-  private AbstractThinclientView thinclientView;
+  private AbstractDirectoryObjectView directoryObjectView;
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
@@ -53,16 +53,16 @@ public class ProfilesListOverviewPanelPresenter {
   private LdifExporterService ldifExporterService;
   private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
 
-  public ProfilesListOverviewPanelPresenter(AbstractThinclientView thinclientView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
-    this.thinclientView = thinclientView;
+  public ProfilesListOverviewPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
+    this.directoryObjectView = directoryObjectView;
     this.panel = panel;
     this.ldifExporterService = ldifExporterService;
 
     // set some default behaviour
-    addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
+    addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(directoryObjectView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
     extendLdifExportButton(createResource());
-    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
+    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(directoryObjectView.getViewName() + "/edit/" + dirObj.getName()));
   }
 
   private StreamResource createResource() {
@@ -132,25 +132,25 @@ public class ProfilesListOverviewPanelPresenter {
           new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
             selectedItems.forEach(item -> {
               if (item instanceof ClientMetaData) { // get the full client-profile
-                item = thinclientView.getFreshProfile(item.getName());
+                item = directoryObjectView.getFreshProfile(item.getName());
               }
               Realm realm = item.getRealm();
               try {
                 realm.getDirectory().delete(item);
                 Audit.logDelete(item);
               } catch (DirectoryException e) {
-                thinclientView.showError(e);
+                directoryObjectView.showError(e);
               }
             });
             // update display
             try {
-              Set<DirectoryObject> allItems = itemsSupplier == null ? thinclientView.getAllItems() : itemsSupplier.get();
+              Set<DirectoryObject> allItems = itemsSupplier == null ? directoryObjectView.getAllItems() : itemsSupplier.get();
               panel.setDataProvider(DataProvider.ofCollection(allItems));
-              thinclientView.selectItem(null);
+              directoryObjectView.selectItem(null);
               panel.getCheckBox().setValue(false);
 
             } catch (AllItemsListException e) {
-              thinclientView.showError(e);
+              directoryObjectView.showError(e);
             }
             window.close();
             UI.getCurrent().removeWindow(window);

@@ -30,7 +30,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = DeviceView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 50)
 @ThemeIcon(DeviceView.ICON)
-public final class DeviceView extends AbstractThinclientView<Device> {
+public final class DeviceView extends AbstractDirectoryObjectView<Device> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);
 

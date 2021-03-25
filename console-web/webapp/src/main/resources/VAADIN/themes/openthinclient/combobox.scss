@@ -3,7 +3,7 @@
     border-left: none;
   }
 
-  .thinclientview .profilePanel .property .v-filterselect-focus:not(.macselect):not(.v-filterselect-no-input) .v-filterselect-input {
+  .item-view .profilePanel .property .v-filterselect-focus:not(.macselect):not(.v-filterselect-no-input) .v-filterselect-input {
     padding-left: 3ch;
     background: url("/VAADIN/themes/openthinclient/icon/filter.svg") .66ch/1em no-repeat;
   }
