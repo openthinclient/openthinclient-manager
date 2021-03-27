@@ -4,7 +4,6 @@ import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
-import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -16,7 +15,6 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -51,8 +49,6 @@ public final class ApplicationView extends AbstractProfileView<Application> {
   private UserService userService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
-  @Autowired @Qualifier("deviceSideBar")
-  OTCSideBar deviceSideBar;
 
   @PostConstruct
   public void setup() {
@@ -222,12 +218,6 @@ public final class ApplicationView extends AbstractProfileView<Application> {
   @Override
   public ConsoleWebMessages getViewTitleKey() {
     return TITLE_KEY;
-  }
-
-  @Override
-  public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ deviceSideBar);
-    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
   @Override

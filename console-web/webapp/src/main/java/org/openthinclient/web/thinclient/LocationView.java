@@ -6,7 +6,6 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.Audit;
-import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -18,7 +17,6 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -46,8 +44,6 @@ public final class LocationView extends AbstractProfileView<Location> {
   private LocationService locationService;
   @Autowired
   private PrinterService printerService;
-  @Autowired @Qualifier("deviceSideBar")
-  OTCSideBar deviceSideBar;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -140,12 +136,6 @@ public final class LocationView extends AbstractProfileView<Location> {
     LOGGER.info("Save: " + profile);
     locationService.save(profile);
     Audit.logSave(profile);
-  }
-
-  @Override
-  public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ deviceSideBar);
-    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
   @Override

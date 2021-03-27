@@ -28,6 +28,7 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -40,6 +41,7 @@ import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Comparator;
 import java.util.List;
@@ -66,6 +68,8 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
   private RealmService realmService;
   @Autowired
   private ClientService clientService;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
   protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
@@ -242,7 +246,10 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
     saveProfile(profile, null);
   }
 
-  public abstract void selectItem(DirectoryObject directoryObject);
+  public void selectItem(DirectoryObject directoryObject) {
+    LOGGER.debug("sideBar: "+ deviceSideBar);
+    deviceSideBar.selectItem(getViewName(), directoryObject, getAllItems());
+  }
 
   /**
    * Save profile, return success status

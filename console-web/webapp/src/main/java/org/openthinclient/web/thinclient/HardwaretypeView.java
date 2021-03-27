@@ -4,7 +4,6 @@ import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.Audit;
-import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -16,7 +15,6 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -42,8 +40,6 @@ public final class HardwaretypeView extends AbstractProfileView<HardwareType> {
   private DeviceService deviceService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
-  @Autowired @Qualifier("deviceSideBar")
-  OTCSideBar deviceSideBar;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -147,11 +143,6 @@ public final class HardwaretypeView extends AbstractProfileView<HardwareType> {
   @Override
   public ConsoleWebMessages getViewTitleKey() {
     return TITLE_KEY;
-  }
-
-  @Override
-  public void selectItem(DirectoryObject directoryObject) {
-    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }

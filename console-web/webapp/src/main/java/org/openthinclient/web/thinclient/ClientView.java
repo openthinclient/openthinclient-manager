@@ -19,7 +19,6 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
-import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -39,7 +38,6 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -81,8 +79,6 @@ public final class ClientView extends AbstractProfileView<Client> {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
-  @Autowired @Qualifier("deviceSideBar")
-  private OTCSideBar deviceSideBar;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -541,12 +537,6 @@ public final class ClientView extends AbstractProfileView<Client> {
   @Override
   public ConsoleWebMessages getViewTitleKey() {
     return TITLE_KEY;
-  }
-
-  @Override
-  public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.debug("sideBar: "+ deviceSideBar);
-    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }
