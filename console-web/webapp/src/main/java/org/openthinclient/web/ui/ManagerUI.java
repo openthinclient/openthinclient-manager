@@ -160,7 +160,6 @@ public final class ManagerUI extends AbstractUI implements View {
       return new ThemeResource(icon);
     });
 
-    // TODO: perfom LDAP-search
     (new Thread() {
       @Override
       public void run() {

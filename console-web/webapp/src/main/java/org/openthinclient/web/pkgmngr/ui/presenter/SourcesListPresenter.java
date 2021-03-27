@@ -53,13 +53,13 @@ import org.vaadin.dialogs.ConfirmDialog;
 public class SourcesListPresenter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SourcesListPresenter.class);
-  
+
     private final View view;
     private final Binder<Source> sourceFormBinder;
     private PackageManager packageManager;
-    
+
     private final IMessageConveyor mc;
-    
+
     public SourcesListPresenter(View view) {
         this.view = view;
 
@@ -155,9 +155,9 @@ public class SourcesListPresenter {
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
 
         // FIXME add some kind of confirm dialog
-        ConfirmDialog.show(UI.getCurrent(), mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION), 
-                                            mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION), 
-                                            mc.getMessage(UI_BUTTON_YES), 
+        ConfirmDialog.show(UI.getCurrent(), mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION),
+                                            mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION),
+                                            mc.getMessage(UI_BUTTON_YES),
                                             mc.getMessage(UI_BUTTON_NO),
                                             () ->
         {
@@ -200,13 +200,13 @@ public class SourcesListPresenter {
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
-        
+
         final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
                                                                        mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION),
                                                                        NotificationDialogType.SUCCESS);
         notification.addCloseListener(e -> updatePackages());
         notification.open(false);
-        
+
         updateSources();
     }
 
@@ -260,13 +260,13 @@ public class SourcesListPresenter {
         Grid<Source> getSourcesTable();
 
         Source getSelectedSource();
-        
+
         Label getSourceDetailsLabel() ;
-        
+
         Label getSourcesLabel() ;
-        
+
         HorizontalLayout getSourcesListLayout();
-        
+
         VerticalLayout getSourceDetailsLayout();
 
         void disableForm();

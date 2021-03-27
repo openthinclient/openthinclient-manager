@@ -64,7 +64,7 @@ public class ProxyConfigurationView extends Panel implements View {
 
       buildContent();
   }
-  
+
   private void buildContent() {
 
     VerticalLayout content = new VerticalLayout();

@@ -5,7 +5,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
-import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
@@ -30,7 +29,6 @@ import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.vaadin.icons.VaadinIcons;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -59,7 +57,7 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
   private EventBus.SessionEventBus eventBus;
   private MyReceiver receiver = new MyReceiver();
   final MessageConveyor mc;
-  final VerticalLayout root ;
+  final VerticalLayout root;
 
   private Label importSuccessLabel;
   private Label importErrorLabel;
@@ -92,7 +90,7 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
   private void init() {
       buildContent();
   }
-  
+
   private void buildContent() {
 
     VerticalLayout content = new VerticalLayout();
@@ -119,17 +117,6 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
       importErrorLabel.setVisible(false);
     });
     importHL.addComponents(upload, importSuccessLabel, importErrorLabel);
-
-//    Button uploadButton = new Button("LDIF Import" /*, new ThemeResource(icon)*/);
-//    uploadButton.addClickListener(e -> {
-//          importSuccessLabel.setVisible(false);
-//          importErrorLabel.setVisible(false);
-//        }
-//    );
-//    uploadButton.addStyleName("thinclient-action-button");
-//    uploadButton.setIcon(VaadinIcons.UPLOAD);
-////    uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-//    content.addComponent(uploadButton);
 
     content.addComponent(new Label("<hr/>",ContentMode.HTML));
 

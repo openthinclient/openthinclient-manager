@@ -17,7 +17,6 @@ import com.vaadin.ui.Window;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;

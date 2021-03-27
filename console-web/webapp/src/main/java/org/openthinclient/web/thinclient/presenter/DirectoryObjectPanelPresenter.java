@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-/**
- * Presenter for DirectoryObjectPanel
- */
 public class DirectoryObjectPanelPresenter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryObjectPanelPresenter.class);

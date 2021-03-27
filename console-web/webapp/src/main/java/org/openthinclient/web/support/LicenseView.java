@@ -2,13 +2,11 @@ package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import java.util.Base64;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
 import org.openthinclient.web.component.Popup;
@@ -30,8 +28,6 @@ public class LicenseView extends Panel implements View {
 
   @Autowired
   private ManagerHome managerHome;
-  @Autowired
-  private DownloadManager downloadManager;
   @Autowired
   private LicenseManager licenseManager;
   @Autowired
