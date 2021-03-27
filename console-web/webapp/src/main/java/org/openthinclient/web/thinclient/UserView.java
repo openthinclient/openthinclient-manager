@@ -207,15 +207,11 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
     nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
     nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), null, 32));
     nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_REGEXP), "[a-zA-Z_][a-zA-Z0-9._-]*[$]?"));
-    nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
+    nameConfiguration.addValidator(new AbstractValidator<String>(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
-      public ValidationResult apply(Object value, ValueContext context) {
+      public ValidationResult apply(String value, ValueContext context) {
         Optional<User> optional = userService.findBySAMAccountName(value.toString());
         return toResult(value, !optional.isPresent());
-      }
-      @Override
-      public Object apply(Object o, Object o2) {
-        return null;
       }
     });
     if (secondaryDirectory) nameConfiguration.disable();
@@ -240,14 +236,10 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
 
     OtcPasswordProperty pwdRetype = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_RETYPE_LABEL), null, "passwordRetype", pwdValue);
     ItemConfiguration pwdRetypeConfig = new ItemConfiguration("passwordRetype", pwdValue);
-    pwdRetypeConfig.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_PASSWORD_RETYPE_VALIDATOR)) {
+    pwdRetypeConfig.addValidator(new AbstractValidator<String>(mc.getMessage(UI_USERS_PASSWORD_RETYPE_VALIDATOR)) {
       @Override
-      public ValidationResult apply(Object value, ValueContext context) {
+      public ValidationResult apply(String value, ValueContext context) {
         return toResult(value, pwdConfig.getValue() != null && pwdConfig.getValue().equals(value));
-      }
-      @Override
-      public Object apply(Object o, Object o2) {
-        return null;
       }
     });
     if (secondaryDirectory) pwdRetypeConfig.disable();
