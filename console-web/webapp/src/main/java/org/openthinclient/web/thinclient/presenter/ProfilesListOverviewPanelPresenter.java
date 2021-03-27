@@ -17,12 +17,10 @@ import com.vaadin.ui.Window;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.web.Audit;
 import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
+import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.vaadin.viritin.button.MButton;
 
@@ -133,11 +131,9 @@ public class ProfilesListOverviewPanelPresenter {
               if (item instanceof ClientMetaData) { // get the full client-profile
                 item = directoryObjectView.getFreshProfile(item.getName());
               }
-              Realm realm = item.getRealm();
               try {
-                realm.getDirectory().delete(item);
-                Audit.logDelete(item);
-              } catch (DirectoryException e) {
+                directoryObjectView.delete(item);
+              } catch(ProfileNotDeletedException e) {
                 directoryObjectView.showError(e);
               }
             });

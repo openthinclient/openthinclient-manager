@@ -7,12 +7,11 @@ import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.web.Audit;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
+import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -86,13 +85,9 @@ public class DirectoryObjectPanelPresenter {
       hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
           new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
 
-            Realm realm = directoryObject.getRealm();
             try {
-              realm.getDirectory().delete(directoryObject);
-              Audit.logDelete(directoryObject);
-            } catch (DirectoryException e) {
-              // TODO: handle exception
-              // delete failed
+              directoryObjectView.delete(directoryObject);
+            } catch (ProfileNotDeletedException e) {
               e.printStackTrace();
             }
 

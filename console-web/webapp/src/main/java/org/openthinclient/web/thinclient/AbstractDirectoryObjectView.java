@@ -28,10 +28,12 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.model.Item;
@@ -159,6 +161,16 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
   protected abstract <D extends DirectoryObject> Set<D> getMembers(P profile, Class<D> clazz);
 
   public abstract void save(P profile) throws ProfileNotSavedException;
+
+  public void delete(P profile) throws ProfileNotDeletedException {
+    Realm realm = profile.getRealm();
+    try {
+      realm.getDirectory().delete(profile);
+    } catch (DirectoryException e) {
+      throw new ProfileNotDeletedException("Cannot delete object " + profile, e);
+    }
+    Audit.logDelete(profile);
+  }
 
   private Client getClient(String name) {
     return clientService.findByName(name);
