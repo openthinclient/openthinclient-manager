@@ -300,7 +300,9 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
       });
     }
     String panelCaption = userIsNew? mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER) : profile.getName();
-    ProfilePanel profilePanel = new ProfilePanel(panelCaption, profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(panelCaption,
+                                                  mc.getMessage(UI_USER),
+                                                  User.class);
     // put property-group to panel
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup()));

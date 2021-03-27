@@ -87,7 +87,9 @@ public final class PrinterView extends AbstractProfileView<Printer> {
     addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  schemaNames.getOrDefault(type, type),
+                                                  Printer.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
     presenter.setItemGroups(otcPropertyGroups);

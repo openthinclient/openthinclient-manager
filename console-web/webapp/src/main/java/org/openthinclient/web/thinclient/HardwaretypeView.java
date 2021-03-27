@@ -70,7 +70,9 @@ public final class HardwaretypeView extends AbstractProfileView<HardwareType> {
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
 
-    ProfilePanel       profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  mc.getMessage(UI_HWTYPE),
+                                                  HardwareType.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 

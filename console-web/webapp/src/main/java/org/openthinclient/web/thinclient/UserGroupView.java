@@ -50,6 +50,11 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
   }
 
   @Override
+  protected String getSubtitle() {
+    return mc.getMessage(UI_USERGROUP);
+  }
+
+  @Override
   public Set<UserGroup> getAllItems() {
     return userGroupService.findAll();
   }

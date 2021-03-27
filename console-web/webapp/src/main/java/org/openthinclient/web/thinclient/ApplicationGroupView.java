@@ -47,6 +47,11 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
   }
 
   @Override
+  protected String getSubtitle() {
+    return mc.getMessage(UI_APPLICATIONGROUP);
+  }
+
+  @Override
   public Set<ApplicationGroup> getAllItems() {
     return applicationGroupService.findAll();
   }

@@ -19,6 +19,8 @@ public abstract class AbstractThinclientGroupView<T extends DirectoryObject> ext
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+  abstract protected String getSubtitle();
+
   /**
    * Set form-values to profile
    * @param profilePanelPresenter DirectoryObjectPanelPresenter contains ItemGroupPanels with form components
@@ -83,7 +85,10 @@ public abstract class AbstractThinclientGroupView<T extends DirectoryObject> ext
 
   public ProfilePanel createProfilePanel(T directoryObject, boolean isNew) {
     String title = isNew? mc.getMessage(UI_PROFILE_PANEL_NEW_GROUP_HEADER) : directoryObject.getName();
-    ProfilePanel profilePanel = new ProfilePanel(title, directoryObject.getClass());
+    String subtitle = isNew? "" : getSubtitle();
+    ProfilePanel profilePanel = new ProfilePanel(title,
+                                                  subtitle,
+                                                  directoryObject.getClass());
     DirectoryObjectPanelPresenter presenter = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
 
     OtcPropertyGroup propertyGroup = createMetadataPropertyGroup(directoryObject, isNew);

@@ -120,7 +120,9 @@ public final class ClientView extends AbstractProfileView<Client> {
   public ProfilePanel createProfilePanel (Client profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  mc.getMessage(UI_CLIENT),
+                                                  Client.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if(!"00:00:00:00:00:00".equals(((Client)profile).getMacAddress())){
       presenter.addPanelCaptionComponent(createWOLButton(profile));

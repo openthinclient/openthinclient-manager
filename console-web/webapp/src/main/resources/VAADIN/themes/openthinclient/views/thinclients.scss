@@ -100,17 +100,36 @@ $ok-button-color: #2db200;
     .references-caption > * {
       position: relative;
       display: flex;
-      min-height: 36px;
+      --min-height: calc(1.8em + 8px);
+      min-height: var(--min-height);
       padding: 0 1ch 0 20px;
       align-items: center;
       background: #2b2e33;
       color: #fff;
-      text-shadow: 0 0 0 #fff;
-      line-height: 1.33;
       font-size: $v-font-size-headline;
+      line-height: 1;
+      font-weight: normal;
+
 
       & > :first-child {
         flex: 1;
+      }
+
+      .settings-title {
+        display: flex;
+        flex-flow: column nowrap;
+        padding: 4px;
+
+        :nth-child(2) {
+          font-size: .66em;
+          line-height: 1.2;
+          font-weight: 300;
+          text-shadow: 0 0 0 #fff;
+        }
+      }
+
+      .v-button {
+        text-shadow: 0 0 0 #fff;
       }
 
       .panelButtons {
@@ -722,7 +741,7 @@ $ok-button-color: #2db200;
 
     .references-caption > * {
       position: fixed;
-      margin-top: -36px;
+      margin-top: calc(-1 * var(--min-height));
       right: 0px;
       transform: rotate(270deg);
       transform-origin: bottom right;

@@ -75,7 +75,9 @@ public final class DeviceView extends AbstractProfileView<Device> {
     addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  schemaNames.getOrDefault(type, type),
+                                                  Device.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
     // put to panel

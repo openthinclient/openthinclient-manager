@@ -29,8 +29,11 @@ public class ProfilePanel extends CssLayout {
 
   IMessageConveyor mc;
 
+  public ProfilePanel(String title, Class<? extends DirectoryObject> clazz) {
+    this(title, "", clazz);
+  }
 
-  public ProfilePanel(String name, Class<? extends DirectoryObject> clazz) {
+  public ProfilePanel(String title, String subtitle, Class<? extends DirectoryObject> clazz) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -39,8 +42,13 @@ public class ProfilePanel extends CssLayout {
     panelCaption = new CssLayout();
     panelCaption.addStyleName("settings-caption");
 
-    Label label = new Label(name);
-    panelCaption.addComponent(label);
+    AbstractLayout titleLayout = new CssLayout();
+    titleLayout.setStyleName("settings-title");
+    titleLayout.addComponents(
+      new Label(title),
+      new Label(subtitle)
+    );
+    panelCaption.addComponent(titleLayout);
 
     panelButtons = new CssLayout();
     panelButtons.addStyleName("panelButtons");

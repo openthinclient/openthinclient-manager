@@ -81,7 +81,9 @@ public final class ApplicationView extends AbstractProfileView<Application> {
      addProfileNameAlreadyExistsValidator(meta);
      String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
+     ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  schemaNames.getOrDefault(type, type),
+                                                  Application.class);
      ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
      // put properties to panel

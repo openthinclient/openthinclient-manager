@@ -74,7 +74,9 @@ public final class LocationView extends AbstractProfileView<Location> {
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  mc.getMessage(UI_LOCATION),
+                                                  profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
