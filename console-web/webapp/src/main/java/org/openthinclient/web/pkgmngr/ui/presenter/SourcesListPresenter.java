@@ -46,13 +46,9 @@ import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.component.NotificationDialog;
 import org.openthinclient.web.component.NotificationDialog.NotificationDialogType;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
-import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
-import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.spring.events.Event;
-import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 
 public class SourcesListPresenter {
 
@@ -243,16 +239,6 @@ public class SourcesListPresenter {
     private void updateSources() {
 
         this.view.getSourcesTable().setItems(packageManager.findAllSources());
-    }
-
-    @EventBusListenerMethod
-    public void onPackageManagerTaskActivated(Event<PackageManagerTaskActivatedEvent> event) {
-//        view.getUpdateButton().setEnabled(false);
-    }
-
-    @EventBusListenerMethod
-    public void onPackageManagerTaskFinalized(Event<PackageManagerTaskFinalizedEvent> event) {
-//        view.getUpdateButton().setEnabled(true);
     }
 
     public interface View {

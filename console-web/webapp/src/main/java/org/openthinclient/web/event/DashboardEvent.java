@@ -74,10 +74,6 @@ public abstract class DashboardEvent {
         }
     }
 
-    public static class UserLoggedOutEvent {
-
-    }
-
     public static class NotificationsCountUpdatedEvent {
     }
 
