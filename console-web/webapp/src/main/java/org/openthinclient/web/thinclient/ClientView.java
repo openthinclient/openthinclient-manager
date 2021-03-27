@@ -20,8 +20,10 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.component.Popup;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
@@ -38,6 +40,7 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -63,6 +66,8 @@ public final class ClientView extends AbstractProfileView<Client> {
   public static final String ICON = "icon/thinclient.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_CLIENT_HEADER;
 
+  private EventBus.SessionEventBus eventBus;
+
   @Autowired
   private PrinterService printerService;
   @Autowired
@@ -81,6 +86,11 @@ public final class ClientView extends AbstractProfileView<Client> {
   private UnrecognizedClientService unrecognizedClientService;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+
+  public ClientView(EventBus.SessionEventBus eventBus) {
+    super();
+    this.eventBus = eventBus;
+  }
 
   @PostConstruct
   public void setup() {
@@ -447,6 +457,14 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
 
+    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+
+  }
+
+  @Override
+  public void delete(Client profile) throws ProfileNotDeletedException {
+    super.delete(profile);
+    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
   }
 
   private void showClientLogs(Client profile) {

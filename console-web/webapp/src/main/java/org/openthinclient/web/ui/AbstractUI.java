@@ -25,6 +25,7 @@ import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.component.LicenseMessageBar;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
+import org.openthinclient.web.event.DashboardEvent.ClientCountChangeEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,6 +189,15 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
 
   @EventBusListenerMethod
   public void licenseChange(LicenseChangeEvent ev) {
+    this.updateLicenseBar();
+  }
+
+  @EventBusListenerMethod
+  public void userCountChange(ClientCountChangeEvent ev) {
+    this.updateLicenseBar();
+  }
+
+  private void updateLicenseBar() {
     if(licenseMessageBar != null) {
       licenseMessageBar.updateContent();
       this.push();

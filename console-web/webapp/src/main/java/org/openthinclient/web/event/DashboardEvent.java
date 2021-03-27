@@ -107,4 +107,6 @@ public abstract class DashboardEvent {
     }
   }
 
+  public static class ClientCountChangeEvent {}
+
 }
