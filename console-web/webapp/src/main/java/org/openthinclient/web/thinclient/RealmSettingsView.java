@@ -8,7 +8,6 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -40,14 +39,16 @@ public final class RealmSettingsView extends AbstractProfileView<Realm> {
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   @Override
-  public Set<Realm> getAllItems() throws AllItemsListException {
+  public Set<Realm> getAllItems() {
      try {
        Set<Realm> allRealms = getRealmService().findAllRealms();
        HashSet<Realm> hashSet = new HashSet<>();
        hashSet.addAll(allRealms);
        return hashSet;
      } catch (Exception e) {
-       throw new AllItemsListException("Cannot load settings.", e);
+      LOGGER.error("Cannot load realm", e);
+      showError(e);
+      return new HashSet<>();
      }
   }
 

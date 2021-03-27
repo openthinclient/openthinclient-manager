@@ -19,7 +19,6 @@ import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.ApplicationGroupView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.UserGroupView;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
@@ -298,12 +297,7 @@ public class OTCSideBar extends ValoSideBar {
       LOGGER.debug("Fetch menu-items for {}", sideBarItemClass);
       Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
       if (bean instanceof AbstractDirectoryObjectView) {
-        try {
-          return ((AbstractDirectoryObjectView) bean).getAllItems();
-        } catch (AllItemsListException e) {
-          LOGGER.error("Cannot fetch all items for " + item.getItemId() + ": " + e.getMessage());
-          return new HashSet<>();
-        }
+        return ((AbstractDirectoryObjectView) bean).getAllItems();
       }
     }
     return new HashSet<>();

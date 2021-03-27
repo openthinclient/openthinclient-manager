@@ -23,7 +23,6 @@ import org.openthinclient.web.Audit;
 import org.openthinclient.web.services.ui.EnumMessageConveyorCaptionGenerator;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.vaadin.viritin.button.MButton;
 
@@ -143,15 +142,10 @@ public class ProfilesListOverviewPanelPresenter {
               }
             });
             // update display
-            try {
-              Set<DirectoryObject> allItems = itemsSupplier == null ? directoryObjectView.getAllItems() : itemsSupplier.get();
-              panel.setDataProvider(DataProvider.ofCollection(allItems));
-              directoryObjectView.selectItem(null);
-              panel.getCheckBox().setValue(false);
-
-            } catch (AllItemsListException e) {
-              directoryObjectView.showError(e);
-            }
+            Set<DirectoryObject> allItems = itemsSupplier == null ? directoryObjectView.getAllItems() : itemsSupplier.get();
+            panel.setDataProvider(DataProvider.ofCollection(allItems));
+            directoryObjectView.selectItem(null);
+            panel.getCheckBox().setValue(false);
             window.close();
             UI.getCurrent().removeWindow(window);
           }));

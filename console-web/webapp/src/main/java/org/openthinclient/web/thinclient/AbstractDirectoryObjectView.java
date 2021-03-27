@@ -30,7 +30,6 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -127,7 +126,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
 
   public abstract ProfileReferencesPanel createReferencesPanel(P profile) throws BuildProfileException;
 
-  public abstract Set<? extends DirectoryObject> getAllItems() throws AllItemsListException;
+  public abstract Set<? extends DirectoryObject> getAllItems();
 
   protected Schema getSchema(String schemaName) {
     return schemaProvider.getSchema(getItemClass(), schemaName);
@@ -348,13 +347,9 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
    * Display overview-page with list of items
    */
   public void showOverview(boolean enabled) {
-    try {
-      ProfilesListOverviewPanelPresenter overviewPanelPresenter = createOverviewItemlistPanel(getViewTitleKey(), getAllItems(), enabled);
-      overviewPanelPresenter.setDeleteMandatSupplier(createDeleteMandateFunction());
-      displayOverviewPanel(overviewPanelPresenter.getPanel());
-    } catch(AllItemsListException e) {
-      showError(e);
-    }
+    ProfilesListOverviewPanelPresenter overviewPanelPresenter = createOverviewItemlistPanel(getViewTitleKey(), getAllItems(), enabled);
+    overviewPanelPresenter.setDeleteMandatSupplier(createDeleteMandateFunction());
+    displayOverviewPanel(overviewPanelPresenter.getPanel());
   }
 
   public void showOverview() {
