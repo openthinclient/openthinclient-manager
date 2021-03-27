@@ -85,10 +85,9 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
    private List<File> visibleItems = new ArrayList<>();
 
-   public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   public FileBrowserView(EventBus.SessionEventBus eventBus) {
      mc = new MessageConveyor(UI.getCurrent().getLocale());
      setSizeFull();
-     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_FILEBROWSER_HEADER)));
    }
 
    public static boolean isMimeTypeSupported(String mimeType) {

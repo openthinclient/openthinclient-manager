@@ -12,12 +12,9 @@ import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
 import org.openthinclient.web.component.Popup;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 
@@ -54,11 +51,10 @@ public class LicenseView extends Panel implements View {
   private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().getLocale());
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(UI.getCurrent().getLocale());
 
-  public LicenseView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public LicenseView() {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     setSizeFull();
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_LICENSE_HEADER)));
 
     root = new CssLayout();
     root.setStyleName("licenseview");

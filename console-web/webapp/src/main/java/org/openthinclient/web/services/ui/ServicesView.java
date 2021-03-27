@@ -14,12 +14,9 @@ import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -44,9 +41,7 @@ public class ServicesView extends Panel implements View {
   private final ServicePanel dhcpServicePanel;
 
   @Autowired
-  public ServicesView(ServiceManager serviceManager,
-                              EventBus.SessionEventBus eventBus,
-                              DashboardNotificationService notificationService) {
+  public ServicesView(ServiceManager serviceManager) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -57,7 +52,6 @@ public class ServicesView extends Panel implements View {
     dhcpServicePanel = new ServicePanel(serviceManager, DHCPService.class, mc.getMessage(UI_SERVICE_CAPTION_DHCP));
 
     setSizeFull();
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SERVICES_CAPTION)));
   }
 
   @PostConstruct

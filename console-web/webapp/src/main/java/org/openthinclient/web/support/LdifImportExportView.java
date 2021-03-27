@@ -21,8 +21,6 @@ import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.api.ldif.export.LdifImporterService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.filebrowser.FileUploadSubWindow;
 import org.openthinclient.web.filebrowser.FileUploadView;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -32,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.icons.VaadinIcons;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -69,11 +66,10 @@ public class LdifImportExportView extends Panel implements View, FileUploadView 
   Set<LdifImporterService.State> importResult = new HashSet<>();
   Set<LdifExporterService.State> exportResult = new HashSet<>();
 
-  public LdifImportExportView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public LdifImportExportView() {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     setSizeFull();
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_LDIF_IMPORT_EXPORT_HEADER)));
 
     root = new VerticalLayout();
     root.setSizeFull();

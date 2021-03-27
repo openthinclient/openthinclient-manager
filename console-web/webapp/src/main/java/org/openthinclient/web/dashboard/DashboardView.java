@@ -70,11 +70,10 @@ public class DashboardView extends Panel implements View {
   private CssLayout dashboardPanels;
 
   @Autowired
-  public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public DashboardView(EventBus.SessionEventBus eventBus) {
     setSizeFull();
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     this.eventBus = eventBus;
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_DASHBOARDVIEW_HEADER)));
   }
 
   @PostConstruct

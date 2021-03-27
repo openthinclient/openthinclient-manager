@@ -61,19 +61,6 @@ public abstract class DashboardEvent {
         }
     }
 
-    public static class UpdateHeaderLabelEvent {
-
-        private final String caption;
-
-        public UpdateHeaderLabelEvent(String caption) {
-            this.caption = caption;
-        }
-
-        public String getCaption() {
-            return caption;
-        }
-    }
-
     public static class NotificationsCountUpdatedEvent {
     }
 

@@ -16,7 +16,6 @@ import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.ui.presenter.*;
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
@@ -28,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -67,7 +65,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
                                          final PackageManagerExecutionEngine packageManagerExecutionEngine,
                                          final SchemaService schemaService, ApplicationService applicationService,
                                          final ClientService clientService,
-                                         final EventBus.SessionEventBus eventBus,
                                          final ApplicationContext applicationContext) {
 
     this.packageManager = packageManager;
@@ -84,7 +81,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     this.sourcesListPresenter = new SourcesListPresenter(mainView.getSourcesListView());
 
     setSizeFull();
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
 
     handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
       bindPackageLists();

@@ -15,15 +15,12 @@ import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyCon
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.Audit;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -44,11 +41,10 @@ public class ProxyConfigurationView extends Panel implements View {
   final MessageConveyor mc;
   final VerticalLayout root ;
 
-  public ProxyConfigurationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public ProxyConfigurationView() {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     setSizeFull();
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_PROXY_CONFIGURATION_HEADER)));
 
     root = new VerticalLayout();
     root.setSizeFull();
