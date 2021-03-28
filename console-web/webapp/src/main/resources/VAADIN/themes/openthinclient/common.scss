@@ -18,6 +18,21 @@
       }
     }
 
+    .outside-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border: none;
+      background: transparent;
+      z-index: -1;
+
+      &:hover::after {
+        background: transparent;
+      }
+    }
+
     .v-window-maximizebox {
       display: none;
     }

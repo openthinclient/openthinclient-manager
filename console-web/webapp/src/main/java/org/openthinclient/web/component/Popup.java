@@ -49,6 +49,9 @@ public class Popup {
     if(buttonsLayout.getComponentCount() == 0) {
       buttonsLayout.addComponent(new Button(mc.getMessage(UI_BUTTON_CLOSE), ev -> popup.close()));
     }
+    Button outsidePopupButton = new Button("", ev -> popup.close());
+    outsidePopupButton.setStyleName("outside-popup");
+    buttonsLayout.addComponent(outsidePopupButton);
     popup.setWindowMode(windowMode);
     popup.setSizeUndefined();
     popup.setWidth(width);
