@@ -270,7 +270,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   private OtcPropertyGroup createClientMetadataPropertyGroup(Client profile, ProfilePanelPresenter presenter) {
 
-    OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    OtcPropertyGroup configuration = builder.createDirectoryObjectMetaDataGroup(profile);
     // remove default validators and add custom validator to 'name'-property
     addProfileNameAlreadyExistsValidator(configuration);
     configuration.getProperty("name").ifPresent(nameProperty -> {
