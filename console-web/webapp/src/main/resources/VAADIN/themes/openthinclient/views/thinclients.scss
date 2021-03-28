@@ -544,6 +544,8 @@ $ok-button-color: #2db200;
     }
 
     .overviewPanel {
+      display: flex;
+      flex-flow: column nowrap;
       border: none;
       max-width: 75ch;
       max-height: 100%;
