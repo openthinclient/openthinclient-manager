@@ -95,6 +95,9 @@ b {
   .v-widget.v-button {
     height: auto;
   }
+  :root & .v-widget.v-checkbox {
+    padding-left: 19px;
+  }
   .v-grid {
     background: #fff;
   }

@@ -513,6 +513,49 @@ $ok-button-color: #2db200;
     }
   }
 
+
+  .otc-popup .content.reference-popup {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0;
+
+    .filterLine {
+      padding: 0 2ch;
+    }
+
+    .selectAll {
+      margin: 0 2ch 8px;
+    }
+
+    .table {
+      border: 2px solid var(--primary-blue);
+      border-width: 2px 0;
+      padding: 1ex 2ch;
+
+      .v-grid {
+        background: transparent;
+      }
+      .v-grid-tablewrapper {
+        border: none;
+      }
+
+      .v-grid-row > td {
+        border: none;
+        padding: 0;
+        background: transparent;
+        font-weight: normal;
+
+        &::before {
+          content: none; // disable v-grid-cell-focused styling
+        }
+      }
+
+      .v-checkbox {
+        padding-right: 8px;
+      }
+    }
+  }
+
   // colored dots before captions
   .profiles-overview .overviewPanel .caption,
   .item-view .settings-caption,
@@ -528,6 +571,38 @@ $ok-button-color: #2db200;
       width: 8px;
       border-radius: 50%;
       background: var(--section-color);
+    }
+  }
+
+
+  // pretty checkboxes
+  .overviewPanel .v-checkbox,
+  .reference-popup .v-checkbox {
+    label {
+      padding-left: 8px;
+    }
+  }
+
+  // filter input element
+  .overviewPanel .filterLine,
+  .reference-popup .filterLine {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d9d9d9;
+    border-top: none;
+    margin-bottom: 1em;
+
+    &::before {
+      content: "";
+      height: 19px;
+      width: 19px;
+      background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
+    }
+
+    input {
+      height: 100%;
+      width: 100%;
+      border: none;
     }
   }
 
@@ -550,16 +625,6 @@ $ok-button-color: #2db200;
       max-width: 75ch;
       max-height: 100%;
       overflow: hidden !important;
-
-      .v-checkbox {
-        label {
-          padding-left: 8px;
-        }
-        & > input ~ label::before {
-          border-radius: 50%;
-          background: #eef0ef;
-        }
-      }
 
       .caption .create-new {
         position: relative;
@@ -585,28 +650,7 @@ $ok-button-color: #2db200;
       }
 
       .filterLine {
-        position: relative;
-        width: 100%;
-        border: 1px solid #d9d9d9;
-        border-top: none;
-        margin-bottom: 1em;
-
-        &::before {
-          content: "";
-          position: absolute;
-          top: 4px;
-          left: 6px;
-          height: 19px;
-          width: 19px;
-          background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
-        }
-
-        input {
-          width: calc(100% - 28px);
-          height: 100%;
-          margin-left: 28px;
-          border: none;
-        }
+        padding: 0 6px;
       }
 
       .actionLine {
@@ -636,7 +680,7 @@ $ok-button-color: #2db200;
         width: calc(100% - 14px);
         border: 2px solid var(--section-color);
         border-width: 2px 0;
-        padding: 0.66em 0;
+        padding: 1ex 0;
         margin: 0 6px;
         overflow: auto;
 

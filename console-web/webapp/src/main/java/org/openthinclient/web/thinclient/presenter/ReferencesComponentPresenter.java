@@ -6,6 +6,8 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.ui.*;
 import com.vaadin.server.SerializablePredicate;
+
+import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemButtonComponent;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
@@ -94,14 +96,10 @@ public class ReferencesComponentPresenter {
 
   private void handleMultiSelectPopup(Button.ClickEvent event) {
 
-    Window multiSelectPopup = new Window();
-    multiSelectPopup.setModal(true);
-    multiSelectPopup.setResizable(false);
-    multiSelectPopup.setClosable(false);
+    Popup multiSelectPopup = new Popup(ConsoleWebMessages.UI_COMMON_PLEASE_SELECT, "reference-popup");
 
-    VerticalLayout main = new VerticalLayout();
-    main.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_COMMON_PLEASE_SELECT)));
-
+    CssLayout filterLine = new CssLayout();
+    filterLine.setStyleName("filterLine");
     TextField filter = new TextField();
     filter.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
     filter.addValueChangeListener(event1 -> {
@@ -109,10 +107,11 @@ public class ReferencesComponentPresenter {
       updateSelectAll();
     });
     itemListDataProvider.clearFilters();
-    filter.setSizeFull();
-    main.addComponent(filter);
+    filterLine.addComponent(filter);
+    multiSelectPopup.addContent(filterLine);
 
     selectAll = new CheckBox(mc.getMessage(ConsoleWebMessages.UI_COMMON_SELECT_ALL), false);
+    selectAll.setStyleName("selectAll");
     selectAll.addValueChangeListener(e -> {
       if (!selectAllIgnoreValueChange) {
         checkBoxesIgnoreValueChange = true;
@@ -131,28 +130,21 @@ public class ReferencesComponentPresenter {
       }
     });
     updateSelectAll();
-    main.addComponent(selectAll);
+    multiSelectPopup.addContent(selectAll);
 
+    CssLayout table = new CssLayout();
+    table.setStyleName("table");
     Grid<Item> referencesGrid = new Grid<>();
     referencesGrid.setDataProvider(itemListDataProvider);
     referencesGrid.setSelectionMode(Grid.SelectionMode.NONE);
     referencesGrid.removeHeaderRow(0);
     referencesGrid.addComponentColumn(this::createItemCheckBox);
-    referencesGrid.setBodyRowHeight(40); // make sure the buttons fit in the cells of the Grid
-    main.addComponent(referencesGrid);
+    referencesGrid.setBodyRowHeight(32);
+    table.addComponent(referencesGrid);
+    multiSelectPopup.addContent(table);
 
-    Button closeButton = new Button(mc.getMessage(ConsoleWebMessages.UI_BUTTON_CLOSE));
-    closeButton.addClickListener(e -> multiSelectPopup.close());
-
-    HorizontalLayout bottomLine = new HorizontalLayout();
-    bottomLine.setSizeFull();
-    bottomLine.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-    bottomLine.addComponents(closeButton);
-    main.addComponent(bottomLine);
-
-    multiSelectPopup.setContent(main);
-
-    UI.getCurrent().addWindow(multiSelectPopup);
+    multiSelectPopup.open();
+    filter.focus();
   }
 
   private void updateSelectAll() {
