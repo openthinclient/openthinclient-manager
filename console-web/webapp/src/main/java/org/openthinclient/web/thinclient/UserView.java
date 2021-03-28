@@ -377,19 +377,6 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
   }
 
   @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
-    if (params.length > 0) {
-      if ("create".equals(params[0])) {
-        showProfileMetadata(new User());
-      } else {
-        super.enter(event);
-      }
-    }
-  }
-
-  @Override
   public void showOverview() {
     super.showOverview(!secondaryDirectory);
     overviewCL.addComponent(

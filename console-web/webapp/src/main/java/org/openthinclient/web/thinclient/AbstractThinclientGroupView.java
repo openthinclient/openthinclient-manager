@@ -113,30 +113,4 @@ public abstract class AbstractThinclientGroupView<T extends DirectoryObject> ext
 
     return group;
   }
-
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
-    if (params.length > 0) {
-      // handle create action
-      if ("create".equals(params[0])) {
-        showProfileMetadata(newProfile());
-      } else if("edit".equals(params[0])
-                && params.length == 2
-                && params[1].length() > 0) {
-        T profile = getFreshProfile(params[1]);
-        if (profile != null) {
-          showProfile(profile);
-        } else {
-          LOGGER.info("No profile found for name '" + params[1] + "'.");
-        }
-
-      // initial overview
-      } else {
-        showOverview();
-      }
-    }
-  }
-
 }
