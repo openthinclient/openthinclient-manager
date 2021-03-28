@@ -581,6 +581,17 @@ $ok-button-color: #2db200;
     label {
       padding-left: 8px;
     }
+    & > input ~ label::before {
+      border-radius: 50%;
+      background: #eef0ef;
+    }
+    & > input ~ label:hover::before,
+    & > input:focus ~ label::before {
+      border: 2px solid #ccc;
+    }
+    & > input ~ label:active::after {
+      background: none;
+    }
   }
 
   // filter input element
