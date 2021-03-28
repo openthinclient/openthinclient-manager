@@ -61,10 +61,12 @@ html {
   ::-webkit-scrollbar-track {
     background: #e7e9e8 !important;
   }
+
+  --primary-blue: #0064a2;
 }
 
 a {
-  color: #0064a2;
+  color: var(--primary-blue);
   font-weight: bolder;
   text-decoration: none;
   &:hover, &:focus {

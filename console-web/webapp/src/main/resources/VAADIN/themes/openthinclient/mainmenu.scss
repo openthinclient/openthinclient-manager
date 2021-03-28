@@ -1,7 +1,7 @@
 @mixin mainmenu {
   &.settingsui #mainmenu {
     color: #b3e2ff;
-    background: #0064a2;
+    background: var(--primary-blue);
 
     .valo-menu-item.selected {
       font-width: bold;
@@ -10,7 +10,7 @@
     }
     .valo-menu-item.unselected {
       color: #b3e2ff;
-      background: #0064a2;
+      background: var(--primary-blue);
     }
   }
   &.managerui #mainmenu {
@@ -38,7 +38,7 @@
     .logo-button {
       min-height: $header-height;
       width: 100% !important;
-      background: #0064a2;
+      background: var(--primary-blue);
       margin: 0;
       padding: 4% 8% 2% 8%;
     }
@@ -118,9 +118,9 @@
     }
 
     #sidebaritem_menulinktosettings {
-      border-top: 2px solid #0064a2;
+      border-top: 2px solid var(--primary-blue);
       &:hover {
-        background: #0064a2;
+        background: var(--primary-blue);
       }
     }
     #sidebaritem_menulinkfromsettings {
