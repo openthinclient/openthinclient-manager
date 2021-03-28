@@ -231,9 +231,10 @@ public final class ClientView extends AbstractProfileView<Client> {
   private Component createVNCButton(Client profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
-    button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
+    button.setIcon(VaadinIcons.DESKTOP);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
+    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
     return button;
   }
