@@ -663,6 +663,10 @@ $ok-button-color: #2db200;
 
             &:hover {
               color: #000;
+
+              .name {
+                text-decoration: underline;
+              }
             }
 
             .v-button-caption {
