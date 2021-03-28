@@ -73,8 +73,10 @@
   }
 
   .license-messagebar {
+    position: relative;
     width: 100%;
     padding: 0 2ch;
+    z-index: 1;
 
     &.warning {
       background: #ffc;
