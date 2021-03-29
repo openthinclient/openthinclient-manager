@@ -1,5 +1,6 @@
 package org.openthinclient.web.thinclient;
 
+import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -149,7 +150,11 @@ public class ProfilePropertiesBuilder {
     if (profile.getRealm() != null) {
       schemaName = profile.getSchema(profile.getRealm()).getName();
     }
-    List<SelectOption> selectOptions = schemaNames.entrySet().stream().map((entry) -> new SelectOption(entry.getValue(), entry.getKey())).collect(Collectors.toList());
+    Collator collator = Collator.getInstance();
+    List<SelectOption> selectOptions = schemaNames.entrySet().stream()
+                                          .sorted(Comparator.comparing(Map.Entry::getValue, collator))
+                                          .map((entry) -> new SelectOption(entry.getValue(), entry.getKey()))
+                                          .collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
              mc.getMessage(UI_COMMON_TYPE_LABEL),
              null,
