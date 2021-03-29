@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * Wrapper class for a label in one language. Used for castor mapping of labels.
@@ -35,17 +36,26 @@ public class Label {
   private String lang;
   @XmlAttribute(name = "value")
   private String label;
+  @XmlValue
+  private String text;
 
-  public Label(String lang, String label) {
+  public Label(String lang, String label, String text) {
     this.lang = lang;
     this.label = label;
+    this.text = text;
   }
 
   public Label() {
   }
 
   public String getLabel() {
-    return label;
+    if (label == null || label.isEmpty()) {
+      return text;
+    } else if (text.isEmpty()) {
+      return label;
+    } else {
+      return String.format("%s<br/>%s", label, text);
+    }
   }
 
   public void setLabel(String label) {
