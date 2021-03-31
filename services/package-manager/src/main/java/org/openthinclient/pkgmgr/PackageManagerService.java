@@ -1,6 +1,5 @@
 package org.openthinclient.pkgmgr;
 
-import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.nfs.NFS;
 
@@ -47,9 +46,7 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   public void startService() throws Exception {
     running = true;
 
-    final PackageManager dpkgPackageManager = packageManagerFactory.createPackageManager(configuration);
-    packageManager = new PackageManagerImpl(dpkgPackageManager, nfs);
-
+    packageManager = packageManagerFactory.createPackageManager(configuration);
   }
 
   @Override
