@@ -223,7 +223,7 @@ $ok-button-color: #2db200;
 
       .panelRows {
         flex: 1;
-        overflow: auto;
+        overflow: hidden auto;
         border: 1px solid silver;
         border-width: 0 1px;
 
