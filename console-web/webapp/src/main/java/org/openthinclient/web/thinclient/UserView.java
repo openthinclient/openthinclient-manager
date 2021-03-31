@@ -137,7 +137,7 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
     Set<UserGroup> userGroupsWithApplicationGroups = userGroups.stream()
                                                       .filter(group -> group.getApplicationGroups().size() > 0)
                                                       .collect(Collectors.toSet());
-    if (userGroupsWithApplications.size() > 0) {
+    if (userGroupsWithApplicationGroups.size() > 0) {
       Set<ApplicationGroup> appGroups = userGroupsWithApplicationGroups.stream()
                                         .flatMap(userGroup -> userGroup.getApplicationGroups().stream())
                                         .collect(Collectors.toSet());
