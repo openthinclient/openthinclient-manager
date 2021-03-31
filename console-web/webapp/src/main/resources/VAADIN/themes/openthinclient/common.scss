@@ -100,35 +100,6 @@
       }
     }
 
-    .sparks {
-      @include valo-panel-style;
-      margin-bottom: round($view-padding / 3);
-
-      @include width-range($max: 680px) {
-        .spark {
-          width: 50%;
-        }
-        .spark:nth-child(2n+1) {
-          border-left: none;
-        }
-        .spark:nth-child(n+3) {
-          border-top: valo-border($strength: 0.3);
-        }
-      }
-
-      @include width-range($max: 270px) {
-        .spark {
-          width: 100%;
-          border-left: none;
-          border-top: valo-border($strength: 0.3);
-
-          &:first-child {
-            border-top: none;
-          }
-        }
-      }
-    }
-
     @include width-range($max: 480px) {
       padding-left: round($view-padding / 2);
       padding-right: round($view-padding / 2);
