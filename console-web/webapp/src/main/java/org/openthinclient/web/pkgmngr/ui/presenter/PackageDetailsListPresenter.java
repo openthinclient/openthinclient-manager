@@ -4,6 +4,7 @@ import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
@@ -50,7 +51,7 @@ public class PackageDetailsListPresenter {
 
   }
 
-  public void setPackages(Collection<org.openthinclient.pkgmgr.db.Package> otcPackages) {
+  public void setPackages(Collection<Package> otcPackages) {
 
     if (otcPackages == null || otcPackages.size() == 0) {
       // null or empty list indicate a reset of the view
@@ -76,7 +77,7 @@ public class PackageDetailsListPresenter {
     });
   }
 
-  private void doInstallPackages(Collection<org.openthinclient.pkgmgr.db.Package> otcPackages) {
+  private void doInstallPackages(Collection<Package> otcPackages) {
     final PackageManagerOperation op = packageManager.createOperation();
     otcPackages.forEach(op::install);
     op.resolve();
@@ -86,7 +87,7 @@ public class PackageDetailsListPresenter {
 
   }
 
-  private void doUninstallPackages(Collection<org.openthinclient.pkgmgr.db.Package> otcPackages) {
+  private void doUninstallPackages(Collection<Package> otcPackages) {
     final PackageManagerOperation op = packageManager.createOperation();
     otcPackages.forEach(op::uninstall);
     op.resolve();
