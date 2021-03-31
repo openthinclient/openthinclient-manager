@@ -26,7 +26,7 @@ public class PackageManagerUtils {
         seen.put(pkg.getName(), pkg);
       } else {
         Package p = seen.get(pkg.getName());
-        if (p.getVersion().compareTo(pkg.getVersion()) < 1) {
+        if (p.getVersion().compareTo(pkg.getVersion()) <= 0) {
           seen.replace(pkg.getName(), pkg);
         }
       }

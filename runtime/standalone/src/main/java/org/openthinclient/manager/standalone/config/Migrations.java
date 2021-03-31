@@ -120,7 +120,7 @@ public class Migrations {
 
   private boolean isTcosLibs2020(Package pkg) {
     return ("tcos-libs".equals(pkg.getName())
-            && pkg.getVersion().compareTo(version2020) != -1);
+            && pkg.getVersion().compareTo(version2020) >= 0);
   }
 
   private boolean tcosLibs2020Updated(List<PackageReport> reports) {

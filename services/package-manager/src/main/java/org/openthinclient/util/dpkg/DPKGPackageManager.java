@@ -172,7 +172,7 @@ public class DPKGPackageManager implements PackageManager {
         ArrayList<Package> update = new ArrayList<>();
         for (final Package installedPkg : getInstalledPackages()) {
             for (final Package installablePkg : getInstallablePackagesWithoutInstalledOfSameVersion()) {
-                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) == 1) {
+                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) > 0) {
                     update.add(installablePkg);
                 }
             }
