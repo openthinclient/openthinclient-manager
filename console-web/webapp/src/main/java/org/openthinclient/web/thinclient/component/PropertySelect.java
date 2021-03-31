@@ -44,10 +44,6 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     }
     field.bind(t -> bean.getSelectOption(t.getValue()), (t, selectOption) -> t.setValue(selectOption != null ? selectOption.getValue() : null));
 
-    // preselect if only one option is present
-    if (bean.getOptions().size() == 1) {
-      setValue(bean.getSelectOption(bean.getOptions().get(0).getValue()));
-    }
   }
 
   @Override

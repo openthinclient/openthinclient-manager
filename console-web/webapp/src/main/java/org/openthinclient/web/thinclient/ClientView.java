@@ -149,12 +149,16 @@ public final class ClientView extends AbstractProfileView<Client> {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     HardwareType hwtype = client.getHardwareType();
-    refPresenter.showReference(Collections.singleton(hwtype),
-                                mc.getMessage(UI_HWTYPE));
+    if (hwtype != null) {
+      refPresenter.showReference(Collections.singleton(hwtype),
+      mc.getMessage(UI_HWTYPE));
+    }
 
     Location location = client.getLocation();
-    refPresenter.showReference(Collections.singleton(location),
-                                mc.getMessage(UI_LOCATION));
+    if (location != null) {
+      refPresenter.showReference(Collections.singleton(location),
+                                  mc.getMessage(UI_LOCATION));
+    }
 
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(client.getApplications(),
@@ -176,11 +180,12 @@ public final class ClientView extends AbstractProfileView<Client> {
                                 allDevices,
                                 values -> saveReference(client, values, allDevices, Device.class));
 
-
-    Set<Device> hwtypeDevices = hwtype.getDevices();
-    if (hwtypeDevices.size() > 0) {
-      refPresenter.showReferenceAddendum(hwtypeDevices,
-                                          mc.getMessage(UI_FROM_HWTYPE_HEADER));
+    if (hwtype != null) {
+      Set<Device> hwtypeDevices = hwtype.getDevices();
+      if (hwtypeDevices.size() > 0) {
+        refPresenter.showReferenceAddendum(hwtypeDevices,
+                                            mc.getMessage(UI_FROM_HWTYPE_HEADER));
+      }
     }
 
     Set<Printer> allPrinters = printerService.findAll();
@@ -188,10 +193,12 @@ public final class ClientView extends AbstractProfileView<Client> {
                                 allPrinters,
                                 values -> saveReference(client, values, allPrinters, Printer.class));
 
-    Set<Printer> locationPrinters = location.getPrinters();
-    if (locationPrinters.size() > 0) {
-      refPresenter.showReferenceAddendum(locationPrinters,
-                                          mc.getMessage(UI_FROM_LOCATION_HEADER));
+    if (location != null) {
+      Set<Printer> locationPrinters = location.getPrinters();
+      if (locationPrinters.size() > 0) {
+        refPresenter.showReferenceAddendum(locationPrinters,
+                                            mc.getMessage(UI_FROM_LOCATION_HEADER));
+      }
     }
 
     return referencesPanel;
@@ -307,16 +314,51 @@ public final class ClientView extends AbstractProfileView<Client> {
       configuration.addProperty(ipaddress);
     }
 
+    boolean isNew = profile.getDn() == null;
+
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
+    Location location = profile.getLocation();
+    Set<Location> allLocations = locationService.findAll();
+    String selectedLocationDn = null;
+    if(location != null)  {
+      selectedLocationDn = location.getDn();
+    } else if(isNew && allLocations.size() == 1) {
+      selectedLocationDn = allLocations.stream().findFirst().get().getDn();
+    }
+
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION),
+                                                      null,
+                                                      "location",
+                                                      selectedLocationDn,
+                                                      null,
+                                                      allLocations.stream()
+                                                                  .map(o -> new SelectOption(o.getName(), o.getDn()))
+                                                                  .collect(Collectors.toList()));
+    ItemConfiguration locationConfig = new ItemConfiguration("location",
+                                                              location != null ? location.getDn() : null);
     locationConfig.setRequired(true);
     locationProp.setConfiguration(locationConfig);
     configuration.addProperty(locationProp);
 
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null);
+    HardwareType hardwareType = profile.getHardwareType();
+    Set<HardwareType> allHardwareTypes = hardwareTypeService.findAll();
+    String selectedHardwareTypeDn = null;
+    if(location != null)  {
+      selectedHardwareTypeDn = location.getDn();
+    } else if(isNew && allHardwareTypes.size() == 1) {
+      selectedHardwareTypeDn = allHardwareTypes.stream().findFirst().get().getDn();
+    }
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE),
+                                                null,
+                                                "hwtype",
+                                                selectedHardwareTypeDn,
+                                                null,
+                                                allHardwareTypes.stream()
+                                                                  .map(o -> new SelectOption(o.getName(), o.getDn()))
+                                                                  .collect(Collectors.toList()));
+    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype",
+                                                            hardwareType != null ? hardwareType.getDn() : null);
     hwtypeConfig.setRequired(true);
     hwProp.setConfiguration(hwtypeConfig);
     configuration.addProperty(hwProp);
