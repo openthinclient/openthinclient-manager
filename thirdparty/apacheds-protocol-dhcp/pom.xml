@@ -5,9 +5,9 @@
 	<!-- FIXME: get rid of this sub-project by submitting the code to the apache directory project -->
 
 	<parent>
-		<groupId>org.apache.directory.server</groupId>
-		<artifactId>build</artifactId>
-		<version>1.0.2</version>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>manager-thirdparty</artifactId>
+		<version>2021.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-protocol-shared</artifactId>
-			<version>1.0.2</version>
+			<version>${apacheds.version}</version>
 		</dependency>
 	</dependencies>
 

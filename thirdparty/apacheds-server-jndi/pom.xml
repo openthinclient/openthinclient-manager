@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- FIXME: get rid of this sub-project by submitting the code to the apache directory project -->
   <parent>
-    <groupId>org.apache.directory.server</groupId>
-    <artifactId>build</artifactId>
-    <version>1.0.2</version>
+    <groupId>org.openthinclient</groupId>
+    <artifactId>manager-thirdparty</artifactId>
+    <version>2021.1-SNAPSHOT</version>
   </parent>
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
   <version>2021.1-SNAPSHOT</version>
@@ -21,32 +21,33 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>nlog4j</artifactId>
+      <version>1.2.25</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-protocol-changepw</artifactId>
-      <version>1.0.2</version>
+      <version>${apacheds.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-protocol-ntp</artifactId>
-      <version>1.0.2</version>
+      <version>${apacheds.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-protocol-kerberos</artifactId>
-      <version>1.0.2</version>
+      <version>${apacheds.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-protocol-ldap</artifactId>
-      <version>1.0.2</version>
+      <version>${apacheds.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-core</artifactId>
-      <version>1.0.2</version>
+      <version>${apacheds.version}</version>
     </dependency>
   </dependencies>
 
