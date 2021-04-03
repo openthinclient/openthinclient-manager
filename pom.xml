@@ -36,7 +36,7 @@
 	</scm>
 
 	<properties>
-		<revision>2021.1-SNAPSHOT</revision>
+		<revision>2021.2-BETA</revision>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
