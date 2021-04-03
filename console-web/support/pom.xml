@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-web</artifactId>
-        <version>2021.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>manager-console-web-support</artifactId>

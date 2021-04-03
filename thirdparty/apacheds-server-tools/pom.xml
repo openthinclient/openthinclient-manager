@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.openthinclient</groupId>
     <artifactId>manager-thirdparty</artifactId>
-    <version>2021.1-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
   <artifactId>apacheds-server-tools</artifactId>
   <name>ApacheDS Server Tools</name>
-  <version>2021.1-SNAPSHOT</version>
+  <version>${revision}</version>
   <description>
     Contained within this executable jar are various commandline utilities
     for apacheds.

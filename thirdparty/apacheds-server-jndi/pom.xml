@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.openthinclient</groupId>
     <artifactId>manager-thirdparty</artifactId>
-    <version>2021.1-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
-  <version>2021.1-SNAPSHOT</version>
+  <version>${revision}</version>
   <artifactId>apacheds-server-jndi</artifactId>
   <name>ApacheDS Server JNDI</name>
   <description>

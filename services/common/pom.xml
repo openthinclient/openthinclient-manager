@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2021.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>manager-service-common</artifactId>
@@ -32,17 +32,17 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-install</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-progress</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>

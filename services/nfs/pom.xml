@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2021.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>manager-service-nfs</artifactId>
@@ -22,7 +22,7 @@
     	<dependency>
     		<groupId>org.openthinclient</groupId>
     		<artifactId>manager-service-common</artifactId>
-    		<version>2021.1-SNAPSHOT</version>
+    		<version>${revision}</version>
     	</dependency>
 
 		<dependency>

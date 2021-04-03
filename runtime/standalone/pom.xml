@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-runtime</artifactId>
-        <version>2021.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>manager-runtime-standalone</artifactId>
@@ -84,38 +84,38 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-apacheds</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-nfs</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-syslog</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-tftp</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!-- Missing config -->
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-util</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <!--
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-first-start-wizard</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <!--
@@ -135,7 +135,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-control</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <!--
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-web-webapp</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 

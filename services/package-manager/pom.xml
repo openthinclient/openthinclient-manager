@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2021.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>manager-service-package-manager</artifactId>
@@ -20,24 +20,24 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-db</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-nfs</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
-            <version>2021.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <!-- MapDB for package database persistence -->
