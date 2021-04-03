@@ -5,7 +5,6 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-web</artifactId>
-        <relativePath>..</relativePath>
         <version>${revision}</version>
     </parent>
 

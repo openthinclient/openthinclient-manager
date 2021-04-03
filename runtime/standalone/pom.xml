@@ -5,7 +5,6 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-runtime</artifactId>
-        <relativePath>..</relativePath>
         <version>${revision}</version>
     </parent>
 

@@ -4,7 +4,6 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager</artifactId>
-		<relativePath>../pom.xml</relativePath>
 		<version>${revision}</version>
 	</parent>
 
