@@ -24,6 +24,7 @@ import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -42,6 +43,9 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
   private static final long serialVersionUID = -1596921762830560217L;
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerMainNavigatorView.class);
+
+  @Value("${application.repository}")
+  private final String defaultSource = "";
 
   private final PackageManagerMainView mainView;
   private final PackageListMasterDetailsPresenter availablePackagesPresenter;
@@ -88,6 +92,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   @PostConstruct
   private void init() {
     addStyleName("package-manager");
+    sourcesListPresenter.setDefaultSource(defaultSource);
     setContent(buildContent());
   }
 

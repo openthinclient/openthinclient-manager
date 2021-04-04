@@ -9,7 +9,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_B
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DETAILS_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_FORM_DESCRIPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION;
@@ -55,6 +54,7 @@ public class SourcesListPresenter {
     private static final Logger LOG = LoggerFactory.getLogger(SourcesListPresenter.class);
 
     private final View view;
+    private String defaultSource = "";
     private final Binder<Source> sourceFormBinder;
     private PackageManager packageManager;
 
@@ -97,6 +97,10 @@ public class SourcesListPresenter {
 
         // disable delete-button until selection
         this.view.getDeleteSourceButton().setEnabled(false);
+    }
+
+    public void setDefaultSource(String defaultSource) {
+        this.defaultSource = defaultSource;
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
@@ -176,12 +180,11 @@ public class SourcesListPresenter {
 
         final Source newSource = new Source();
         try {
-            newSource.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2020/packages/"));
+            newSource.setUrl(new URL(defaultSource));
         } catch (MalformedURLException e) {
             // should never happen, as the URL is hardcoded
         }
         newSource.setEnabled(true);
-        newSource.setDescription(mc.getMessage(UI_PACKAGESOURCES_FORM_DESCRIPTION));
 
         Collection<Source> sources = packageManager.findAllSources();
         sources.add(newSource);
