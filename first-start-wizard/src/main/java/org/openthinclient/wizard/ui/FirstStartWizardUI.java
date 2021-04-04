@@ -34,6 +34,7 @@ import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
@@ -59,6 +60,9 @@ public class FirstStartWizardUI extends UI {
   @Autowired
   private ApplicationEventPublisher publisher;
   private IMessageConveyor mc;
+
+  @Value("${application.distribution}")
+  private String distributionXml;
 
   @Override
   protected void init(VaadinRequest request) {
@@ -148,7 +152,7 @@ public class FirstStartWizardUI extends UI {
         // get official distribution or fallback
         InstallableDistribution installableDistribution = systemSetupModel.getInstallModel().getInstallableDistributions().get(0);
         try {
-            URL officialURL = InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML.toURL();
+            URL officialURL = new URL(distributionXml);
             InstallableDistributions officialDistribution;
             if (systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty().booleanValue()) {
               officialDistribution = InstallableDistributions.load(officialURL);
@@ -160,8 +164,8 @@ public class FirstStartWizardUI extends UI {
             installableDistribution = officialDistribution.getPreferred();
             logger.info("Using official distribution: " + officialURL);
           } catch (Exception e) {
-            logger.warn("Cannot load preferred official distribution: " + InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML +
-                        ", falling back to " + installableDistribution);
+            logger.warn("Cannot load preferred official distribution: {} , falling back to {}",
+                        distributionXml, installableDistribution);
           }
 
         systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution);

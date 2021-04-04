@@ -28,8 +28,10 @@ public class ImportableProfileProviderTest {
     ImportableProfileProvider provider = new ImportableProfileProvider(InstallableDistributions.getDefaultDistributionsURL().toURI());
     assertFalse(provider.requiresHttpDownload(provider.createTargetURI(new ImportItem.Client("profiles/current/client-default.json"))));
 
-    provider = new ImportableProfileProvider(InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML);
+    provider = new ImportableProfileProvider(URI.create("http://example.com/distribution.xml"));
     assertTrue(provider.requiresHttpDownload(provider.createTargetURI(new ImportItem.Client("profiles/current/client-default.json"))));
 
+    provider = new ImportableProfileProvider(URI.create("https://example.com/distribution.xml"));
+    assertTrue(provider.requiresHttpDownload(provider.createTargetURI(new ImportItem.Client("profiles/current/client-default.json"))));
   }
 }

@@ -20,7 +20,6 @@ import java.util.Optional;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class InstallableDistributions {
 
-  public static final URI OFFICIAL_DISTRIBUTIONS_XML = URI.create("http://archive.openthinclient.org/openthinclient/v2020/first-start-profiles/distributions.xml");
   public static final String LOCAL_DISTRIBUTIONS_XML = "/org/openthinclient/distributions.xml";
 
   public static JAXBContext CONTEXT;
@@ -49,7 +48,7 @@ public class InstallableDistributions {
   /**
    * Returns the packaged default <code>distributions.xml</code> URL. This URL will be used to
    * resolve the fallback and pre-packaged <code>distributions.xml</code> in the case that the
-   * {@link #OFFICIAL_DISTRIBUTIONS_XML official one} is not reachable.
+   * official one is not reachable.
    */
   public static URL getDefaultDistributionsURL() {
     return InstallableDistributions.class.getResource(LOCAL_DISTRIBUTIONS_XML);
