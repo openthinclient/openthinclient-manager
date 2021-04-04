@@ -40,12 +40,6 @@
             <version>${revision}</version>
         </dependency>
 
-        <!-- slf4j simple logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>

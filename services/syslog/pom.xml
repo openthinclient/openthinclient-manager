@@ -45,10 +45,5 @@
             <artifactId>base</artifactId>
             <version>${levigo-utils.version}</version>
         </dependency>
-
-        <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-ext</artifactId>
-        </dependency>
 </dependencies>
 </project>

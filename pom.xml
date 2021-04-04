@@ -47,7 +47,7 @@
 
 		<apacheds.version>1.0.2</apacheds.version>
 		<levigo-utils.version>2.0.4</levigo-utils.version>
-        <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <!--
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
@@ -274,11 +274,6 @@
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-ext</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
 
 
 			<!--
