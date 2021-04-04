@@ -70,7 +70,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
     CssLayout filterLine = new CssLayout();
     filterLine.addStyleNames("filterLine");
     TextField filter = new TextField();
-    filter.setPlaceholder(mc.getMessage(UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
+    filter.setPlaceholder(mc.getMessage(UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT));
     filter.addValueChangeListener(this::onFilterTextChange);
     filterLine.addComponent(filter);
     content.addComponent(filterLine);

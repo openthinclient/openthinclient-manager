@@ -101,7 +101,7 @@ public class ReferencesComponentPresenter {
     CssLayout filterLine = new CssLayout();
     filterLine.setStyleName("filterLine");
     TextField filter = new TextField();
-    filter.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
+    filter.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT));
     filter.addValueChangeListener(event1 -> {
       itemListDataProvider.setFilter(Item::getName, s -> s.toLowerCase().contains(event1.getValue().toLowerCase()));
       updateSelectAll();

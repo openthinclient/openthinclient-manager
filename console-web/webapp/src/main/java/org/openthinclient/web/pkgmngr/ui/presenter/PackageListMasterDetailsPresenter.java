@@ -76,7 +76,7 @@ public class PackageListMasterDetailsPresenter {
       applyFilters();
     });
 
-    this.view.getSearchField().setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
+    this.view.getSearchField().setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT));
     this.view.getSearchField().addValueChangeListener(e -> {
       applyFilters();
     });
