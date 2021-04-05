@@ -176,7 +176,7 @@
         <comment>No manager-version-package found, adding manager-version-package (again)</comment>
         <sql><![CDATA[
             INSERT INTO otc_package (source_id,name,version_epoch,version_upstream,version_revision,description_short,installed,essential,installed_size,size)
-            VALUES ((select min(id) from otc_source where default_source=true), 'openthinclient-manager-version', 0, '${project.version}','0','otc manager version',true,true,0,0);
+            VALUES ((select min(id) from otc_source where default_source=true), 'openthinclient-manager-version', 0, '${application.meta-package-version}','0','otc manager version',true,true,0,0);
         ]]></sql>
     </changeSet>
 
@@ -184,7 +184,7 @@
         <validCheckSum>ANY</validCheckSum>
         <sql><![CDATA[
         UPDATE otc_package
-        SET version_upstream='${project.version}', source_id=(select min(id) from otc_source where default_source=true)
+        SET version_upstream='${application.meta-package-version}', source_id=(select min(id) from otc_source where default_source=true)
         WHERE name='openthinclient-manager-version';
         ]]></sql>
     </changeSet>
