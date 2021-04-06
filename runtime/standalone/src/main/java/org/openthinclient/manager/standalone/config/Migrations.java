@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @DependsOn({"serviceManager", "liquibase"})
 public class Migrations {
   private static Logger LOG = LoggerFactory.getLogger(Migrations.class);
-  private static Version version2020 = Version.parse("2020");
+  private static Version v2020 = Version.parse("2020");
 
   @Autowired
   private PackageManager pkgManager;
@@ -69,7 +69,7 @@ public class Migrations {
 
   @PostConstruct
   public void init() {
-    if(tcosLibs2020IsInstalled()) {
+    if(isInstalled("tcos-libs", v2020)) {
       updateLocationTimezone();
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
@@ -79,7 +79,7 @@ public class Migrations {
 
   @EventListener
   public void onPackageEvent(PackageEvent ev) {
-    if(tcosLibs2020Updated(ev.getReports())) {
+    if(isUpdate(ev.getReports(), "tcos-libs", v2020)) {
       updateLocationTimezone();
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
@@ -112,20 +112,20 @@ public class Migrations {
     }
   }
 
-  private boolean tcosLibs2020IsInstalled() {
+  private boolean is(Package pkg, String name, Version version) {
+    return name.equals(pkg.getName())
+            && version.compareTo(pkg.getVersion()) <= 0;
+  }
+
+  private boolean isInstalled(String name, Version version) {
     return pkgManager.getInstalledPackages()
             .stream()
-            .anyMatch(this::isTcosLibs2020);
+            .anyMatch(pkg -> is(pkg, name, version));
   }
 
-  private boolean isTcosLibs2020(Package pkg) {
-    return ("tcos-libs".equals(pkg.getName())
-            && pkg.getVersion().compareTo(version2020) >= 0);
-  }
-
-  private boolean tcosLibs2020Updated(List<PackageReport> reports) {
+  private boolean isUpdate(List<PackageReport> reports, String name, Version version) {
     return reports.stream().anyMatch(report -> (
-              isTcosLibs2020(report.getPackage())
+              is(report.getPackage(), name, version)
               && ( report.getType().equals(PackageReportType.UPGRADE)
                   || report.getType().equals(PackageReportType.INSTALL) )
     ));
