@@ -5,7 +5,7 @@
         <sources>
             <source enabled="true">
                 <description>openthinclient</description>
-                <url>http://archive.openthinclient.org/openthinclient/v2020/packages/</url>
+                <url>http://archive.openthinclient.org/openthinclient/v2021/packages/</url>
             </source>
         </sources>
         
