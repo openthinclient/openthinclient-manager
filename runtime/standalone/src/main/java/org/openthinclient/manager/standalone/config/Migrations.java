@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 public class Migrations {
   private static Logger LOG = LoggerFactory.getLogger(Migrations.class);
   private static Version v2020 = Version.parse("2020");
+  private static Version v2021 = Version.parse("2021");
 
   @Autowired
   private PackageManager pkgManager;
@@ -74,6 +75,10 @@ public class Migrations {
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
 
+    if(isInstalled("tcos-libs", v2021)) {
+      fixLocationLanguageKey();
+    }
+
     removeObsoletePackageFiles(obsoletePackageNames);
   }
 
@@ -82,6 +87,9 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2020)) {
       updateLocationTimezone();
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
+    }
+    if(isUpdate(ev.getReports(), "tcos-libs", v2021)) {
+      fixLocationLanguageKey();
     }
   }
 
@@ -107,6 +115,17 @@ public class Migrations {
       if(tz != null && tz.startsWith("posix/")) {
         LOG.info("Updating timezone for {}", location.getName());
         location.setValue("Time.localtime", tz.substring(6));
+        locationService.save(location);
+      }
+    }
+  }
+
+  private void fixLocationLanguageKey() {
+    for(Location location : locationService.findAll()) {
+      String lang = location.getValueLocal("Lang.lang");
+      if(lang != null && lang.equals("de_BE.UFT-8")) {
+        LOG.info("Updating language de_BE.UFT-8 for {}", location.getName());
+        location.setValue("Lang.lang", "de_BE.UTF-8");
         locationService.save(location);
       }
     }
