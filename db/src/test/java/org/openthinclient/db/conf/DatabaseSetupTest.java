@@ -23,8 +23,8 @@ public class DatabaseSetupTest {
 
     @Autowired
     DataSource dataSource;
-    @Value("${application.version}")
-    private String projectVersion;
+    @Value("${application.meta-package-version}")
+    private String metaPackageVersion;
 
     @Test
     public void testOpenthinclientManagerVersionPresent() throws Exception {
@@ -33,7 +33,7 @@ public class DatabaseSetupTest {
       ResultSet resultSet = connection.createStatement().executeQuery("SELECT version_upstream FROM otc_package WHERE name='openthinclient-manager-version'");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals("Expected project-version not found at package-entry", projectVersion, resultSet.getString(1));
+      assertEquals("Expected application.meta-package-version not found at package-entry", metaPackageVersion, resultSet.getString(1));
     }
 
     @Test
