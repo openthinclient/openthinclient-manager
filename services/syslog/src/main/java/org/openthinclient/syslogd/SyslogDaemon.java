@@ -213,7 +213,8 @@ public abstract class SyslogDaemon implements Runnable {
 				Pattern messagePattern = Pattern
 						.compile("^<(\\d+)>(\\p{Alpha}+\\s+\\d+\\s+\\d+:\\d+:\\d+)\\s+"
 								+ "(\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2})\\s*"
-								+ "(.*)$");
+								+ "(.*)$",
+								Pattern.DOTALL);
 
 				Matcher m = messagePattern.matcher(message);
 				if (m.matches()) {
