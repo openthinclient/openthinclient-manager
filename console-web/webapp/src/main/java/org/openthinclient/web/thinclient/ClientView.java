@@ -45,12 +45,18 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -513,23 +519,44 @@ public final class ClientView extends AbstractProfileView<Client> {
   }
 
   private void showClientLogs(Client profile) {
-    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
+    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog");
     (new FileContentWindow(logs, profile.getName(), profile.getMacAddress())).open();
   }
 
   class FileContentWindow extends Popup {
 
-    public FileContentWindow(Path doc, String name, String macAddress) {
+    // Show the last MAX_DISPLAY_LINES (of all log files combined).
+    private final int MAX_DISPLAY_LINES = 2048;
+
+    // Don't open next ZIP if we're only a few lines short of MAX_DISPLAY_LINES.
+    private final int MAX_MISSING_LINES = 15;
+
+    // Unique indicator for IO error (must not be Collections.emptyLst())
+    private final List<String> FILE_READ_ERROR = new ArrayList<>();
+
+    public FileContentWindow(Path logDir, String name, String macAddress) {
       super(mc.getMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_CAPTION, name, macAddress), "logview");
 
       setWidth("642px");
       setMaximized(true);
 
       List<String> lines = new ArrayList<>();
-      try {
-        List<String> srcLines = Files.readAllLines(doc.toAbsolutePath());
+      int linesLeft = MAX_DISPLAY_LINES;
+
+      Iterator<List<String>> lineChunks = readLogLines(logDir.toAbsolutePath(),
+                                                        macAddress).iterator();
+      while(lineChunks.hasNext() && linesLeft > MAX_MISSING_LINES) {
+        List<String> srcLines = lineChunks.next();
+        if(srcLines == FILE_READ_ERROR) { // Something went wrong
+          if(lines.size() > 0) {          // Abort and display what we've got so far
+            break;
+          } else {                        // … or present an error if nothing was read
+            setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_ERROR);
+            return;
+          }
+        }
         ListIterator<String> lineIter = srcLines.listIterator(srcLines.size());
-        int linesLeft = 2048;
+
         while (lineIter.hasPrevious() && linesLeft > 0) {
           String[] parts = StringEscapeUtils.escapeHtml(lineIter.previous()).split("(?! +)(?<= )", 6);
           if(parts.length < 6) {
@@ -540,19 +567,70 @@ public final class ClientView extends AbstractProfileView<Client> {
           if (parts[3].startsWith(macAddress)) {
             linesLeft--;
             StringBuilder line = new StringBuilder();
-            line.append(String.format("<div class=\"logline %s\">", parts[2].trim())).append(parts[0]).append(parts[1])
-                .append(parts[2]).append(parts[5]).append("</div>");
+            line.append(String.format("<div class=\"logline %s\">", parts[2].trim()))
+                .append(parts[0])
+                .append(parts[1])
+                .append(parts[2])
+                .append(parts[5])
+                .append("</div>");
             lines.add(0, line.toString());
           }
         }
-        if (lines.size() != 0) {
-          addContent(new Label(String.join("\n", lines), ContentMode.HTML));
-        } else {
-          setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_EMPTY);
+      }
+      if (lines.size() > 0) {
+        addContent(new Label(String.join("\n", lines), ContentMode.HTML));
+      } else {
+        setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_EMPTY);
+      }
+    }
+
+    private Stream<List<String>> readLogLines(Path logDir, String macaddress) {
+      // Read the current log file;
+      Stream<List<String>> logLines;
+      Path logPath = logDir.resolve(String.format("%s.log", macaddress));
+      if(logPath.toFile().exists()) {
+        try {
+          logLines = Stream.of(Files.readAllLines(logPath));
+        } catch (IOException ex) {
+          LOGGER.error(String.format("Failed to read from log file %s", logPath),
+                        ex);
+          return Stream.of(FILE_READ_ERROR);
         }
-      } catch (IOException ex) {
-        setMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_ERROR);
-        LOGGER.error("Cannot read file " + doc.toAbsolutePath(), ex);
+      } else {
+        logLines = Stream.empty();
+      }
+
+      // Append the rolled over logs
+      String[] zipFileNames = logDir.toFile()
+                              .list((d, name) -> name.startsWith(macaddress)
+                                                    && name.endsWith(".zip"));
+      if(zipFileNames == null) {
+        LOGGER.error("Could not list files in {}", logDir);
+        return Stream.concat(logLines, Stream.of(FILE_READ_ERROR));
+      }
+      return Stream.concat( logLines,
+                            Stream.of(zipFileNames)
+                                  .sorted(Comparator.reverseOrder())
+                                  .map(logDir::resolve)
+                                  .map(this::readLinesfromZip) );
+    }
+
+    private List<String> readLinesfromZip(Path filePath) {
+      try {
+        ZipFile zipFile = new ZipFile(filePath.toFile());
+        if(zipFile.size() != 1) {
+          LOGGER.error("Unexpected amount of files ({}) in zipped syslog {}",
+                        zipFile.size(), zipFile.getName());
+          return Collections.emptyList();
+        }
+        ZipEntry zipEntry = zipFile.entries().nextElement();
+        return new BufferedReader(new InputStreamReader(zipFile.getInputStream(zipEntry)))
+                .lines().collect(Collectors.toList());
+
+      } catch(IOException ex)  {
+        LOGGER.error(String.format("Failed to read from log file %s", filePath),
+                      ex);
+        return FILE_READ_ERROR;
       }
     }
 

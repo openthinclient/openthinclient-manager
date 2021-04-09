@@ -9,32 +9,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;
 import org.openthinclient.manager.standalone.config.Migrations;
-import org.openthinclient.service.common.home.ManagerHomeMetadata;
 import org.openthinclient.service.common.home.impl.DefaultManagerHome;
 import org.openthinclient.service.common.home.impl.XMLManagerHomeMetadata;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class MigrationsTest {
 
   @Test
-  public void testMigrateInstallationWithoutMetadata() throws Exception {
-
-    final Path dir = createTempDirectory();
-
-    final DefaultManagerHome home = new DefaultManagerHome(dir.toFile());
-
-    final ManagerHomeMetadata metadata = home.getMetadata();
-
-    assertNotNull(metadata);
-    assertNull(metadata.getServerID());
-
-
-    (new Migrations()).setServerId(home);
-
-    assertNotNull(home.getMetadata().getServerID());
-  }
-
-  @Test
-  public void testMigrateInstallationWithManuallyRemovedMetadata() throws Exception {
+  public void testMigrateInstallationWithoutServerId() throws Exception {
     final Path dir = createTempDirectory();
 
     final String metadata = "<meta:manager-home-metadata xmlns:meta=\"http://www.openthinclient.org/ns/manager/metadata/1.0\" home-schema-version=\"1\">\n" +
@@ -43,12 +25,15 @@ public class MigrationsTest {
             "</meta:manager-home-metadata>";
     Files.write(dir.resolve(XMLManagerHomeMetadata.FILENAME), metadata.getBytes());
 
-    final DefaultManagerHome home = new DefaultManagerHome(dir.toFile());
+    final DefaultManagerHome managerHome = new DefaultManagerHome(dir.toFile());
+    assertNull(managerHome.getMetadata().getServerID());
 
-    assertNull(home.getMetadata().getServerID());
-    (new Migrations()).setServerId(home);
+    Migrations migrations = new Migrations();
+    ReflectionTestUtils.setField(migrations, "managerHome", managerHome);
 
-    assertNotNull(home.getMetadata().getServerID());
+    migrations.setServerId();
+
+    assertNotNull(managerHome.getMetadata().getServerID());
 
   }
 

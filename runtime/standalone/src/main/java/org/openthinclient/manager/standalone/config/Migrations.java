@@ -1,5 +1,6 @@
 package org.openthinclient.manager.standalone.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +36,8 @@ public class Migrations {
   private static Version v2021 = Version.parse("2021");
 
   @Autowired
+  private ManagerHome managerHome;
+  @Autowired
   private PackageManager pkgManager;
   @Autowired
   private LocationService locationService;
@@ -57,8 +60,7 @@ public class Migrations {
     "changelog"
   };
 
-  @Autowired
-  public void setServerId(ManagerHome managerHome) {
+  public void setServerId() {
     final ManagerHomeMetadata meta = managerHome.getMetadata();
     if (Strings.isNullOrEmpty(meta.getServerID())) {
       meta.setServerID(ServerIDFactory.create());
@@ -80,6 +82,7 @@ public class Migrations {
     }
 
     removeObsoletePackageFiles(obsoletePackageNames);
+    removeObsoleteSyslogFiles();
   }
 
   @EventListener
@@ -90,6 +93,21 @@ public class Migrations {
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2021)) {
       fixLocationLanguageKey();
+    }
+  }
+
+  private void removeObsoleteSyslogFiles() {
+    File logDir = managerHome.getLocation().toPath().resolve("logs").toFile();
+    if(logDir.isDirectory()) {
+      for(File file: logDir.listFiles((d, name) -> name.startsWith("syslog."))) {
+        try {
+          file.delete();
+        } catch(SecurityException ex) {
+          LOG.error(String.format("Failed to delete obsolete log file %s",
+                                  file.getName()),
+                    ex);
+        }
+      }
     }
   }
 

@@ -29,17 +29,25 @@
     </root>
 
     <!-- log file for events received by syslog -->
-    <appender name="syslogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
-        </encoder>
-        <file>${LOG_PATH}/syslog.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>20</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
-        </rollingPolicy>
+    <appender name="syslogAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>hostname</key>
+            <defaultValue>-</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${hostname}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <encoder>
+                    <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
+                </encoder>
+                <file>${LOG_PATH}/syslog/${hostname}.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/syslog/${hostname}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+                    <maxFileSize>1MB</maxFileSize>
+                    <maxHistory>20</maxHistory>
+                    <totalSizeCap>4MB</totalSizeCap>
+                </rollingPolicy>
+            </appender>
+        </sift>
     </appender>
 
     <!-- audit log -->
