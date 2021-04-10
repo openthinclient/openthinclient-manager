@@ -47,6 +47,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -514,6 +515,12 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   @Override
   public void delete(Client profile) throws ProfileNotDeletedException {
+    String mac = profile.getMacAddress();
+    Path logDir = managerHome.getLocation().toPath().resolve("logs").resolve("syslog");
+    File[] logFiles = logDir.toFile().listFiles((d, name) -> name.startsWith(mac));
+    for(File file: logFiles) {
+      file.delete();
+    }
     super.delete(profile);
     eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
   }
