@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
@@ -41,11 +41,11 @@ public class RequiredPackagesInstallStepTest {
             createPackage("base", "2.0-18")
     );
 
-    final List<Optional<Package>> result = new RequiredPackagesInstallStep(null).resolvePackages(installable, Collections.singletonList("base"));
+    final Map<String, Package> result = new RequiredPackagesInstallStep(null).resolvePackages(installable, Collections.singletonList("base"));
 
     assertEquals(1, result.size());
-    assertTrue(result.get(0).isPresent());
-    assertEquals("0:2.0-27", result.get(0).get().getVersion().toString());
+    assertTrue(result.containsKey("base"));
+    assertEquals("0:2.0-27", result.get("base").getVersion().toString());
 
   }
 
@@ -63,12 +63,12 @@ public class RequiredPackagesInstallStepTest {
 
     // read packages to install from distribution.xml
     RequiredPackagesInstallStep rpis = new RequiredPackagesInstallStep(distribution);
-    final List<Optional<Package>> resolvedPackages = rpis.resolvePackages(installablePackages, distribution.getMinimumPackages());
+    final Map<String, Package> resolvedPackages = rpis.resolvePackages(installablePackages, distribution.getMinimumPackages());
 
     // resolving installable and dependencies fro an empty system
     LOG.info("Resolving dependencies");
     PackageManagerOperation operation = new DefaultPackageManagerOperation(new PackageManagerOperationResolverImpl(() -> Collections.EMPTY_LIST, () -> installablePackages));
-    resolvedPackages.stream().map(Optional::get).forEach(operation::install);
+    resolvedPackages.values().forEach(operation::install);
     operation.resolve();
   }
 

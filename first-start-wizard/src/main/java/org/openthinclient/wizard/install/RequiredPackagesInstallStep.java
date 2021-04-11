@@ -2,15 +2,12 @@ package org.openthinclient.wizard.install;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
@@ -51,16 +48,15 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     installablePackages.forEach(pkg -> log.info(" - {}", pkg.getName()));
 
     final List<String> minimumPackages = installableDistribution.getMinimumPackages();
-    final List<Optional<Package>> resolvedPackages = resolvePackages(installablePackages, minimumPackages);
+    final Map<String , Package> resolvedPackages = resolvePackages(installablePackages, minimumPackages);
 
     // verify that all packages have been resolved
     final List<String> missingPackages = new ArrayList<>();
-    for (int i = 0; i < minimumPackages.size(); i++) {
-      if (resolvedPackages.get(i).isPresent()) {
-        final Package p = resolvedPackages.get(i).get();
+    for (String packageName: minimumPackages) {
+      if (resolvedPackages.containsKey(packageName)) {
+        final Package p = resolvedPackages.get(packageName);
         log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
       } else {
-        final String packageName = minimumPackages.get(i);
         missingPackages.add(packageName);
         log.error("No package found with name '{}'", packageName);
       }
@@ -70,7 +66,8 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
      installableDistribution.getAdditionalPackages().forEach(p -> {
          Optional<Package> packageOptional = resolvePackage(installablePackages, p);
          if (packageOptional.isPresent()) {
-             resolvedPackages.add(packageOptional);
+             Package pkg = packageOptional.get();
+             resolvedPackages.put(pkg.getName(), pkg);
              log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
          } else {
              missingPackages.add(p.getName());
@@ -85,7 +82,7 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     log.info("Resolving dependencies");
     final PackageManagerOperation operation = packageManager.createOperation();
 
-    resolvedPackages.stream().map(Optional::get).forEach(operation::install);
+    resolvedPackages.values().forEach(operation::install);
 
     operation.resolve();
 
@@ -136,18 +133,26 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
     }
 
-  protected List<Optional<Package>> resolvePackages(Collection<Package> installablePackages, List<String> minimumPackages) {
-    return minimumPackages
-            .stream()
-            .map(pkgName -> installablePackages
-                    .stream()
-                    .filter(p -> pkgName.equals(p.getName()))
-                    .sorted((p1, p2) -> {
-                      // compare the version number
-                      return p2.getVersion().compareTo(p1.getVersion());
-                    })
-                    .findFirst())
-            .collect(Collectors.toList());
+  protected Map<String, Package> resolvePackages(Collection<Package> installablePackages, List<String> minimumPackages) {
+    Map<String, Package> result = new HashMap<>();
+    for (Package pkg: installablePackages) {
+      String name = pkg.getName();
+      if(!minimumPackages.contains(name)) {
+        continue;
+      }
+      if (!result.containsKey(name)) {
+        result.put(name, pkg);
+      } else {
+        Version res_ver = result.get(name).getVersion();
+        Version pkg_ver = pkg.getVersion();
+        if((!pkg_ver.isPreview() && res_ver.isPreview())   // Always prefer stable version
+            || (pkg_ver.isPreview() == res_ver.isPreview() // Never upgrade stable to preview
+                && pkg_ver.compareTo(res_ver) > 0)) {
+          result.put(name, pkg);
+        }
+      }
+    }
+    return result;
   }
 
   protected Optional<Package> resolvePackage(Collection<Package> installablePackages, Package pkg) {
