@@ -201,6 +201,14 @@ public class Version implements Comparable<Version>, Serializable {
         return version;
     }
 
+    public boolean isPreview() {
+        if (debianRevision == null || debianRevision.isEmpty()) {
+            return upstreamVersion.contains("~");
+        } else {
+            return debianRevision.contains("~");
+        }
+    }
+
     public int getEpoch() {
         return epoch;
     }
