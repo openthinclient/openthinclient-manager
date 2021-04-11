@@ -131,7 +131,8 @@ public class PackageListMasterDetailsPresenter {
     // name starting with the provided text
     String value = view.getSearchField().getValue().trim();
     if (!value.isEmpty()) {
-      dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
+      dataProvider.addFilter(AbstractPackageItem::getName,
+                              s -> s.toLowerCase().contains(value.toLowerCase()));
     }
 
     dataProvider.addFilter(new HideOTCManagerVersionFilter());
