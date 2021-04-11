@@ -19,8 +19,6 @@ import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
-import org.openthinclient.pkgmgr.op.InstallPlan;
-import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.openthinclient.util.dpkg.PackageManagerOperationResolverImpl;

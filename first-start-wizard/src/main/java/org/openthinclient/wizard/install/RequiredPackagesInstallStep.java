@@ -8,7 +8,6 @@ import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
-import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
@@ -62,18 +61,18 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
       }
     }
 
-     // add additional packages to installation
-     installableDistribution.getAdditionalPackages().forEach(p -> {
-         Optional<Package> packageOptional = resolvePackage(installablePackages, p);
-         if (packageOptional.isPresent()) {
-             Package pkg = packageOptional.get();
-             resolvedPackages.put(pkg.getName(), pkg);
-             log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
-         } else {
-             missingPackages.add(p.getName());
-             log.error("No package found with name '{}', version '{}'", p.getName(), p.getVersion());
-         }
-     });
+    // add additional packages to installation
+    installableDistribution.getAdditionalPackages().forEach(p -> {
+        Optional<Package> packageOptional = resolvePackage(installablePackages, p);
+        if (packageOptional.isPresent()) {
+            Package pkg = packageOptional.get();
+            resolvedPackages.put(pkg.getName(), pkg);
+            log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
+        } else {
+            missingPackages.add(p.getName());
+            log.error("No package found with name '{}', version '{}'", p.getName(), p.getVersion());
+        }
+    });
 
     // FIXME better error handling
     if (missingPackages.size() > 0)
@@ -110,7 +109,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
       throw new IllegalStateException("Detected suggested packages.");
     }
 
-    final List<InstallPlanStep> steps = operation.getInstallPlan().getSteps();
     final StringBuilder sb = new StringBuilder();
 
     operation.getInstallPlan().getPackageInstallSteps().forEach(step -> {
