@@ -2,10 +2,10 @@ package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.db.Package;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * PackageManagerUtils has util methods to support Package handling
@@ -15,13 +15,17 @@ public class PackageManagerUtils {
   /**
    * Reduces the given list to only the latest version of each given package
    * @param packages - the packages to reduce
-   * @return - the list of reduces packages, each package has the latest version
+   * @return reduced list of packages with the latest stable version, and
+   *         additional packages with the latest preview version, if they are
+   *         newer than the latest stable version or no stable version exists).
    */
   public List<Package> reduceToLatestVersion(List<Package> packages) {
-    
-    Map<String, Package> seen = new ConcurrentHashMap<>();
-    
+
+    Map<String, Package> releaseSeen = new HashMap<>();
+    Map<String, Package> previewSeen = new HashMap<>();
+
     for (Package pkg : packages) {
+      Map<String, Package> seen = pkg.getVersion().isPreview()? previewSeen : releaseSeen;
       if (!seen.containsKey(pkg.getName())) {
         seen.put(pkg.getName(), pkg);
       } else {
@@ -31,8 +35,19 @@ public class PackageManagerUtils {
         }
       }
     }
-   
-    return seen.entrySet().stream().map(p -> p.getValue()).collect(Collectors.toList());
+    List<Package> result = new ArrayList<>();
+    result.addAll(releaseSeen.values());
+
+    for (Map.Entry<String, Package> entry : previewSeen.entrySet()) {
+      String name = entry.getKey();
+      Package pkg = entry.getValue();
+      if (!releaseSeen.containsKey(name)
+          || releaseSeen.get(name).getVersion().compareTo(pkg.getVersion()) < 0) {
+        result.add(pkg);
+      }
+    }
+
+    return result;
   }
 
   /**
