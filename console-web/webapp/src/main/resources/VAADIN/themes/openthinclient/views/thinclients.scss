@@ -549,10 +549,6 @@ $ok-button-color: #2db200;
           content: none; // disable v-grid-cell-focused styling
         }
       }
-
-      .v-checkbox {
-        padding-right: 8px;
-      }
     }
   }
 
@@ -571,26 +567,6 @@ $ok-button-color: #2db200;
       width: 8px;
       border-radius: 50%;
       background: var(--section-color);
-    }
-  }
-
-
-  // pretty checkboxes
-  .overviewPanel .v-checkbox,
-  .reference-popup .v-checkbox {
-    label {
-      padding-left: 8px;
-    }
-    & > input ~ label::before {
-      border-radius: 50%;
-      background: #eef0ef;
-    }
-    & > input ~ label:hover::before,
-    & > input:focus ~ label::before {
-      border: 2px solid #ccc;
-    }
-    & > input ~ label:active::after {
-      background: none;
     }
   }
 

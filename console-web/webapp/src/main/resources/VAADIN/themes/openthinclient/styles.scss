@@ -95,9 +95,83 @@ b {
   .v-widget.v-button {
     height: auto;
   }
+
+  // round checkboxes
+  :root & .v-widget.v-checkbox,
+  :root & .v-grid-selection-checkbox,
+  :root & .v-grid-select-all-checkbox {
+    & > input ~ label {
+      padding-left: 8px;
+    }
+    & > input ~ label::before {
+      border-radius: 50%;
+      background: #eef0ef;
+    }
+    & > input:not(:disabled) ~ label:hover::before {
+      border: 2px solid #ccc;
+    }
+    & > input:focus ~ label::before {
+      border: 1px solid #ccc;
+    }
+    & > input:active ~ label::after {
+      background: none;
+    }
+  }
+
   :root & .v-widget.v-checkbox {
     padding-left: 19px;
   }
+
+  // add style to grid selection checkboxes
+  // (mostly copied from .v-checkbox style)
+  :root & .v-grid-selection-checkbox > input,
+  :root & .v-grid-select-all-checkbox > input {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    z-index: 0;
+    margin: 0;
+    visibility: hidden;
+
+    // mis/reuse aria label
+    & ~ label {
+      position: relative;
+      top: calc(50% - 10px);
+      left: unset;
+      display: inline-block;
+      box-sizing: border-box;
+      width: 19px;
+      color: transparent;
+    }
+    & ~ label:before,
+    & ~ label:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+      width: 19px;
+      height: 19px;
+      line-height: 20px;
+      font-size: 11px;
+      text-align: center;
+    }
+    & ~ label::before {
+      content: "";
+      border: 1px solid #e1e5e8;
+      padding: 0;
+      font-weight: 400;
+      color: #191919;
+    }
+    & ~ label::after {
+      content: "\f00c";
+      font-family: ThemeIcons;
+      color: transparent;
+      transition: color 100ms;
+    }
+    &:checked ~ label:after {
+      color: #5099c6;
+    }
+  }
+
   .v-grid {
     background: #fff;
   }
