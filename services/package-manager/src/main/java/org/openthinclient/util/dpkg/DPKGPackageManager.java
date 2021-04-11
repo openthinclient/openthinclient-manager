@@ -31,6 +31,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -167,13 +168,23 @@ public class DPKGPackageManager implements PackageManager {
         return installablePackages;
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<Package> getUpdateablePackages() {
         ArrayList<Package> update = new ArrayList<>();
-        for (final Package installedPkg : getInstalledPackages()) {
-            for (final Package installablePkg : getInstallablePackagesWithoutInstalledOfSameVersion()) {
-                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) > 0) {
-                    update.add(installablePkg);
+
+        Collection<Package> installedPackages = getInstalledPackages();
+        Collection<Package> installablePackages = getInstallablePackages();
+
+        for (final Package installedPkg : installedPackages) {
+            Version installedVersion = installedPkg.getVersion();
+            for (final Package installablePkg : installablePackages) {
+                if (installablePkg.getName().equals(installedPkg.getName())) {
+                    Version installableVersion = installablePkg.getVersion();
+                    if(installableVersion.isPreview() && !installedVersion.isPreview()) {
+                        continue;
+                    }
+                    if(installableVersion.compareTo(installedVersion) > 0) {
+                        update.add(installablePkg);
+                    }
                 }
             }
         }
