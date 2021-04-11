@@ -62,6 +62,16 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
       return moreButton;
     }, new ComponentRenderer()).setCaption("");
 
+    packageList.addItemClickListener(event -> {
+      if (event.getColumn() == null) {
+        return;
+      }
+      if (packageList.getSelectedItems().contains(event.getItem())) {
+        packageList.deselect(event.getItem());
+      } else {
+        packageList.select(event.getItem());}
+    });
+
     // prepare the initial state of the details view. It will be visible at the beginning.
     detailsVisible = true;
     // hide the details component
