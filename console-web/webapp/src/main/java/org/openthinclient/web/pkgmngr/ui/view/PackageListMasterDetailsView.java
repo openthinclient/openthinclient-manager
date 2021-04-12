@@ -58,7 +58,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
     packageList.setSelectionMode(Grid.SelectionMode.MULTI);
     packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
-    Column<ResolvedPackageItem, ?> versionColumn = packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
+    Column<ResolvedPackageItem, ?> versionColumn = packageList.addColumn(AbstractPackageItem::getDisplayVersion)
+                                                              .setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION))
+                                                              .setId("displayVersion");
 
     Column<ResolvedPackageItem, ?> detailsColumn = packageList.addColumn((ValueProvider<ResolvedPackageItem, Component>) item -> {
       final Button moreButton = new Button();
@@ -71,7 +73,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
           showPackageDetailsConsumer.accept(((ResolvedPackageItem)item).getPackage());
       });
       return moreButton;
-    }, new ComponentRenderer()).setCaption("");
+    }, new ComponentRenderer())
+    .setCaption("");
 
     packageList.addItemClickListener(event -> {
       if (event.getColumn() == null) {
@@ -121,7 +124,6 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addSelectionListener(event -> {
       Set<ResolvedPackageItem> value = event.getAllSelectedItems();

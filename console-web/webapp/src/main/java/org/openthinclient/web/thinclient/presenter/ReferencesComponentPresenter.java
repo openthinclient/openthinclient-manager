@@ -12,12 +12,9 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemButtonComponent;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.stream.Stream;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;

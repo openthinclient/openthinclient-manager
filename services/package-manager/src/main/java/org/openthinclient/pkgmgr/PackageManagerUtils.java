@@ -70,7 +70,7 @@ public class PackageManagerUtils {
   }
 
   /**
-   * Create a Packgae-object with name and version
+   * Create a Package-object with name and version
    * @param name package-name
    * @param version package-version
    * @return Package

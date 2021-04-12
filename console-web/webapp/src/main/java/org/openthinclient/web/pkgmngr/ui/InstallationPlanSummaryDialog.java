@@ -33,7 +33,6 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public static final String PROPERTY_PACKAGE_VERSION = "packageVersion";
   public static final String PROPERTY_INSTALLED_VERSION = "newVersion";
   private static final Logger LOG = LoggerFactory.getLogger(InstallationPlanSummaryDialog.class);
-  private static final String PROPERTY_ICON = "icon";
 
   private final List<Runnable> onInstallListeners;
 

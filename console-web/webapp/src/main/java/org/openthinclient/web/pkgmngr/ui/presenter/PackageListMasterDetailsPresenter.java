@@ -17,7 +17,6 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.progress.ListenableProgressFuture;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
@@ -79,7 +78,7 @@ public class PackageListMasterDetailsPresenter {
       applyFilters();
     });
 
-    this.view.onShowPackageDetails((pkg) -> {
+    view.onShowPackageDetails((pkg) -> {
       final PackageDetailsView packageDetailsView = new PackageDetailsView();
       final PackageDetailsPresenter
       presenter = new PackageDetailsPresenter(
@@ -92,7 +91,7 @@ public class PackageListMasterDetailsPresenter {
     });
 
     // update sources
-    this.view.getSourceUpdateButton().addClickListener(event -> {
+    view.getSourceUpdateButton().addClickListener(event -> {
       final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.updateCacheDB();
       final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION)){
         @Override
@@ -203,10 +202,11 @@ public class PackageListMasterDetailsPresenter {
 
     public LatestVersionOnlyFilter(ListDataProvider<ResolvedPackageItem> dataProvider) {
       PackageManagerUtils pmu = new PackageManagerUtils();
-      latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems() //
-              .stream() //
-              .map(api -> ((ResolvedPackageItem) api).getPackage()) //
-              .collect(Collectors.toList()));
+      latestVersionPackageList = pmu.reduceToLatestVersion(
+                                      dataProvider.getItems().stream()
+                                                  .map(item -> item.getPackage())
+                                                  .collect(Collectors.toList())
+                                  );
 
     }
 

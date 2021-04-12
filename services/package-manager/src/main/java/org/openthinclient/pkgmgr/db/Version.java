@@ -276,6 +276,7 @@ public class Version implements Comparable<Version>, Serializable {
      * <a
      * href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">
      */
+    @Override
     public int compareTo(Version v) {
         int result;
 
