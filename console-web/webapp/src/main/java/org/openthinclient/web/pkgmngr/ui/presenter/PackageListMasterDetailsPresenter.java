@@ -40,7 +40,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_P
 public class PackageListMasterDetailsPresenter {
 
   protected final View view;
-  protected final ListDataProvider<AbstractPackageItem> dataProvider;
+  protected final ListDataProvider<ResolvedPackageItem> dataProvider;
   protected final PackageManager packageManager;
   protected final IMessageConveyor mc;
 
@@ -63,21 +63,19 @@ public class PackageListMasterDetailsPresenter {
     });
 
     // filter checkBox
-    this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
-    this.view.getPackageFilerCheckbox().setValue(false);
-    this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
+    view.getAllPackagesFilterCheckbox().setValue(false);
+    view.getAllPackagesFilterCheckbox().addValueChangeListener(e -> {
       applyFilters();
     });
-    // the filter checkbox is only enabled in the AvailablePackageListMasterDetailsPresenter
-    view.getPackageFilerCheckbox().setVisible(false);
-
-    // search
-    this.view.getSearchButton().addClickListener(e -> {
+    view.getPreviewPackagesFilterCheckbox().setValue(false);
+    view.getPreviewPackagesFilterCheckbox().addValueChangeListener(e -> {
       applyFilters();
     });
+    // the filter checkboxes are only enabled in the AvailablePackageListMasterDetailsPresenter
+    view.getAllPackagesFilterCheckbox().setVisible(false);
+    view.getPreviewPackagesFilterCheckbox().setVisible(false);
 
-    this.view.getSearchField().setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT));
-    this.view.getSearchField().addValueChangeListener(e -> {
+    view.getFilterInput().addValueChangeListener(e -> {
       applyFilters();
     });
 
@@ -129,7 +127,7 @@ public class PackageListMasterDetailsPresenter {
 
     // If the user entered a text in the search field, apply a filter matching only packages with a
     // name starting with the provided text
-    String value = view.getSearchField().getValue().trim();
+    String value = view.getFilterInput().getValue().trim();
     if (!value.isEmpty()) {
       dataProvider.addFilter(AbstractPackageItem::getName,
                               s -> s.toLowerCase().contains(value.toLowerCase()));
@@ -158,17 +156,17 @@ public class PackageListMasterDetailsPresenter {
 
   public interface View {
 
-    Button getSearchButton();
-
-    TextField getSearchField();
+    TextField getFilterInput();
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
 
     void onShowPackageDetails(Consumer<Package> consumer);
 
-    CheckBox getPackageFilerCheckbox();
+    CheckBox getAllPackagesFilterCheckbox();
 
-    void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider);
+    CheckBox getPreviewPackagesFilterCheckbox();
+
+    void setDataProvider(DataProvider<ResolvedPackageItem, ?> dataProvider);
 
     void sort(SortableProperty property, SortDirection direction);
 
@@ -200,21 +198,20 @@ public class PackageListMasterDetailsPresenter {
   /**
    * Filters all but the latest versions of {@link Package packages}.
    */
-  public static class LatestVersionOnlyFilter implements SerializablePredicate<AbstractPackageItem> {
+  public static class LatestVersionOnlyFilter implements SerializablePredicate<ResolvedPackageItem> {
     private final List<Package> latestVersionPackageList;
 
-    public LatestVersionOnlyFilter(ListDataProvider<AbstractPackageItem> dataProvider) {
+    public LatestVersionOnlyFilter(ListDataProvider<ResolvedPackageItem> dataProvider) {
       PackageManagerUtils pmu = new PackageManagerUtils();
       latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems() //
               .stream() //
-              .filter(api -> (api instanceof ResolvedPackageItem)) //
               .map(api -> ((ResolvedPackageItem) api).getPackage()) //
               .collect(Collectors.toList()));
 
     }
 
     @Override
-    public boolean test(AbstractPackageItem item) {
+    public boolean test(ResolvedPackageItem item) {
       final Package pkg = ((ResolvedPackageItem) item).getPackage();
       return latestVersionPackageList.stream().anyMatch(p -> {
         return p.compareTo(pkg) == 0
@@ -228,12 +225,12 @@ public class PackageListMasterDetailsPresenter {
   /**
    * A filter to hide OPENTHINCLIENT_MANANGER_VERSION_NAME package
    */
-  public static class HideOTCManagerVersionFilter implements SerializablePredicate<AbstractPackageItem> {
+  public static class HideOTCManagerVersionFilter implements SerializablePredicate<ResolvedPackageItem> {
 
     public static final String OPENTHINCLIENT_MANANGER_VERSION_NAME="openthinclient-manager-version";
 
     @Override
-    public boolean test(AbstractPackageItem item) {
+    public boolean test(ResolvedPackageItem item) {
       return !StringUtils.equalsIgnoreCase(item.getName(), OPENTHINCLIENT_MANANGER_VERSION_NAME);
     }
   }

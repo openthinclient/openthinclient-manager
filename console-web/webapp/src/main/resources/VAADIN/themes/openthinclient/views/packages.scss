@@ -35,6 +35,35 @@
       color: white;
     }
 
+    .v-grid-header .filter-row th {
+      background: white;  // hide cells scrolled under the filter line
+      color: #2b2e33;
+      text-align: right;
+
+      .filter-input {
+        margin-left: -8px;
+        width: calc(100% + 8px);
+        height: 26px;
+        border-bottom: none;
+        border-radius: 0;
+        vertical-align: bottom;
+        font-weight: 300;
+      }
+
+      .toggles {
+        display: inline-flex;
+        flex-flow: row wrap;
+        align-content: end;
+        vertical-align: bottom;
+        * {
+          margin-bottom: 2px;
+        }
+        :not(:last-child) {
+          margin-right: 2ch;
+        }
+      }
+    }
+
     // disable ugly stripes in grid
     .v-grid-row-stripe:not(.v-grid-row-selected) > td {
       background: $v-grid-row-background-color;

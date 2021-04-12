@@ -1,14 +1,17 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -17,16 +20,21 @@ public class AvailablePackageListMasterDetailsPresenter extends PackageListMaste
     super(view, detailsPresenter, packageManager, clientService, applicationContext);
 
     // enable the "show all versions" filtering checkbox
-    view.getPackageFilerCheckbox().setVisible(true);
+    view.getAllPackagesFilterCheckbox().setVisible(true);
+    view.getPreviewPackagesFilterCheckbox().setVisible(true);
 
   }
 
   @Override
   protected void applyFilters() {
     super.applyFilters();
+    Boolean showPreviewVersions = this.view.getPreviewPackagesFilterCheckbox().getValue();
+    if (!showPreviewVersions) {
+      dataProvider.addFilter(new NoPreviewFilter(dataProvider));
+    }
 
     // handle packages-version filter
-    Boolean showAllVersions = this.view.getPackageFilerCheckbox().getValue();
+    Boolean showAllVersions = this.view.getAllPackagesFilterCheckbox().getValue();
     if (!showAllVersions) {
 
       // if not all theoretically installable should be shown, we're limiting the list to
@@ -39,20 +47,45 @@ public class AvailablePackageListMasterDetailsPresenter extends PackageListMaste
   }
 
   /**
-   * A filter that will match all packages that do not have a name equal to a package that has already been installed.
-   * This filter effectively removes all packages that have already been installed, regardless of the installed version.
+   * Filter out installed packages, but include the latest preview version if it is newer than the stable version of an
+   * installed package.
    */
-  public static class NotInstalledFilter implements SerializablePredicate<AbstractPackageItem> {
+  public static class NotInstalledFilter implements SerializablePredicate<ResolvedPackageItem> {
 
-    private final Collection<String> installedPackageNames;
+    private Map<String, Package> installedPackages;
 
     public NotInstalledFilter(PackageManager packageManager) {
-      this.installedPackageNames = packageManager.getInstalledPackages().stream().map(Package::getName).collect(Collectors.toList());
+      installedPackages = packageManager.getInstalledPackages().stream()
+                                          .collect(Collectors.toMap(Package::getName, pkg -> pkg));
     }
 
     @Override
-    public boolean test(AbstractPackageItem item) {
-      return !installedPackageNames.contains(item.getName());
+    public boolean test(ResolvedPackageItem item) {
+      return ( !installedPackages.containsKey(item.getName())
+              || (item.getPackage().getVersion().isPreview()
+                  && !installedPackages.get(item.getName()).getVersion().isPreview()
+                  )
+              );
+    }
+  }
+
+  /**
+   * Filters out the preview versions of {@link Package packages}.
+   */
+  public static class NoPreviewFilter implements SerializablePredicate<ResolvedPackageItem> {
+    private final List<Package> previewVersionPackageList;
+
+    public NoPreviewFilter(ListDataProvider<ResolvedPackageItem> dataProvider) {
+      previewVersionPackageList = dataProvider.getItems().stream()
+                                              .map(item -> item.getPackage())
+                                              .filter(pkg -> pkg.getVersion().isPreview())
+                                              .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public boolean test(ResolvedPackageItem item) {
+      return !previewVersionPackageList.contains(item.getPackage());
     }
   }
 

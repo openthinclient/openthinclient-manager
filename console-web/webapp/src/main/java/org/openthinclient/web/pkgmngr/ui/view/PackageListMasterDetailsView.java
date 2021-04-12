@@ -8,9 +8,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.ComponentRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -19,12 +22,17 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_PREVIEW_VERSIONS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -34,11 +42,14 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   /** serialVersionUID */
   private static final long serialVersionUID = 6572660094735789367L;
   
-  private DataProvider<AbstractPackageItem, ?> packageListDataProvider;
+  private DataProvider<ResolvedPackageItem, ?> packageListDataProvider;
   private Consumer<Package> showPackageDetailsConsumer;
   private boolean detailsVisible;
   private float previousSplitPosition;
   private Unit previousSplitPositionUnit;
+  private TextField filterInput;
+  private CheckBox allPackagesFilterCheckbox;
+  private CheckBox previewPackagesFilterCheckbox;
 
   public PackageListMasterDetailsView() {
 
@@ -47,9 +58,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
     packageList.setSelectionMode(Grid.SelectionMode.MULTI);
     packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
-    packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
+    Column<ResolvedPackageItem, ?> versionColumn = packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
 
-    packageList.addColumn((ValueProvider<AbstractPackageItem, Component>) item -> {
+    Column<ResolvedPackageItem, ?> detailsColumn = packageList.addColumn((ValueProvider<ResolvedPackageItem, Component>) item -> {
       final Button moreButton = new Button();
       moreButton.addStyleName("details-button");
       moreButton.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_LIST_DETAILS_CAPTION));
@@ -72,6 +83,26 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
         packageList.select(event.getItem());}
     });
 
+    filterInput = new TextField();
+    filterInput.setStyleName("filter-input");
+    filterInput.setPlaceholder(mc.getMessage(UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMPT));
+
+    allPackagesFilterCheckbox = new CheckBox(mc.getMessage(UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
+    previewPackagesFilterCheckbox = new CheckBox(mc.getMessage(UI_PACKAGEMANAGER_SHOW_PREVIEW_VERSIONS));
+    CssLayout toggles = new CssLayout();
+    toggles.setStyleName("toggles");
+    toggles.addComponents(
+      allPackagesFilterCheckbox,
+      previewPackagesFilterCheckbox
+    );
+
+    HeaderRow filterRow = packageList.addHeaderRowAt(0);
+    filterRow.setStyleName("filter-row");
+    filterRow.getCell("name").setComponent(filterInput);
+    filterRow.join(
+      Stream.of(versionColumn, detailsColumn).map(filterRow::getCell).collect(Collectors.toSet())
+    ).setComponent(toggles);
+
     // prepare the initial state of the details view. It will be visible at the beginning.
     detailsVisible = true;
     // hide the details component
@@ -84,7 +115,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider) {
+  public void setDataProvider(DataProvider<ResolvedPackageItem, ?> dataProvider) {
     packageListDataProvider = dataProvider;
     packageList.setDataProvider(packageListDataProvider);
   }
@@ -93,7 +124,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @SuppressWarnings("unchecked")
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addSelectionListener(event -> {
-      Set<AbstractPackageItem> value = event.getAllSelectedItems();
+      Set<ResolvedPackageItem> value = event.getAllSelectedItems();
       consumer.accept(value.stream().map(rpi -> ((ResolvedPackageItem) rpi).getPackage()).collect(Collectors.toCollection(ArrayList::new)));
     });
   }
@@ -107,19 +138,18 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     return detailsContainer;
   }
 
-  @Override
-  public Button getSearchButton() {
-    return searchButton;
+  public TextField getFilterInput() {
+    return filterInput;
   }
 
   @Override
-  public TextField getSearchField() {
-    return searchTextField;
+  public CheckBox getAllPackagesFilterCheckbox() {
+    return allPackagesFilterCheckbox;
   }
 
   @Override
-  public CheckBox getPackageFilerCheckbox() {
-    return packageFilerCheckbox;
+  public CheckBox getPreviewPackagesFilterCheckbox() {
+    return previewPackagesFilterCheckbox;
   }
 
   @Override
