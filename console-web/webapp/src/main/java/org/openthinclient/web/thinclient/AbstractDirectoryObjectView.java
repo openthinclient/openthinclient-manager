@@ -389,6 +389,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
       ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
       displayProfilePanel(profilePanel, profileReferencesPanel);
     } catch (BuildProfileException e) {
+      LOGGER.error("Failed to build profile!", e);
       showError(e);
     }
   }
