@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DATE_FORMAT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SHORT_DATE_FORMAT;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_LASTUPDATE_LABEL;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
 
@@ -115,7 +115,7 @@ public class PackageListMasterDetailsPresenter {
         .min(Comparator.comparing(Source::getLastUpdated, Comparator.nullsLast(Comparator.reverseOrder())))
         .ifPresent(lastUpdatedSource -> {
           if (lastUpdatedSource.getLastUpdated() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mc.getMessage(UI_DATE_FORMAT));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(mc.getMessage(UI_SHORT_DATE_FORMAT));
             view.setSourceUpdateLabelValue(mc.getMessage(UI_PACKAGEMANAGER_LASTUPDATE_LABEL, lastUpdatedSource.getLastUpdated().format(formatter)));
           }
         });

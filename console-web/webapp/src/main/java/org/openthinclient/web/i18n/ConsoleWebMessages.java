@@ -8,7 +8,7 @@ import ch.qos.cal10n.LocaleData;
 @LocaleData(defaultCharset = "UTF8", value = {@Locale("de"), @Locale("en")})
 public enum ConsoleWebMessages {
 
-  UI_DATE_FORMAT,
+  UI_SHORT_DATE_FORMAT,
   UI_PAGE_TITLE,
 
   UI_BUTTON_YES,

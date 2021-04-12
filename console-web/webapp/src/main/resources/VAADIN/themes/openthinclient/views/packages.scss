@@ -27,6 +27,43 @@
       }
     }
 
+    #sourceUpdatePanel {
+      margin-top: 1ex;
+      line-height: 1;
+      display: flex;
+      flex-flow: column;
+      align-items: end;
+
+      .v-button {
+        margin-right: 1ch;
+        padding: 4px 1ch;
+      }
+
+      .v-label {
+        margin-right: 2ch;
+        font-size: small;
+        color: gray;
+      }
+    }
+
+    .v-grid {
+      background: transparent;
+    }
+
+    .v-grid-tablewrapper {
+      border: none;
+      width: 100% !important;
+    }
+
+    .v-grid-scroller {
+      z-index: 10;
+    }
+
+    .v-grid-header-deco,
+    .v-grid-footer-deco {
+      display: none;
+    }
+
     // darker grid headers w/o column borders
     .v-grid-header .v-grid-cell {
       border-left: none;
@@ -96,5 +133,16 @@
   .v-panel-sources {
     padding-top: 5px !important;
     padding-left: 15px;
+  }
+
+  .preview-warning {
+    padding: 1ex 2ch;
+    background: yellow;
+
+    &::before {
+      content: "\e748";
+      font-family: Vaadin-Icons;
+      margin-right: 1ch;
+    }
   }
 }

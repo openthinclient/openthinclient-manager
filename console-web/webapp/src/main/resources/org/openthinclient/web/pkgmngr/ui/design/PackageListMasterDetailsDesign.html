@@ -9,19 +9,15 @@
  <body>
   <vaadin-vertical-layout size-full margin="false">
    <vaadin-horizontal-split-panel split-position="50.05025%" _id="splitPanel" :expand>
-    <vaadin-vertical-layout spacing="false" size-full margin-left="false" margin-bottom="false">
-     <vaadin-horizontal-layout width-full>
-      <vaadin-css-layout style-name="v-component-group" _id="sourceUpdatePanel">
-       <vaadin-button icon="fonticon://FontAwesome/f021" style-name="borderless-colored" plain-text _id="sourceUpdateButton">
-         Jetzt aktualisieren 
-       </vaadin-button>
-       <vaadin-label style-name="small" plain-text _id="sourceUpdateLabel">
-       </vaadin-label>
-      </vaadin-css-layout>
+    <vaadin-vertical-layout size-full margin="false" spacing="false">
+     <vaadin-css-layout id="sourceUpdatePanel">
+      <vaadin-button icon="fonticon://FontAwesome/f021" style-name="quiet" plain-text _id="sourceUpdateButton"/>
+      <vaadin-label style-name="small" plain-text _id="sourceUpdateLabel"/>
+     </vaadin-css-layout>
     </vaadin-horizontal-layout>
      <vaadin-grid style-name="borderless" size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="packageList" :expand></vaadin-grid>
     </vaadin-vertical-layout>
-    <vaadin-vertical-layout style-name="borderless" size-full _id="detailsContainer"></vaadin-vertical-layout>
+    <vaadin-vertical-layout style-name="borderless" size-full _id="detailsContainer"/>
    </vaadin-horizontal-split-panel>
   </vaadin-vertical-layout>
  </body>
