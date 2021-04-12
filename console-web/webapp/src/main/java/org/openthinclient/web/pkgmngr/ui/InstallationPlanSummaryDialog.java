@@ -140,6 +140,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       content.addComponent(licenseAgreementCheckBox);
     }
 
+    if (containsPreviewInstallation()) {
+      Label warning = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PREVIEW_WARNING), ContentMode.HTML);
+      warning.setStyleName("preview-warning");
+      content.addComponent(warning);
+    }
+
     // Update to new OTC-manager hint
     updateServerHint = new CssLayout();
     updateServerHint.addStyleName("update-server-hint");
@@ -326,6 +332,21 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       if (pkg.getLicense() != null) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean containsPreviewInstallation() {
+    for (InstallPlanStep step : packageManagerOperation.getInstallPlan().getSteps()) {
+      if (step instanceof InstallPlanStep.PackageInstallStep) {
+        return ((InstallPlanStep.PackageInstallStep) step).getPackage().getVersion().isPreview();
+      } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
+        InstallPlanStep.PackageVersionChangeStep changeStep = ((InstallPlanStep.PackageVersionChangeStep) step);
+        return (changeStep.getTargetPackage().getVersion().isPreview()
+                 && !changeStep.getInstalledPackage().getVersion().isPreview());
+      } else {
+        continue;
       }
     }
     return false;
