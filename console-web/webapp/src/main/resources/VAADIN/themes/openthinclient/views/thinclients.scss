@@ -614,16 +614,16 @@ $ok-button-color: #2db200;
       overflow: hidden !important;
 
       .caption .create-new {
-        position: relative;
-        padding: 3px .5ch 3px 3ch;
+        display: flex;
+        padding: 3px .5ch 3px 0;
         color: #000;
-        background: #e3e3e3;
+        background: #fff;
 
         &::before {
           content: "\e7fe";
           font-family: "Vaadin-Icons";
-          position: absolute;
-          left: 1ch;
+          width: unset;
+          margin: 0 8px;
           color: #00b400;
         }
       }
