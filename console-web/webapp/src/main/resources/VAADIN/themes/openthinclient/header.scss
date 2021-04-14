@@ -1,5 +1,10 @@
 @mixin header {
 
+  .v-slot-header {
+    background: var(--primary-blue);
+    color: white;
+  }
+
   .header {
     height: $header-height !important;
     display: flex;
