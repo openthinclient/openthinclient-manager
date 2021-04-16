@@ -100,14 +100,14 @@ $ok-button-color: #2db200;
     .references-caption > * {
       position: relative;
       display: flex;
-      --min-height: calc(1.8em + 8px);
+      --min-height: calc(1.66 * 1.2em + 4px);
       min-height: var(--min-height);
       padding: 0 1ch 0 20px;
       align-items: center;
       background: #2b2e33;
       color: #fff;
       font-size: $v-font-size-headline;
-      line-height: 1;
+      line-height: 1.2;
       font-weight: normal;
 
 
@@ -118,11 +118,10 @@ $ok-button-color: #2db200;
       .settings-title {
         display: flex;
         flex-flow: column nowrap;
-        padding: 4px;
+        padding: 2px 4px;
 
         :nth-child(2) {
           font-size: .66em;
-          line-height: 1.2;
           font-weight: 300;
           text-shadow: 0 0 0 #fff;
         }
