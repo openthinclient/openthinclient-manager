@@ -27,6 +27,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
+      :first-child {
+        font-weight: normal;
+
+        &::before {
+          content: "Host: ";
+          font-weight: 300;
+        }
+      }
     }
 
     .header-searchfield {
