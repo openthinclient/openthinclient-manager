@@ -133,6 +133,10 @@ $ok-button-color: #2db200;
 
       .panelButtons {
         display: contents;
+
+        .ip {
+          font-weight: 300;
+        }
       }
 
       .v-button-borderless-colored {

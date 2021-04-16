@@ -115,6 +115,7 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
 
   protected void afterNavigatorViewChange(ViewChangeEvent event) {
     JavaScript.getCurrent().execute("disableSpellcheck()");
+    JavaScript.getCurrent().execute("installCopyOnClick()");
   }
 
   /**

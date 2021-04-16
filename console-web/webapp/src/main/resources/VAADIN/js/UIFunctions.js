@@ -69,3 +69,18 @@ function loadBrowserFrame(browserSelector, url) {
     }
   })
 }
+
+function installCopyOnClick() {
+  document.querySelectorAll('.copy-on-click').forEach(btn => {
+    btn.onclick = ev => {
+      input = document.createElement('textarea')
+      input.classList.add('v-assistive-device-only')
+      input.value = ev.target.textContent
+      document.body.appendChild(input)
+      input.focus()
+      input.select()
+      document.execCommand('copy')
+      document.body.removeChild(input)
+    }
+  })
+}

@@ -132,6 +132,10 @@ public final class ClientView extends AbstractProfileView<Client> {
                                                   Client.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if(!"00:00:00:00:00:00".equals(((Client)profile).getMacAddress())){
+      String ip = profile.getIpHostNumber();
+      if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
+        presenter.addPanelCaptionComponent(createIPButton(profile));
+      }
       presenter.addPanelCaptionComponent(createWOLButton(profile));
       presenter.addPanelCaptionComponent(createVNCButton(profile));
       presenter.addPanelCaptionComponent(createLOGButton(profile));
@@ -231,6 +235,16 @@ public final class ClientView extends AbstractProfileView<Client> {
     };
   }
 
+  private Component createIPButton(Client profile) {
+    Button button = new Button();
+    button.addStyleNames("ip", "copy-on-click");
+    button.setCaption(profile.getIpHostNumber());
+    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_IP));
+    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    button.addStyleName(ValoTheme.BUTTON_SMALL);
+    return button;
+  }
+
   private Component createWOLButton(Client profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
@@ -311,15 +325,6 @@ public final class ClientView extends AbstractProfileView<Client> {
     });
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
-
-    //IP address
-    if(!"00:00:00:00:00:00".equals(mac)) {
-      OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber(), null);
-      ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
-      ipaddressConfiguration.disable();
-      ipaddress.setConfiguration(ipaddressConfiguration);
-      configuration.addProperty(ipaddress);
-    }
 
     boolean isNew = profile.getDn() == null;
 
