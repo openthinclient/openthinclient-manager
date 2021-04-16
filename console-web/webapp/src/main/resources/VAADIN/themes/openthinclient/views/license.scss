@@ -42,8 +42,11 @@ $item-group-panel-margin-left: 10px;
       .overview {
         .nolicense, .v-button {
           grid-column: 1/3;
-          width: max-content;
           height: auto;
+
+          p {
+            font-weight: 300;
+          }
         }
       }
 
