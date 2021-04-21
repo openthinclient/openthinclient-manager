@@ -523,8 +523,10 @@ public final class ClientView extends AbstractProfileView<Client> {
     String mac = profile.getMacAddress();
     Path logDir = managerHome.getLocation().toPath().resolve("logs").resolve("syslog");
     File[] logFiles = logDir.toFile().listFiles((d, name) -> name.startsWith(mac));
-    for(File file: logFiles) {
-      file.delete();
+    if(logFiles != null) {
+      for(File file: logFiles) {
+        file.delete();
+      }
     }
     super.delete(profile);
     eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
