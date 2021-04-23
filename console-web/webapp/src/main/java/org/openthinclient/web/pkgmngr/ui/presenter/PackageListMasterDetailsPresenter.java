@@ -42,6 +42,7 @@ public class PackageListMasterDetailsPresenter {
   protected final ListDataProvider<ResolvedPackageItem> dataProvider;
   protected final PackageManager packageManager;
   protected final IMessageConveyor mc;
+  protected final boolean applicationIsPreview;
 
   public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext applicationContext) {
     this.view = view;
@@ -49,6 +50,7 @@ public class PackageListMasterDetailsPresenter {
     this.view.setDataProvider(this.dataProvider);
     this.packageManager = packageManager;
     this.mc = new MessageConveyor(UI.getCurrent().getLocale());
+    this.applicationIsPreview = applicationContext.getEnvironment().getProperty("application.is-preview", Boolean.class);
 
     // basic wiring.
     view.onPackageSelected(packages -> {
@@ -66,7 +68,7 @@ public class PackageListMasterDetailsPresenter {
     view.getAllPackagesFilterCheckbox().addValueChangeListener(e -> {
       applyFilters();
     });
-    view.getPreviewPackagesFilterCheckbox().setValue(false);
+    view.getPreviewPackagesFilterCheckbox().setValue(applicationIsPreview);
     view.getPreviewPackagesFilterCheckbox().addValueChangeListener(e -> {
       applyFilters();
     });
