@@ -16,9 +16,6 @@ public class ReferencesComponent extends CssLayout {
 
   public ReferencesComponent(String labelText, boolean isReadOnly, boolean isReferenceStart) {
     addStyleName("referenceComponent");
-    if(isReadOnly) {
-      addStyleName("read-only");
-    }
     if(isReferenceStart) {
       addStyleName("reference-start");
     }
