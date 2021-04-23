@@ -23,7 +23,7 @@ public class InstallSystemTask implements Callable<Boolean> {
   private volatile InstallState installState = InstallState.PENDING;
 
   public InstallSystemTask(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution, DirectoryModel directoryModel,
-                           NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel) {
+                           NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel, boolean applicationIsPreview) {
 
     // prepare
     cleanupManagerHomeDirectory(managerHomeFactory.getManagerHomeDirectory().toPath());
@@ -36,7 +36,7 @@ public class InstallSystemTask implements Callable<Boolean> {
     mutableSteps.add(new HomeTemplateInstallStep());
     mutableSteps.add(new PrepareDatabaseInstallStep(databaseModel));
     mutableSteps.add(new PackageManagerUpdatedPackageListInstallStep(installableDistribution));
-    mutableSteps.add(new RequiredPackagesInstallStep(installableDistribution));
+    mutableSteps.add(new RequiredPackagesInstallStep(installableDistribution, applicationIsPreview));
     mutableSteps.add(new ConfigureTFTPInstallStep());
     mutableSteps.add(new ConfigureNFSInstallStep());
     mutableSteps.add(new ConfigureSyslogInstallStep());

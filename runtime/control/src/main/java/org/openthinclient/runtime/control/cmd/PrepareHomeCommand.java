@@ -70,7 +70,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
     managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
 
-    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel);
+    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel, options.isPreview);
 
     task.call();
   }
@@ -112,6 +112,8 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     public String distributionSource;
     @Option(name = "--dist", required = false, metaVar = "NAME", usage = "The name of the distribution to be installed. When not specified, the preferred (commonly the most recent version) will be installed. Use the command ls-distributions for a list of available distributions")
     public String distribution;
+    @Option(name = "--isPreview", required = false, metaVar = "PREVIEW", usage = "Indicates that preview packages should be installed even if older stable versions exist.")
+    public boolean isPreview;
 
     @Option(name = "--admin-password", required = true, metaVar = "PASSWORD", usage = "The initial Administrator password.")
     public String adminPassword;

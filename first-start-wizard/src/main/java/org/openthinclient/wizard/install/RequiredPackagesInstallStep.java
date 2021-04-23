@@ -15,11 +15,13 @@ import org.openthinclient.progress.ListenableProgressFuture;
 public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
   private final InstallableDistribution installableDistribution;
+  private boolean applicationIsPreview;
 
   private ListenableProgressFuture<PackageManagerOperationReport> future = null;
 
-  public RequiredPackagesInstallStep(InstallableDistribution installableDistribution) {
+  public RequiredPackagesInstallStep(InstallableDistribution installableDistribution, boolean applicationIsPreview) {
     this.installableDistribution = installableDistribution;
+    this.applicationIsPreview = applicationIsPreview;
   }
 
   @Override
@@ -141,11 +143,14 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
       if (!result.containsKey(name)) {
         result.put(name, pkg);
       } else {
-        Version res_ver = result.get(name).getVersion();
+        Version best_ver = result.get(name).getVersion();
         Version pkg_ver = pkg.getVersion();
-        if((!pkg_ver.isPreview() && res_ver.isPreview())   // Always prefer stable version
-            || (pkg_ver.isPreview() == res_ver.isPreview() // Never upgrade stable to preview
-                && pkg_ver.compareTo(res_ver) > 0)) {
+        if(!applicationIsPreview && pkg_ver.isPreview() && !best_ver.isPreview()) {
+          continue; // Skip preview versions if we got a stable version (unless this is a preview server)
+        }
+        // Prefer stable version, even if it's older (unless this is a preview server)
+        boolean preferStable = (!applicationIsPreview && !pkg_ver.isPreview() && best_ver.isPreview());
+        if(preferStable || pkg_ver.compareTo(best_ver) > 0) {
           result.put(name, pkg);
         }
       }

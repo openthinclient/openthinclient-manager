@@ -39,7 +39,7 @@ public class RequiredPackagesInstallStepTest {
             createPackage("base", "2.0-18")
     );
 
-    final Map<String, Package> result = new RequiredPackagesInstallStep(null).resolvePackages(installable, Collections.singletonList("base"));
+    final Map<String, Package> result = new RequiredPackagesInstallStep(null, false).resolvePackages(installable, Collections.singletonList("base"));
 
     assertEquals(1, result.size());
     assertTrue(result.containsKey("base"));
@@ -60,7 +60,7 @@ public class RequiredPackagesInstallStepTest {
     assertNotNull(distribution);
 
     // read packages to install from distribution.xml
-    RequiredPackagesInstallStep rpis = new RequiredPackagesInstallStep(distribution);
+    RequiredPackagesInstallStep rpis = new RequiredPackagesInstallStep(distribution, false);
     final Map<String, Package> resolvedPackages = rpis.resolvePackages(installablePackages, distribution.getMinimumPackages());
 
     // resolving installable and dependencies fro an empty system

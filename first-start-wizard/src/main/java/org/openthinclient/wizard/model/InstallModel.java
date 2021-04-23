@@ -38,8 +38,8 @@ public class InstallModel {
         return installSystemTask != null;
     }
 
-    public InstallSystemTask installSystem(ManagerHomeFactory factory, InstallableDistribution installableDistribution) {
-        installSystemTask = new InstallSystemTask(factory, installableDistribution, directoryModel, networkConfigurationModel, databaseModel);
+    public InstallSystemTask installSystem(ManagerHomeFactory factory, InstallableDistribution installableDistribution, boolean applicationIsPreview) {
+        installSystemTask = new InstallSystemTask(factory, installableDistribution, directoryModel, networkConfigurationModel, databaseModel, applicationIsPreview);
         taskExecutor.submitListenable(installSystemTask);
 
         return installSystemTask;

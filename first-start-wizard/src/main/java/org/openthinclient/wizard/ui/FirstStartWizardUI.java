@@ -63,6 +63,8 @@ public class FirstStartWizardUI extends UI {
 
   @Value("${application.distribution}")
   private String distributionXml;
+  @Value("${application.is-preview}")
+  private boolean applicationisPreview;
 
   @Override
   protected void init(VaadinRequest request) {
@@ -168,7 +170,7 @@ public class FirstStartWizardUI extends UI {
                         distributionXml, installableDistribution);
           }
 
-        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution);
+        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution, applicationisPreview);
 
         root.removeComponent(wizardWrapper);
 
