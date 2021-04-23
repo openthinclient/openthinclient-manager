@@ -18,6 +18,7 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.service.update.UpdateChecker;
 import org.openthinclient.service.common.license.License;
 import org.openthinclient.service.common.license.LicenseManager;
@@ -206,7 +207,7 @@ public class DashboardView extends Panel implements View {
       }
     }
 
-    void updatePackageStatus(Collection updatablePackages) {
+    void updatePackageStatus(Collection<Package> updatablePackages) {
       if(updatablePackages.size() > 0) {
         newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_UPDATABLE));
         newPackagesLabel.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
