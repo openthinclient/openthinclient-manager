@@ -163,7 +163,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
       report.getConfiguration().setPrimaryLdapUserGroupCount(userGroupService.count());
     }
 
-    // licence usage
+    // license usage
     report.getConfiguration().setLicenseState(licenseManager.getLicenseState(clients.size()).name());
     License license = licenseManager.getLicense();
     if(license != null) {

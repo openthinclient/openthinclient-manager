@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Stream.concat;
-import static org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.HideOTCManagerVersionFilter.OPENTHINCLIENT_MANANGER_VERSION_NAME;
+import static org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.HideOTCManagerVersionFilter.OPENTHINCLIENT_MANAGER_VERSION_NAME;
 
 public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public static final String PROPERTY_TYPE = "type";
@@ -42,8 +42,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final PackageManager packageManager;
   private final ApplicationContext applicationContext;
   private final CheckBox licenseAgreementCheckBox = new CheckBox();
-  private final TextArea licenceTextArea = new TextArea();
-  private final List<Button> licenceButtons = new ArrayList<>();
+  private final TextArea licenseTextArea = new TextArea();
+  private final List<Button> licenseButtons = new ArrayList<>();
 
   private AbstractLayout updateServerHint;
 
@@ -108,13 +108,13 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
     // unresolved dependency
     if (!packageManagerOperation.getUnresolved().isEmpty()) {
-      tables.put(GridTypes.UNRESOVED, createTable(GridTypes.UNRESOVED));
+      tables.put(GridTypes.UNRESOLVED, createTable(GridTypes.UNRESOLVED));
       if (packageManagerOperation.hasPackagesToUninstall()) {
         content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_DEPENDING_PACKAGE)));
       } else {
         content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_UNRESOLVED)));
       }
-      content.addComponent(tables.get(GridTypes.UNRESOVED));
+      content.addComponent(tables.get(GridTypes.UNRESOLVED));
     }
 
     // suggested
@@ -125,10 +125,10 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // license
-    licenceTextArea.addStyleNames("otc-content-wrap", "license-area");
-    licenceTextArea.setWidth(100, Unit.PERCENTAGE);
-    licenceTextArea.setVisible(false);
-    content.add(licenceTextArea);
+    licenseTextArea.addStyleNames("otc-content-wrap", "license-area");
+    licenseTextArea.setWidth(100, Unit.PERCENTAGE);
+    licenseTextArea.setVisible(false);
+    content.add(licenseTextArea);
 
     if (containsLicenseAgreement()) {
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_LICENSE_CAPTION)));
@@ -181,25 +181,25 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         if (is.getLicense() != null) {
           Button button = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
           button.addClickListener(click -> {
-                // licence already clicked, re-set button caption
-                licenceButtons.stream().filter(b -> !b.equals(button)).forEach(b -> {
+                // license already clicked, re-set button caption
+                licenseButtons.stream().filter(b -> !b.equals(button)).forEach(b -> {
                   if (b.getCaption().equals(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE))) {
                     b.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
                   }
                 });
-                // display licence
+                // display license
                 if (button.getCaption().equals(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW))) {
-                  licenceTextArea.setVisible(true);
-                  licenceTextArea.setValue(is.getLicense());
+                  licenseTextArea.setVisible(true);
+                  licenseTextArea.setValue(is.getLicense());
                 } else {
-                  licenceTextArea.setVisible(false);
+                  licenseTextArea.setVisible(false);
                 }
-                button.setCaption(licenceTextArea.isVisible() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE)
+                button.setCaption(licenseTextArea.isVisible() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE)
                                                               : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
               }
           );
           button.addStyleName("package_install_summary_display_license_button");
-          licenceButtons.add(button);
+          licenseButtons.add(button);
           return button;
         } else {
           return null;
@@ -271,7 +271,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         }
 
         // show OTC-server version update  hint
-        if (pkg.getName().equals(OPENTHINCLIENT_MANANGER_VERSION_NAME)) {
+        if (pkg.getName().equals(OPENTHINCLIENT_MANAGER_VERSION_NAME)) {
           updateServerHint.setVisible(true);
         }
       }
@@ -280,7 +280,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // unresolved dependencies
-    Grid<InstallationSummary> unresolvedTable = tables.get(GridTypes.UNRESOVED);
+    Grid<InstallationSummary> unresolvedTable = tables.get(GridTypes.UNRESOLVED);
     if (unresolvedTable != null) {
       List<InstallationSummary> unresolvedSummaries = new ArrayList<>();
       for (UnresolvedDependency unresolvedDep : packageManagerOperation.getUnresolved()) {
@@ -296,7 +296,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
             unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion() != null ? missing.getVersion().toStringWithoutEpoch() : "", null));
 
             // show OTC-server version update  hint
-            if (missing.getName().equals(OPENTHINCLIENT_MANANGER_VERSION_NAME)) {
+            if (missing.getName().equals(OPENTHINCLIENT_MANAGER_VERSION_NAME)) {
               updateServerHint.setVisible(true);
             }
           }
@@ -365,7 +365,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   }
 
   /**
-   * Find package for PackageRefernce
+   * Find package for PackageReference
    *
    * @param packageReference PackageReference if package matches
    * @return a Package or null
@@ -399,7 +399,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   enum GridTypes {
     INSTALL_UNINSTALL,
     CONFLICTS,
-    UNRESOVED,
+    UNRESOLVED,
     SUGGESTED
   }
 

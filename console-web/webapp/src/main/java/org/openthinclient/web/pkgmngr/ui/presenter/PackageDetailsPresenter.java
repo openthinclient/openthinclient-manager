@@ -92,9 +92,9 @@ public class PackageDetailsPresenter {
                 });
             installButton.addStyleName("package_detail_install_button");
             installButton.setEnabled(otcPackage.getLicense() == null);
-            // licence-info text
+            // license-info text
             if (otcPackage.getLicense() != null) {
-                actionBar.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_CONFIRM_LICENCE_INFO)));
+                actionBar.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_CONFIRM_LICENSE_INFO)));
             }
             actionBar.addComponent(installButton);
 

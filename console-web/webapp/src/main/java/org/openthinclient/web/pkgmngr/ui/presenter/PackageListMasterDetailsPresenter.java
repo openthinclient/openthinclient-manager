@@ -225,15 +225,15 @@ public class PackageListMasterDetailsPresenter {
   }
 
   /**
-   * A filter to hide OPENTHINCLIENT_MANANGER_VERSION_NAME package
+   * A filter to hide OPENTHINCLIENT_MANAGER_VERSION_NAME package
    */
   public static class HideOTCManagerVersionFilter implements SerializablePredicate<ResolvedPackageItem> {
 
-    public static final String OPENTHINCLIENT_MANANGER_VERSION_NAME="openthinclient-manager-version";
+    public static final String OPENTHINCLIENT_MANAGER_VERSION_NAME="openthinclient-manager-version";
 
     @Override
     public boolean test(ResolvedPackageItem item) {
-      return !StringUtils.equalsIgnoreCase(item.getName(), OPENTHINCLIENT_MANANGER_VERSION_NAME);
+      return !StringUtils.equalsIgnoreCase(item.getName(), OPENTHINCLIENT_MANAGER_VERSION_NAME);
     }
   }
 }

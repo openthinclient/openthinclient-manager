@@ -340,7 +340,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       logger.info("Got PXE REQUEST"
               + getLogDetail(localAddress, clientAddress, request));
 
-    // clientAdress must be set
+    // clientAddress must be set
     if (isZeroAddress(clientAddress.getAddress())) {
       if (logger.isDebugEnabled())
         logger.debug("Ignoring PXE REQUEST from 0.0.0.0"

@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public class UpdateablePackageListMasterDetailsPresenter extends PackageListMasterDetailsPresenter {
-  public UpdateablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext aplicationContext) {
-    super(view, detailsPresenter, packageManager, clientService, aplicationContext);
+  public UpdateablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext applicationContext) {
+    super(view, detailsPresenter, packageManager, clientService, applicationContext);
   }
 
   @Override
