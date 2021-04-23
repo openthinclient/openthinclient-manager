@@ -121,7 +121,7 @@ public class PackageDetailsPresenter {
         op.uninstall(otcPackage);
         op.resolve();
 
-        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
+        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager, applicationContext);
         summaryDialog.onInstallClicked(() -> execute(op, false));
         summaryDialog.open(true);
     }
@@ -146,7 +146,7 @@ public class PackageDetailsPresenter {
         op.resolve();
 
         // FIXME validate the state (Conflicts, missing packages, etc.)
-        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
+        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager, applicationContext);
         summaryDialog.onInstallClicked(() -> execute(op, true));
         summaryDialog.open(true);
 

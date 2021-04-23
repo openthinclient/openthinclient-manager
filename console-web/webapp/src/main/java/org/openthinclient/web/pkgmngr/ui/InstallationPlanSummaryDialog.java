@@ -19,6 +19,7 @@ import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.*;
@@ -39,17 +40,19 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final Map<GridTypes, Grid<InstallationSummary>> tables;
   private final PackageManagerOperation packageManagerOperation;
   private final PackageManager packageManager;
+  private final ApplicationContext applicationContext;
   private final CheckBox licenseAgreementCheckBox = new CheckBox();
   private final TextArea licenceTextArea = new TextArea();
   private final List<Button> licenceButtons = new ArrayList<>();
 
   private AbstractLayout updateServerHint;
 
-  public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
+  public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager, ApplicationContext applicationContext) {
     super();
 
     this.packageManager = packageManager;
     this.packageManagerOperation = packageManagerOperation;
+    this.applicationContext = applicationContext;
     tables = new HashMap<>();
 
     proceedButton.setCaption(getActionButtonCaption());
@@ -138,8 +141,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       content.addComponent(licenseAgreementCheckBox);
     }
-
-    if (containsPreviewInstallation()) {
+    boolean isPreview = applicationContext.getEnvironment().getProperty("application.is-preview", Boolean.class);
+    if (!isPreview && containsPreviewInstallation()) {
       Label warning = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PREVIEW_WARNING), ContentMode.HTML);
       warning.setStyleName("preview-warning");
       content.addComponent(warning);

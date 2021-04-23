@@ -119,7 +119,7 @@ public class PackageDetailsListPresenter {
   }
 
   private void showSummaryDialog(PackageManagerOperation op, Runnable installCallback) {
-    final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
+    final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager, applicationContext);
     summaryDialog.onInstallClicked(installCallback);
     summaryDialog.open(true);
   }
