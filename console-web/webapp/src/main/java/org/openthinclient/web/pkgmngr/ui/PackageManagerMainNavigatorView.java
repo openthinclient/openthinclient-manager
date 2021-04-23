@@ -46,6 +46,8 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
   @Value("${application.repository}")
   private final String defaultSource = "";
+  @Value("${application.is-preview}")
+  private boolean applicationIsPreview = false;
 
   private final PackageManagerMainView mainView;
   private final PackageListMasterDetailsPresenter availablePackagesPresenter;
@@ -118,7 +120,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   private void bindPackageLists() {
     bindPackageList(this.availablePackagesPresenter, packageManager::getInstallablePackagesWithoutInstalledOfSameVersion);
     bindPackageList(this.installedPackagesPresenter, packageManager::getInstalledPackages);
-    bindPackageList(this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
+    bindPackageList(this.updateablePackagesPresenter, () -> packageManager.getUpdateablePackages(applicationIsPreview));
   }
 
   private PackageListMasterDetailsPresenter createPresenter(PackageDetailsListPresenter.Mode mode, PackageListMasterDetailsView masterDetailsView) {

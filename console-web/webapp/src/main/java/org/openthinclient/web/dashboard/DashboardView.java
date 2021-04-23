@@ -64,6 +64,8 @@ public class DashboardView extends Panel implements View {
 
   @Value("${application.version}")
   private String applicationVersion;
+  @Value("${application.is-preview}")
+  private boolean applicationIsPreview;
 
   private EventBus.SessionEventBus eventBus;
   private final IMessageConveyor mc;
@@ -190,7 +192,7 @@ public class DashboardView extends Panel implements View {
           new Link(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION), new ExternalResource(packagesUpdateURL)),
           newPackagesLabel
         );
-        updatePackageStatus(packageManager.getUpdateablePackages());
+        updatePackageStatus(packageManager.getUpdateablePackages(applicationIsPreview));
       }
     }
 

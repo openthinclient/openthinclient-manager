@@ -168,7 +168,7 @@ public class DPKGPackageManager implements PackageManager {
         return installablePackages;
     }
 
-    public Collection<Package> getUpdateablePackages() {
+    public Collection<Package> getUpdateablePackages(boolean applicationIsPreview) {
         ArrayList<Package> update = new ArrayList<>();
 
         Collection<Package> installedPackages = getInstalledPackages();
@@ -179,7 +179,9 @@ public class DPKGPackageManager implements PackageManager {
             for (final Package installablePkg : installablePackages) {
                 if (installablePkg.getName().equals(installedPkg.getName())) {
                     Version installableVersion = installablePkg.getVersion();
-                    if(installableVersion.isPreview() && !installedVersion.isPreview()) {
+                    if(!applicationIsPreview
+                            && installableVersion.isPreview()
+                            && !installedVersion.isPreview()) {
                         continue;
                     }
                     if(installableVersion.compareTo(installedVersion) > 0) {

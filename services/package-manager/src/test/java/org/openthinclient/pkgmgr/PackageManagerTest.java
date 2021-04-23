@@ -61,7 +61,7 @@ public class PackageManagerTest {
     assertEquals(1, withoutInstalled.size());
     assertEquals(foo1, withoutInstalled.iterator().next());
 
-    Collection<Package> updateablePackages = packageManager.getUpdateablePackages();
+    Collection<Package> updateablePackages = packageManager.getUpdateablePackages(false);
     assertEquals(1, updateablePackages.size());
     assertEquals(foo1, updateablePackages.iterator().next());
 
