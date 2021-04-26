@@ -84,11 +84,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
     username.setRequiredIndicatorVisible(false);
 
     TextField givenName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_FIRSTNAME));
-    this.userBinder.forField(givenName)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .bind(User::getGivenName, User::setGivenName);
-    givenName.setRequiredIndicatorVisible(false);
+    this.userBinder.forField(givenName).bind(User::getGivenName, User::setGivenName);
 
     TextField sn = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME));
     this.userBinder.forField(sn)
