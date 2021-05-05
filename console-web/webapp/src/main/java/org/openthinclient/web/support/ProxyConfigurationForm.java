@@ -89,6 +89,7 @@ public class ProxyConfigurationForm extends CustomComponent {
     this.binder.readBean(proxyConfiguration);
 
     final FormLayout form = new FormLayout();
+    form.setMargin(false);
     form.addComponent(useProxyCheckbox);
     form.addComponent(hostField);
     form.addComponent(portField);

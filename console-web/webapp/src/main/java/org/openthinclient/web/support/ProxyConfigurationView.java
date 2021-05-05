@@ -76,7 +76,6 @@ public class ProxyConfigurationView extends Panel implements View {
     errorLabel.setStyleName("unexpected_error");
 
     final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_DESCRIPTION), ContentMode.HTML);
-    content.addComponent(labelDescription);
 
     PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
     ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
@@ -113,8 +112,12 @@ public class ProxyConfigurationView extends Panel implements View {
         errorLabel.setVisible(false);
       }
     };
-    content.addComponent(proxyConfigurationForm);
-    content.addComponents(successLabel, errorLabel);
+    content.addComponents(
+      proxyConfigurationForm,
+      successLabel,
+      errorLabel,
+      labelDescription
+    );
 
     root.addComponent(content);
     root.setExpandRatio(content, 1);
