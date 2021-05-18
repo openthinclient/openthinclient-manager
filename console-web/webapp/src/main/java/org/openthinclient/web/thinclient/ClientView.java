@@ -624,7 +624,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
       return Stream.concat( logLines,
                             Stream.of(zipFileNames)
-                                  .sorted(Comparator.reverseOrder())
+                                  .sorted()
                                   .map(logDir::resolve)
                                   .map(this::readLinesfromZip) );
     }

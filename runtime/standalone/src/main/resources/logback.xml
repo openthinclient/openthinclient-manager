@@ -14,12 +14,14 @@
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <file>${LOG_PATH}/openthinclient-manager.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>20</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>19</maxIndex>
         </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>25MB</maxFileSize>
+        </triggeringPolicy>
     </appender>
 
     <!-- log to file and console all INFO and up -->
@@ -40,12 +42,14 @@
                     <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
                 </encoder>
                 <file>${LOG_PATH}/syslog/${hostname}.log</file>
-                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                    <fileNamePattern>${LOG_PATH}/syslog/${hostname}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-                    <maxFileSize>1MB</maxFileSize>
-                    <maxHistory>20</maxHistory>
-                    <totalSizeCap>4MB</totalSizeCap>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/syslog/${hostname}.%i.log.zip</fileNamePattern>
+                    <minIndex>1</minIndex>
+                    <maxIndex>3</maxIndex>
                 </rollingPolicy>
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <maxFileSize>2MB</maxFileSize>
+                </triggeringPolicy>
             </appender>
         </sift>
     </appender>
@@ -56,12 +60,14 @@
             <pattern>%d %m%n</pattern>
         </encoder>
         <file>${LOG_PATH}/audit.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/audit.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>20</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/audit.%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>9</maxIndex>
         </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
     </appender>
 
     <!-- log all events, avoiding the main log file -->
