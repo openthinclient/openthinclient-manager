@@ -3,6 +3,7 @@ package org.openthinclient.pkgmgr.op;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Installation;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
@@ -78,12 +79,20 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         for (InstallPlanStep step : steps) {
             if (step instanceof InstallPlanStep.PackageInstallStep) {
-                operations.add(new PackageOperationInstall(((InstallPlanStep.PackageInstallStep) step).getPackage()));
+                Package pkg = ((InstallPlanStep.PackageInstallStep) step).getPackage();
+                localPackageRepository.touch(pkg);
+                operations.add(new PackageOperationInstall(pkg));
             } else if (step instanceof InstallPlanStep.PackageUninstallStep) {
-                operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageUninstallStep) step).getInstalledPackage()));
+                Package pkg = ((InstallPlanStep.PackageUninstallStep) step).getInstalledPackage();
+                localPackageRepository.touch(pkg);
+                operations.add(new PackageOperationUninstall(pkg));
             } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
-                operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage()));
-                operations.add(new PackageOperationInstall(((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage()));
+                Package installedPkg = ((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage();
+                Package targetPkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
+                localPackageRepository.touch(installedPkg);
+                localPackageRepository.touch(targetPkg);
+                operations.add(new PackageOperationUninstall(installedPkg));
+                operations.add(new PackageOperationInstall(targetPkg));
             } else {
                 throw new IllegalArgumentException("Unsupported type of install plan step " + step);
             }

@@ -11,6 +11,8 @@ public interface LocalPackageRepository {
 
     boolean isAvailable(Package pkg);
 
+    public void touch(Package pkg);
+
     void addPackage(Package pkg, PackageContentsProvider targetPathConsumer) throws IOException;
 
     interface PackageContentsProvider {

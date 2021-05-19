@@ -57,6 +57,20 @@ public class DefaultLocalPackageRepository implements LocalPackageRepository {
         return isValidPackageFile(getPackagePath(pkg));
     }
 
+    /**
+     * Re-set last-modified timestamp of cached packge file so
+     * ManagerHomeCleaner removes it only after its MAX_HISTORY_DAYS
+     *
+     * @param pkg
+     */
+    @Override
+    public void touch(Package pkg) {
+        Path packagePath = getPackagePath(pkg);
+        if(isValidPackageFile(packagePath)) {
+            packagePath.toFile().setLastModified(System.currentTimeMillis());
+        }
+    }
+
     @Override
     public void addPackage(Package pkg, PackageContentsProvider packageContentsProvider) throws IOException {
 

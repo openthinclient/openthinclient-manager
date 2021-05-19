@@ -145,4 +145,5 @@ public interface PackageManager {
 
     List<PackageInstalledContent> getInstalledPackageContents(Package pkg);
 
+    boolean isRunning();
 }

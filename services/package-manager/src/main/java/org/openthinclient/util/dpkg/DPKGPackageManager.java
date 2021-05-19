@@ -505,4 +505,9 @@ public class DPKGPackageManager implements PackageManager {
   public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
     return packageManagerDatabase.getInstalledContentRepository().findByPkgOrderBySequenceDesc(pkg);
   }
+
+  @Override
+  public boolean isRunning() {
+    return executionEngine.getQueuedTasks().size() > 0;
+  }
 }
