@@ -72,6 +72,8 @@ public class Migrations {
 
   @PostConstruct
   public void init() {
+    setServerId();
+
     if(isInstalled("tcos-libs", v2020)) {
       updateLocationTimezone();
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
