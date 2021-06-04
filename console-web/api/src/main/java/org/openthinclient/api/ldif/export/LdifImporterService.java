@@ -47,7 +47,7 @@ public class LdifImporterService {
       final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
 
       params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd.getHostname()));
-      params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER, new Integer(lcd.getPortNumber())));
+      params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER, (int)lcd.getPortNumber()));
 
       switch (lcd.getAuthenticationMethod()){
         case SIMPLE :
@@ -56,10 +56,10 @@ public class LdifImporterService {
           params.add(new Parameter(ImportCommandExecutor.PASSWORD_PARAMETER, new String(pc.getPassword())));
       }
       params.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, importFile));
-      params.add(new Parameter(ImportCommandExecutor.IGNOREERRORS_PARAMETER, new Boolean(true)));
-      params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER, new Boolean(false)));
-      params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER, new Boolean(false)));
-      params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,  new Boolean(false)));
+      params.add(new Parameter(ImportCommandExecutor.IGNOREERRORS_PARAMETER, true));
+      params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER, false));
+      params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER, false));
+      params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,  false));
 
       // Listeners
     final ListenerParameter listeners[] = new ListenerParameter[]{
