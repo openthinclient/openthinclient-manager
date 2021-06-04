@@ -1,5 +1,26 @@
 @mixin importexport-view {
   .importexport {
+    display: grid;
+    grid-gap: 2ex;
+
+    & > .v-csslayout {
+      display: flex;
+      max-width: 140ch;
+      min-height: 14ex;
+      border-bottom: 1px solid silver;
+      padding: 2ex 2ch;
+      align-items: start;
+
+      & > :first-child {
+        display: grid;
+        min-width: 24ch;
+        margin-right: 2ch;
+        gap: 2ex;
+        justify-items: baseline;
+        align-items: start;
+      }
+    }
+
     .ldif-import .v-button {
       height: 28px;
       &::before {
