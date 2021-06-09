@@ -160,14 +160,19 @@ public class LdifImportExportView extends Panel implements View {
 
   private StreamResource createDownloadResource() {
     return new StreamResource((StreamResource.StreamSource) () -> {
+      exportErrorLabel.setVisible(false);
+      exportSuccessLabel.setVisible(false);
+      getUI().access(() -> getUI().push());
       LdifExporterService ldifExporterService = new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor());
       Set<LdifExporterService.State> exportResult = new HashSet<>();
       byte[] bytes = ldifExporterService.performAction(Collections.singleton(""), exportResult::add);
       if (exportResult.contains(LdifExporterService.State.ERROR) || exportResult.contains(LdifExporterService.State.EXCEPTION)) {
         exportErrorLabel.setVisible(true);
+        getUI().access(() -> getUI().push());
         return null;
       } else {
         exportSuccessLabel.setVisible(true);
+        getUI().access(() -> getUI().push());
         return new ByteArrayInputStream(bytes);
       }
     }, "openthinclient-export.ldif");
@@ -187,13 +192,15 @@ public class LdifImportExportView extends Panel implements View {
       LOGGER.error("Failed to import file " + file.getName(), e);
       importErrorLabel.setVisible(true);
     }
+    getUI().access(() -> getUI().push());
     eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
     file.delete();
   }
 
   private void uploadFailed(Exception exception) {
-    importErrorLabel.setVisible(true);
     LOGGER.error("Failed to import LDIF-file.", exception);
+    importErrorLabel.setVisible(true);
+    getUI().access(() -> getUI().push());
   }
 
 }
