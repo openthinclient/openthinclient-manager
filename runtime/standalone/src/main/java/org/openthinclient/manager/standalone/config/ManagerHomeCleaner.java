@@ -55,9 +55,11 @@ public class ManagerHomeCleaner {
    */
   private void cleanReports(long notBefore) {
     File reportsDir = managerHomePath.resolve(REPORTS_PATH).toFile();
-    for(File subdir : reportsDir.listFiles(File::isDirectory)) {
-      for(File file : subdir.listFiles(file -> file.lastModified() < notBefore)) {
-        deleteFile(file);
+    if(reportsDir.isDirectory()) {
+      for(File subdir : reportsDir.listFiles(File::isDirectory)) {
+        for(File file : subdir.listFiles(file -> file.lastModified() < notBefore)) {
+          deleteFile(file);
+        }
       }
     }
   }
