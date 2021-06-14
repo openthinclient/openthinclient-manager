@@ -749,21 +749,19 @@ public class Mapping {
 			for (final TypeMapping m : mappers)
 				m.collectRefererAttributes(refererAttributes);
 
-			// compress references into set of attribute names and a set of type
-			// mappings (not all types have references at all!)
+			// build filter expression from referrer attributes
 			final Set<String> attributeNames = new HashSet<String>();
-			final Set<TypeMapping> effectiveMappers = new HashSet<TypeMapping>();
-			for (final ReferenceAttributeMapping ra : refererAttributes) {
-				attributeNames.add(ra.getFieldName());
-				effectiveMappers.add(ra.getTypeMapping());
-			}
-
-			// build filter expression
-			final DirContext ctx = tx.getContext(directory);
 			final StringBuilder sb = new StringBuilder("(|");
-			for (final String name : attributeNames)
-				sb.append("(").append(name).append("=").append(oldDN).append(")");
+			for (final ReferenceAttributeMapping ra : refererAttributes) {
+				String fieldName = ra.getFieldName();
+				if(!attributeNames.contains(fieldName)) {
+					sb.append("(").append(fieldName).append("={0})");
+					attributeNames.add(fieldName);
+				}
+			}
 			sb.append(")");
+			String filterExpr = sb.toString();
+			String[] filterArgs = new String[]{oldDN};
 
 			// we query by referrer attribute name only. Theoretically, we would also
 			// need to use the object class in the query, but we can probably get
@@ -773,12 +771,11 @@ public class Mapping {
 			sc.setReturningAttributes(new String[refererAttributes.size()]);
 			sc.setDerefLinkFlag(false);
 
-			final String filter = sb.toString();
-
-			DiropLogger.LOG.logSearch("", filter, null, sc, "searching references");
+			final DirContext ctx = tx.getContext(directory);
 
 			// issue query to find referencing objects
-			final NamingEnumeration<SearchResult> ne = ctx.search("", filter, sc);
+			DiropLogger.LOG.logSearch("", filterExpr, filterArgs, sc, "searching references");
+			final NamingEnumeration<SearchResult> ne = ctx.search("", filterExpr, filterArgs, sc);
 
 			while (ne.hasMore()) {
 				final SearchResult result = ne.next();
