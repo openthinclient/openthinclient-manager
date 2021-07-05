@@ -109,4 +109,7 @@ public abstract class DashboardEvent {
   public static class ClientCountChangeEvent {
   }
 
+  public static class LDAPImportEvent extends ClientCountChangeEvent {
+  }
+
 }

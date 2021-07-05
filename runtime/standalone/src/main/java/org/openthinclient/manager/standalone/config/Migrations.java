@@ -20,6 +20,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReportT
 import org.openthinclient.service.common.ServerIDFactory;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.event.PackageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +90,11 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2021)) {
       fixLocationLanguageKey();
     }
+  }
+
+  @EventListener
+  public void runLDAPMigration(DashboardEvent.LDAPImportEvent ev) {
+    runLDAPMigration();
   }
 
   public void runLDAPMigration() {

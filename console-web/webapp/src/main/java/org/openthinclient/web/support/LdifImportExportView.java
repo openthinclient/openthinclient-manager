@@ -193,7 +193,7 @@ public class LdifImportExportView extends Panel implements View {
       importErrorLabel.setVisible(true);
     }
     getUI().access(() -> getUI().push());
-    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+    eventBus.publish(this, new DashboardEvent.LDAPImportEvent());
     file.delete();
   }
 
