@@ -74,14 +74,7 @@ public class Migrations {
   public void init() {
     setServerId();
 
-    if(isInstalled("tcos-libs", v2020)) {
-      updateLocationTimezone();
-      removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
-    }
-
-    if(isInstalled("tcos-libs", v2021)) {
-      fixLocationLanguageKey();
-    }
+    runLDAPMigration();
 
     removeObsoletePackageFiles(obsoletePackageNames);
     removeObsoleteSyslogFiles();
@@ -94,6 +87,17 @@ public class Migrations {
       removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2021)) {
+      fixLocationLanguageKey();
+    }
+  }
+
+  public void runLDAPMigration() {
+    if(isInstalled("tcos-libs", v2020)) {
+      updateLocationTimezone();
+      removeObsoletePackageFiles(obsoleteWithTcosLibs2020PackageNames);
+    }
+
+    if(isInstalled("tcos-libs", v2021)) {
       fixLocationLanguageKey();
     }
   }
