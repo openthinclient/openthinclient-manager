@@ -66,14 +66,19 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   private final RealmService realmService;
   private final ClientService clientService;
   private final Path tftpHome;
-  private final Path fallbackTemplatePath;
+  private final String fastTemplate;
+  private final String safeTemplate;
 
-  public PXEConfigTFTProvider(Path tftpHome, RealmService realmService, ClientService clientService, Path fallbackTemplatePath) throws DirectoryException {
+  public PXEConfigTFTProvider(Path tftpHome,
+                              RealmService realmService,
+                              ClientService clientService,
+                              String fastTemplate,
+                              String safeTemplate) throws DirectoryException {
     this.tftpHome = tftpHome;
     this.realmService = realmService;
     this.clientService = clientService;
-    this.fallbackTemplatePath = fallbackTemplatePath;
-
+    this.fastTemplate = fastTemplate;
+    this.safeTemplate = safeTemplate;
   }
 
   /*
@@ -177,7 +182,14 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   }
 
   protected Path getTemplatePath(Client client) {
-    final String templatePathString = Config.BootOptions.BootLoaderTemplate.get(client);
+    String templatePathString = Config.BootOptions.BootLoaderTemplate.get(client);
+    if(templatePathString != null) {
+      LOGGER.warn("Template path stored directly: {}", templatePathString);
+    } else if("safe".equals(Config.BootOptions.BootMode.get(client))) {
+      templatePathString = safeTemplate;
+    } else {
+      templatePathString = fastTemplate;
+    }
 
     Path templatePath = null;
     if (templatePathString != null && templatePathString.trim().length() > 0) {
@@ -191,8 +203,6 @@ public class PXEConfigTFTProvider implements TFTPProvider {
       }
     }
 
-    if (templatePath == null)
-      return fallbackTemplatePath;
     return templatePath;
   }
 

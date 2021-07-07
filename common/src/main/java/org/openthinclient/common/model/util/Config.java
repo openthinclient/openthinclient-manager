@@ -19,6 +19,7 @@ public interface Config {
     ConfigProperty<String> TFTPBootserver = new StringConfig("BootOptions.TFTPBootserver");
     ConfigProperty<String> BootLoaderTemplate = new StringConfig("BootOptions.BootLoaderTemplate");
     ConfigProperty<String> BootfileName = new StringConfig("BootOptions.BootfileName");
+    ConfigProperty<String> BootMode = new StringConfig("BootOptions.BootMode");
     ConfigProperty<PXEServicePolicyType> PXEServicePolicy = new ConfigProperty.EnumConfig<>("BootOptions.PXEServicePolicy", PXEServicePolicyType.class, PXEServicePolicyType.RegisteredOnly);
 
     enum PXEServicePolicyType {

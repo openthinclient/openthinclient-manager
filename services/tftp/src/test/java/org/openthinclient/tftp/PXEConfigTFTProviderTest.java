@@ -76,17 +76,17 @@ public class PXEConfigTFTProviderTest {
           "##\n";
 
   public static final class Config {
-    public Config(Path managerHome, Path tftpHome, Path defaultTemplatePath, Path secondTemplatePath) {
+    public Config(Path managerHome, Path tftpHome, String defaultTemplate, String safeTemplate) {
       this.managerHome = managerHome;
       this.tftpHome = tftpHome;
-      this.defaultTemplatePath = defaultTemplatePath;
-      this.secondTemplatePath = secondTemplatePath;
+      this.defaultTemplate = defaultTemplate;
+      this.safeTemplate = safeTemplate;
     }
 
     public final Path managerHome;
     public final Path tftpHome;
-    public final Path defaultTemplatePath;
-    public final Path secondTemplatePath;
+    public final String defaultTemplate;
+    public final String safeTemplate;
   }
 
   private static Config config;
@@ -102,13 +102,16 @@ public class PXEConfigTFTProviderTest {
     Files.createDirectories(tftpHome);
 
     // setup some template files
-    final Path defaultTemplatePath = tftpHome.resolve("template.txt");
-    final Path secondTemplatePath = tftpHome.resolve("another-template.txt");
+    final String defaultTemplate = "template.txt";
+    final String safeTemplate = "another-template.txt";
+
+    final Path defaultTemplatePath = tftpHome.resolve(defaultTemplate);
+    final Path safeTemplatePath = tftpHome.resolve(safeTemplate);
 
     Files.write(defaultTemplatePath, "DEFAULT_TEMPLATE".getBytes());
-    Files.write(secondTemplatePath, "NON_DEFAULT_TEMPLATE".getBytes());
+    Files.write(safeTemplatePath, "NON_DEFAULT_TEMPLATE".getBytes());
 
-    config = new Config(managerHome, tftpHome, defaultTemplatePath, secondTemplatePath);
+    config = new Config(managerHome, tftpHome, defaultTemplate, safeTemplate);
   }
 
   @Test
@@ -165,7 +168,7 @@ public class PXEConfigTFTProviderTest {
   }
 
   private PXEConfigTFTProvider createProvider() throws DirectoryException {
-    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.defaultTemplatePath);
+    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.defaultTemplate, config.defaultTemplate);
   }
 
   @Test
@@ -175,7 +178,7 @@ public class PXEConfigTFTProviderTest {
     final Client client = new Client();
     final Path path = provider.getTemplatePath(client);
 
-    assertEquals(config.defaultTemplatePath, path);
+    assertEquals(config.tftpHome.resolve(config.defaultTemplate), path);
   }
 
   @Test
@@ -186,7 +189,7 @@ public class PXEConfigTFTProviderTest {
     BootOptions.BootLoaderTemplate.set(client, "some-non-existing-template.txt");
     final Path path = provider.getTemplatePath(client);
 
-    assertEquals(config.defaultTemplatePath, path);
+    assertEquals(config.tftpHome.resolve(config.defaultTemplate), path);
   }
 
   @Test
@@ -197,7 +200,7 @@ public class PXEConfigTFTProviderTest {
     BootOptions.BootLoaderTemplate.set(client, "another-template.txt");
     final Path path = provider.getTemplatePath(client);
 
-    assertEquals(config.secondTemplatePath, path);
+    assertEquals(config.tftpHome.resolve(config.safeTemplate), path);
   }
 
   private MapPropertySource createPropertySource() {

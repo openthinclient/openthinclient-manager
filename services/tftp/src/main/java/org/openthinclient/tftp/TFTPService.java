@@ -94,7 +94,14 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
               tftpHome,
               realmService,
               clientService,
-              tftpHome.resolve("template.txt"))));
+              "template-http.txt",
+              "template-tftp.txt")));
+      tftpServer.addExport(new TFTPExport("/ipxe.cfg", new PXEConfigTFTProvider(
+              tftpHome,
+              realmService,
+              clientService,
+              "ipxe.cfg",
+              "ipxe.cfg")));
 
       tftpServer.start();
       LOGGER.info("TFTP service launched");

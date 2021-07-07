@@ -11,7 +11,9 @@ import javax.annotation.PostConstruct;
 import com.google.common.base.Strings;
 
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Version;
@@ -35,11 +37,14 @@ public class Migrations {
   private static Logger LOG = LoggerFactory.getLogger(Migrations.class);
   private static Version v2020 = Version.parse("2020");
   private static Version v2021 = Version.parse("2021");
+  private static Version v2021b2 = Version.parse("2021.2~beta2~");
 
   @Autowired
   private ManagerHome managerHome;
   @Autowired
   private PackageManager pkgManager;
+  @Autowired
+  private HardwareTypeService hardwareTypeService;
   @Autowired
   private LocationService locationService;
 
@@ -90,6 +95,9 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2021)) {
       fixLocationLanguageKey();
     }
+    if(isUpdate(ev.getReports(), "tcos-libs", v2021b2)) {
+      updateHardwaretypeBootOptions();
+    }
   }
 
   @EventListener
@@ -105,6 +113,10 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2021)) {
       fixLocationLanguageKey();
+    }
+
+    if(isInstalled("tcos-libs", v2021b2)) {
+      updateHardwaretypeBootOptions();
     }
   }
 
@@ -158,6 +170,30 @@ public class Migrations {
         location.setValue("Lang.lang", "de_BE.UTF-8");
         locationService.save(location);
       }
+    }
+  }
+
+  private void updateHardwaretypeBootOptions() {
+    for(HardwareType hwtype : hardwareTypeService.findAll()) {
+      if(hwtype.containsValue("BootOptions.BootMode")) {
+        continue;
+      }
+      if( !hwtype.containsValue("BootOptions.BootfileName") &&
+          !hwtype.containsValue("BootOptions.BootLoaderTemplate")) {
+        continue;
+      }
+
+      LOG.info("Updating boot mode for {}", hwtype.getName());
+
+      String template = hwtype.getValueLocal("BootOptions.BootLoaderTemplate");
+      // "translate" template to boot mode or keep unset/null for default
+      if(template != null) {
+        boolean isHTTPBoot = "template-http.txt".equals(template);
+        hwtype.setValue("BootOptions.BootMode", isHTTPBoot? "fast" : "safe");
+      }
+      hwtype.removeValue("BootOptions.BootfileName");
+      hwtype.removeValue("BootOptions.BootLoaderTemplate");
+      hardwareTypeService.save(hwtype);
     }
   }
 
