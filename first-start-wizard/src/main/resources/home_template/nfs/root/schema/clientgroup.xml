@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema name="clientgroup" type="fixed">
-    <label lang="en" value="ThinClient group"/>
-    <label lang="de" value="ThinClientsgruppe"/>
-</schema>

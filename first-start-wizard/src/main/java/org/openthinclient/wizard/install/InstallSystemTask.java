@@ -33,7 +33,6 @@ public class InstallSystemTask implements Callable<Boolean> {
     // setup
     final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
     mutableSteps.add(new PrepareManagerHomeInstallStep(managerHomeFactory, networkConfigurationModel));
-    mutableSteps.add(new HomeTemplateInstallStep());
     mutableSteps.add(new PrepareDatabaseInstallStep(databaseModel));
     mutableSteps.add(new PackageManagerUpdatedPackageListInstallStep(installableDistribution));
     mutableSteps.add(new RequiredPackagesInstallStep(installableDistribution, applicationIsPreview));
