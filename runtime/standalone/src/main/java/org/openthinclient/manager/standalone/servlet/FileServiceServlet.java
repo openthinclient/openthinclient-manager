@@ -79,16 +79,19 @@ public class FileServiceServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
+
     File f = makeFile(request.getPathInfo());
     if (!f.exists() || !f.canRead()) {
-      if (logger.isDebugEnabled())
-        logger.debug("Won't serve this file: " + f);
+      logger.info("HTTP 404 – File not found for "
+                + request.getRemoteAddr() + ": "
+                + request.getServletPath() + request.getPathInfo());
 
       response.sendError(404);
     } else {
       if (f.isDirectory()) {
-        if (logger.isDebugEnabled())
-          logger.debug("Listing Directory: " + f);
+        logger.info("HTTP 200 – Sending directory listing "
+                    + request.getServletPath() + request.getPathInfo()
+                    + " to " + request.getRemoteAddr());
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("ISO-8859-1");
@@ -100,8 +103,9 @@ public class FileServiceServlet extends HttpServlet {
           w.write("\n");
         }
       } else {
-        if (logger.isDebugEnabled())
-          logger.debug("Getting file: " + f);
+        logger.info("HTTP 200 – Sending file "
+                    + request.getServletPath() + request.getPathInfo()
+                    + " to " + request.getRemoteAddr());
 
         response.setContentType("application/octet-stream");
 
