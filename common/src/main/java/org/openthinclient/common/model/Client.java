@@ -130,22 +130,10 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	 */
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("[Client name=").append(getName())
-				.append(", description=").append(getDescription()).append(", ip=")
-				.append(ipHostNumber).append(", location=").append(location).append(
-						" applicationGroups={");
-		if (applicationGroups != null) {
-			for (final ApplicationGroup g : applicationGroups)
-				sb.append(g).append(" ");
-			sb.append("}, applications={");
-		}
-		if (applications != null) {
-			for (final Application a : applications)
-				sb.append(a).append(" ");
-			sb.append("}]");
-		}
-
-		return sb.toString();
+		return String.format(
+			"[Client %s, MAC=%s, IP=%s, hwtype=%s]",
+			getName(), macAddress, ipHostNumber, hardwareType
+		);
 	}
 
 	public Set<Printer> getPrinters() {
