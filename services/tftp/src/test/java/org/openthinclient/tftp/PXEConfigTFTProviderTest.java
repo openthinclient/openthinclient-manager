@@ -76,16 +76,16 @@ public class PXEConfigTFTProviderTest {
           "##\n";
 
   public static final class Config {
-    public Config(Path managerHome, Path tftpHome, String defaultTemplate, String safeTemplate) {
+    public Config(Path managerHome, Path tftpHome, String fastTemplate, String safeTemplate) {
       this.managerHome = managerHome;
       this.tftpHome = tftpHome;
-      this.defaultTemplate = defaultTemplate;
+      this.fastTemplate = fastTemplate;
       this.safeTemplate = safeTemplate;
     }
 
     public final Path managerHome;
     public final Path tftpHome;
-    public final String defaultTemplate;
+    public final String fastTemplate;
     public final String safeTemplate;
   }
 
@@ -102,16 +102,16 @@ public class PXEConfigTFTProviderTest {
     Files.createDirectories(tftpHome);
 
     // setup some template files
-    final String defaultTemplate = "template.txt";
+    final String fastTemplate = "template.txt";
     final String safeTemplate = "another-template.txt";
 
-    final Path defaultTemplatePath = tftpHome.resolve(defaultTemplate);
+    final Path fastTemplatePath = tftpHome.resolve(fastTemplate);
     final Path safeTemplatePath = tftpHome.resolve(safeTemplate);
 
-    Files.write(defaultTemplatePath, "DEFAULT_TEMPLATE".getBytes());
+    Files.write(fastTemplatePath, "DEFAULT_TEMPLATE".getBytes());
     Files.write(safeTemplatePath, "NON_DEFAULT_TEMPLATE".getBytes());
 
-    config = new Config(managerHome, tftpHome, defaultTemplate, safeTemplate);
+    config = new Config(managerHome, tftpHome, fastTemplate, safeTemplate);
   }
 
   @Test
@@ -168,7 +168,7 @@ public class PXEConfigTFTProviderTest {
   }
 
   private PXEConfigTFTProvider createProvider() throws DirectoryException {
-    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.defaultTemplate, config.defaultTemplate);
+    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.fastTemplate, config.fastTemplate);
   }
 
   @Test
@@ -178,18 +178,7 @@ public class PXEConfigTFTProviderTest {
     final Client client = new Client();
     final Path path = provider.getTemplatePath(client);
 
-    assertEquals(config.tftpHome.resolve(config.defaultTemplate), path);
-  }
-
-  @Test
-  public void testResolveTemplateWithConfiguredTemplateThatDoesNotExist() throws Exception {
-    final PXEConfigTFTProvider provider = createProvider();
-
-    final Client client = new Client();
-    BootOptions.BootLoaderTemplate.set(client, "some-non-existing-template.txt");
-    final Path path = provider.getTemplatePath(client);
-
-    assertEquals(config.tftpHome.resolve(config.defaultTemplate), path);
+    assertEquals(config.tftpHome.resolve(config.fastTemplate), path);
   }
 
   @Test
