@@ -102,6 +102,12 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
               clientService,
               "ipxe.cfg",
               "ipxe.cfg")));
+      tftpServer.addExport(new TFTPExport("/localboot.cfg", new PXEConfigTFTProvider(
+              tftpHome,
+              realmService,
+              clientService,
+              "localboot.cfg",
+              "localboot.cfg")));
 
       tftpServer.start();
       LOGGER.info("TFTP service launched");
