@@ -20,6 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.openthinclient.common.model.schema.Schema;
@@ -61,12 +63,17 @@ public abstract class Profile extends DirectoryObject {
 		return getProperties().getMap().get(key);
 	}
 
-	/**
-	 * @param key
-	 * @return
-	 */
 	private String getInheritedValue(String key) {
+		return getInheritedValue(key, new HashSet<>());
+	}
+
+	private String getInheritedValue(String key, Set<Profile> visited) {
 		String value = null;
+
+		// Check for circular inheritance
+		if(visited.contains(this)) {
+			return null;
+		}
 
 		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited) {
@@ -80,9 +87,10 @@ public abstract class Profile extends DirectoryObject {
 		if (null != value)
 			return value;
 
+		visited.add(this);
 		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited && !inherited.getName().equals(this.getName())) {
-				value = inherited.getInheritedValue(key);
+				value = inherited.getInheritedValue(key, visited);
 				if (null != value)
 					return value;
 			}
