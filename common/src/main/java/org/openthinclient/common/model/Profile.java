@@ -89,7 +89,7 @@ public abstract class Profile extends DirectoryObject {
 
 		visited.add(this);
 		for (final Profile inherited : getInheritedProfiles())
-			if (null != inherited && !inherited.getName().equals(this.getName())) {
+			if (null != inherited) {
 				value = inherited.getInheritedValue(key, visited);
 				if (null != value)
 					return value;
