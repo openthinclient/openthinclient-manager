@@ -87,7 +87,7 @@ public abstract class DirectoryObject implements Serializable {
    */
   @Override
   public String toString() {
-    return getName();
+    return String.format("[%s %s]", getClass().getSimpleName(), getName());
   }
 
   private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
