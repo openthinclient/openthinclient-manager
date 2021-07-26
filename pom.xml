@@ -36,8 +36,8 @@
 	</scm>
 
 	<properties>
-		<revision>2021.2-BETA2</revision>
-		<application.meta-package-version>2021.2~beta</application.meta-package-version>
+		<revision>2021.2-BETA3</revision>
+		<application.meta-package-version>2021.2~beta3</application.meta-package-version>
 		<application.repository>http://archive.openthinclient.org/openthinclient/v2021/packages</application.repository>
 		<application.distribution>http://archive.openthinclient.org/openthinclient/v2021/first-start-profiles/distributions.xml</application.distribution>
 
