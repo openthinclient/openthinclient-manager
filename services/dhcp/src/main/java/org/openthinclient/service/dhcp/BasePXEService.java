@@ -52,7 +52,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 			return null;
 
 		// detect PXE client
-		if (!ArchType.isPXEClient(request)) {
+		ArchType archType = ArchType.fromMessage(request);
+		if (!archType.isPXEClient()) {
 			if (logger.isDebugEnabled())
 				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));
@@ -76,7 +77,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 		// Create conversation and immediately synchronize on it, in order to
 		// prevent race conditions with other phases.
-		final Conversation conversation = new Conversation(request);
+		final Conversation conversation = new Conversation(request, archType);
 		synchronized (conversation) {
 			conversations.put(requestID, conversation);
 
@@ -141,16 +142,21 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 			reply.setMessageType(MessageType.DHCPOFFER);
 
+			ArchType archType = conversation.getArchType();
+
 			final OptionsField options = reply.getOptions();
 			final VendorClassIdentifier vci = new VendorClassIdentifier();
-			vci.setString("PXEClient");
+			vci.setString(archType.isHTTP()? "HTTPClient" : "PXEClient");
 			options.add(vci);
 
-			final Client client = conversation.getClient();
-			if (null != client)
-				reply.setNextServerAddress(getNextServerAddress(Config.BootOptions.TFTPBootserver,
-						conversation.getApplicableServerAddress(), client));
-
+			if (archType.isHTTP()) {
+				reply.setBootFileName(getBootFileURI(conversation));
+			} else {
+				final Client client = conversation.getClient();
+				if (null != client)
+					reply.setNextServerAddress(getNextServerAddress(Config.BootOptions.TFTPBootserver,
+							conversation.getApplicableServerAddress(), client));
+			}
 			if (logger.isInfoEnabled())
 				logger.info("Sending PXE proxy offer " + offer);
 

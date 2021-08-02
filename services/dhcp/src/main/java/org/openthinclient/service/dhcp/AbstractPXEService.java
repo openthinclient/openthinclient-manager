@@ -186,6 +186,27 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     }
   }
 
+  protected String getBootFileURI(Conversation conversation) {
+    String bootFileName = null;
+    switch(conversation.getArchType()) {
+      case HTTP32:
+        bootFileName = "ipxe32.efi";
+        break;
+      case HTTP64:
+        bootFileName = "ipxe64.efi";
+        break;
+      default:
+        logger.error("Could not determine boot file for {}",
+                      conversation.getArchType());
+        bootFileName = "ipxe64.efi";
+    }
+
+    InetSocketAddress serverAddress = conversation.getApplicableServerAddress();
+    return String.format("http://%s:8080/openthinclient/files/tftp/%s",
+                          serverAddress.getAddress().getHostAddress(),
+                          bootFileName);
+  }
+
   /**
    * Track an unrecognized client.
    *
@@ -336,8 +357,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   protected DhcpMessage handleREQUEST(InetSocketAddress localAddress,
                                       InetSocketAddress clientAddress, DhcpMessage request)
           throws DhcpException {
+
+    ArchType archType = ArchType.fromMessage(request);
+
+    if (archType.isHTTP()) {
+      return null;
+    }
+
     // detect PXE client
-    if (!ArchType.isPXEClient(request)) {
+    if (!archType.isPXEClient()) {
       if (logger.isDebugEnabled())
         logger.debug("Ignoring non-PXE REQUEST"
                 + getLogDetail(localAddress, clientAddress, request));
@@ -365,7 +393,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     Conversation conversation = conversations.get(id);
 
     if (null == conversation) {
-      if(ArchType.isUEFI(request)) {
+      if (archType.isUEFI()) {
         // Some UEFI PXE implementations don't set the correct transaction id
         // in their last request. In order to be able to serve those devices
         // we simply begin a new "conversation" and send the last ACK with the
@@ -378,7 +406,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         }
         logger.info("Got UEFI PXE REQUEST for which there is no conversation. Serving anyway."
             + getLogDetail(localAddress, clientAddress, request));
-        conversation = new Conversation(request);
+        conversation = new Conversation(request, archType);
         synchronized (conversation) {
             conversation.setClient(client);
             InetSocketAddress serverAddress = determineServerAddress(localAddress, request);
@@ -509,13 +537,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   public final class Conversation {
     private static final int CONVERSATION_EXPIRY = 60000;
     private final DhcpMessage discover;
+    private final ArchType archType;
     private Client client;
     private DhcpMessage offer;
     private long lastAccess;
     private InetSocketAddress applicableServerAddress;
 
-    public Conversation(DhcpMessage discover) {
+    public Conversation(DhcpMessage discover, ArchType archType) {
       this.discover = discover;
+      this.archType = archType;
       touch();
     }
 
@@ -540,6 +570,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     public DhcpMessage getDiscover() {
       touch();
       return discover;
+    }
+
+    public ArchType getArchType() {
+      return archType;
     }
 
     public Client getClient() {

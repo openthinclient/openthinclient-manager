@@ -4,6 +4,8 @@ import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
+import org.apache.directory.server.dhcp.options.OptionsField;
+import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.HostName;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
@@ -88,7 +90,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 			return null;
 
 		// detect PXE client
-		if (!ArchType.isPXEClient(request)) {
+		ArchType archType = ArchType.fromMessage(request);
+		if (!archType.isPXEClient()) {
 			if (logger.isDebugEnabled())
 				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));
@@ -116,7 +119,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		// conversation early and synchronizing on it, so that the latency-inducing
 		// getClient() call doesn't lead to us to jumping to wrong conclusions while
 		// handling the OFFER.
-		final Conversation conversation = new Conversation(request);
+		final Conversation conversation = new Conversation(request, archType);
 		synchronized (conversation) {
 			conversations.put(requestID, conversation);
 
@@ -200,6 +203,14 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 					final DhcpMessage reply = initGeneralReply(applicableServerAddress,
 							offer);
 					reply.setMessageType(MessageType.DHCPOFFER);
+
+					if (conversation.getArchType().isHTTP()) {
+						final OptionsField options = reply.getOptions();
+						final VendorClassIdentifier vci = new VendorClassIdentifier();
+						vci.setString("HTTPClient");
+						options.add(vci);
+						reply.setBootFileName(getBootFileURI(conversation));
+					}
 
 					if (logger.isInfoEnabled())
 						logger.info("Sending PXE proxy offer " + offer);
