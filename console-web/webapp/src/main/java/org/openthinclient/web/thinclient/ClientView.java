@@ -28,6 +28,7 @@ import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
+import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcMacProperty;
@@ -277,6 +278,18 @@ public final class ClientView extends AbstractProfileView<Client> {
     button.addClickListener(ev -> showClientLogs((Client) profile));
     return button;
   }
+
+
+  @Override
+  public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean enabled) {
+
+    ProfilesListOverviewPanelPresenter plopPresenter = super.createOverviewItemlistPanel(i18nTitleKey, items, enabled);
+    plopPresenter.addWolButtonClickHandler(clients -> {
+      wakeOnLan(clients.toArray(new ClientMetaData[0]));
+    });
+    return plopPresenter;
+  }
+
 
   @Override
   protected ProfilePanel createProfileMetadataPanel(Client p) {
@@ -655,15 +668,34 @@ public final class ClientView extends AbstractProfileView<Client> {
     }
   }
 
-  private void wakeOnLan(Client profile) {
-    try {
-      String macAddress = profile.getMacAddress();
-      LOGGER.info("Sending WOL packet to " + macAddress);
-      WakeOnLan.wake(macAddress);
-      Notification.show(mc.getMessage(ConsoleWebMessages.UI_PROFILE_WOL_SUCCESS));
-    } catch(Exception ex) {
-      LOGGER.error("Failed to send WOL packet", ex);
-      Notification.show(mc.getMessage(ConsoleWebMessages.UI_PROFILE_WOL_ERROR), Notification.Type.ERROR_MESSAGE);
+  private void wakeOnLan(ClientMetaData... profiles) {
+    List<String> failed = new ArrayList<>(profiles.length);
+    boolean sent = false;
+    for(ClientMetaData profile: profiles) {
+      try {
+        String macAddress = profile.getMacAddress();
+        LOGGER.info("Sending WOL packet to " + macAddress);
+        WakeOnLan.wake(macAddress);
+        sent = true;
+      } catch(Exception ex) {
+        LOGGER.error("Failed to send WOL packet", ex);
+
+      }
+      boolean single = profiles.length == 1;
+      boolean errors = failed.size() > 0;
+      String message;
+      if(!errors) {
+        message = mc.getMessage(single? ConsoleWebMessages.UI_PROFILE_WOL_SUCCESS:
+                                        ConsoleWebMessages.UI_PROFILE_WOL_SUCCESS_ALL);
+      } else if(failed.size() == profiles.length) {
+        message = mc.getMessage(single? ConsoleWebMessages.UI_PROFILE_WOL_ERROR:
+                                        ConsoleWebMessages.UI_PROFILE_WOL_ERROR_ALL);
+      } else {
+        message = mc.getMessage(ConsoleWebMessages.UI_PROFILE_WOL_ERROR_SOME,
+                                String.join(", ", failed));
+      }
+      Notification.show(message, errors ? Notification.Type.ERROR_MESSAGE:
+                                          Notification.Type.HUMANIZED_MESSAGE);
     }
   }
 

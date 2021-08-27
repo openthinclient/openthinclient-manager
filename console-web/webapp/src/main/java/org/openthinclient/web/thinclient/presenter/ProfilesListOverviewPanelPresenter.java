@@ -45,6 +45,7 @@ public class ProfilesListOverviewPanelPresenter {
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
+  private Registration wolClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
   private LdifExporterService ldifExporterService;
   private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
@@ -166,6 +167,13 @@ public class ProfilesListOverviewPanelPresenter {
   public void extendLdifExportButton(StreamResource myResource) {
     FileDownloader fileDownloader = new FileDownloader(myResource);
     fileDownloader.extend(panel.getLdifExportButton());
+  }
+
+  public void addWolButtonClickHandler(Consumer<Set<DirectoryObject>> clickListener) {
+    Button button = panel.getWolButton();
+    button.setVisible(true);
+    if (wolClickListenerRegistration != null) wolClickListenerRegistration.remove();
+    wolClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
   }
 
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {

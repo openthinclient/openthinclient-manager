@@ -33,6 +33,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
   private Button addNew;
   private Button deleteProfileAction;
   private Button ldifExportAction;
+  private Button wolAction;
   private boolean enabled = true;
 
   private Consumer<DirectoryObject> itemButtonClickedConsumer = null;
@@ -101,6 +102,16 @@ public class ProfilesListOverviewPanel extends CssLayout {
     ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     ldifExportAction.addStyleName("ldifExport");
     actionLine.addComponent(ldifExportAction);
+
+    wolAction = new Button("");
+    wolAction.setDescription("Wake On LAN");
+    wolAction.setIcon(VaadinIcons.POWER_OFF);
+    wolAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    wolAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    wolAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    wolAction.addStyleName("wol");
+    wolAction.setVisible(false);
+    actionLine.addComponent(wolAction);
 
     gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
@@ -177,6 +188,10 @@ public class ProfilesListOverviewPanel extends CssLayout {
   }
 
   public Button getLdifExportButton() { return ldifExportAction;
+  }
+
+  public Button getWolButton() {
+    return wolAction;
   }
 
   public CheckBox getCheckBox() {
