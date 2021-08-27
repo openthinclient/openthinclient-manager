@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @author levigo
  */
-public class Client extends Profile implements AssociatedObjectsProvider {
+public class Client extends ClientMetaData implements AssociatedObjectsProvider {
 	private static final long serialVersionUID = 1L;
 
 	private Set<ApplicationGroup> applicationGroups;
@@ -38,9 +38,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	private Set<ClientGroup> clientGroups;
 	private HardwareType hardwareType;
 
-	private String ipHostNumber;
-	private String macAddress;
-	private Location location;
 
 	public Set<ApplicationGroup> getApplicationGroups() {
 		return applicationGroups;
@@ -48,16 +45,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 
 	public Set<Application> getApplications() {
 		return applications;
-	}
-
-	public String getIpHostNumber() {
-		if (null == ipHostNumber)
-			return "0.0.0.0";
-		return ipHostNumber;
-	}
-
-	public Location getLocation() {
-		return location;
 	}
 
 	public void setApplicationGroups(Set<ApplicationGroup> applicationGroups) {
@@ -110,19 +97,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 		if (null != hardwareType)
 			set.add(hardwareType);
 		return set;
-	}
-
-	public void setIpHostNumber(String ipHostNumber) {
-		final String oldIpAddress = this.ipHostNumber;
-		this.ipHostNumber = ipHostNumber;
-		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
-	}
-
-	public void setLocation(Location location) {
-		// String dn = TypeMapping.idToUpperCase(location.getDn()).trim();
-		// location.setDn(dn);
-		this.location = location;
-		firePropertyChange("location", null, location);
 	}
 
 	/*
@@ -183,16 +157,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 			setPrinters((Set<Printer>) subgroups);
 		if (subgroupClass.equals(Device.class))
 			setDevices((Set<Device>) subgroups);
-	}
-
-	public String getMacAddress() {
-		return macAddress;
-	}
-
-	public void setMacAddress(String macAddress) {
-		final String oldMacAddress = this.macAddress;
-		this.macAddress = macAddress.toLowerCase();
-		firePropertyChange("macAddress", oldMacAddress, macAddress);
 	}
 
 	/*

@@ -196,6 +196,10 @@ public abstract class Profile extends DirectoryObject {
 				inherited.initSchemas(realm);
 	}
 
+	protected Class<? extends Profile> getSchemaClass() {
+		return this.getClass();
+	}
+
 	/**
 	 * @param realm TODO
 	 * @throws SchemaLoadingException
@@ -204,7 +208,7 @@ public abstract class Profile extends DirectoryObject {
 		final String schemaName = getSchemaName();
 
 		if(realm != null) {
-			schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+			schema = realm.getSchemaProvider().getSchema(this.getSchemaClass(), schemaName);
 		}
 
 		if (null == schema)

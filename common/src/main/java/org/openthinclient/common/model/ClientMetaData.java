@@ -38,8 +38,9 @@ public class ClientMetaData extends Profile {
 
 	private transient Schema schema;
 
-	private String ipHostNumber;
-	private String macAddress;
+	String ipHostNumber;
+	String macAddress;
+	Location location;
 
 	public String getIpHostNumber() {
 		if (null == ipHostNumber)
@@ -53,23 +54,26 @@ public class ClientMetaData extends Profile {
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
-	@Override
-	public Schema getSchema(Realm realm) throws SchemaLoadingException {
-		if (null == schema)
-			schema = (new Client()).getSchema(realm);
-		return schema;
+	public Location getLocation() {
+		return location;
 	}
 
-	/*
-	 * @see java.lang.Object#toString()
-	 */
+	public void setLocation(Location location) {
+		this.location = location;
+		firePropertyChange("location", null, location);
+	}
+
+	@Override
+	protected Class<? extends Profile> getSchemaClass() {
+		return Client.class;
+	}
+
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("[ClientMetaData name=")
-				.append(getName())
-				.append(", description=").append(getDescription())
-				.append(", ip=").append(ipHostNumber);
-		return sb.toString();
+		return String.format(
+			"[ClientMetaData %s, MAC=%s, IP=%s]",
+			getName(), macAddress, ipHostNumber
+		);
 	}
 
 	public String getMacAddress() {

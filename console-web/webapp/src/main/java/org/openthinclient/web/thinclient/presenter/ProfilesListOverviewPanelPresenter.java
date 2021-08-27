@@ -127,7 +127,7 @@ public class ProfilesListOverviewPanelPresenter {
       hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
           new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
             selectedItems.forEach(item -> {
-              if (item instanceof ClientMetaData) { // get the full client-profile
+              if (item.getClass().equals(ClientMetaData.class)) { // get the full client-profile
                 item = directoryObjectView.getFreshProfile(item.getName());
               }
               try {

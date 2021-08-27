@@ -224,7 +224,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
                                         .findFirst();
         if (directoryObject.isPresent()) {
           DirectoryObject object = directoryObject.get();
-          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+          if (object.getClass().equals(ClientMetaData.class)) { // we need to get a full client-profile
             members.remove(getClient(object.getName()));
           } else {
             members.remove(object);
@@ -244,7 +244,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
                                         .findFirst();
         if (directoryObject.isPresent()) {
           DirectoryObject object = directoryObject.get();
-          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+          if (object.getClass().equals(ClientMetaData.class)) { // we need to get a full client-profile
             members.add((T) getClient(object.getName()));
           } else {
             members.add((T) object);

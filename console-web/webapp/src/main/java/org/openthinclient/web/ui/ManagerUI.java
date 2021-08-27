@@ -148,8 +148,6 @@ public final class ManagerUI extends AbstractUI implements View {
         icon = DeviceView.ICON;
       } else if (profile instanceof ClientMetaData) {
         icon = ClientView.ICON;
-      } else if (profile instanceof Client) {
-        icon = ClientView.ICON;
       } else if (profile instanceof Location) {
         icon = LocationView.ICON;
       } else if (profile instanceof User) {
@@ -213,8 +211,6 @@ public final class ManagerUI extends AbstractUI implements View {
     } else if (directoryObject instanceof Application) {
       navigationState = ApplicationView.NAME;
     } else if (directoryObject instanceof ClientMetaData) {
-      navigationState = ClientView.NAME;
-    } else if (directoryObject instanceof Client) {
       navigationState = ClientView.NAME;
     } else if (directoryObject instanceof Device) {
       navigationState = DeviceView.NAME;
