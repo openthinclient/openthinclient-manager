@@ -10,7 +10,6 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.ldap.DirectoryException;
@@ -24,9 +23,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class UserProfileSubWindow extends Window {
 
-  /**
-   * serialVersionUID
-   */
   private static final long serialVersionUID = -6L;
   IMessageConveyor mc;
   UserService service;
@@ -80,11 +76,11 @@ public class UserProfileSubWindow extends Window {
      layoutWithBinder.addComponent(passwordField);
      layoutWithBinder.addComponent(passwordRetype);
 
-    // Button bar
+     // Button bar
      HorizontalLayout actions = new HorizontalLayout();
      actions.addComponents(save, reset);
 
-    // First name is required field
+     // First name is required field
      name.setRequiredIndicatorVisible(true);
      description.setRequiredIndicatorVisible(true);
 

@@ -6,7 +6,6 @@ import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
-import org.apache.directory.server.dhcp.options.vendor.HostName;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
@@ -196,7 +195,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 			} else {
 			  InetSocketAddress applicableServerAddress = determineServerAddress(localAddress, offer);
 			  if (applicableServerAddress != null) {
-			    // we'll need this later
+			    	// we'll need this later
 					conversation.setApplicableServerAddress(applicableServerAddress);
 
 					// prepare PXE proxy offer
@@ -228,8 +227,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException {
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 		logger.warn("  Using EavesdroppingPXEService implementation.");
 		logger.warn("  This type of PXE service will additionally bind on");
 		logger.warn("  port 68 (bootpc) to analyse DHCP-server messages as well.");
@@ -248,7 +246,6 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		final InetSocketAddress pxePort = new InetSocketAddress(4011);
 		logger.info("  Binding on " + pxePort);
 		acceptor.bind(pxePort, handler, config);
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 	}
 }

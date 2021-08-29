@@ -19,7 +19,7 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *******************************************************************************/
 /*
- * This code is based on: 
+ * This code is based on:
  * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
  * http://hometown.aol.com/markmitche11
  */
@@ -127,7 +127,7 @@ public class NFSServerMain {
 //      }
 //      System.err.println("PORTMAP Server exited");
 //    }
-    
+
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e1) {
@@ -138,7 +138,7 @@ public class NFSServerMain {
     nfs.stopRpcProcessing();
     mountd.stopRpcProcessing();
     pm.stopRpcProcessing();
-    
+
     System.out.println("I'm gone!");
   }
 }

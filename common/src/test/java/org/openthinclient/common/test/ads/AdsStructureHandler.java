@@ -111,9 +111,8 @@ public class AdsStructureHandler {
 
 		group.setUserGroups(giveMeTheOthers(group, usergroups));
 
-		logger
-				.info("Save usergroup after allocate this group with all the otherss: "
-						+ group);
+		logger.info("Save usergroup after allocate this group with all the otherss: "
+					+ group);
 		Connection.getAdsStructureHandler().save(group, dn);
 		testUserGroup(group.getDn(), usergroups, users);
 
@@ -131,9 +130,8 @@ public class AdsStructureHandler {
 		for (final UserGroup g : usergroups) {
 			g.setUserGroups(giveMeTheOthers(g, usergroups));
 
-			logger
-					.info("Save usergroup after allocate this group with all the others: "
-							+ g);
+			logger.info("Save usergroup after allocate this group with all the others: "
+						+ g);
 			Connection.getAdsStructureHandler().save(g, dn);
 			testUserGroup(g.getDn(), giveMeTheOthers(g, usergroups), users);
 		}

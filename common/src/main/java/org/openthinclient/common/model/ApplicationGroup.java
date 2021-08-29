@@ -65,7 +65,7 @@ public class ApplicationGroup extends DirectoryObject
 		firePropertyChange("applications", null, applications);
 	}
 
-	
+
 	/*
 	 * @see java.lang.Object#toString()
 	 */

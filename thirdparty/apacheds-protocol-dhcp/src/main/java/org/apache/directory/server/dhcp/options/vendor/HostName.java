@@ -32,7 +32,7 @@ public class HostName extends StringOption
     public HostName()
     {
     }
-    
+
     /**
      * @param string
      */

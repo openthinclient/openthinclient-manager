@@ -222,9 +222,8 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 		env.put(Context.SECURITY_CREDENTIALS, password);
 		env.put(Context.SECURITY_AUTHENTICATION, auth);
 		env.put(Context.PROVIDER_URL, "ldap://" + host + ":" + port + "/" + baseDN);
-		env
-				.put(Context.INITIAL_CONTEXT_FACTORY,
-						"com.sun.jndi.ldap.LdapCtxFactory");
+		env.put(Context.INITIAL_CONTEXT_FACTORY,
+				"com.sun.jndi.ldap.LdapCtxFactory");
 		DirContext ctx;
 		try {
 			ctx = new InitialDirContext(env);

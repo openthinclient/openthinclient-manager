@@ -1,7 +1,6 @@
 package org.openthinclient.web;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.util.FileTypeResolver;
 import org.springframework.context.annotation.Configuration;
 

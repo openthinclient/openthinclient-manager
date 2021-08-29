@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author levigo
  */
 public class LDAPDirectory implements Directory {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LDAPDirectory.class);
 
 	/**

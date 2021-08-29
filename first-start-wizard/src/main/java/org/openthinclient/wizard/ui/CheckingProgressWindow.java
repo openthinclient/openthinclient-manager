@@ -18,9 +18,9 @@ public class CheckingProgressWindow extends Window implements CheckingProgressPr
   private Consumer<CheckingProgressPresenter.View> cancelHandler;
 
   protected IMessageConveyor mc;
-  
+
   public CheckingProgressWindow() {
-    
+
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     setContent(createCheckingWindowContent());

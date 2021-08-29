@@ -28,9 +28,8 @@ import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_I
 
 public class ProxyConfigurationForm extends CustomComponent {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = -120512201002490319L;
-  
+
   private final TextField hostField;
   private final TextField portField;
   private final TextField userField;
@@ -42,7 +41,7 @@ public class ProxyConfigurationForm extends CustomComponent {
   private final NetworkConfigurationModel networkConfigurationModel;
 
   public ProxyConfigurationForm(NetworkConfigurationModel networkConfigurationModel) {
-    
+
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     this.networkConfigurationModel = networkConfigurationModel;

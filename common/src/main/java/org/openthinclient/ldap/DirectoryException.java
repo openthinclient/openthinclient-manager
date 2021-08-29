@@ -28,14 +28,8 @@ package org.openthinclient.ldap;
  */
 public class DirectoryException extends Exception {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
 
-  /**
-   * 
-   */
   public DirectoryException() {
     super();
   }

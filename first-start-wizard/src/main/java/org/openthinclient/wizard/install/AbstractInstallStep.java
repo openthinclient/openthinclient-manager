@@ -15,7 +15,7 @@ public abstract class AbstractInstallStep {
   private volatile InstallState installState = InstallState.PENDING;
 
   protected final IMessageConveyor mc;
-  
+
   public AbstractInstallStep() {
     Locale locale;
     if (UI.getCurrent() != null) {
@@ -25,7 +25,7 @@ public abstract class AbstractInstallStep {
     }
     mc = new MessageConveyor(locale);
   }
-  
+
   public InstallState getState() {
     return installState;
   }

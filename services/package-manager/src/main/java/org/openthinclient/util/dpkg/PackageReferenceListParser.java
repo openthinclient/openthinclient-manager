@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class PackageReferenceListParser {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageReferenceListParser.class);
-  
+
    private static final Pattern SPECIFIER_PATTERN = Pattern
          // .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\))?");
          .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\s*\\))?");

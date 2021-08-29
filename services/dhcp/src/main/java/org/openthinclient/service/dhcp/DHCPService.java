@@ -24,7 +24,6 @@ import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoAcceptorConfig;
-import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
@@ -36,9 +35,6 @@ import org.openthinclient.service.common.Service;
 import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;

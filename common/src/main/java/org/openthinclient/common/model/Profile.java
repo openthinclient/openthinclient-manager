@@ -216,9 +216,6 @@ public abstract class Profile extends DirectoryObject {
 					+ (null != schemaName ? ", schemaName=" + schemaName : ""));
 	}
 
-	/**
-	 * @return
-	 */
 	protected String getSchemaName() {
 		return getProperties().getDescription();
 	}

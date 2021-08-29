@@ -35,7 +35,6 @@ import org.openthinclient.web.thinclient.property.OtcMacProperty;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;

@@ -9,7 +9,6 @@ import org.openthinclient.ldap.TypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.ldap.LdapName;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;

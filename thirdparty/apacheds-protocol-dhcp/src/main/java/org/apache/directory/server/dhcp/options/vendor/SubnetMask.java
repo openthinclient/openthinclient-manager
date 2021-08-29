@@ -34,7 +34,7 @@ public class SubnetMask extends AddressOption
     public SubnetMask()
     {
     }
-    
+
     /**
      * @param netmask
      */

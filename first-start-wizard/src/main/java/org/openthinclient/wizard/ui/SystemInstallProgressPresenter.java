@@ -27,7 +27,7 @@ public class SystemInstallProgressPresenter {
   private final ApplicationEventPublisher publisher;
 
   protected IMessageConveyor mc;
-  
+
   public SystemInstallProgressPresenter(ApplicationEventPublisher publisher, InstallModel installModel) {
     this.publisher = publisher;
     this.installModel = installModel;

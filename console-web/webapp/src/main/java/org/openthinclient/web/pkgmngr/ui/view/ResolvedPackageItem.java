@@ -11,7 +11,7 @@ public class ResolvedPackageItem extends AbstractPackageItem {
    private final Package _package;
    private final String name;
    private final String displayVersion;
-   
+
    public ResolvedPackageItem(Package _package) {
       this._package = _package;
       this.name = _package.getName();
@@ -41,5 +41,5 @@ public class ResolvedPackageItem extends AbstractPackageItem {
    public String getDisplayVersion() {
       return displayVersion;
    }
-   
+
 }

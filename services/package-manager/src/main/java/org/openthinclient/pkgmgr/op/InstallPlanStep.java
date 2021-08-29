@@ -24,7 +24,7 @@ public abstract class InstallPlanStep {
         public Package getPackage() {
             return pkg;
         }
-        
+
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("pkg", pkg.forConflictsToString()).toString();
@@ -75,7 +75,7 @@ public abstract class InstallPlanStep {
         public Package getTargetPackage() {
             return targetPackage;
         }
-        
+
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -119,11 +119,11 @@ public abstract class InstallPlanStep {
         public Package getInstalledPackage() {
             return installedPackage;
         }
-        
+
         @Override
         public String toString() {
             return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                   .append("installedPackage", installedPackage.forConflictsToString()).toString();
-        }        
+        }
     }
 }

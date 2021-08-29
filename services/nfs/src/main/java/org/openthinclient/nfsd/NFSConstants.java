@@ -21,7 +21,7 @@
 package org.openthinclient.nfsd;
 
 /*
- * This code is based on: 
+ * This code is based on:
  * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
  * http://hometown.aol.com/markmitche11
  */

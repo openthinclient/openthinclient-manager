@@ -32,11 +32,9 @@ public class SingleHomedPXEService extends BasePXEService {
 
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler, IoServiceConfig config) throws IOException {
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 		logger.warn("  Using SingleHomedPXEService implementation. ");
-		logger
-				.warn("  This type of service might be problematic on multi-homed systems.");
+		logger.warn("  This type of service might be problematic on multi-homed systems.");
 		logger.warn("  (for more details, see log messages with level INFO)");
 		logger.info("");
 

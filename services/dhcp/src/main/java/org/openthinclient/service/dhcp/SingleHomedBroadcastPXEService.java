@@ -41,11 +41,9 @@ public class SingleHomedBroadcastPXEService extends BasePXEService {
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException {
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 		logger.warn("  Using SingleHomedBroadcastPXEService implementation. ");
-		logger
-				.warn("  This type of service might be problematic on multi-homed systems.");
+		logger.warn("  This type of service might be problematic on multi-homed systems.");
 		logger.warn("  (for more details, see log messages with level INFO)");
 		logger.info("");
 
@@ -59,8 +57,7 @@ public class SingleHomedBroadcastPXEService extends BasePXEService {
 		acceptor.bind(pxePort, handler, config);
 		logger.info("  Binding on " + pxePort);
 
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 	}
 
 	/**

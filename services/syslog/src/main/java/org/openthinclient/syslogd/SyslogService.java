@@ -31,15 +31,15 @@ import org.slf4j.LoggerFactory;
  * @author jn
  */
 public class SyslogService implements Service<SyslogServiceConfiguration> {
-	
+
   private static final Logger logger = LoggerFactory.getLogger(SyslogService.class);
 
   private SyslogDaemon daemon;
 
   private Thread daemonThread;
-  
+
   private SyslogServiceConfiguration configuration;
-  
+
   @Override
   public void setConfiguration(SyslogServiceConfiguration configuration) {
   	this.configuration = configuration;
@@ -53,11 +53,11 @@ public class SyslogService implements Service<SyslogServiceConfiguration> {
   @Override
   public Class<SyslogServiceConfiguration> getConfigurationClass() {
   	return SyslogServiceConfiguration.class;
-  }  
+  }
 
   public void startService() throws Exception {
     try {
-      
+
       daemon = new Log4JSyslogDaemon(0 != configuration.getSyslogPort()
           ? configuration.getSyslogPort()
           : SyslogDaemon.SYSLOG_PORT);

@@ -119,7 +119,7 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	private Timer flushTimer;
 
 	private NFSServiceConfiguration configuration;
-	
+
 	private boolean isRunning = false;
 
 	public boolean isRunning() {
@@ -139,7 +139,7 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	@Override
 	public Class<NFSServiceConfiguration> getConfigurationClass() {
 		return NFSServiceConfiguration.class;
-	}	
+	}
 	@Override
 	public void startService() throws Exception {
 		isRunning = true;

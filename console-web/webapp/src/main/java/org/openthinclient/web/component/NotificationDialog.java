@@ -21,7 +21,7 @@ public class NotificationDialog {
     private final VerticalLayout content;
 
     public NotificationDialog(String caption, String description, NotificationDialogType type) {
-      
+
         window = new Window(caption);
 
         window.setResizable(false);
@@ -86,7 +86,7 @@ public class NotificationDialog {
         UI.getCurrent().removeWindow(window);
     }
 
-   
+
     public enum NotificationDialogType {
       SUCCESS,
       ERROR,

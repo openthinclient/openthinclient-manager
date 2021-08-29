@@ -45,7 +45,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
   private final Binder<User>  userBinder;
 
   public ConfigureDirectoryStep(Wizard wizard, SystemSetupModel systemSetupModel) {
-    
+
     this.systemSetupModel = systemSetupModel;
 
     this.primaryOUBinder = new Binder<>();
@@ -65,7 +65,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
     final Label descriptionLabel = createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_DESCRIPTION), ContentMode.HTML);
     descriptionLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
     contents.addComponent(descriptionLabel);
-    
+
     contents.addComponent(createPrimaryOUPanel());
     contents.addComponent(createAdministratorUserPanel());
 

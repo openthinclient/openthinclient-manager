@@ -42,7 +42,7 @@ public interface PackageManagerOperation {
      * @return true if there are packages to uninstall
      */
     boolean hasPackagesToUninstall();
-    
+
     void resolve();
 
 //    /**
@@ -77,7 +77,7 @@ public interface PackageManagerOperation {
      * OR because it will be deleted and depends to other packages
      */
     Collection<UnresolvedDependency> getUnresolved();
-    
+
     /**
      * Returns the computed {@link InstallPlan}. Note that this {@link InstallPlan} is onaly valid if
      * {@link #resolve() this operations has been resolved}. <br> This method will return
@@ -118,14 +118,14 @@ public interface PackageManagerOperation {
         public Package getSource() {
             return source;
         }
-        
+
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
               .append("\nsource", source.forConflictsToString())
               .append("\nconflicting", conflicting.forConflictsToString())
               .toString();
-        }        
+        }
     }
 
     /**
@@ -151,13 +151,13 @@ public interface PackageManagerOperation {
         public PackageReference getMissing() {
             return missing;
         }
-        
+
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
               .append("\nsource", source.forConflictsToString())
               .append("\nmissing", missing)
               .toString();
-        }        
+        }
     }
 }

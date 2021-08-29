@@ -4,7 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.UI;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;

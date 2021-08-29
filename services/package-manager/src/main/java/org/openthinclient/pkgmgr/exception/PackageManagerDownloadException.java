@@ -5,7 +5,6 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 
 public class PackageManagerDownloadException extends PackageManagerException {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = 360924013969609905L;
 
   private URL downloadUrl;

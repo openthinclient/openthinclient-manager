@@ -5,7 +5,6 @@ import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;

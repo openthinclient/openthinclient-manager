@@ -1,7 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
 /**
- * A MissingPackageItem is a declared package (by some other package) which is not available for installation/deinstallation  
+ * A MissingPackageItem is a declared package (by some other package) which is not available for installation/deinstallation
  */
 public class MissingPackageItem extends AbstractPackageItem {
 
@@ -22,6 +22,5 @@ public class MissingPackageItem extends AbstractPackageItem {
    public String getDisplayVersion() {
       return displayVersion;
    }
-   
-   
+
 }

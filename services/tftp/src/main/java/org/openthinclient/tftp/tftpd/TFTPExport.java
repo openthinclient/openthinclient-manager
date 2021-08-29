@@ -46,10 +46,6 @@ public class TFTPExport {
     return provider;
   }
 
-  /**
-   * 
-   * @return
-   */
   public String getPathPrefix() {
     return pathPrefix;
   }

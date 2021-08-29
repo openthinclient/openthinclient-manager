@@ -35,8 +35,7 @@ public class BindToAddressPXEService extends BasePXEService {
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException {
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 		logger.warn("  Using BindToAddressPXEService implementation. ");
 		logger.warn("  This type of service will not work on most UNIX systems.");
 		logger.warn("  (for more details, see log messages with level INFO)");
@@ -68,7 +67,6 @@ public class BindToAddressPXEService extends BasePXEService {
 				}
 			}
 		}
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 	}
 }

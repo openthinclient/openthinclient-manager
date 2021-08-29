@@ -126,7 +126,7 @@ public interface PackageManager {
 
     /**
      * Find all enabled sources
-     * @return enabled Source list 
+     * @return enabled Source list
      */
     Collection<Source> findAllSources();
 

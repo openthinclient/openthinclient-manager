@@ -49,9 +49,6 @@ import org.openthinclient.wizard.model.SystemSetupModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * ReinstallInformationPanel
- */
 public class ReinstallInformationPanel extends Panel {
 
   Logger logger = LoggerFactory.getLogger(getClass());

@@ -13,7 +13,7 @@ public interface ClientService extends DirectoryObjectService<Client> {
 
   /**
    * Accesses the {@link Client default client}, that shall be used if no specialized configuration
-   * has been found. The default client  must be configured using the MAC-Address {@link
+   * has been found. The default client must be configured using the MAC-Address {@link
    * #DEFAULT_CLIENT_MAC 00:00:00:00:00:00}.
    *
    * @return the default client configuration, or <code>null</code> if no default client has been

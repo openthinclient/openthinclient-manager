@@ -49,7 +49,7 @@ public class InstallationLogEntry {
     private String packageVersion;
     @Column(name="package_source_url")
     private String packageSourceUrl;
-    
+
     /**
      * Use the factory methods instead.
      */

@@ -228,8 +228,7 @@ public class ImportCommandCL extends BaseToolCommandCL {
 			System.exit(1);
 		}
 
-		parameters
-				.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, ldifFile));
+		parameters.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, ldifFile));
 
 		// -------------------------------------------------------------------
 		// figure out the 'install-path'
@@ -239,8 +238,7 @@ public class ImportCommandCL extends BaseToolCommandCL {
 			parameters.add(new Parameter(ImportCommandExecutor.INSTALLPATH_PARAMETER,
 					cmd.getOptionValue('i')));
 		} else if (cmd.hasOption('c')) {
-			System.err
-					.println("forced configuration load (-c) requires the -i option");
+			System.err.println("forced configuration load (-c) requires the -i option");
 			System.exit(1);
 		}
 

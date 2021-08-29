@@ -14,19 +14,18 @@ import java.nio.file.Path;
 
 
 public class RemoveItemSubWindow extends Window {
-   
-   /** serialVersionUID */
+
    private static final long serialVersionUID = 9051875905013039615L;
    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveItemSubWindow.class);
-   
+
    public RemoveItemSubWindow(FileBrowserView fileBrowserView, Path doc) {
-      
+
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
-      
+
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
+
       setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, ""));
       setHeight("140px");
       setWidth("500px");
@@ -36,7 +35,7 @@ public class RemoveItemSubWindow extends Window {
       subContent.setMargin(true);
       subContent.setSizeFull();
       setContent(subContent);
-      
+
       Label tf = new Label(doc.getFileName().toString());
       subContent.addComponent(tf);
 
@@ -56,6 +55,5 @@ public class RemoveItemSubWindow extends Window {
          this.close();
       }));
    }
-   
- 
+
 }

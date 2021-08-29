@@ -395,57 +395,56 @@ public class DPKGPackageManager implements PackageManager {
                     break;
                 case CONFLICT_EXISTING:
                     sb.append(pkg.forConflictsToString()).append(" ")
-                            // .append(
-                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-                            // "packageManager.toString.CONFLICT_EXISTING",
-                            // "No entry found for
-                            // packageManager.toString.CONFLICT_EXISTING"))
-                            .append(" ").append(conflicting.forConflictsToString());
+                      // .append(
+                      // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                      // "packageManager.toString.CONFLICT_EXISTING",
+                      // "No entry found for
+                      // packageManager.toString.CONFLICT_EXISTING"))
+                      .append(" ").append(conflicting.forConflictsToString());
                     break;
                 case CONFLICT_NEW:
                     sb.append(pkg.forConflictsToString()).append(" ")
-                            // .append(
-                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-                            // "packageManager.toString.ALREADY_INSTALLED",
-                            // "No entry found for
-                            // packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ").append(conflicting.forConflictsToString());
+                      // .append(
+                      // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                      // "packageManager.toString.ALREADY_INSTALLED",
+                      // "No entry found for
+                      // packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ").append(conflicting.forConflictsToString());
                     break;
                 case UNSATISFIED:
                     sb
-                            // .append(
-                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-                            // "packageManager.toString.ALREADY_INSTALLED",
-                            // "No entry found for
-                            // packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ").append(ref).append(" ")
-                            // .append(
-                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-                            // "packageManager.toString.ALREADY_INSTALLED",
-                            // "No entry found for
-                            // packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ");
+                      // .append(
+                      // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                      // "packageManager.toString.ALREADY_INSTALLED",
+                      // "No entry found for
+                      // packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ").append(ref).append(" ")
+                      // .append(
+                      // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                      // "packageManager.toString.ALREADY_INSTALLED",
+                      // "No entry found for
+                      // packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ");
                     for (final Package pkg : pkgs)
                         sb.append(pkg.getName()).append(" ");
                     break;
                 case FILE_CONFLICT:
-                    sb
-                            .append(
-                                    I18N.getMessage(
-                                            "packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ")
-                            .append(file)
-                            .append(" ")
-                            .append(
-                                    I18N.getMessage(
-                                            "packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ")
-                            .append(pkg)
-                            .append(" ")
-                            .append(
-                                    I18N.getMessage(
-                                            "packageManager.toString.ALREADY_INSTALLED"))
-                            .append(" ").append(conflicting);
+                    sb.append(
+                              I18N.getMessage(
+                                      "packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ")
+                      .append(file)
+                      .append(" ")
+                      .append(
+                              I18N.getMessage(
+                                      "packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ")
+                      .append(pkg)
+                      .append(" ")
+                      .append(
+                              I18N.getMessage(
+                                      "packageManager.toString.ALREADY_INSTALLED"))
+                      .append(" ").append(conflicting);
                     break;
             }
 

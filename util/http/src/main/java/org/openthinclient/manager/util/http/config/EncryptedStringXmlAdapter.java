@@ -3,7 +3,7 @@ package org.openthinclient.manager.util.http.config;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class EncryptedStringXmlAdapter extends XmlAdapter<String,String> {
- 
+
     /**
      * Encrypts the value to be placed back in XML
      */
@@ -23,5 +23,5 @@ public class EncryptedStringXmlAdapter extends XmlAdapter<String,String> {
         return cyphertext;
       }
     }
- 
+
 }

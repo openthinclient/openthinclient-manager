@@ -1,14 +1,8 @@
 package org.openthinclient.web.thinclient.property;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-
-import org.openthinclient.common.model.schema.Node;
-import org.openthinclient.web.thinclient.component.ItemGroupPanel;
-
 public class OtcPropertyGroup {
 
   private String label;

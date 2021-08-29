@@ -106,9 +106,6 @@ public class AttributeMapping implements Cloneable {
 		// nothing to do here
 	}
 
-	/**
-	 * @return
-	 */
 	protected boolean checkNull(Attributes a) {
 		return null == a.get(fieldName);
 	}
@@ -257,9 +254,6 @@ public class AttributeMapping implements Cloneable {
 		// nothing to do
 	}
 
-	/**
-	 * 
-	 */
 	protected void initPostLoad() {
 		// nothing to do
 	}

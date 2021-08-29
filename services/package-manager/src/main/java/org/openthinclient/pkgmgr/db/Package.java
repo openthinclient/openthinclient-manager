@@ -166,7 +166,7 @@ public class Package implements Serializable, Comparable<Package> {
     public String getDisplayVersion() {
       return version == null ? "" : version.getUpstreamVersion().concat(version.getDebianRevision() != null ? "-" + version.getDebianRevision() : "");
     }
-    
+
     public void setVersion(String s) {
         version = Version.parse(s);
     }
@@ -215,16 +215,16 @@ public class Package implements Serializable, Comparable<Package> {
         sb.append("  Description: \n").append(getDescription());
         return sb.toString();
     }
-    
+
     /**
     *
     * @return a string of conflicting packages
     */
-   public String toStringWithNameAndVersion() {
-       final StringBuilder sb = new StringBuilder();
-       sb.append("Package: ").append(getName()).append(" ").append(getVersion());
-       return sb.toString();
-   }    
+    public String toStringWithNameAndVersion() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Package: ").append(getName()).append(" ").append(getVersion());
+        return sb.toString();
+    }
 
     /* (non-Javadoc)
     * @see java.lang.Object#hashCode()

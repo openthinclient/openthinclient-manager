@@ -141,8 +141,7 @@ public class nfs_protClient extends OncRpcClientStub {
    */
   public attrstat NFSPROC_GETATTR_2(nfs_fh arg1) throws OncRpcException {
     attrstat result$ = new attrstat();
-    client
-        .call(nfs_prot.NFSPROC_GETATTR_2, nfs_prot.NFS_VERSION, arg1, result$);
+    client.call(nfs_prot.NFSPROC_GETATTR_2, nfs_prot.NFS_VERSION, arg1, result$);
     return result$;
   }
 
@@ -155,8 +154,7 @@ public class nfs_protClient extends OncRpcClientStub {
    */
   public attrstat NFSPROC_SETATTR_2(sattrargs arg1) throws OncRpcException {
     attrstat result$ = new attrstat();
-    client
-        .call(nfs_prot.NFSPROC_SETATTR_2, nfs_prot.NFS_VERSION, arg1, result$);
+    client.call(nfs_prot.NFSPROC_SETATTR_2, nfs_prot.NFS_VERSION, arg1, result$);
     return result$;
   }
 
@@ -295,8 +293,7 @@ public class nfs_protClient extends OncRpcClientStub {
    */
   public int NFSPROC_SYMLINK_2(symlinkargs arg1) throws OncRpcException {
     XdrInt result$ = new XdrInt();
-    client
-        .call(nfs_prot.NFSPROC_SYMLINK_2, nfs_prot.NFS_VERSION, arg1, result$);
+    client.call(nfs_prot.NFSPROC_SYMLINK_2, nfs_prot.NFS_VERSION, arg1, result$);
     return result$.intValue();
   }
 
@@ -335,8 +332,7 @@ public class nfs_protClient extends OncRpcClientStub {
    */
   public readdirres NFSPROC_READDIR_2(readdirargs arg1) throws OncRpcException {
     readdirres result$ = new readdirres();
-    client
-        .call(nfs_prot.NFSPROC_READDIR_2, nfs_prot.NFS_VERSION, arg1, result$);
+    client.call(nfs_prot.NFSPROC_READDIR_2, nfs_prot.NFS_VERSION, arg1, result$);
     return result$;
   }
 

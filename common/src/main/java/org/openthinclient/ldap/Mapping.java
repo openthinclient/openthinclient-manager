@@ -787,9 +787,8 @@ public class Mapping {
 						.getName()), attributes.get("objectClass"), mappers);
 
 				if (null == m) {
-					logger
-							.warn("Could not determine TypeMapping for referencing object at "
-									+ result.getName());
+					logger.warn("Could not determine TypeMapping for referencing object at "
+								+ result.getName());
 					continue;
 				}
 
@@ -807,8 +806,7 @@ public class Mapping {
 							attr.remove(oldDN);
 							attr.add(newDN);
 
-							mods
-									.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
 						}
 
 						if (null == mods) {
@@ -821,8 +819,7 @@ public class Mapping {
 											.getCardinality() == Cardinality.ONE_OR_MANY))
 								attr.add(directory.getDummyMember());
 
-							mods
-									.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
 						}
 					}
 				}

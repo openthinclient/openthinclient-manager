@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 public class PackageReferenceList extends ArrayList<PackageReference> {
 
-   /** serialVersionUID */
   private static final long serialVersionUID = 6466163962933898656L;
 
   @Override

@@ -34,7 +34,7 @@ import java.util.Map;
  * @author levigo
  */
 public class Log4JSyslogDaemon extends SyslogDaemon {
-	
+
   private static final Logger logger = LoggerFactory.getLogger(Log4JSyslogDaemon.class);
 
   private Map<Facility, Logger> loggerMap = new HashMap<Facility, Logger>();
@@ -56,7 +56,7 @@ public class Log4JSyslogDaemon extends SyslogDaemon {
 
   @Override
   protected void handleMessage(InetAddress source, String hostname, Priority prio, Facility facility, Date timestamp, String message) {
-	  
+
 	MDC.put("hostname", hostname != null ? hostname : "-");
 	MDC.put("peer", null != source ? source.getHostAddress() : "-");
 

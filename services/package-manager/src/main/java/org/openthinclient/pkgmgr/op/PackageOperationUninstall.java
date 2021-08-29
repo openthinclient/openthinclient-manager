@@ -57,7 +57,7 @@ public class PackageOperationUninstall implements PackageOperation {
 
         // Remove package-related 'installed'-content
         context.getDatabase().getInstalledContentRepository().deleteAll(contents);
-        
+
         pkgToUninstall.setInstalled(false);
         context.getDatabase().getPackageRepository().save(pkgToUninstall);
     }

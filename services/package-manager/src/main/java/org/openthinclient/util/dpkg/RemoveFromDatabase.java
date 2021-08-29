@@ -19,7 +19,7 @@ public class RemoveFromDatabase implements ProgressTask<PackageListUpdateReport>
    PackageManagerConfiguration configuration;
    Source source;
    PackageManagerDatabase packageManagerDatabase;
-   
+
    public RemoveFromDatabase(PackageManagerConfiguration configuration, Source source, PackageManagerDatabase packageManagerDatabase) {
       this.configuration = configuration;
       this.source = source;
@@ -33,9 +33,9 @@ public class RemoveFromDatabase implements ProgressTask<PackageListUpdateReport>
 
    @Override
    public PackageListUpdateReport execute(ProgressReceiver progressReceiver) throws Exception {
-      
+
       final PackageListUpdateReport report = new PackageListUpdateReport();
-      
+
       List<Package> existingPackages = packageManagerDatabase.getPackageRepository().findBySource(source);
       for (int i = 0; i < existingPackages.size(); i++) {
          Package p = existingPackages.get(i);
@@ -43,7 +43,7 @@ public class RemoveFromDatabase implements ProgressTask<PackageListUpdateReport>
          report.incRemoved();
          progressReceiver.progress("Delete package " + p.getDisplayVersion(), i / existingPackages.size());
       };
-      
+
       return report;
    }
 

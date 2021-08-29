@@ -15,7 +15,7 @@ public class PackageListUpdateReport {
      * The number of packages that have been removed from the remote repository.
      */
     private int removed;
-    
+
     /**
      * Number of skipped packages because it already exists
      */

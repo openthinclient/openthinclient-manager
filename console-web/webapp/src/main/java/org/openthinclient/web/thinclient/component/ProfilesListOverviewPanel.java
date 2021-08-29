@@ -187,7 +187,8 @@ public class ProfilesListOverviewPanel extends CssLayout {
     return deleteProfileAction;
   }
 
-  public Button getLdifExportButton() { return ldifExportAction;
+  public Button getLdifExportButton() {
+    return ldifExportAction;
   }
 
   public Button getWolButton() {

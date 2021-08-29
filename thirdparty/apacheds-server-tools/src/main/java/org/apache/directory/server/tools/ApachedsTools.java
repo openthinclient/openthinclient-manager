@@ -98,8 +98,7 @@ public class ApachedsTools {
 		cmd.setVersion(tools.getProductVersion());
 
 		if (cmdline.hasOption('c') && (cmdline.getOptionValue('i') == null)) {
-			System.err
-					.println("forced configuration load (-c) requires the -i option");
+			System.err.println("forced configuration load (-c) requires the -i option");
 			System.exit(1);
 		}
 

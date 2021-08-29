@@ -28,7 +28,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
     public ConfigureManagerHomeStep(Wizard wizard, SystemSetupModel systemSetupModel) {
         super(wizard);
-        
+
         this.systemSetupModel = systemSetupModel;
 
         this.binder = new Binder();

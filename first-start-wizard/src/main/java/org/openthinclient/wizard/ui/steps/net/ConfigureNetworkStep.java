@@ -25,7 +25,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
   private boolean checkSucessfullyRun;
 
   public ConfigureNetworkStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
-    
+
     this.wizard = wizard;
     this.checkExecutionEngine = checkExecutionEngine;
     this.systemSetupModel = systemSetupModel;

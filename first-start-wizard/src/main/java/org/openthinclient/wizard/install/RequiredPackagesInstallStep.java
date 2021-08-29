@@ -128,7 +128,7 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 //    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
     future = packageManager.execute(operation);
 
-    // FIXME there should be some kind of smarter logic including org.openthinclient.progress presentation, etc.
+     // FIXME there should be some kind of smarter logic including org.openthinclient.progress presentation, etc.
      future.get();
 
     }

@@ -145,8 +145,7 @@ public class Client extends ClientMetaData implements AssociatedObjectsProvider 
 	 * @see org.openthinclient.common.model.DirectoryObject#setAssociatedObjects(java.lang.Class,
 	 *      java.util.Set)
 	 */
-	public void setAssociatedObjects(Class subgroupClass,
-																	 Set<? extends DirectoryObject> subgroups) {
+	public void setAssociatedObjects(Class subgroupClass, Set<? extends DirectoryObject> subgroups) {
 		if (subgroupClass.equals(Application.class))
 			setApplications((Set<Application>) subgroups);
 		if (subgroupClass.equals(ApplicationGroup.class))

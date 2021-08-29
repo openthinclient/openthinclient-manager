@@ -3,7 +3,6 @@ package org.openthinclient.wizard.ui;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -25,11 +24,11 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
   private final Label descriptionLabel;
 
   protected IMessageConveyor mc;
-  
+
   public SystemInstallProgressView() {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
-    
+
     setSpacing(true);
 
     this.titleLabel = createH1Label("");

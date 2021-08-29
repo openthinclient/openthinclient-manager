@@ -30,7 +30,6 @@ public class UpdateManagerView extends Panel implements View {
 
   public final static String NAME = "support";
 
-  /** serialVersionUID */
   private static final long serialVersionUID = -8836300902351197949L;
 
   @Autowired

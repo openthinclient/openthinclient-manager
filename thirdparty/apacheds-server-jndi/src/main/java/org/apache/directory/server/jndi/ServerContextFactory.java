@@ -1,21 +1,20 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *  
- *    http://www.apache.org/licenses/LICENSE-2.0
- *  
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License. 
- *  
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.directory.server.jndi;
 
@@ -94,7 +93,7 @@ public class ServerContextFactory extends CoreContextFactory
     protected static IoAcceptor udpAcceptor;
     protected static ThreadPoolExecutor threadPoolExecutor;
     protected static ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance( "ApacheDS" );
-    
+
     private static boolean ldapStarted;
     private static boolean ldapsStarted;
     private static KerberosServer tcpKdcServer;
@@ -109,10 +108,10 @@ public class ServerContextFactory extends CoreContextFactory
     public void beforeStartup( DirectoryService service )
     {
         int maxThreads = service.getConfiguration().getStartupConfiguration().getMaxThreads();
-        threadPoolExecutor = new ThreadPoolExecutor( maxThreads, maxThreads, 60, TimeUnit.SECONDS, 
+        threadPoolExecutor = new ThreadPoolExecutor( maxThreads, maxThreads, 60, TimeUnit.SECONDS,
             new LinkedBlockingQueue() );
         threadModel.setExecutor( threadPoolExecutor );
-        
+
         udpAcceptor = new DatagramAcceptor();
         tcpAcceptor = new SocketAcceptor();
 
@@ -122,9 +121,9 @@ public class ServerContextFactory extends CoreContextFactory
 
     public void afterShutdown( DirectoryService service )
     {
-        ServerStartupConfiguration cfg = ( ServerStartupConfiguration ) 
+        ServerStartupConfiguration cfg = ( ServerStartupConfiguration )
             service.getConfiguration().getStartupConfiguration();
-        
+
         if ( ldapStarted )
         {
             stopLDAP0( cfg.getLdapPort() );
@@ -245,9 +244,9 @@ public class ServerContextFactory extends CoreContextFactory
 
         buf.append( File.separatorChar == '\\' ? WINDOWSFILE_ATTR : UNIXFILE_ATTR );
         buf.append( "=" );
-        
+
         buf.append( StringTools.dumpHexPairs( StringTools.getBytesUtf8( getCanonical( ldif ) ) ) );
-        
+
         buf.append( "," );
         buf.append( LDIF_FILES_DN );
 
@@ -256,7 +255,7 @@ public class ServerContextFactory extends CoreContextFactory
 
     private void addFileEntry( DirContext root, File ldif ) throws NamingException
     {
-        String rdnAttr = File.separatorChar == '\\' ? WINDOWSFILE_ATTR : UNIXFILE_ATTR;    
+        String rdnAttr = File.separatorChar == '\\' ? WINDOWSFILE_ATTR : UNIXFILE_ATTR;
         String oc = File.separatorChar == '\\' ? WINDOWSFILE_OC : UNIXFILE_OC;
 
         Attributes entry = new LockableAttributesImpl( rdnAttr, getCanonical( ldif ), true );
@@ -264,7 +263,7 @@ public class ServerContextFactory extends CoreContextFactory
         entry.get( "objectClass" ).add( oc );
         root.createSubcontext( buildProtectedFileEntry( ldif ), entry );
     }
-    
+
 
     private Attributes getLdifFileEntry( DirContext root, File ldif )
     {
@@ -333,7 +332,7 @@ public class ServerContextFactory extends CoreContextFactory
                 log.info( "LDIF load directory '" + getCanonical( cfg.getLdifDirectory() )
                     + "' is a file.  Will attempt to load as LDIF." );
             }
-            
+
             Attributes fileEntry = getLdifFileEntry( root, cfg.getLdifDirectory() );
 
             if ( fileEntry != null )
@@ -345,10 +344,10 @@ public class ServerContextFactory extends CoreContextFactory
                     log.info( "Load of LDIF file '" + getCanonical( cfg.getLdifDirectory() )
                         + "' skipped.  It has already been loaded on " + time + "." );
                 }
-                
+
                 return;
             }
-            
+
             LdifFileLoader loader = new LdifFileLoader( root, cfg.getLdifDirectory(), cfg.getLdifFilters() );
             loader.execute();
 
@@ -482,13 +481,13 @@ public class ServerContextFactory extends CoreContextFactory
             acceptorCfg.setReuseAddress( true );
             acceptorCfg.setFilterChainBuilder( chainBuilder );
             acceptorCfg.setThreadModel( threadModel );
-            
+
             ((SocketSessionConfig)(acceptorCfg.getSessionConfig())).setTcpNoDelay( true );
             ((SocketSessionConfig)(acceptorCfg.getSessionConfig())).setReuseAddress( true );
-            
+
             tcpAcceptor.bind( new InetSocketAddress( port ), protocolProvider.getHandler(), acceptorCfg );
             ldapStarted = true;
-            
+
             if ( log.isInfoEnabled() )
             {
                 log.info( "Successful bind of an LDAP Service (" + port + ") is complete." );
@@ -513,7 +512,7 @@ public class ServerContextFactory extends CoreContextFactory
             {
                 KdcConfiguration kdcConfiguration = new KdcConfiguration( env, LoadStrategy.PROPS );
                 PrincipalStore kdcStore = new JndiPrincipalStoreImpl( kdcConfiguration, this );
-                
+
                 DatagramAcceptorConfig udpConfig = new DatagramAcceptorConfig();
                 udpConfig.setThreadModel( threadModel );
 
@@ -553,9 +552,9 @@ public class ServerContextFactory extends CoreContextFactory
                 tcpConfig.setFilterChainBuilder( new DefaultIoFilterChainBuilder() );
                 tcpConfig.setThreadModel( threadModel );
 
-                tcpChangePasswordServer = new ChangePasswordServer( changePasswordConfiguration, tcpAcceptor, 
+                tcpChangePasswordServer = new ChangePasswordServer( changePasswordConfiguration, tcpAcceptor,
                     tcpConfig, store );
-                udpChangePasswordServer = new ChangePasswordServer( changePasswordConfiguration, udpAcceptor, 
+                udpChangePasswordServer = new ChangePasswordServer( changePasswordConfiguration, udpAcceptor,
                     udpConfig, store );
             }
             catch ( Throwable t )
@@ -598,11 +597,11 @@ public class ServerContextFactory extends CoreContextFactory
     {
         try
         {
-            // we should unbind the service before we begin sending the notice 
+            // we should unbind the service before we begin sending the notice
             // of disconnect so new connections are not formed while we process
             List writeFutures = new ArrayList();
 
-            // If the socket has already been unbound as with a successful 
+            // If the socket has already been unbound as with a successful
             // GracefulShutdownRequest then this will complain that the service
             // is not bound - this is ok because the GracefulShutdown has already
             // sent notices to to the existing active sessions

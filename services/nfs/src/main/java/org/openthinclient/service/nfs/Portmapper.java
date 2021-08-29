@@ -64,7 +64,7 @@ public class Portmapper extends OncRpcServerStub implements OncRpcDispatchable {
       programNumber = PMAP_PROGRAM;
     if (0 == port)
       port = PMAP_PORT;
-    
+
     //
     // We only need to register one {progam, version}.
     //

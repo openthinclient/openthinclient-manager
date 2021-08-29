@@ -54,7 +54,7 @@ public class ProgressReceiverDialog {
     private final IMessageConveyor mc;
 
     public ProgressReceiverDialog(String caption) {
-      
+
         window = new Window(caption);
 
         window.setResizable(false);
@@ -141,12 +141,12 @@ public class ProgressReceiverDialog {
     }
 
     private void onSuccess(Object res) {
-      final UI ui = window.getUI();
-      ui.access(() -> {
-        // once the process is finished, there is no need for further polling.
-        ui.setPollInterval(-1);
+        final UI ui = window.getUI();
+        ui.access(() -> {
+            // once the process is finished, there is no need for further polling.
+            ui.setPollInterval(-1);
 
-        // FIXME Disyplaying any kind of result must be refactored out of this dialog.
+            // FIXME Displaying any kind of result must be refactored out of this dialog.
             if (res instanceof PackageManagerOperationReport) {
                 onSuccess((PackageManagerOperationReport) res);
             } else if (res instanceof PackageListUpdateReport) {

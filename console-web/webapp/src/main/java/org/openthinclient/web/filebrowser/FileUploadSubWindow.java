@@ -19,9 +19,8 @@ import java.nio.file.Path;
 
 public class FileUploadSubWindow extends Window {
 
-   /** serialVersionUID */
    private static final long serialVersionUID = 641733612432869212L;
-   
+
    private MyReceiver receiver = new MyReceiver();
    private Path doc;
    private Label fileUploadInfoLabel;
@@ -30,13 +29,13 @@ public class FileUploadSubWindow extends Window {
    private IMessageConveyor mc;
 
    public FileUploadSubWindow(FileUploadView fileBrowserView, Path doc, Path managerHomePath) {
-      
+
       this.fileBrowserView = fileBrowserView;
-      
+
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
-      
+
       mc = new MessageConveyor(UI.getCurrent().getLocale());
 
       if (doc == null) {
@@ -60,19 +59,18 @@ public class FileUploadSubWindow extends Window {
       upload.addSucceededListener(receiver);
       upload.setImmediateMode(true);
       subContent.addComponent(upload);
-      
+
       fileUploadInfoLabel = new Label();
       fileUploadInfoLabel.setEnabled(false);
       subContent.addComponent(fileUploadInfoLabel);
-      
+
    }
-   
+
    /**
     * The file upload receiver.
     */
    public class MyReceiver implements Receiver, SucceededListener {
 
-      /** serialVersionUID */
       private static final long serialVersionUID = -5844542658116931976L;
       private final transient Logger LOGGER = LoggerFactory.getLogger(MyReceiver.class);
 
@@ -103,5 +101,5 @@ public class FileUploadSubWindow extends Window {
       public void uploadFailed(Upload.FailedEvent event) {
          fileBrowserView.uploadFailed(event.getReason());
       }
-  }   
+  }
 }

@@ -1,6 +1,5 @@
 package org.openthinclient.web.thinclient.component;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import org.openthinclient.web.thinclient.property.*;

@@ -10,9 +10,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * ApplicationVersionUtil
- */
 public class ApplicationVersionUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationVersionUtil.class);

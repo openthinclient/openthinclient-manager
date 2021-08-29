@@ -132,9 +132,6 @@ public class UserGroup extends DirectoryObject
 		this.members = members;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getBusinessCategory() {
 		return businessCategory;
 	}

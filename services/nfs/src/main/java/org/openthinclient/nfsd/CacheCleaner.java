@@ -136,10 +136,9 @@ public class CacheCleaner {
 				synchronized (file) {
 					try {
 						if (LOG.isDebugEnabled())
-							LOG
-									.debug("Flushing cache for file of age "
-											+ (System.currentTimeMillis() - file
-													.getLastAccessTimestamp()));
+							LOG.debug("Flushing cache for file of age "
+										+ (System.currentTimeMillis() - file
+												.getLastAccessTimestamp()));
 
 						file.flushCache();
 						openFilesSet.remove(file);

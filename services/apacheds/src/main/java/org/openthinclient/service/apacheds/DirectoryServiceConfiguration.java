@@ -64,7 +64,7 @@ public class DirectoryServiceConfiguration implements ServiceConfiguration {
 
   @XmlElement
   private String primaryOU = "openthinclient";
-  
+
   @XmlElement
   private boolean embeddedAnonymousAccess;
 
@@ -230,7 +230,7 @@ public class DirectoryServiceConfiguration implements ServiceConfiguration {
    public String getPrimaryOU() {
       return primaryOU;
    }
-   
+
    /**
     * @param primaryOU the primaryOU to set
     */

@@ -21,7 +21,7 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
 
   public CheckEnvironmentStep(Wizard wizard, SystemSetupModel systemSetupModel) {
     super(wizard);
-    
+
     this.systemSetupModel = systemSetupModel;
     final VerticalLayout contents = new VerticalLayout();
     contents.setMargin(true);

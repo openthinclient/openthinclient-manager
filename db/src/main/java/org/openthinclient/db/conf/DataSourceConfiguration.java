@@ -52,8 +52,8 @@ public class DataSourceConfiguration {
     public static String createApacheDerbyDatabaseUrl(ManagerHome managerHome) {
         return "jdbc:derby:" +  managerHome.getLocation().toPath().resolve("db").resolve("manager").toString() + ";create=true";
     }
-    
-    
+
+
     /**
      * Create a {@link DataSource} based on the given {@link DatabaseConfiguration} using the
      * provided url. <b>NOTE</b>: This method will not configure the {@link DataSource} for the
@@ -124,7 +124,7 @@ public class DataSourceConfiguration {
         }
 
         DataSource dataSource = createDataSource(conf, url);
-        
+
         /**
          * Liquibase is closing the DB connection after migration,
          * (the problem is: https://github.com/spring-projects/spring-boot/issues/2917)
@@ -149,16 +149,16 @@ public class DataSourceConfiguration {
           String derbyLogPath = Paths.get(managerHome.getLocation().getPath(), "logs/derby.log").toAbsolutePath().toString();
           System.setProperty("derby.stream.error.file", derbyLogPath);
         } else if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
-          // in case of MySQL, we're also providing a test on borrow as connections may time out
+            // in case of MySQL, we're also providing a test on borrow as connections may time out
             dataSource.setTestOnBorrow(true);
             dataSource.setValidator(new MySQLConnectionValidator());
             // not specifying a validation interval, as the default of 30 seconds is acceptable.
         }
 
         if (type != DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
-          /**
-           * If ApacheDerby is not selected: stop Liquibase from creating derby.log
-           */
+            /**
+             * If ApacheDerby is not selected: stop Liquibase from creating derby.log
+             */
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 System.setProperty("derby.stream.error.file", "NUL");
             } else {

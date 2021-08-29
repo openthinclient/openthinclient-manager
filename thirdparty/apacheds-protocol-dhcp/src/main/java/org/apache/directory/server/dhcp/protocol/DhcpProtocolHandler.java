@@ -53,9 +53,6 @@ public class DhcpProtocolHandler implements IoHandler {
 	 */
 	private final DhcpService dhcpService;
 
-	/**
-	 * 
-	 */
 	public DhcpProtocolHandler(DhcpService service) {
 		this.dhcpService = service;
 	}

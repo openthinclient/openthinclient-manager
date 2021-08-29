@@ -3,14 +3,10 @@ package org.openthinclient.web.thinclient.component;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.Binder;
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_VALUE_PLACEHOLDER;

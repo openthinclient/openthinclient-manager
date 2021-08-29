@@ -1,6 +1,5 @@
 package org.openthinclient.web.thinclient.component;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;

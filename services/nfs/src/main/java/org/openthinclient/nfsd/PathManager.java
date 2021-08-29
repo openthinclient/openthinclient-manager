@@ -190,8 +190,7 @@ public class PathManager {
 						final NFSFile parentFile = (NFSFile) handlesToFiles
 								.get(handleToInt(parentHandle));
 						if (null == parentFile) {
-							LOG
-									.warn("Parent file for handle not found. Should not happen!");
+							LOG.warn("Parent file for handle not found. Should not happen!");
 							filesToRemove.add(file);
 						} else
 							file.setParentDirectory(parentFile);

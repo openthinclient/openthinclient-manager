@@ -5,9 +5,8 @@ import org.openthinclient.web.pkgmngr.ui.design.PackageManagerMainDesign;
 
 public class PackageManagerMainView extends PackageManagerMainDesign {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = 9193433664185414165L;
-  
+
   public PackageListMasterDetailsView getAvailablePackagesView() {
     return availablePackages;
   }
@@ -34,7 +33,7 @@ public class PackageManagerMainView extends PackageManagerMainDesign {
      for (int i=0; i<getComponentCount(); i++) {
         Component component = getTab(i).getComponent();
         if (component != null && c != null && component.equals(c.getParent())) {
-           getTab(i).setCaption(caption);   
+           getTab(i).setCaption(caption);
         }
      }
   }

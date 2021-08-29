@@ -10,11 +10,10 @@ import org.openthinclient.pkgmgr.db.Package;
  */
 public class SourceIntegrityViolationException extends Exception {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = 5395688585293081999L;
 
   private List<Package> packages;
-  
+
   public SourceIntegrityViolationException(String message, List<Package> packages) {
     super(message);
     this.packages = packages;

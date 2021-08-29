@@ -3,14 +3,14 @@ package org.openthinclient.web;
 public class WebUtil {
 
    /**
-    * Returns value of 'vaadin.servlet.urlMapping' without characters behind last '/' 
+    * Returns value of 'vaadin.servlet.urlMapping' without characters behind last '/'
     *  <pre>
     * {@code
     * /xyz/*      => /xyz/
     * /xyz/abc    => /xyz/abc/
     * /xyz/abc/   => /xyz/abc/
     * /           => /
-    * <leer>      => / 
+    * <leer>      => /
     * }
     * </pre>
     * @param mapping the mapping-String

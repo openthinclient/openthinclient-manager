@@ -26,9 +26,6 @@ package org.openthinclient.common.model.schema.provider;
 public class SchemaLoadingException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
-  /**
-   * 
-   */
   public SchemaLoadingException() {
     super();
   }

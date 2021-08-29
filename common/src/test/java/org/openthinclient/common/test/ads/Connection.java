@@ -30,8 +30,7 @@ public class Connection {
 		final String secret = Menu.getPassword();
 
 		lcd.setCallbackHandler(new UsernamePasswordHandler(principal, secret));
-		lcd
-				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		return lcd;
 	}
 

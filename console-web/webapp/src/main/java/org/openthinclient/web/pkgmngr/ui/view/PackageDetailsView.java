@@ -22,9 +22,6 @@ import ch.qos.cal10n.MessageConveyor;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
 
-  /**
-   * serialVersionUID
-   */
   private static final long serialVersionUID = -2726203031530856857L;
   private final TabSheet.Tab tabDependencies;
   private final TabSheet.Tab tabProvides;

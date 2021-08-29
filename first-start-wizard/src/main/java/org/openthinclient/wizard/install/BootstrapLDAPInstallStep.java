@@ -23,7 +23,6 @@ import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.progress.LoggingProgressReceiver;
-import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;

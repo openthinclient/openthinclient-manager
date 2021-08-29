@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.UI;
-import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.property.OtcMacProperty;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_REQUIRED_VALUE_PLACEHOLDER;

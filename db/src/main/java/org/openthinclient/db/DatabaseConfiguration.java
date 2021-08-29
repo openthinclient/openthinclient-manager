@@ -65,8 +65,8 @@ public class DatabaseConfiguration implements Configuration {
   }
 
   public enum DatabaseType {
-    APACHE_DERBY("org.apache.derby.jdbc.EmbeddedDriver", true), 
-    MYSQL("com.mysql.jdbc.Driver", false), 
+    APACHE_DERBY("org.apache.derby.jdbc.EmbeddedDriver", true),
+    MYSQL("com.mysql.jdbc.Driver", false),
     H2("org.h2.Driver", true);
 
     private final String driverClassName;

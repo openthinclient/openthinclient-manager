@@ -20,14 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-
 /**
  * A Client object with only minor attributes
  * @author levigo

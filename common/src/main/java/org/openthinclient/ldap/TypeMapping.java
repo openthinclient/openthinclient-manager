@@ -276,9 +276,6 @@ public class TypeMapping implements Cloneable {
 		return dnAttribute.setValue(o, dn);
 	}
 
-	/**
-	 * @return
-	 */
 	public String getBaseRDN() {
 		return baseRDN;
 	}
@@ -299,9 +296,6 @@ public class TypeMapping implements Cloneable {
 		return mapping;
 	}
 
-	/**
-	 * @return
-	 */
 	public Class getMappedType() {
 		return modelClass;
 	}
@@ -668,8 +662,7 @@ public class TypeMapping implements Cloneable {
 					// Fall through to update mode.
 					name = fillEmptyDN(o, ctx, baseDN);
 					if (logger.isDebugEnabled())
-						logger
-								.debug("Caught NameAlreadyBoundException on saveNewObject for "
+						logger.debug("Caught NameAlreadyBoundException on saveNewObject for "
 										+ name + ". trying update instead.");
 				}
 
@@ -972,8 +965,7 @@ public class TypeMapping implements Cloneable {
 				currentAttributes.remove(id);
 			else {
 				if (!areAttributesEqual(newValues, currentValues))
-					mods
-							.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newValues));
+					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newValues));
 				currentAttributes.remove(id);
 			}
 		} else if (currentValues == null && newValues != null)
@@ -1147,9 +1139,6 @@ public class TypeMapping implements Cloneable {
 
 	}
 
-	/**
-	 * 
-	 */
 	public void initPostLoad() {
 		for (final AttributeMapping am : attributes)
 			am.initPostLoad();

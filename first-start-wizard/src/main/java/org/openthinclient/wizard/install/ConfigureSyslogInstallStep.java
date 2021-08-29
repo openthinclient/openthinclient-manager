@@ -15,7 +15,7 @@ public class ConfigureSyslogInstallStep extends AbstractInstallStep {
     final SyslogServiceConfiguration configuration = managerHome.getConfiguration(SyslogServiceConfiguration.class);
 
     configuration.setSyslogPort(514);
-    
+
     // save the configuration
     managerHome.save(TFTPServiceConfiguration.class);
   }

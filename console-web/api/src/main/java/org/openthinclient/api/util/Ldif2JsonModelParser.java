@@ -128,18 +128,18 @@ public class Ldif2JsonModelParser {
 
                 // add members
 
-                    try {
-                        if (uniquemember != null && uniquemember.get() != null) {
-                            if (profileType == ProfileType.DEVICE) {
-                                ((Device) profileObject).addMember(uniquemember.get().toString());
-                            }
-                            if (profileType == ProfileType.APPLICATION) {
-                                ((Application) profileObject).addMember(uniquemember.get().toString());
-                            }
+                try {
+                    if (uniquemember != null && uniquemember.get() != null) {
+                        if (profileType == ProfileType.DEVICE) {
+                            ((Device) profileObject).addMember(uniquemember.get().toString());
                         }
-                    } catch (NamingException e) {
-                        logger.debug("Cannot handle uniquemember", e);
+                        if (profileType == ProfileType.APPLICATION) {
+                            ((Application) profileObject).addMember(uniquemember.get().toString());
+                        }
                     }
+                } catch (NamingException e) {
+                    logger.debug("Cannot handle uniquemember", e);
+                }
 
 
                 // Do we need to handle objectClass?

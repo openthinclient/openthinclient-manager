@@ -37,9 +37,6 @@ import javax.naming.ldap.LdapContext;
 public class ACLUtils {
 	private final LdapContext ctx;
 
-	/**
-	 * 
-	 */
 	public ACLUtils(LdapContext ctx) {
 		this.ctx = ctx;
 	}

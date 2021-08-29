@@ -763,10 +763,9 @@ public class ImportCommandExecutor extends BaseToolCommandExecutor {
 				} else {
 					nbAdd++;
 
-					notifyEntryAddedListener(entry.getDn()); // The Entry class is not
-																										// serializable, so we have
-																										// to notify the listener
-																										// using the toString method
+					// The Entry class is not serializable, so we have to notify
+					// the listener using the toString method
+					notifyEntryAddedListener(entry.getDn());
 				}
 
 				if (nbAdd % 10 == 0) {
@@ -824,10 +823,9 @@ public class ImportCommandExecutor extends BaseToolCommandExecutor {
 				} else {
 					nbMod++;
 
-					notifyEntryAddedListener(entry.getDn()); // The Entry class is not
-																										// serializable, so we have
-																										// to notify the listener
-																										// using the toString method
+					// The Entry class is not serializable, so we have to notify
+					// the listener using the toString method
+					notifyEntryAddedListener(entry.getDn());
 				}
 
 				if (nbMod % 10 == 0) {

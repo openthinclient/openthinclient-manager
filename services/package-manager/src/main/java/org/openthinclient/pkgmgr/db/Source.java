@@ -45,7 +45,7 @@ public class Source {
     @Column(name = "default_source")
     @XmlAttribute(name = "default")
     private Boolean defaultSource = Boolean.FALSE;
-    
+
     public Long getId() {
         return id;
     }
@@ -108,7 +108,7 @@ public class Source {
             .append("description", description)
             .toString();
     }
-    
+
     @Override
     public int hashCode() {
       final int prime = 31;
@@ -156,5 +156,5 @@ public class Source {
        */
       DISABLED
     }
-    
+
 }

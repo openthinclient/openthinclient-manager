@@ -38,8 +38,6 @@ import org.acplt.oncrpc.server.OncRpcServerTransportRegistrationInfo;
 import org.acplt.oncrpc.server.OncRpcTcpServerTransport;
 import org.acplt.oncrpc.server.OncRpcUdpServerTransport;
 
-/**
- */
 public abstract class MountDaemonStub extends OncRpcServerStub
     implements
       OncRpcDispatchable {

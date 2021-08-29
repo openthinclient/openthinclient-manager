@@ -31,7 +31,7 @@ import org.openthinclient.web.converter.StringToIntegerConverter;
 import org.vaadin.viritin.button.MButton;
 
 public class ProxyConfigurationForm extends CustomComponent {
-  
+
   private final TextField hostField;
   private final TextField portField;
   private final TextField userField;
@@ -45,7 +45,7 @@ public class ProxyConfigurationForm extends CustomComponent {
   private final ProxyConfiguration proxyConfiguration;
 
   public ProxyConfigurationForm(ProxyConfiguration proxyConfiguration) {
-    
+
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     this.proxyConfiguration = proxyConfiguration;

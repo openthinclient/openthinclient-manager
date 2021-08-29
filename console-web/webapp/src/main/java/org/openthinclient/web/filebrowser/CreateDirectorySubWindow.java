@@ -19,9 +19,8 @@ import java.nio.file.Path;
 
 public class CreateDirectorySubWindow extends Window {
 
-   /** serialVersionUID */
    private static final long serialVersionUID = 6056187481962333854L;
-   
+
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    private static final String ALLOWED_FILENAME_PATTERN = "[\\.\\w-+_]([ \\.\\w-+_]*[\\w-+_])?";
    private static final String NOT_RESERVED_FILENAME_PATTERN = "(?i)(?!(aux|clock\\$|con|nul|prn|com[0-9]|lpt[0-9])(?:$|\\.)).*";
@@ -31,9 +30,9 @@ public class CreateDirectorySubWindow extends Window {
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
-      
+
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
+
       Path dir;
       if (doc == null) {
          dir = managerHome;
@@ -51,12 +50,12 @@ public class CreateDirectorySubWindow extends Window {
       subContent.setMargin(true);
       subContent.setSizeFull();
       setContent(subContent);
-      
+
 
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       subContent.addComponent(group);
-      
+
       Label errorMessage = new Label();
       errorMessage.setVisible(false);
       subContent.addComponent(errorMessage);
@@ -98,6 +97,6 @@ public class CreateDirectorySubWindow extends Window {
          }
          this.close();
       }));
-      
+
    }
 }

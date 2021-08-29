@@ -4,9 +4,8 @@ import org.openthinclient.pkgmgr.db.Package;
 
 public class PackageChecksumVerificationFailedException extends PackageManagerException {
 
-    /** serialVersionUID */
     private static final long serialVersionUID = 2179768247437683202L;
-    
+
     private final Package pkg;
     private final String md5sum;
 

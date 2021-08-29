@@ -21,13 +21,11 @@
 package org.openthinclient.common.model.schema;
 
 import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Profile;
 
 import java.text.Collator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.StringTokenizer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

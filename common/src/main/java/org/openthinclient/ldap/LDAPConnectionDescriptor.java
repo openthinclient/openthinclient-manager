@@ -333,9 +333,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 			return 10389;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isBaseDnSet() {
 		return getBaseDN() != null && getBaseDN().length() > 0;
 	}

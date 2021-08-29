@@ -42,7 +42,7 @@ public class ClientGroup extends DirectoryObject implements
 	private Set<Application> applications;
 
 	private String groupType;
-	
+
 	/*
 	 * This method returns a set of the referenced applicationgroup.
 	 * If there is none it creates a new one.
@@ -53,7 +53,7 @@ public class ClientGroup extends DirectoryObject implements
 
 		return applicationGroups;
 	}
-	
+
 	/*
 	 * This method returns a set of the referenced application.
 	 * If there is none it creates a new one.
@@ -104,9 +104,9 @@ public class ClientGroup extends DirectoryObject implements
 	 * @see
 	 * org.openthinclient.common.model.AssociatedObjectsProvider#getAssociatedObjects
 	 * ()
-	 * This method returns all accociated objects for the directoryobject. 
+	 * This method returns all accociated objects for the directoryobject.
 	 * This means that it returns the referenced objects (like applications or thinclientgroups)
-	 * for the referenced class. (For example in this case the ClientGroup) 
+	 * for the referenced class. (For example in this case the ClientGroup)
 	 */
 	public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
 		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
@@ -121,7 +121,7 @@ public class ClientGroup extends DirectoryObject implements
 	 * @see
 	 * org.openthinclient.common.model.AssociatedObjectsProvider#setAssociatedObjects
 	 * (java.lang.Class, java.util.Set)
-	 * This method sets the referenced objects as a set. 
+	 * This method sets the referenced objects as a set.
 	 * Referenced objects could be for example a set of applications.
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
@@ -144,8 +144,8 @@ public class ClientGroup extends DirectoryObject implements
 				.append(", description=").append(getDescription()).append("]")
 				.toString();
 	}
-	
-	
+
+
 	/*
 	 * @see org.openthinclient.common.model.Group#getMemberClasses()
 	 * Get the list of classes which can be members of this group.
@@ -176,16 +176,10 @@ public class ClientGroup extends DirectoryObject implements
 		this.members = members;
 	}
 
-	/*
-	 * 
-	 */
 	public String getGroupType() {
 		return groupType;
 	}
 
-	/*
-	 * 
-	 */
 	public void setGroupType(String groupType) {
 		this.groupType = groupType;
 	}

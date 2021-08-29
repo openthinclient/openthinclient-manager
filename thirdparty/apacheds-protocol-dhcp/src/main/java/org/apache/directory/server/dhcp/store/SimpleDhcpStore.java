@@ -55,9 +55,8 @@ public class SimpleDhcpStore extends AbstractDhcpStore {
 
 	protected DirContext getContext() throws NamingException {
 		final Hashtable env = new Hashtable();
-		env
-				.put(Context.INITIAL_CONTEXT_FACTORY,
-						"com.sun.jndi.ldap.LdapCtxFactory");
+		env.put(Context.INITIAL_CONTEXT_FACTORY,
+				"com.sun.jndi.ldap.LdapCtxFactory");
 		// env.put( Context.INITIAL_CONTEXT_FACTORY,
 		// DEFAULT_INITIAL_CONTEXT_FACTORY );
 		env.put(Context.PROVIDER_URL, "ldap://localhost:10389/dc=tcat,dc=test");

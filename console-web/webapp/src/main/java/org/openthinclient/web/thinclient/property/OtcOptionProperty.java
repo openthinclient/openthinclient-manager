@@ -6,9 +6,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 
-/**
- *
- */
 public class OtcOptionProperty extends OtcProperty {
 
   private ItemConfiguration config;

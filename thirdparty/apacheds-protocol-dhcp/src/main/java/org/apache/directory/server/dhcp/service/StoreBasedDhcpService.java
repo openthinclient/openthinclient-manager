@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1995-2006 levigo holding gmbh. All Rights Reserved.
  * 
- * This software is the proprietary information of levigo holding gmbh  
+ * This software is the proprietary information of levigo holding gmbh
  * Use is subject to license terms.
  */
 package org.apache.directory.server.dhcp.service;

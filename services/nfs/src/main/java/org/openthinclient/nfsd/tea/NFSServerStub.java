@@ -39,8 +39,6 @@ import org.acplt.oncrpc.server.OncRpcServerTransportRegistrationInfo;
 import org.acplt.oncrpc.server.OncRpcTcpServerTransport;
 import org.acplt.oncrpc.server.OncRpcUdpServerTransport;
 
-/**
- */
 public abstract class NFSServerStub extends OncRpcServerStub
     implements
       OncRpcDispatchable {

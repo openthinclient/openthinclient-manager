@@ -1,6 +1,5 @@
 package org.openthinclient.web.thinclient.model;
 
-import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.Validator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

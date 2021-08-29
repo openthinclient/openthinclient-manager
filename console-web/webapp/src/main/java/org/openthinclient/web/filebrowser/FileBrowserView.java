@@ -30,8 +30,6 @@ import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
@@ -337,9 +335,9 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
         docList.scrollTo(indexOf, ScrollDestination.START);
 
         if (expand.equals(managerHome.toPath())) {
-            selectedFileItem = null;
-            docList.deselectAll();
-            // Collapse anything if managerHome is selected
+           selectedFileItem = null;
+           docList.deselectAll();
+           // Collapse anything if managerHome is selected
            try {
               Files.newDirectoryStream(managerHome.toPath(), path -> path.toFile().isDirectory())
                    .forEach(path -> docList.collapse(path.toFile()));

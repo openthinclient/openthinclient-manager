@@ -2,10 +2,8 @@ package org.openthinclient.api.rest.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -35,16 +35,16 @@ public class InstallPlan {
   public Stream<InstallPlanStep.PackageVersionChangeStep> getPackageVersionChangeSteps() {
     return steps.stream().filter(step -> step instanceof InstallPlanStep.PackageVersionChangeStep).map(step -> (InstallPlanStep.PackageVersionChangeStep) step);
   }
-  
+
   public Stream<InstallPlanStep.PackageUninstallStep> getPackageUninstallSteps() {
     return steps.stream().filter(step -> step instanceof InstallPlanStep.PackageUninstallStep).map(step -> (InstallPlanStep.PackageUninstallStep) step);
-  }  
-  
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("steps", steps).toString();
   }
-  
+
   /**
    * Creates an InstallPlan map, this maps:
    * <li>PackageInstallStep::getPackage</li>
@@ -61,6 +61,6 @@ public class InstallPlan {
       installPlanMap.putAll(getPackageVersionChangeSteps().collect(Collectors
           .toMap(Function.identity(), InstallPlanStep.PackageVersionChangeStep::getTargetPackage)));
     return installPlanMap;
-  }  
-  
+  }
+
 }

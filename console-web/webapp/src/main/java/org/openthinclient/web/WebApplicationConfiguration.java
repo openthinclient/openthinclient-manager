@@ -34,9 +34,6 @@ import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-/**
- *
- */
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
 @EnableSideBar
 @Import({
@@ -60,9 +57,6 @@ public class WebApplicationConfiguration {
     SystemMessagesProvider systemMessagesProvider() {
         return new SystemMessagesProvider() {
 
-            /**
-             * serialVersionUID
-             */
             private static final long serialVersionUID = 2570216527087874367L;
 
             @Override

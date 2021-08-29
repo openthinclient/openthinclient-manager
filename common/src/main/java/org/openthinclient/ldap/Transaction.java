@@ -166,9 +166,7 @@ public class Transaction {
 				} catch (final Throwable e) {
 					if (null != firstCause)
 						firstCause = e;
-					logger
-							.error(
-									"Exception during Rollback. Trying to continue with rollback anyway.",
+					logger.error("Exception during Rollback. Trying to continue with rollback anyway.",
 									e);
 				}
 

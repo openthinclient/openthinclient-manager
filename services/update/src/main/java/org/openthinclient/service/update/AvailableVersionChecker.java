@@ -2,7 +2,6 @@ package org.openthinclient.service.update;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.progress.ProgressReceiver;
-import org.openthinclient.service.common.home.ManagerHome;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

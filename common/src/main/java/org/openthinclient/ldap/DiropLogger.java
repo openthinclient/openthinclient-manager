@@ -1,7 +1,6 @@
 package org.openthinclient.ldap;
 
 import java.text.MessageFormat;
-import java.util.logging.Level;
 
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;

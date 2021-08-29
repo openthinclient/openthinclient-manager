@@ -139,8 +139,7 @@ public class OneToManyMapping extends ReferenceAttributeMapping {
 						try {
 							mm = type.getMapping().getMapping(memberDN, tx);
 						} catch (final NameNotFoundException f) {
-							logger
-									.warn("Ignoring nonexistant referenced object: " + memberDN);
+							logger.warn("Ignoring nonexistant referenced object: " + memberDN);
 							continue;
 						}
 

@@ -39,9 +39,8 @@ import ch.qos.cal10n.MessageConveyor;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = 6572660094735789367L;
-  
+
   private DataProvider<ResolvedPackageItem, ?> packageListDataProvider;
   private Consumer<Package> showPackageDetailsConsumer;
   private boolean detailsVisible;

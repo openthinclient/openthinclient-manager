@@ -9,8 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class StringToUrlConverter implements Converter<String, URL> {
-  
-  /** serialVersionUID */
+
   private static final long serialVersionUID = -7087450829844830031L;
 
   @Override

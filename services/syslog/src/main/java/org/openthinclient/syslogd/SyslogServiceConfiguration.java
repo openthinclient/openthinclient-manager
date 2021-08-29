@@ -17,7 +17,7 @@ public class SyslogServiceConfiguration implements ServiceConfiguration {
      * Default Syslog Port
      */
     public static final int DEFAULT_SYSLOG_PORT = 0;
-  
+
     @XmlElement
     private int syslogPort = DEFAULT_SYSLOG_PORT;
 
@@ -28,5 +28,5 @@ public class SyslogServiceConfiguration implements ServiceConfiguration {
 	public void setSyslogPort(int syslogPort) {
 		this.syslogPort = syslogPort;
 	}
-	
+
 }

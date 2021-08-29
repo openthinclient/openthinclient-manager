@@ -129,7 +129,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         for (int i = 0; i < operations.size(); i++) {
             PackageOperation operation = operations.get(i);
-            
+
             try {
               report.addPackageReport(execute(installation, targetDirectory, operation, progressReceiver.subprogress(i * step, (i * step) + step)));
             } catch (IOException exception) {
@@ -157,7 +157,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         } else if (operation instanceof PackageOperationDownload) {
           reportType = PackageReportType.DOWNLOAD;
         }
-        
+
         return new PackageReport(operation.getPackage(), reportType);
     }
 

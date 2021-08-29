@@ -1,8 +1,6 @@
 package org.openthinclient.web.ui;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_LOGIN;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_PASSWORD;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_REMEMBERME;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_USERNAME;
@@ -13,11 +11,8 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -26,7 +21,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -41,8 +35,6 @@ import org.springframework.ldap.CommunicationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.security.shared.VaadinSharedSecurity;
 
 /**

@@ -34,10 +34,10 @@ public interface DhcpService
      * Retrieve the reply to a given message. The reply may be zero, if the
      * message should be ignored.
      * @param localAddress TODO
-     * @param clientAddress 
+     * @param clientAddress
      * @param request
      * @return
-     * @throws DhcpException 
+     * @throws DhcpException
      */
     public DhcpMessage getReplyFor( InetSocketAddress localAddress, InetSocketAddress clientAddress, DhcpMessage request ) throws DhcpException;
 }

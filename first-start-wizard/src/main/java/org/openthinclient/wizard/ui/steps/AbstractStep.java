@@ -16,11 +16,11 @@ public abstract class AbstractStep implements WizardStep {
   private Component content;
 
   protected IMessageConveyor mc;
-  
+
   public AbstractStep() {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
-  
+
   protected Label createLabelHuge(String text) {
     final Label label = new Label(text);
     label.setStyleName(ValoTheme.LABEL_HUGE);
@@ -32,7 +32,7 @@ public abstract class AbstractStep implements WizardStep {
     label.setStyleName(ValoTheme.LABEL_H1);
     return label;
   }
-  
+
   protected Label createLabelLarge(String text) {
     return createLabelLarge(text, ContentMode.TEXT);
   }

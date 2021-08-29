@@ -1,6 +1,5 @@
 package org.openthinclient.web.thinclient;
 
-import com.vaadin.navigator.ViewChangeListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;

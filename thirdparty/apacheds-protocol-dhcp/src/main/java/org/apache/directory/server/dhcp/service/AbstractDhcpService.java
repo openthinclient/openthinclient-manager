@@ -189,8 +189,7 @@ public abstract class AbstractDhcpService implements DhcpService {
 			InetSocketAddress clientAddress, DhcpMessage request)
 			throws DhcpException {
 		if (logger.isDebugEnabled())
-			logger
-					.debug("Got OFFER message: " + request + " from:  " + clientAddress);
+			logger.debug("Got OFFER message: " + request + " from:  " + clientAddress);
 		return null;
 	}
 

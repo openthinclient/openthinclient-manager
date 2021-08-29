@@ -8,9 +8,6 @@ import org.openthinclient.manager.util.http.impl.HttpClientDownloadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * DownloadManagerFactory
- */
 public class DownloadManagerFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DownloadManagerFactory.class);

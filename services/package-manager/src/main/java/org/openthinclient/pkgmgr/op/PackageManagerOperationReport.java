@@ -22,8 +22,8 @@ public class PackageManagerOperationReport {
     INSTALL,
     UNINSTALL,
     UPGRADE,
-    DOWNGRADE, 
-    FAIL, 
+    DOWNGRADE,
+    FAIL,
     DOWNLOAD
   }
 
@@ -43,7 +43,7 @@ public class PackageManagerOperationReport {
           .append("type", type)
           .toString();
     }
-    
+
     public Package getPackage() {
       return pkg;
     }
@@ -51,12 +51,12 @@ public class PackageManagerOperationReport {
     public PackageReportType getType() {
       return type;
     }
-    
+
     public String getPackageName() {
       return pkg.getName();
     }
   }
-  
+
   public void addPackageReport(PackageReport packageReport) {
     packageReports.add(packageReport);
   }

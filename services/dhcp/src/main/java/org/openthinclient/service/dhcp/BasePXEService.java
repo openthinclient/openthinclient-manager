@@ -4,11 +4,8 @@ import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.ArchType;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
-import org.apache.directory.server.dhcp.options.AddressOption;
 import org.apache.directory.server.dhcp.options.OptionsField;
-import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
-import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
@@ -119,7 +116,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 			return null;
 		}
 
-		// synchronize on conversation to give any in-org.openthinclient.progress DISCOVERs
+		// synchronize on conversation to give any in-progress DISCOVERs
 		// time to set the client
 		synchronized (conversation) {
 			if (conversation.isExpired()) {

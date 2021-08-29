@@ -29,7 +29,7 @@ public class IntroStep extends AbstractStep implements WizardStep {
 
   @Override
   public Component getContent() {
-    
+
     final VerticalLayout layout = new VerticalLayout();
 
     layout.setMargin(true);

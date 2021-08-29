@@ -38,7 +38,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,15 +101,15 @@ public class PXEConfigTFTProvider implements TFTPProvider {
       throw new FileNotFoundException(
               "Don't know what to make of this file name: " + fileName);
 
-		/*
+    /*
      * request will be 01-aa-bb-cc-dd-ee-ff -> mac address should be
-		 * aa:bb:cc:dd:ee:ff
-		 */
+     * aa:bb:cc:dd:ee:ff
+     */
     final String hwAddress = /*
                                * Ignore the media type for now.
-															 * Integer.valueOf(fileName.substring(0, 2)) + "/"
-															 * +
-															 */
+                               * Integer.valueOf(fileName.substring(0, 2)) + "/"
+                               * * +
+                               * */
             fileName.substring(3).replaceAll("-", ":");
 
     LOGGER.info("MAC is " + fileName);

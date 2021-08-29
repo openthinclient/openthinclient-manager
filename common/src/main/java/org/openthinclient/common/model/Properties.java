@@ -79,13 +79,13 @@ public class Properties extends DirectoryObject {
 		// can safely return the initial set...
 		if(null != propertySet)
 			return propertySet;
-		
-		// ...otherwise we copy it back from the map. 
+
+		// ...otherwise we copy it back from the map.
 		Set<Property> props = new HashSet<Property>();
 		if (null != propertyMap)
 			for (Map.Entry<String, String> e : propertyMap.entrySet())
 				props.add(new Property(this, e.getKey(), e.getValue()));
-		
+
 		return props;
 	}
 
@@ -103,9 +103,6 @@ public class Properties extends DirectoryObject {
 		this.propertyMap = null;
 	}
 
-	/**
-	 * @return
-	 */
 	public SortedMap<String, String> getMap() {
 		if (null == propertyMap) {
 			// trigger lazy proxy loading.

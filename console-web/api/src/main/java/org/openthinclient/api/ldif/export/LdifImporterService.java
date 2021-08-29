@@ -62,7 +62,7 @@ public class LdifImporterService {
       params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,  false));
 
       // Listeners
-    final ListenerParameter listeners[] = new ListenerParameter[]{
+      final ListenerParameter listeners[] = new ListenerParameter[]{
         new ListenerParameter(
             ImportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
             new ToolCommandListener() {
@@ -84,7 +84,8 @@ public class LdifImporterService {
               public void notify(Serializable o) {
                 logger.info("Error occurred while importing from ldif-file: {}", o.toString());
               }
-        })};
+        })
+      };
 
       // Calling the import command
       importCommandExecutor.execute(params.toArray(new Parameter[params.size()]), listeners);

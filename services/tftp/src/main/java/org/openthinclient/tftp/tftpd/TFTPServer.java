@@ -577,8 +577,7 @@ public class TFTPServer implements Runnable {
       try {
         long start = System.currentTimeMillis();
         initTransfer(peer, serverChannel);
-        logger
-                .info("TFTP startup took " + (System.currentTimeMillis() - start));
+        logger.info("TFTP startup took " + (System.currentTimeMillis() - start));
 
         try {
           // init two buffers so that we can keep re-sending the xmitBuffer if

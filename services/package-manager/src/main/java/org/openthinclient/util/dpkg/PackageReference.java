@@ -96,7 +96,7 @@ public abstract class PackageReference implements Serializable {
       if (relation != null && version == null) {
         throw new IllegalArgumentException("Version must not be null if relation is specified.");
       }
-      
+
       this.name = name;
       this.relation = relation;
       this.version = version;

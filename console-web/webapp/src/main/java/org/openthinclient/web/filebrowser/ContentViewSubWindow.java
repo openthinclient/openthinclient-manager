@@ -15,17 +15,16 @@ import java.nio.file.Path;
 
 public class ContentViewSubWindow extends Window {
 
-   /** serialVersionUID */
    private static final long serialVersionUID = -6794768759901017749L;
 
    public ContentViewSubWindow(Path doc) {
-      
+
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
+
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
-      
+
       setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_VIEWFILE_CAPTION, doc.getFileName()));
       setHeight("400px");
       setWidth("500px");
@@ -35,7 +34,7 @@ public class ContentViewSubWindow extends Window {
       subContent.setMargin(true);
       subContent.setSizeFull();
       setContent(subContent);
-      
+
       if (isImage(doc)) {
          Embedded image = new Embedded();
          image.setSource(new FileResource(doc.toFile()));
@@ -51,9 +50,9 @@ public class ContentViewSubWindow extends Window {
          text.setSizeFull();
          subContent.addComponent(text);
       }
-      
+
    }
-   
+
    private boolean isImage(Path doc) {
       String mimeType = FileTypeResolver.getMIMEType(doc.toFile());
       switch (mimeType) {
@@ -64,5 +63,5 @@ public class ContentViewSubWindow extends Window {
       }
       return false;
    }
-   
+
 }

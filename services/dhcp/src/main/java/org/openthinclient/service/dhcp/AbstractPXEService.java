@@ -55,7 +55,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -63,9 +62,6 @@ import java.util.Set;
  */
 public abstract class AbstractPXEService extends AbstractDhcpService {
 
-  /**
-   *
-   */
   public static final int PXE_DHCP_PORT = 4011;
   /**
    * A map of on-going conversations.
@@ -477,12 +473,11 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       reply.setBootFileName(getBootfileName(request, client));
 
       if (logger.isInfoEnabled())
-        logger
-                .info("Sending PXE proxy ACK rootPath=" + rootPath
-                        + " bootFileName=" + reply.getBootFileName()
-                        + " nextServerAddress="
-                        + reply.getNextServerAddress().getHostAddress() + " reply="
-                        + reply);
+        logger.info("Sending PXE proxy ACK rootPath=" + rootPath
+                    + " bootFileName=" + reply.getBootFileName()
+                    + " nextServerAddress="
+                    + reply.getNextServerAddress().getHostAddress() + " reply="
+                    + reply);
       return reply;
     }
   }

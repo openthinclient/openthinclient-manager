@@ -48,11 +48,10 @@ import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 @Push
 public class FirstStartWizardUI extends UI {
 
-  /** serialVersionUID   */
   private static final long serialVersionUID = 1127863296116812758L;
 
   Logger logger = LoggerFactory.getLogger(getClass());
-  
+
   @Autowired
   private SystemSetupModel systemSetupModel;
   @Autowired
@@ -68,14 +67,14 @@ public class FirstStartWizardUI extends UI {
 
   @Override
   protected void init(VaadinRequest request) {
-    
+
     setLocale(LocaleUtil.getLocaleForMessages(FirstStartWizardMessages.class, UI.getCurrent().getLocale()));
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     Page.getCurrent().setTitle(mc.getMessage(FirstStartWizardMessages.UI_PAGE_TITLE));
-    
+
     Responsive.makeResponsive(this);
-    
+
     // create the root layout and add the wizard
     final VerticalLayout root = new VerticalLayout();
     root.setMargin(false);

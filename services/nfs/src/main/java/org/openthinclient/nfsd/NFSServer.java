@@ -510,8 +510,7 @@ public class NFSServer extends NFSServerStub {
 					next.name = new filename(fileName);
 					next.cookie = new nfscookie(new byte[nfs_prot.NFS_COOKIESIZE]);
 					// Set "pointer" to next directory entry
-					NFSServer
-							.intToByte(idMapNextByCurrent.get(fileId), next.cookie.value);
+					NFSServer.intToByte(idMapNextByCurrent.get(fileId), next.cookie.value);
 
 					// Calculate size
 					size += 4 /* FILEID */

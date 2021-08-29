@@ -126,9 +126,6 @@ public class Realm extends Profile implements Serializable {
 		isInitialized = true;
 	}
 
-	/**
-	 * @return
-	 */
 	public LDAPConnectionDescriptor getConnectionDescriptor() {
 		return lcd;
 	}
@@ -162,13 +159,10 @@ public class Realm extends Profile implements Serializable {
 			final String secret = getValue("Directory.Secondary.ReadOnly.Secret");
 
 			if (null != principal) {
-				secLcd
-						.setCallbackHandler(new UsernamePasswordHandler(principal, secret));
-				secLcd
-						.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+				secLcd.setCallbackHandler(new UsernamePasswordHandler(principal, secret));
+				secLcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 			} else
-				secLcd
-						.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.NONE);
+				secLcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.NONE);
 
 			// always read only
 			secLcd.setReadOnly(true);
@@ -190,9 +184,6 @@ public class Realm extends Profile implements Serializable {
 		return super.containsValue(key);
 	}
 
-	/**
-	 * 
-	 */
 	private void checkRefresh() {
 		if (needRefresh)
 			try {
@@ -319,8 +310,7 @@ public class Realm extends Profile implements Serializable {
 					logger.error("Invalid server URL for " + host, e);
 				}
 				if (logger.isDebugEnabled() && host == "localhost")
-					logger
-							.warn("No usable servers found - falling back to local schemas");
+					logger.warn("No usable servers found - falling back to local schemas");
 			}
 		throw new SchemaLoadingException(
 				"Schema wasn't found: schema provider could not be determined");

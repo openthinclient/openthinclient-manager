@@ -20,7 +20,7 @@ public class LocaleUtil {
    * @return a Locale, defaults to Locale.ENGLISH
    */
   public static Locale getLocaleForMessages(Class<?> enumClazz, Locale current) {
-    
+
     if (enumClazz != null && current != null) {
       AnnotationExtractorViaEnumClass annotationExtractorViaEnumClass = new AnnotationExtractorViaEnumClass(enumClazz);
       ch.qos.cal10n.Locale[] extractLocales = annotationExtractorViaEnumClass.extractLocales();
@@ -31,8 +31,8 @@ public class LocaleUtil {
           }
       }
     }
-    
+
     return Locale.ENGLISH;
   }
-  
+
 }
