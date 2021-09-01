@@ -278,7 +278,7 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
   public void save(User profile) {
     if (!secondaryDirectory) {
       LOGGER.info("Save: " + profile);
-      userService.save((User) profile);
+      userService.save(profile);
       Audit.logSave(profile);
     }
   }
@@ -360,7 +360,7 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
   public void showProfile(User profile) {
     String message = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, "").trim();
     boolean userIsNew = profile.getName().indexOf(message) == 0;
-    ProfilePanel profilePanel = createUserProfilePanel((User) profile, userIsNew);
+    ProfilePanel profilePanel = createUserProfilePanel(profile, userIsNew);
     ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
     displayProfilePanel(profilePanel, profileReferencesPanel);
   }

@@ -189,7 +189,7 @@ public final class ApplicationView extends AbstractProfileView<Application> {
   @Override
   public void save(Application profile) {
     LOGGER.info("Save: " + profile);
-    applicationService.save((Application) profile);
+    applicationService.save(profile);
     Audit.logSave(profile);
   }
 

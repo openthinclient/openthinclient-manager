@@ -115,8 +115,8 @@ public final class RealmSettingsView extends AbstractProfileView<Realm> {
   public void save(Realm profile) throws ProfileNotSavedException {
     LOGGER.info("Save realm-settings: " + profile);
     try {
-      ((Realm) profile).getDirectory().save(profile);
-      ((Realm) profile).refresh();
+      profile.getDirectory().save(profile);
+      profile.refresh();
       Audit.logSave("Realm settings");
     } catch (DirectoryException e) {
       throw new ProfileNotSavedException("Cannot save object " + profile, e);

@@ -151,7 +151,7 @@ public final class PrinterView extends AbstractProfileView<Printer> {
   @Override
   public void save(Printer profile) {
     LOGGER.info("Save: " + profile);
-    printerService.save((Printer) profile);
+    printerService.save(profile);
     Audit.logSave(profile);
   }
 }

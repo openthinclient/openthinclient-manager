@@ -131,7 +131,7 @@ public final class ClientView extends AbstractProfileView<Client> {
                                                   mc.getMessage(UI_CLIENT),
                                                   Client.class);
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    if(!"00:00:00:00:00:00".equals(((Client)profile).getMacAddress())){
+    if(!"00:00:00:00:00:00".equals(profile.getMacAddress())){
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
         presenter.addPanelCaptionComponent(createIPButton(profile));
@@ -144,7 +144,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
-    otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile, presenter));
+    otcPropertyGroups.add(0, createClientMetadataPropertyGroup(profile, presenter));
 
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
@@ -252,7 +252,7 @@ public final class ClientView extends AbstractProfileView<Client> {
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> wakeOnLan((Client) profile));
+    button.addClickListener(ev -> wakeOnLan(profile));
     return button;
   }
 
@@ -274,7 +274,7 @@ public final class ClientView extends AbstractProfileView<Client> {
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> showClientLogs((Client) profile));
+    button.addClickListener(ev -> showClientLogs(profile));
     return button;
   }
 
@@ -291,9 +291,8 @@ public final class ClientView extends AbstractProfileView<Client> {
 
 
   @Override
-  protected ProfilePanel createProfileMetadataPanel(Client p) {
+  protected ProfilePanel createProfileMetadataPanel(Client profile) {
 
-    Client profile = (Client) p;
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_CLIENT_HEADER), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
@@ -303,7 +302,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     // put property-group to panel
     presenter.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup()));
-    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, p));
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
     return profilePanel;
   }
@@ -396,11 +395,10 @@ public final class ClientView extends AbstractProfileView<Client> {
    * @param client Profile to set the values
    */
   @Override
-  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Client profile) {
+  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Client client) {
 
-    LOGGER.debug("Save values for client: " + profile);
+    LOGGER.debug("Save values for client: " + client);
 
-    Client client = (Client) profile;
     profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
       // write values back from bean to client
       itemGroupPanel.propertyComponents().stream()
@@ -472,7 +470,7 @@ public final class ClientView extends AbstractProfileView<Client> {
     // update view
     if (success) {
       selectItem(client);
-      navigateTo(profile);
+      navigateTo(client);
     }
   }
 
@@ -515,7 +513,7 @@ public final class ClientView extends AbstractProfileView<Client> {
     Audit.logSave(profile);
 
     // remove MAC-address from unrecognizedClientService
-    String macAddress = ((Client) profile).getMacAddress();
+    String macAddress = profile.getMacAddress();
     Optional<UnrecognizedClient> optionalUnrecognizedClient = unrecognizedClientService.findAll().stream().filter(unrecognizedClient -> unrecognizedClient.getMacAddress().equals(macAddress)).findFirst();
     if (optionalUnrecognizedClient.isPresent()) {
       Realm realm = optionalUnrecognizedClient.get().getRealm();
@@ -699,7 +697,7 @@ public final class ClientView extends AbstractProfileView<Client> {
   }
 
   private void openNoVncInNewBrowserWindow(String clientName) {
-    String ipHostNumber = ((Client) getFreshProfile(clientName)).getIpHostNumber();
+    String ipHostNumber = getFreshProfile(clientName).getIpHostNumber();
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
     String noVNCConsoleAutoconnect = "true";

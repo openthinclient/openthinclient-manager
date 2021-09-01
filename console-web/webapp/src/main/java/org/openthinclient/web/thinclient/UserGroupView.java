@@ -158,7 +158,7 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
   @Override
   public void save(UserGroup profile) {
     LOGGER.info("Save: " + profile);
-    userGroupService.save((UserGroup) profile);
+    userGroupService.save(profile);
     Audit.logSave(profile);
   }
 
