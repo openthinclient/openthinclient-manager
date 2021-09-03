@@ -180,10 +180,6 @@ public class ProfilesListOverviewPanelPresenter {
     panel.setItemButtonClickedConsumer(itemButtonClickedConsumer);
   }
 
-  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
-    panel.setDataProvider(dataProvider);
-  }
-
   public void setVisible(boolean visible) {
     panel.setVisible(visible);
   }

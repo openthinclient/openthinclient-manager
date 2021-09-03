@@ -321,7 +321,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-    plopPresenter.setDataProvider(dataProvider);
+    plop.setDataProvider(dataProvider);
     plopPresenter.setVisible(true);
 
     return plopPresenter;
