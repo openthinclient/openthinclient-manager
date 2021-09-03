@@ -52,11 +52,10 @@ $v-focus-style: none;
 html {
   scrollbar-color: #000 #e7e9e8;
   ::-webkit-scrollbar {
-    width: auto;
+    width: 12px;
   }
   ::-webkit-scrollbar-thumb {
     background: #000 !important;
-    border-radius: 0 !important;
   }
   ::-webkit-scrollbar-track {
     background: #e7e9e8 !important;
