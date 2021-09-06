@@ -194,6 +194,13 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
          } else {
             targetPath = managerHome.getLocation().toPath();
          }
+         if (!Files.exists(targetPath)) {
+            try {
+               Files.createDirectories(targetPath);
+            } catch (IOException ex) {
+               LOGGER.error("Failed to create " + targetPath, ex);
+            }
+         }
          refresh(targetPath);
       }
    }

@@ -67,13 +67,6 @@ public class PackageMetadataManager {
                 LOG.error("Ignoring bookmark entry without valid path");
                 return false;
               }
-              final Path path = Paths.get(bookmark.getPath());
-
-              if (!Files.exists(managerHomeRoot.resolve(path))) {
-                LOG.error("Ignoring bookmark for invalid path: " + bookmark.getPath());
-                return false;
-              }
-
               return true;
             });
   }
