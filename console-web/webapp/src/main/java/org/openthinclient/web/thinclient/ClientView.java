@@ -139,6 +139,10 @@ public final class ClientView extends AbstractProfileView<Client> {
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
                                                   mc.getMessage(UI_CLIENT),
                                                   Client.class);
+    if (clientStatus.isOnline(profile.getMacAddress())) {
+      profilePanel.addStyleName("online");
+    }
+
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if(!"00:00:00:00:00:00".equals(profile.getMacAddress())){
       String ip = profile.getIpHostNumber();
@@ -256,6 +260,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   private Component createWOLButton(Client profile) {
     Button button = new Button();
+    button.addStyleName("wol");
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
     button.setIcon(VaadinIcons.POWER_OFF);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -267,6 +272,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   private Component createVNCButton(Client profile) {
     Button button = new Button();
+    button.addStyleName("vnc");
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
     button.setIcon(VaadinIcons.DESKTOP);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);

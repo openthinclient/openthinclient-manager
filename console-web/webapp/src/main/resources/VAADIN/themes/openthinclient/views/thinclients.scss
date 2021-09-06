@@ -140,13 +140,38 @@ $ok-button-color: #2db200;
       }
 
       .v-button-borderless-colored {
-          color: #fff;
+        color: #fff;
+      }
+    }
+
+    .profilePanel.online .settings-caption {
+      .settings-title :nth-child(2)::after {
+        content: " - online";
+      }
+
+      .wol {
+        color: #999;
       }
     }
 
     &.client_view {
       .profiles-overview .overviewPanel .table .columns .v-checkbox {
         width: 10px;
+      }
+
+      .profilePanel:not(.online) .settings-caption {
+        &::before {
+          background-color: #999;
+        }
+
+        .settings-title :nth-child(2)::after {
+          content: " - offline";
+        }
+
+        .ip,
+        .vnc {
+          color: #999;
+        }
       }
     }
 
