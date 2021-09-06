@@ -53,7 +53,7 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-		<vaadin.version>8.8.6</vaadin.version>
+		<vaadin.version>8.13.3</vaadin.version>
 		<!--<vaadin.version>8.10.3</vaadin.version> -->
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>

@@ -15,7 +15,7 @@ public class StringToUrlConverter implements Converter<String, URL> {
   @Override
   public Result<URL> convertToModel(String value, ValueContext context) {
     if (Strings.isNullOrEmpty(value)) {
-      return null;
+      return Result.error("Empty value");
     }
     try {
       return Result.ok(new URL(value));
