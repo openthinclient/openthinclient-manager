@@ -12,7 +12,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
@@ -126,7 +125,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
          showSubwindow(new ContentViewSubWindow(selectedFileItem));
       });
       this.contentButton.setEnabled(false);
-      this.contentButton.setIcon(FontAwesome.EYE);
+      this.contentButton.setIcon(VaadinIcons.EYE);
       this.contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.contentButton);
 
@@ -134,14 +133,14 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       this.createDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_MKDIR), event -> {
          showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
       });
-      this.createDirButton.setIcon(FontAwesome.FOLDER_O);
+      this.createDirButton.setIcon(VaadinIcons.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
 
       this.removeDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_RMDIR), event -> {
          showSubwindow(new RemoveItemSubWindow(this, selectedFileItem));
       });
-      this.removeDirButton.setIcon(FontAwesome.TIMES);
+      this.removeDirButton.setIcon(VaadinIcons.TRASH);
       this.removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       this.removeDirButton.setEnabled(false);
       controlBar.addComponent(removeDirButton);
@@ -150,7 +149,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       CssLayout groupUploadDownload = new CssLayout();
       groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       this.downloadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_DOWNLOAD));
-      this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
+      this.downloadButton.setIcon(VaadinIcons.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       this.downloadButton.setEnabled(false);
       groupUploadDownload.addComponent(this.downloadButton);
@@ -158,7 +157,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       uploadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_UPLOAD), event -> {
          showSubwindow(new FileUploadSubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
       });
-      uploadButton.setIcon(FontAwesome.UPLOAD);
+      uploadButton.setIcon(VaadinIcons.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       groupUploadDownload.addComponent(uploadButton);
       controlBar.addComponent(groupUploadDownload);
