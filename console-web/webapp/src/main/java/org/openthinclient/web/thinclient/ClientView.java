@@ -688,16 +688,13 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   private void wakeOnLan(ClientMetaData... profiles) {
     List<String> failed = new ArrayList<>(profiles.length);
-    boolean sent = false;
     for(ClientMetaData profile: profiles) {
       try {
         String macAddress = profile.getMacAddress();
         LOGGER.info("Sending WOL packet to " + macAddress);
         WakeOnLan.wake(macAddress);
-        sent = true;
       } catch(Exception ex) {
         LOGGER.error("Failed to send WOL packet", ex);
-
       }
       boolean single = profiles.length == 1;
       boolean errors = failed.size() > 0;
