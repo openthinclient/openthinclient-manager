@@ -145,11 +145,11 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if(!"00:00:00:00:00:00".equals(profile.getMacAddress())){
+      presenter.addPanelCaptionComponent(createWOLButton(profile));
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
         presenter.addPanelCaptionComponent(createIPButton(profile));
       }
-      presenter.addPanelCaptionComponent(createWOLButton(profile));
       presenter.addPanelCaptionComponent(createVNCButton(profile));
       presenter.addPanelCaptionComponent(createLOGButton(profile));
     }
