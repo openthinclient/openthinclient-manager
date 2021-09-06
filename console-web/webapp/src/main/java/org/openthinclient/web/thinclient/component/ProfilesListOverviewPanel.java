@@ -29,6 +29,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
   private CssLayout gridWrapper;
   private List<SelectionRow> selectionRows = new ArrayList<>();
   private ListDataProvider<DirectoryObject> dataProvider;
+  private Collection<String> onlineMACs = Collections.emptyList();
 
   private Button addNew;
   private Button deleteProfileAction;
@@ -209,8 +210,13 @@ public class ProfilesListOverviewPanel extends CssLayout {
   }
 
   public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
+    this.setDataProvider(dataProvider, Collections.emptyList());
+  }
+
+  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider, Collection<String> onlineMACs) {
     this.dataProvider = dataProvider;
     this.dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    this.onlineMACs = onlineMACs;
     updateRowList();
   }
 
@@ -242,6 +248,9 @@ public class ProfilesListOverviewPanel extends CssLayout {
       button.setCaptionAsHtml(true);
       if (isClient) {
         button.addStyleName("client");
+        if(onlineMACs.contains(((ClientMetaData)directoryObject).getMacAddress())) {
+          button.addStyleName("online");
+        }
       }
 
       StringBuilder caption = new StringBuilder();

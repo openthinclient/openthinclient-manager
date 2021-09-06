@@ -15,13 +15,16 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
+import org.openthinclient.web.ClientStatus;
 import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
@@ -40,6 +43,8 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -91,6 +96,10 @@ public final class ClientView extends AbstractProfileView<Client> {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
+  @Autowired
+  private RealmService realmService;
+  @Autowired
+  private ClientStatus clientStatus;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -282,10 +291,16 @@ public final class ClientView extends AbstractProfileView<Client> {
   @Override
   public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean enabled) {
 
-    ProfilesListOverviewPanelPresenter plopPresenter = super.createOverviewItemlistPanel(i18nTitleKey, items, enabled);
+    ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey, enabled);
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
+
+    ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
+    dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    plop.setDataProvider(dataProvider, clientStatus.getOnlineMACs());
     plopPresenter.addWolButtonClickHandler(clients -> {
       wakeOnLan(clients.toArray(new ClientMetaData[0]));
     });
+    plopPresenter.setVisible(true);
     return plopPresenter;
   }
 

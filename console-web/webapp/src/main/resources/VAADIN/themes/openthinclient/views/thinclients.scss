@@ -144,6 +144,12 @@ $ok-button-color: #2db200;
       }
     }
 
+    &.client_view {
+      .profiles-overview .overviewPanel .table .columns .v-checkbox {
+        width: 10px;
+      }
+    }
+
     .profilePanel {
       display: flex;
       flex-flow: column nowrap;
@@ -738,6 +744,22 @@ $ok-button-color: #2db200;
                   text-transform: uppercase;
                 }
               }
+            }
+
+            &.client .v-button-caption::before {
+              content: "";
+              display: inline-block;
+              width: 4px;
+              height: 4px;
+              margin: 7.5px 4px 0 6px;
+              border-radius: 50%;
+              border: 1px solid #ccc;
+            }
+
+            &.client.online .v-button-caption::before {
+              background: var(--section-color);
+              box-shadow: 0 0 3px var(--section-color);
+              border-color: var(--section-color);
             }
           }
         }
