@@ -189,7 +189,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
                   .antMatchers("/actuator/health")
                   .antMatchers("/api/v1/**")
                   .antMatchers("/openthinclient/files/**")
-                  .antMatchers("/download/**")
                   .antMatchers("/ws/**")
     ;
   }
