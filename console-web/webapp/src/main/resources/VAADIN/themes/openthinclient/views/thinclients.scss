@@ -96,7 +96,7 @@ $ok-button-color: #2db200;
     }
 
     .profiles-overview .overviewPanel .caption,
-    .settings-caption,
+    .profilePanel .settings-caption,
     .references-caption > * {
       position: relative;
       display: flex;
@@ -127,20 +127,15 @@ $ok-button-color: #2db200;
         }
       }
 
-      .v-button {
-        text-shadow: 0 0 0 #fff;
-      }
-
       .panelButtons {
         display: contents;
-
-        .ip {
-          font-weight: 300;
-        }
       }
 
-      .v-button-borderless-colored {
+      .v-button-borderless-colored,
+      .context-info-button {
+        font-weight: 300;
         color: #fff;
+        text-shadow: none;
       }
     }
 
