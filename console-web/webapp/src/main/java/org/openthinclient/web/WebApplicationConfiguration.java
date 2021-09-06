@@ -6,14 +6,12 @@ import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.spring.annotation.UIScope;
-import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
 import org.openthinclient.api.ws.WebSocketConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.support.config.SystemReportingConfiguration;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -41,7 +39,6 @@ import java.util.concurrent.TimeUnit;
         VaadinCustomizationConfiguration.class,
         RestApiConfiguration.class,
         WebSocketConfiguration.class,
-        LogMvcConfiguration.class,
         SystemReportingConfiguration.class
 })
 @EnableCaching
@@ -111,12 +108,6 @@ public class WebApplicationConfiguration {
     @Bean
     public SchemaService schemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider, RealmService realmService) {
         return new SchemaService(packageManager, applicationService, schemaProvider, realmService);
-    }
-
-
-    @Bean
-    public DashboardNotificationService dashboardNotificationService() {
-        return new DashboardNotificationService.Dummy();
     }
 
     @Bean
