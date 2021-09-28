@@ -82,6 +82,9 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
    private List<File> visibleItems = new ArrayList<>();
 
+   private File ROOT_DIR;
+   private Path ROOT_PATH;
+
    public FileBrowserView(EventBus.SessionEventBus eventBus) {
      mc = new MessageConveyor(UI.getCurrent().getLocale());
      setSizeFull();
@@ -103,13 +106,16 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
    @PostConstruct
    private void init() {
+      ROOT_PATH = managerHome.getLocation().toPath()
+                     .resolve("nfs").resolve("root").resolve("custom");
+      ROOT_DIR = ROOT_PATH.toFile();
      setContent(buildContent());
    }
 
    private Component buildContent() {
 
-      LOGGER.debug("Managing files from ", managerHome.getLocation());
-      this.selectedFileItem = managerHome.getLocation().toPath();
+      LOGGER.debug("Managing files from ", ROOT_DIR);
+      this.selectedFileItem = ROOT_PATH;
 
       content = new VerticalLayout();
       content.setSpacing(true);
@@ -131,7 +137,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
       // Create directory
       this.createDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_MKDIR), event -> {
-         showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
+         showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem, ROOT_PATH));
       });
       this.createDirButton.setIcon(VaadinIcons.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -155,7 +161,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       groupUploadDownload.addComponent(this.downloadButton);
 
       uploadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_UPLOAD), event -> {
-         showSubwindow(new FileUploadSubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
+         showSubwindow(new FileUploadSubWindow(this, selectedFileItem, ROOT_PATH));
       });
       uploadButton.setIcon(VaadinIcons.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -192,7 +198,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
             final Path path = Paths.get(bookmark.getPath());
             targetPath = managerHome.getLocation().toPath().resolve(path);
          } else {
-            targetPath = managerHome.getLocation().toPath();
+            targetPath = ROOT_PATH;
          }
          if (!Files.exists(targetPath)) {
             try {
@@ -251,8 +257,8 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
           getRpcProxy(GridClientRpc.class).scrollToRow(row, destination);
         }
       };
-      dataProvider = new FileSystemDataProvider(managerHome.getLocation());
-      visibleItems = dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, managerHome.getLocation()))
+      dataProvider = new FileSystemDataProvider(ROOT_DIR);
+      visibleItems = dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, ROOT_DIR))
                                  .collect(Collectors.toList());
       docList.setDataProvider(dataProvider);
       docList.setSizeFull();
@@ -323,7 +329,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       selectedFileItem = expand;
       dataProvider.refreshAll();
       if (expand != null) {
-        File managerHome = this.managerHome.getLocation();
+        File managerHome = ROOT_DIR;
 
         // expand all directory nodes in path
         Path directory = Files.isDirectory(expand) ? expand : expand.getParent();
@@ -364,7 +370,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
            selectedFileItem = null;
        }
 
-     enableOrDisableButtons();
+      enableOrDisableButtons();
 
       // Remove FileDownload-extensions on button-object
       new ArrayList<>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
@@ -375,8 +381,13 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       }
 
       // Reset Bookmark-ComboBox: select a ComboBox-Itmem if expanded path matches, or set ComboBox to null
+      if (selectedFileItem == null) {
+         bookmarkComboBox.setValue(null);
+         return;
+      }
+      Path selectedDir = Files.isDirectory(selectedFileItem)? selectedFileItem : selectedFileItem.getParent();
       Optional<Bookmark> bookmarkExists = metadataManager.getBookmarks()
-          .filter(bookmark -> selectedFileItem.toAbsolutePath().equals(managerHome.getLocation().toPath().resolve(Paths.get(bookmark.getPath()))))
+          .filter(bookmark -> selectedDir.toAbsolutePath().equals(managerHome.getLocation().toPath().resolve(Paths.get(bookmark.getPath()))))
           .findFirst();
       if (bookmarkExists.isPresent()) {
          bookmarkComboBox.setValue(bookmarkExists.get());
@@ -384,7 +395,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
          bookmarkComboBox.setValue(null);
       }
 
-   }
+  }
 
   private void enableOrDisableButtons() {
     contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
