@@ -20,11 +20,6 @@
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>openthinclient-advisor</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
             <version>${revision}</version>
         </dependency>

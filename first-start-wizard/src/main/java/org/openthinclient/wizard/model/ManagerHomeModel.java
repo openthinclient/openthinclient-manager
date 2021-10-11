@@ -1,9 +1,9 @@
 package org.openthinclient.wizard.model;
 
 import com.vaadin.ui.UI;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckExecutionResult;
-import org.openthinclient.advisor.check.CheckManagerHomeDirectory;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckExecutionResult;
+import org.openthinclient.wizard.check.CheckManagerHomeDirectory;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 
 import java.io.File;

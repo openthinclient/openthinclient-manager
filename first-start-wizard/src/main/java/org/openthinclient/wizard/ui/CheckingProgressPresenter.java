@@ -5,10 +5,10 @@ import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_I
 
 import java.util.function.Consumer;
 
-import org.openthinclient.advisor.check.AbstractCheck;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckExecutionResult;
-import org.openthinclient.advisor.check.CheckTask;
+import org.openthinclient.wizard.check.AbstractCheck;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckExecutionResult;
+import org.openthinclient.wizard.check.CheckTask;
 
 import com.vaadin.ui.UI;
 

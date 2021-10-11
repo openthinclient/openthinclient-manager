@@ -1,6 +1,6 @@
-package org.openthinclient.advisor.check;
+package org.openthinclient.wizard.check;
 
-import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKNETWORKINFERFACES_TITLE;
+import static org.openthinclient.wizard.AdvisorMessages.ADVISOR_CHECKNETWORKINFERFACES_TITLE;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -8,8 +8,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.openthinclient.advisor.inventory.SystemInventory;
-import org.openthinclient.advisor.inventory.SystemInventoryFactory;
+import org.openthinclient.wizard.inventory.SystemInventory;
+import org.openthinclient.wizard.inventory.SystemInventoryFactory;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 

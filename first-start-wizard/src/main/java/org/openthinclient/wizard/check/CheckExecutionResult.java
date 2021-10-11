@@ -1,4 +1,4 @@
-package org.openthinclient.advisor.check;
+package org.openthinclient.wizard.check;
 
 public class CheckExecutionResult<T> {
 

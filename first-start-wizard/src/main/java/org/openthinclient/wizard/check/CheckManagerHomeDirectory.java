@@ -1,7 +1,7 @@
-package org.openthinclient.advisor.check;
+package org.openthinclient.wizard.check;
 
-import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION;
-import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE;
+import static org.openthinclient.wizard.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION;
+import static org.openthinclient.wizard.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE;
 
 import ch.qos.cal10n.MessageConveyor;
 import java.io.File;
@@ -19,7 +19,7 @@ public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
   private final File directory;
 
   public CheckManagerHomeDirectory(Locale locale, File directory) {
-    super(new MessageConveyor(locale).getMessage(ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE), 
+    super(new MessageConveyor(locale).getMessage(ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE),
           new MessageConveyor(locale).getMessage(ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION));
 
     if (directory == null) {

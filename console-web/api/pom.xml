@@ -92,11 +92,6 @@
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>openthinclient-advisor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- parsing ldif files -->
         <dependency>

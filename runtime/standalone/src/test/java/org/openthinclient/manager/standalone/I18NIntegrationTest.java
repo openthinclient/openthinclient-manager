@@ -1,7 +1,7 @@
 package org.openthinclient.manager.standalone;
 
 import org.junit.Test;
-import org.openthinclient.advisor.AdvisorMessages;
+import org.openthinclient.wizard.AdvisorMessages;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.wizard.FirstStartWizardMessages;
 

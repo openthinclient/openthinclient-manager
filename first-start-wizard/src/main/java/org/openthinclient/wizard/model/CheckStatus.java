@@ -1,9 +1,9 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.advisor.check.AbstractCheck;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckExecutionResult;
-import org.openthinclient.advisor.check.CheckTask;
+import org.openthinclient.wizard.check.AbstractCheck;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckExecutionResult;
+import org.openthinclient.wizard.check.CheckTask;
 
 /**
  * A small {@link AbstractCheck} wrapper, tracking the execution and the state of a given {@link AbstractCheck}.

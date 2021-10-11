@@ -1,10 +1,10 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckExecutionResult;
-import org.openthinclient.advisor.check.CheckFilesystemFreeSpace;
-import org.openthinclient.advisor.check.CheckNetworkInferfaces;
-import org.openthinclient.advisor.inventory.SystemInventory;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckExecutionResult;
+import org.openthinclient.wizard.check.CheckFilesystemFreeSpace;
+import org.openthinclient.wizard.check.CheckNetworkInferfaces;
+import org.openthinclient.wizard.inventory.SystemInventory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

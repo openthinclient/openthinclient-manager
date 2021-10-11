@@ -2,8 +2,8 @@ package org.openthinclient.wizard.ui.steps.net;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckInternetConnection;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckInternetConnection;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.CheckingProgressPresenter;
 import org.openthinclient.wizard.ui.CheckingProgressWindow;

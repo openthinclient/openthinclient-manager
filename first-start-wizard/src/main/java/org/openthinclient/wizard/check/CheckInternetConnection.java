@@ -1,6 +1,6 @@
-package org.openthinclient.advisor.check;
+package org.openthinclient.wizard.check;
 
-import static org.openthinclient.advisor.AdvisorMessages.*;
+import static org.openthinclient.wizard.AdvisorMessages.*;
 
 import java.net.URI;
 import java.util.List;

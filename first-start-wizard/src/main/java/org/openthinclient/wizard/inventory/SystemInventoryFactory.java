@@ -1,4 +1,4 @@
-package org.openthinclient.advisor.inventory;
+package org.openthinclient.wizard.inventory;
 
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;

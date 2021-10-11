@@ -1,7 +1,7 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.inventory.SystemInventory;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
+import org.openthinclient.wizard.inventory.SystemInventory;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncListenableTaskExecutor;

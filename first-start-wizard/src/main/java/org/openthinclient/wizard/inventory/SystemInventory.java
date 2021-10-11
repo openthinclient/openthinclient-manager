@@ -1,4 +1,4 @@
-package org.openthinclient.advisor.inventory;
+package org.openthinclient.wizard.inventory;
 
 /**
  * A collection of information about a system.

@@ -1,4 +1,4 @@
-package org.openthinclient.advisor.inventory;
+package org.openthinclient.wizard.inventory;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;

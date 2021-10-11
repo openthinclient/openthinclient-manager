@@ -70,7 +70,6 @@
 	<modules>
 		<module>util</module>
 		<module>common</module>
-		<module>advisor</module>
 		<module>thirdparty</module>
 		<module>db</module>
 		<module>services</module>

@@ -18,7 +18,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.wizard.check.CheckExecutionEngine;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.i18n.LocaleUtil;

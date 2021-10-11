@@ -1,4 +1,4 @@
-package org.openthinclient.advisor.check;
+package org.openthinclient.wizard.check;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
