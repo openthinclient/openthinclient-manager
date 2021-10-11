@@ -30,6 +30,7 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -71,6 +72,9 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
   private UserService userService;
   @Autowired
   private LicenseManager licenseManager;
+
+  @Value("${application.is-preview}")
+  private boolean applicationIsPreview;
 
   private Panel springViewDisplay;
 
@@ -134,7 +138,8 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
   private void showMainScreen() {
     OTCSideBar sideBar = getSideBar();
 
-    Image image = new Image(null, new ThemeResource("logo.svg"));
+    String logoFileName = applicationIsPreview? "logo-beta.svg": "logo.svg";
+    Image image = new Image(null, new ThemeResource(logoFileName));
     image.addClickListener(e -> UI.getCurrent().getPage().setLocation("/"));
     image.addStyleName("logo-button");
     image.removeStyleName(ValoTheme.MENU_LOGO);
