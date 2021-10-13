@@ -55,6 +55,10 @@ public class ClientStatus {
                 if(!clients.containsKey(mac)) {
                     for(Client client: clientService.findByHwAddress(mac)) {
                         client.setIpHostNumber(remote_ip);
+                        // Run in background, as saving can take a lot of time.
+                        new Thread(() -> {
+                            clientService.save(client);
+                        }).start();
                     }
                 }
                 clients.put(mac, System.currentTimeMillis());
