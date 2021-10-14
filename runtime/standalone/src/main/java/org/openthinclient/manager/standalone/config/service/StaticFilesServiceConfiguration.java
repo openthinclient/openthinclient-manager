@@ -20,15 +20,29 @@ public class StaticFilesServiceConfiguration  {
   ManagerHome managerHome;
 
   @Bean
-  public ServletRegistrationBean filesServlet() {
+  public ServletRegistrationBean<FileServiceServlet> logsServlet() {
 
-    final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+    final ServletRegistrationBean<FileServiceServlet> servletRegistrationBean = new ServletRegistrationBean<>();
+    servletRegistrationBean.addUrlMappings("/openthinclient/logs/*");
+
+    final Path logsPath = managerHome.getLocation().toPath().resolve("logs").toAbsolutePath();
+    servletRegistrationBean.setServlet(new FileServiceServlet(logsPath.toFile()));
+    servletRegistrationBean.setName("logs");
+
+    return servletRegistrationBean;
+  }
+
+  @Bean
+  public ServletRegistrationBean<FileServiceServlet> filesServlet() {
+
+    final ServletRegistrationBean<FileServiceServlet> servletRegistrationBean = new ServletRegistrationBean<>();
     servletRegistrationBean.addUrlMappings("/openthinclient/files/*");
 
     final Path nfsRootPath = managerHome.getLocation().toPath().resolve("nfs").resolve("root").toAbsolutePath();
     servletRegistrationBean.setServlet(new FileServiceServlet(nfsRootPath.toFile()));
-    return servletRegistrationBean;
+    servletRegistrationBean.setName("nfs");
 
+    return servletRegistrationBean;
   }
 
   /*

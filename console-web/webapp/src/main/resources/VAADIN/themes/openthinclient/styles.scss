@@ -12,6 +12,7 @@
 @import "views/filebrowser";
 @import "views/update";
 @import "views/importexport";
+@import "views/logfiles";
 
 // Main layout padding
 $view-padding: round($v-unit-size / 1.5) !default;
@@ -187,6 +188,7 @@ b {
   @include filebrowser-view;
   @include update-view;
   @include importexport-view;
+  @include logfiles-view;
 }
 
 @media (max-width: 1216px) {

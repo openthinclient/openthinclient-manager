@@ -1,0 +1,48 @@
+@mixin logfiles-view {
+  .v-panel .logfilesview {
+    display: grid;
+    gap: 2em;
+    padding: 2ex 2ch;
+
+    & > div {
+      display: grid;
+    }
+
+    .title {
+      width: 100%;
+      font-weight: bold;
+    }
+
+    .file-listing {
+      display: inline-grid;
+      width: max-content;
+      grid-template-columns: 1fr auto;
+      margin-top: 1ex;
+
+      :first-child {
+        padding-right: 1ch;
+      }
+
+      a::before {
+        content: "\e699";
+        font-family: Vaadin-Icons;
+        padding-right: 1ch;
+      }
+    }
+
+    .client-logs {
+      display: grid;
+
+      .v-filterselect {
+        width: 45em;
+        max-width: calc(100vw - 350px - 4ch);
+        margin-left: -10px;
+        margin-bottom: 1ex;
+
+        input {
+          width: 100% !important;
+        }
+      }
+    }
+  }
+}
