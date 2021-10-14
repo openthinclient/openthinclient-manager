@@ -192,11 +192,21 @@ public final class ManagerUI extends AbstractUI implements View {
         String value = filterText.toLowerCase();
         if(directoryObject.getName().toLowerCase().contains(value)) {
             return true;
-        } else if (directoryObject instanceof ClientMetaData) {
-          String macaddress = ((ClientMetaData) directoryObject).getMacAddress();
-          if(macaddress != null && macaddress.contains(value)) {
+        }
+        if (directoryObject instanceof ClientMetaData) {
+          ClientMetaData client = (ClientMetaData) directoryObject;
+          String mac = client.getMacAddress();
+          if(mac != null && (mac.contains(value) || mac.replace(":", "").contains(value))) {
             return true;
           }
+          String ip = client.getIpHostNumber();
+          if(ip != null && ip.contains(value)) {
+            return true;
+          }
+        }
+        String description = directoryObject.getDescription();
+        if(description != null && description.toLowerCase().contains(value)) {
+          return true;
         }
         return false;
       }
