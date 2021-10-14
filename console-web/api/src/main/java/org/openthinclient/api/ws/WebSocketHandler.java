@@ -61,7 +61,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 }
             }
         } else {
-            LOG.error("Received message with unknown type {}", message_type);
+            String remote_ip = session.getRemoteAddress().getAddress().getHostAddress();
+            LOG.error("Received message with unknown type '{}' from IP {}", message_type, remote_ip);
         }
     }
 
