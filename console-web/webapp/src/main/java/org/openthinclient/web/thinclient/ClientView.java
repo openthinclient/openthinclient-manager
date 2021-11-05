@@ -145,6 +145,8 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     if (clientStatus.isOnline(profile.getMacAddress())) {
       profilePanel.addStyleName("online");
+    } else if (profile.getMacAddress() != null && !isDefaultClient) {
+      profilePanel.addStyleName("offline");
     }
 
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
