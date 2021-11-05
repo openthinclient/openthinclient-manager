@@ -64,6 +64,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.openthinclient.common.model.service.ClientService.DEFAULT_CLIENT_MAC;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
@@ -139,12 +140,15 @@ public final class ClientView extends AbstractProfileView<Client> {
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
                                                   mc.getMessage(UI_CLIENT),
                                                   Client.class);
+
+    boolean isDefaultClient = DEFAULT_CLIENT_MAC.equals(profile.getMacAddress());
+
     if (clientStatus.isOnline(profile.getMacAddress())) {
       profilePanel.addStyleName("online");
     }
 
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    if(!"00:00:00:00:00:00".equals(profile.getMacAddress())){
+    if (!isDefaultClient) {
       presenter.addPanelCaptionComponent(createWOLButton(profile));
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
