@@ -43,5 +43,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
     </dependencies>
 </project>
