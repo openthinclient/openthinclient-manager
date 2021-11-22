@@ -359,6 +359,8 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
+				<!-- Must be kept at 1.4.199. Newer versions are not able
+					 to read DBs created with 1.4.199 or older. -->
 				<version>1.4.199</version>
 			</dependency>
 
