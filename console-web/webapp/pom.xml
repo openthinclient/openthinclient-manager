@@ -149,13 +149,6 @@
             <artifactId>cal10n-api</artifactId>
         </dependency>
 
-        <!-- FIXME this dependency seems to be missing for some reason. Check where it should be coming from -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-        </dependency>
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
