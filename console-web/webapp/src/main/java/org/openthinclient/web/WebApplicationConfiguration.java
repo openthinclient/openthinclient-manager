@@ -6,6 +6,8 @@ import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.spring.annotation.UIScope;
+
+import org.openthinclient.api.HealthEndpoint;
 import org.openthinclient.api.rest.RestApiConfiguration;
 import org.openthinclient.api.ws.WebSocketConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -39,7 +41,8 @@ import java.util.concurrent.TimeUnit;
         VaadinCustomizationConfiguration.class,
         RestApiConfiguration.class,
         WebSocketConfiguration.class,
-        SystemReportingConfiguration.class
+        SystemReportingConfiguration.class,
+        HealthEndpoint.class
 })
 @EnableCaching
 public class WebApplicationConfiguration {
