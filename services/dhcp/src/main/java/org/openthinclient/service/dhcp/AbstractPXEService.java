@@ -164,12 +164,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   }
 
   private String getBootfileName(DhcpMessage message, Client client) {
-    // old schema value if installation is not yet migrated
-    String bootfile = Config.BootOptions.BootfileName.get(client);
-    if (bootfile != null) {
-      return bootfile;
-    }
-
     // new simplified schema
     boolean safe = "safe".equals(Config.BootOptions.BootMode.get(client));
     switch(ArchType.fromMessage(message)) {
@@ -178,6 +172,11 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     case UEFI64:
       return safe ? "ipxe64.efi" : "syslinux64.efi";
     default:
+      // old schema value if installation is not yet migrated
+      String bootfile = Config.BootOptions.BootfileName.get(client);
+      if (bootfile != null) {
+        return bootfile;
+      }
       return safe ? "/pxelinux.0" : "/lpxelinux.0";
     }
   }
