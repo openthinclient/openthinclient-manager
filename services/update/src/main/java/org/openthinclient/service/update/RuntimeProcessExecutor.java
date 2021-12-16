@@ -16,7 +16,7 @@ public class RuntimeProcessExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessExecutor.class);
 
-    public static void executeManagerUpdateCheck(String install4jID, NetworkConfiguration.ProxyConfiguration proxyConfiguration, Consumer<Integer> callback) {
+    public static void executeManagerUpdateCheck(String install4jID, String updatesUrl, NetworkConfiguration.ProxyConfiguration proxyConfiguration, Consumer<Integer> callback) {
 
         List<String> args = new ArrayList<String>();
 
@@ -24,6 +24,7 @@ public class RuntimeProcessExecutor {
         args.add("-v"); // verbose
         args.add("-console"); // try to find a console to add logging
         args.add("-Dinstall4j.noProxyAutoDetect=true,sys.confirmedUpdateInstallation=true"); // switch off proxy-auto detection
+        args.add("-VupdatesUrl="+updatesUrl);
 
         if (proxyConfiguration != null && proxyConfiguration.isEnabled()) {
             args.add("-DproxySet=true");

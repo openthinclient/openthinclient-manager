@@ -15,6 +15,8 @@ public class UpdateRunner {
 
   @Value("${otc.application.version.update.process}")
   private String updateProcess;
+  @Value("${otc.application.version.update.location}")
+  private String updatesUrl;
 
   private boolean isRunning = false;
 
@@ -26,7 +28,7 @@ public class UpdateRunner {
     isRunning = true;
     new Thread(() -> {
       PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
-      RuntimeProcessExecutor.executeManagerUpdateCheck(updateProcess, configuration.getProxyConfiguration(), exitValue -> {
+      RuntimeProcessExecutor.executeManagerUpdateCheck(updateProcess, updatesUrl, configuration.getProxyConfiguration(), exitValue -> {
         isRunning = false;
         applicationContext.publishEvent(new UpdateRunnerEvent(this, exitValue));
       });
