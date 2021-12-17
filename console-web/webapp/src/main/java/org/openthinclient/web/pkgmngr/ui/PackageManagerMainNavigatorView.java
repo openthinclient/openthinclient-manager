@@ -96,19 +96,22 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     addStyleName("package-manager");
     sourcesListPresenter.setDefaultSource(defaultSource);
     setContent(buildContent());
+    refreshUpdatePanel();
   }
 
   private Component buildContent() {
     mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));
     mainView.setTabCaption(mainView.getUpdateablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES));
     mainView.setTabCaption(mainView.getInstalledPackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES));
-    mainView.addSelectedTabChangeListener(event -> {
-          PackageManagerMainNavigatorView.this.updateablePackagesPresenter.refreshUpdatePanel();
-          PackageManagerMainNavigatorView.this.availablePackagesPresenter.refreshUpdatePanel();
-    });
+    mainView.addSelectedTabChangeListener(event -> refreshUpdatePanel());
     // handle sourceUpdatePanel-view
     mainView.getInstalledPackagesView().hideSourceUpdatePanel();
     return mainView;
+  }
+
+  private void refreshUpdatePanel() {
+    PackageManagerMainNavigatorView.this.updateablePackagesPresenter.refreshUpdatePanel();
+    PackageManagerMainNavigatorView.this.availablePackagesPresenter.refreshUpdatePanel();
   }
 
   @Override
