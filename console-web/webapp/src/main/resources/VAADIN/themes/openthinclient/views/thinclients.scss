@@ -139,6 +139,10 @@ $ok-button-color: #2db200;
       }
     }
 
+    .profilePanel .settings-caption .ip {
+      cursor: copy;
+    }
+
     .profilePanel.online .settings-caption {
       .settings-title :nth-child(2)::after {
         content: " - online";
