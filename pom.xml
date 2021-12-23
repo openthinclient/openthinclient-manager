@@ -48,7 +48,7 @@
 
 		<apacheds.version>1.0.2</apacheds.version>
 		<levigo-utils.version>2.0.4</levigo-utils.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
 		<log4j.version>2.17.0</log4j.version>
         <!--
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
