@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import javax.annotation.PostConstruct;
 
+import static org.openthinclient.common.model.service.ClientService.DEFAULT_CLIENT_MAC;
+
 
 @SpringView(name = "logfiles")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_LOGS_HEADER", order = 80)
@@ -118,6 +120,8 @@ public class LogFilesView extends Panel implements View {
     );
     clientCombo.setItems(clientService.findAllClientMetaData()
                           .stream()
+                          .filter(client ->
+                              !DEFAULT_CLIENT_MAC.equals(client.getMacAddress()))
                           .sorted(Comparator.comparing(
                             ClientMetaData::getName,
                             String::compareToIgnoreCase
