@@ -11,10 +11,6 @@
     <artifactId>manager-runtime-standalone</artifactId>
 
     <dependencies>
-        <!-- dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
@@ -41,7 +37,7 @@
 		    <groupId>org.atteo</groupId>
 		    <artifactId>evo-inflector</artifactId>
 		    <version>1.2.2</version>
-		</dependency>        
+		</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
