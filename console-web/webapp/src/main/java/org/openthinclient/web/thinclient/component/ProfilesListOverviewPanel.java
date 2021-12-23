@@ -115,7 +115,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
     actionLine.addComponent(wolAction);
 
     gridWrapper = new CssLayout();
-    gridWrapper.addStyleNames("table");
+    gridWrapper.addStyleNames("table", "detectOverflow");
     content.addComponent(gridWrapper);
   }
 

@@ -701,6 +701,10 @@ $ok-button-color: #2db200;
         margin: 0 6px;
         overflow: auto;
 
+        &.overflowing {
+          padding-right: 1ch;
+        }
+
         .columns {
           display: flex;
 

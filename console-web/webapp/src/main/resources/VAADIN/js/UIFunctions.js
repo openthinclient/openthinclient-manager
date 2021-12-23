@@ -84,3 +84,10 @@ function installCopyOnClick() {
     }
   })
 }
+
+function installOverflowDetection() {
+  let observer = new ResizeObserver(elements => elements.forEach(({ target }) =>
+    target.classList.toggle('overflowing', target.scrollHeight > target.clientHeight)
+  ))
+  document.querySelectorAll('.detectOverflow').forEach(el => observer.observe(el))
+}

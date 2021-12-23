@@ -87,6 +87,7 @@ public final class ManagerUI extends AbstractUI implements View {
   protected void init(VaadinRequest request) {
     buildSearchTextField();
     super.init(request);
+    JavaScript.getCurrent().execute("installOverflowDetection()");
     Page.getCurrent().getStyles().add(String.format(".openthinclient {--no-results-feedback: \"%s\"}",
                                                     mc.getMessage(UI_COMMON_SEARCH_NO_RESULT)));
     new RefreshDashboardThread().start();
