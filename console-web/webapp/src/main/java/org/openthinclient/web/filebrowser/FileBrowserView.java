@@ -79,6 +79,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
    private Window subWindow;
    private FileSystemDataProvider dataProvider;
    private ComboBox<Bookmark> bookmarkComboBox;
+   private Label locationLabel;
 
    private List<File> visibleItems = new ArrayList<>();
 
@@ -118,7 +119,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       this.selectedFileItem = ROOT_PATH;
 
       content = new VerticalLayout();
-      content.setSpacing(true);
+      content.setSpacing(false);
       content.setMargin(new MarginInfo(true, true, true,true));
       content.setSizeFull();
 
@@ -183,6 +184,12 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
       controlBar.setWidth(100, Unit.PERCENTAGE);
       content.addComponent(controlBar);
+
+      locationLabel = new Label(ROOT_DIR.toString());
+      locationLabel.addStyleNames("location", "copy-on-click");
+      locationLabel.setDescription(mc.getMessage(UI_FILEBROWSER_LOCATION_LABEL_HINT));
+      content.addComponent(locationLabel);
+
       createTreeGrid();
       content.addComponent(docList);
       content.setExpandRatio(docList, 1);
@@ -360,6 +367,8 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
             docList.select(expand.toFile());
         }
         enableOrDisableButtons();
+
+        locationLabel.setValue(expand.toAbsolutePath().toString());
       }
    }
 
@@ -371,6 +380,8 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
        }
 
       enableOrDisableButtons();
+
+      locationLabel.setValue(value.getAbsolutePath());
 
       // Remove FileDownload-extensions on button-object
       new ArrayList<>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
