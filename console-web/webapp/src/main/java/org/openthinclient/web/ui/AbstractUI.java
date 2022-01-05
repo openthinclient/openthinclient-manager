@@ -48,7 +48,7 @@ import javax.annotation.PostConstruct;
 @Theme("openthinclient")
 @Push(PushMode.MANUAL)
 @com.vaadin.annotations.JavaScript({"vaadin://js/UIFunctions.js"})
-public abstract class AbstractUI extends UI implements ViewDisplay {
+public abstract class AbstractUI extends UI {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUI.class);
 
@@ -75,8 +75,6 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
 
   @Value("${application.is-preview}")
   private boolean applicationIsPreview;
-
-  private Panel springViewDisplay;
 
   protected IMessageConveyor mc;
   private AbstractOrderedLayout root;
@@ -279,11 +277,5 @@ public abstract class AbstractUI extends UI implements ViewDisplay {
       userProfileWindow.close();
       UI.getCurrent().removeWindow(userProfileWindow);
     }
-  }
-
-
-  @Override
-  public void showView(View view) {
-    if (springViewDisplay != null) springViewDisplay.setContent((Component)view);
   }
 }
