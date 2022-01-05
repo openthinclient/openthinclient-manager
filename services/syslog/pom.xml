@@ -38,12 +38,5 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
-
-        <!-- levigo -->
-        <dependency>
-            <groupId>com.levigo.util</groupId>
-            <artifactId>base</artifactId>
-            <version>${levigo-utils.version}</version>
-        </dependency>
 </dependencies>
 </project>

@@ -30,11 +30,6 @@
 			<artifactId>remotetea</artifactId>
 			<version>1.0.0-levigo</version>
 		</dependency>
-		<dependency>
-			<groupId>com.levigo.util</groupId>
-			<artifactId>base</artifactId>
-			<version>${levigo-utils.version}</version>
-		</dependency>
 	</dependencies>
 
 </project>

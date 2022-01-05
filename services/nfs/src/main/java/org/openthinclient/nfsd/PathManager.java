@@ -24,7 +24,6 @@
  */
 package org.openthinclient.nfsd;
 
-import com.levigo.util.collections.IntHashtable;
 import org.openthinclient.mountd.Exporter;
 import org.openthinclient.nfsd.tea.nfs_fh;
 import org.openthinclient.nfsd.tea.nfs_prot;
@@ -40,7 +39,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -56,7 +54,7 @@ public class PathManager {
 
 	private final File handleDatabase;
 
-	private final IntHashtable handlesToFiles;
+	private final HashMap<Integer, NFSFile> handlesToFiles;
 	private final Map<File, nfs_fh> filesToHandles;
 	private boolean isChanged;
 
@@ -75,7 +73,7 @@ public class PathManager {
 	public PathManager(File handleDatabase, Exporter exporter) throws IOException {
 		this.handleDatabase = handleDatabase;
 		this.exporter = exporter;
-		handlesToFiles = new IntHashtable();
+		handlesToFiles = new HashMap<Integer, NFSFile>();
 		filesToHandles = new HashMap<File, nfs_fh>();
 		isChanged = true;
 
@@ -171,9 +169,7 @@ public class PathManager {
 
 				// resolve parent-child relationships
 				final List<NFSFile> filesToRemove = new ArrayList<NFSFile>();
-				for (final Enumeration<NFSFile> i = handlesToFiles.elements(); i
-						.hasMoreElements();) {
-					final NFSFile file = i.nextElement();
+				for (final NFSFile file: handlesToFiles.values()) {
 					final File parent = file.getFile().getParentFile();
 
 					final nfs_fh parentHandle = filesToHandles.get(parent);
@@ -187,8 +183,7 @@ public class PathManager {
 					} else if (null == parentHandle) {
 						// this is a fs root. just leave the <null> parent
 					} else {
-						final NFSFile parentFile = (NFSFile) handlesToFiles
-								.get(handleToInt(parentHandle));
+						final NFSFile parentFile = handlesToFiles.get(handleToInt(parentHandle));
 						if (null == parentFile) {
 							LOG.warn("Parent file for handle not found. Should not happen!");
 							filesToRemove.add(file);
@@ -232,9 +227,7 @@ public class PathManager {
 			// actually save the path database.
 			final BufferedWriter bw = new BufferedWriter(new FileWriter(tmp));
 
-			for (final Enumeration<NFSFile> i = handlesToFiles.elements(); i
-					.hasMoreElements();) {
-				final NFSFile file = i.nextElement();
+			for (final NFSFile file: handlesToFiles.values()) {
 				file.flushCache();
 				toHex(file.getHandle().data, 0, 12, bw);
 				bw.write(' ');
@@ -306,7 +299,7 @@ public class PathManager {
 	 *           generation doesn't match.
 	 */
 	public NFSFile getNFSFileByHandle(nfs_fh fh) throws StaleHandleException {
-		final NFSFile nfsFile = (NFSFile) handlesToFiles.get(handleToInt(fh));
+		final NFSFile nfsFile = handlesToFiles.get(handleToInt(fh));
 		if (null == nfsFile)
 			throw new StaleHandleException();
 
@@ -374,7 +367,7 @@ public class PathManager {
 			if (null == parentHandle)
 				throw new StaleHandleException(f + " doesn't have a parent handle");
 			final int id = getIDFromHandle(parentHandle);
-			final NFSFile parent = (NFSFile) handlesToFiles.get(id);
+			final NFSFile parent = handlesToFiles.get(id);
 			if (null == parent)
 				throw new StaleHandleException("Not NFS file for parent handle for "
 						+ f);
@@ -477,8 +470,7 @@ public class PathManager {
 			}
 		if (null != fhFrom) {
 			filesToHandles.remove(from);
-			final NFSFile nfsFileFrom = (NFSFile) handlesToFiles
-					.get(handleToInt(fhFrom));
+			final NFSFile nfsFileFrom = handlesToFiles.get(handleToInt(fhFrom));
 
 			final File parentFileTo = to.getParentFile();
 			nfs_fh parentHandleTo = filesToHandles.get(parentFileTo);
@@ -493,7 +485,7 @@ public class PathManager {
 
 			if (null != parentHandleTo) {
 				final int id = getIDFromHandle(parentHandleTo);
-				final NFSFile parentTo = (NFSFile) handlesToFiles.get(id);
+				final NFSFile parentTo = handlesToFiles.get(id);
 
 				if (null != parentTo) {
 					final NFSFile nfsFileTo = new NFSFile(nfsFileFrom.getHandle(), to,

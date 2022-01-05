@@ -31,8 +31,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.levigo.util.collections.IntHashtable;
-
 public abstract class SyslogDaemon implements Runnable {
 	private static final int IN_BUF_SZ = (8 * 1024);
 	public static final int SYSLOG_PORT = 514;
@@ -67,7 +65,15 @@ public abstract class SyslogDaemon implements Runnable {
 		LOG_LOCAL6(22, "local6"), // reserved for local use
 		LOG_LOCAL7(23, "local7"); // reserved for local use
 
-		private static IntHashtable byValue;
+		private static Facility[] byValue;
+
+		static {
+			Facility[] allValues = values();
+			byValue = new Facility[allValues.length];
+			for (Facility facility: allValues) {
+				byValue[facility.code] = facility;
+			}
+		}
 
 		private final int code;
 		private final String fullName;
@@ -85,13 +91,11 @@ public abstract class SyslogDaemon implements Runnable {
 		private static final int LOG_FACMASK = 0x03F8;
 
 		public static Facility fromCode(int code) {
-			if (null == Facility.byValue) {
-				Facility.byValue = new IntHashtable();
-				for (Facility f : values())
-					Facility.byValue.put(f.code, f);
-			}
-
-			return (Facility) byValue.get(getCode(code));
+			code = getCode(code);
+			if (code >= 0 && code < byValue.length)
+				return byValue[code];
+			else
+				return null;
 		}
 
 		/**
@@ -123,7 +127,14 @@ public abstract class SyslogDaemon implements Runnable {
 		// '*' in config, all levels
 		LOG_ALL(8, "all");
 
-		private static IntHashtable byValue;
+		private static final Priority[] byValue;
+		static {
+			Priority[] allValues = values();
+			byValue = new Priority[allValues.length];
+			for (Priority priority: allValues) {
+				byValue[priority.code] = priority;
+			}
+		}
 
 		private final String fullName;
 		private final int code;
@@ -141,13 +152,11 @@ public abstract class SyslogDaemon implements Runnable {
 		private static final int LOG_PRIMASK = 0x07;
 
 		public static Priority fromCode(int code) {
-			if (null == Priority.byValue) {
-				Priority.byValue = new IntHashtable();
-				for (Priority p : values())
-					Priority.byValue.put(p.code, p);
-			}
-
-			return (Priority) byValue.get(getCode(code));
+			code = getCode(code);
+			if (code >= 0 && code < byValue.length)
+				return byValue[code];
+			else
+				return null;
 		}
 
 		/**
