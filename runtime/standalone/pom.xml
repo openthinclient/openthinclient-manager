@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>manager-runtime-util</artifactId>
+            <artifactId>manager-common</artifactId>
             <version>${revision}</version>
         </dependency>
 

@@ -1,9 +1,9 @@
 package org.openthinclient.manager.standalone;
 
-import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
 import org.openthinclient.manager.standalone.patch.PatchManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.util.RestartApplicationEvent;
 import org.openthinclient.wizard.WizardApplicationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

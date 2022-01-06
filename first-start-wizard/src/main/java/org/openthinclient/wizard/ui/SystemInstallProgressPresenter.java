@@ -3,7 +3,7 @@ package org.openthinclient.wizard.ui;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.UI;
-import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
+import org.openthinclient.util.RestartApplicationEvent;
 import org.openthinclient.wizard.install.AbstractInstallStep;
 import org.openthinclient.wizard.install.InstallState;
 import org.openthinclient.wizard.model.InstallModel;

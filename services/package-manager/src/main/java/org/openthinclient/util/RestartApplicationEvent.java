@@ -1,4 +1,4 @@
-package org.openthinclient.manager.runtime.util;
+package org.openthinclient.util;
 
 import org.springframework.context.ApplicationEvent;
 

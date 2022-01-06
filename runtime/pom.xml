@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>util</module>
         <module>standalone</module>
         <module>control</module>
     </modules>
