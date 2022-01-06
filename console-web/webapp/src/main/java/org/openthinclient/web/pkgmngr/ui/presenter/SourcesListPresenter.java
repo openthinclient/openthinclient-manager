@@ -182,7 +182,7 @@ public class SourcesListPresenter {
         try {
             newSource.setUrl(new URL(defaultSource));
         } catch (MalformedURLException e) {
-            // should never happen, as the URL is hardcoded
+            LOG.error("Malformed default repository source: {}", defaultSource);
         }
         newSource.setEnabled(true);
 
