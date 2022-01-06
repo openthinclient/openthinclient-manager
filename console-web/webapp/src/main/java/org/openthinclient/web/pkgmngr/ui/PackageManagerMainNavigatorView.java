@@ -45,7 +45,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerMainNavigatorView.class);
 
   @Value("${application.repository}")
-  private final String defaultSource = "";
+  private String defaultSource = "";
   @Value("${application.is-preview}")
   private boolean applicationIsPreview = false;
 

@@ -118,6 +118,7 @@ public abstract class AbstractUI extends UI {
   protected void afterNavigatorViewChange(ViewChangeEvent event) {
     JavaScript.getCurrent().execute("disableSpellcheck()");
     JavaScript.getCurrent().execute("installCopyOnClick()");
+    eventBus.publish(event, new CloseOpenWindowsEvent());
   }
 
   /**
