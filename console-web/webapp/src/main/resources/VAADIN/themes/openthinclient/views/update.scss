@@ -17,6 +17,7 @@
     .update-checker {
       grid-template: "button status" / auto 1fr;
       grid-gap: 2ch;
+      align-items: center;
     }
 
     .update-runner {
@@ -24,6 +25,7 @@
         "button       status"
         "description  description" / auto 1fr;
       grid-gap: 2ch;
+      align-items: center;
     }
 
     .wikilinks a:after {
