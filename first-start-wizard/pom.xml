@@ -152,7 +152,6 @@
                 </executions>
                 <configuration>
                     <warSourceDirectory>src/main/resources</warSourceDirectory>
-                    <!--<theme>otc-wizard</theme>-->
                 </configuration>
             </plugin>
         </plugins>
