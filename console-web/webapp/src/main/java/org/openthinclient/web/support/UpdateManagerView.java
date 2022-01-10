@@ -45,12 +45,12 @@ public class UpdateManagerView extends Panel implements View {
   private MessageConveyor mc;
   private CssLayout root;
 
-  private Button updateCheckerButton = null;
-  private Label updateCheckerButtonLabel = null;
-  private Label newVersionLabel = null;
-  private CssLayout updateRunnerContainer = null;
-  private Button updateRunnerButton = null;
-  private Label updateRunnerButtonLabel = null;
+  private Button updateCheckerButton;
+  private Label updateCheckerButtonLabel;
+  private Label newVersionLabel;
+  private CssLayout updateRunnerContainer;
+  private Button updateRunnerButton;
+  private Label updateRunnerButtonLabel;
 
   private UI ui;
 
