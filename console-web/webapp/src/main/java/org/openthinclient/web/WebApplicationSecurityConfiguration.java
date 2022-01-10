@@ -1,7 +1,5 @@
 package org.openthinclient.web;
 
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
 import com.vaadin.spring.annotation.EnableVaadin;
 import java.io.IOException;
 import java.util.Optional;
@@ -146,12 +144,12 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
     final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
     // handle the root request only
     redirectFilter.addUrlPatterns("/");
-    redirectFilter.addUrlPatterns(getServletMappingRoot(vaadinServletUrlMapping) + "first-start");
+    redirectFilter.addUrlPatterns(vaadinServletUrlMapping + "first-start");
 
     redirectFilter.setFilter(new OncePerRequestFilter() {
       @Override
       protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
-        response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping));
+        response.sendRedirect(vaadinServletUrlMapping);
       }
     });
     return redirectFilter;
@@ -162,9 +160,9 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
     http.csrf().disable();
 
     http.authorizeRequests()
-        .antMatchers(getServletMappingRoot(vaadinServletUrlMapping) + "login/**").anonymous()
-        .antMatchers(getServletMappingRoot(vaadinServletUrlMapping) + "UIDL/**").permitAll()
-        .antMatchers(getServletMappingRoot(vaadinServletUrlMapping) + "HEARTBEAT/**").permitAll()
+        .antMatchers(vaadinServletUrlMapping + "login/**").anonymous()
+        .antMatchers(vaadinServletUrlMapping + "UIDL/**").permitAll()
+        .antMatchers(vaadinServletUrlMapping + "HEARTBEAT/**").permitAll()
         .anyRequest().authenticated();
 
     http.httpBasic().disable();
@@ -172,11 +170,11 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
     http.logout()
         .addLogoutHandler(new VaadinSessionClosingLogoutHandler())
-        .logoutUrl(getServletMappingRoot(vaadinServletUrlMapping) + "logout")
-        .logoutSuccessUrl(getServletMappingRoot(vaadinServletUrlMapping) + "login?logout")
+        .logoutUrl(vaadinServletUrlMapping + "logout")
+        .logoutSuccessUrl(vaadinServletUrlMapping + "login?logout")
         .permitAll();
 
-    http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(getServletMappingRoot(vaadinServletUrlMapping) + "login"));
+    http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(vaadinServletUrlMapping + "login"));
 
     http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
 
@@ -211,12 +209,12 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
   @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
   public VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
-    return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, getServletMappingRoot(vaadinServletUrlMapping));
+    return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, vaadinServletUrlMapping);
   }
 
   @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_LOGOUT_HANDLER_BEAN)
   public VaadinRedirectLogoutHandler vaadinRedirectLogoutHandler(VaadinRedirectStrategy vaadinRedirectStrategy) {
-    return new VaadinRedirectLogoutHandler(vaadinRedirectStrategy, getServletMappingRoot(vaadinServletUrlMapping) + "logout");
+    return new VaadinRedirectLogoutHandler(vaadinRedirectStrategy, vaadinServletUrlMapping + "logout");
   }
 
 }
