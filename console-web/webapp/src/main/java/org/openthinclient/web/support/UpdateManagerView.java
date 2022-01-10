@@ -51,6 +51,7 @@ public class UpdateManagerView extends Panel implements View {
   private CssLayout updateRunnerContainer;
   private Button updateRunnerButton;
   private Label updateRunnerButtonLabel;
+  private Label descriptionLabel;
 
   private UI ui;
 
@@ -133,6 +134,8 @@ public class UpdateManagerView extends Panel implements View {
   private void displayUpdateCheckerRunning() {
     this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_RUNNING));
     this.updateCheckerButton.setEnabled(false);
+    this.updateRunnerButton.setEnabled(false);
+    this.descriptionLabel.setEnabled(false);
   }
 
   private CssLayout buildUpdateRunner() {
@@ -140,9 +143,9 @@ public class UpdateManagerView extends Panel implements View {
     updateRunnerContainer.addStyleName("update-runner");
     this.updateRunnerButton = new Button(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_BUTTON));
     this.updateRunnerButtonLabel = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_INFO), ContentMode.HTML);
-    Label description = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_DESCRIPTION));
-    description.addStyleName("description");
-    updateRunnerContainer.addComponents(updateRunnerButton, updateRunnerButtonLabel, description);
+    this.descriptionLabel = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_DESCRIPTION));
+    this.descriptionLabel.addStyleName("description");
+    updateRunnerContainer.addComponents(updateRunnerButton, updateRunnerButtonLabel, this.descriptionLabel);
 
     this.updateRunnerContainer.setVisible(updateChecker.getNewVersion().isPresent());
 
@@ -160,7 +163,9 @@ public class UpdateManagerView extends Panel implements View {
 
   private void displayUpdateRunnerRunning() {
     this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_RUNNING));
+    this.updateCheckerButton.setEnabled(false);
     this.updateRunnerButton.setEnabled(false);
+    this.descriptionLabel.setEnabled(false);
   }
 
   private CssLayout buildWikilinks() {
@@ -177,6 +182,8 @@ public class UpdateManagerView extends Panel implements View {
   @EventBusListenerMethod
   private void updateCheckerFinished(UpdateCheckerEvent event) {
     this.updateCheckerButton.setEnabled(true);
+    this.updateRunnerButton.setEnabled(true);
+    this.descriptionLabel.setEnabled(true);
     if(event.failed()) {
       this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_FAIL));
     } else {
@@ -195,7 +202,9 @@ public class UpdateManagerView extends Panel implements View {
   @EventBusListenerMethod
   private void updateRunnerFinished(UpdateRunnerEvent event) {
     if(event.failed()) {
+      this.updateCheckerButton.setEnabled(true);
       this.updateRunnerButton.setEnabled(true);
+      this.descriptionLabel.setEnabled(true);
       if(event.getExitValue() == 107) {
         this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_NONE));
       } else {
