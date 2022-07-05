@@ -116,6 +116,11 @@
             <artifactId>manager-console-web-webapp</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-console-web-splash</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

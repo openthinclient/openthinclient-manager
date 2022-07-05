@@ -2,6 +2,7 @@ package org.openthinclient.manager.standalone;
 
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
 import org.openthinclient.manager.standalone.patch.PatchManagerHome;
+import org.openthinclient.splash.SplashServer;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.util.RestartApplicationEvent;
 import org.openthinclient.wizard.WizardApplicationConfiguration;
@@ -28,6 +29,8 @@ public class ApplicationControl {
         final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
 
         if (managerHomeFactory.isManagerHomeValidAndInstalled()) {
+            SplashServer.INSTANCE.start();
+
             PatchManagerHome patchManagerHome = new PatchManagerHome(managerHomeFactory.create());
             patchManagerHome.apply();
 

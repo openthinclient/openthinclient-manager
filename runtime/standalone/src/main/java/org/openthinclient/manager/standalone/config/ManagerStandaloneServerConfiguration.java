@@ -1,6 +1,7 @@
 package org.openthinclient.manager.standalone.config;
 
 import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.splash.SplashConfiguration;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 
 @SpringBootApplication
 @Import({ //
+        SplashConfiguration.class,
         WebApplicationConfiguration.class,//
         DataSourceConfiguration.class, //
         DirectoryServicesConfiguration.class, //

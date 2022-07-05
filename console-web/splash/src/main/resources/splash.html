@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/favicon.ico">
+  <link rel="icon" type="image/vnd.microsoft.icon" href="/favicon.ico">
+  <title>openthinclient</title>
+  <style>
+    /* Mimic Valo's loading screen style */
+    html {
+      font: 300 14px/26px Verdana, "DejaVu Sans", "Bitstream Vera Sans",
+                              "DejaVu LGC Sans", Geneva, sans-serif;
+      color: #464646;
+      background-color: #fff;
+      cursor: default;
+      text-align: center;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      position: fixed;
+      bottom: calc(55% - 73px);
+      width: 100%;
+    }
+    #status {
+      color: #888;
+      transition: opacity 1s linear;
+    }
+    #status:not(.show) {
+      opacity: 0;
+    }
+    /* Homemade progress bar since <progress> is way too drafty */
+    #progress {
+      --progress: 0;
+      display: inline-block;
+      height: 1ex;
+      width: 20ch;
+      background: #eee;
+      transition: opacity .75s ease-out;
+    }
+    #progress::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: calc(var(--progress) * 100%);
+      background: #0064a2;
+      transition: width .3s linear;
+    }
+    #progress.breathe {
+      animation: breathe 1.25s ease-out infinite alternate;
+    }
+    @keyframes breathe {
+      from { opacity: 1; }
+      to { opacity: 0.1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="status"></div>
+  <div id="progress" class="breathe"></div>
+  <div>openthinclient</div>
+</body>
+<script>
+  const RECONNECT_INTERVAL = 1000
+  const CONNECT_TIMEOUT = 1500
+
+  const MESSAGES = {
+    STARTING: { en: 'Starting server', de: 'Starte Server' },
+  }
+  const STATUS = document.querySelector('#status')
+  const PROGRESS = document.querySelector('#progress')
+
+  const LANG = navigator.languages.find(lang => /^(en|de)\b/i.test(lang)) || 'en'
+  document.documentElement.lang = LANG
+
+  establishConnection()
+
+  var eventSource, connectHandle;
+
+  function startProgressListener() {
+    eventSource = new EventSource("/api/v2/startup-progress")
+    connectHandle = setTimeout(onConnectionLost, CONNECT_TIMEOUT)
+    eventSource.addEventListener("open", ev => clearTimeout(connectHandle))
+    eventSource.addEventListener("progress", ev => {
+      PROGRESS.style.setProperty('--progress', ev.data)
+      PROGRESS.classList.toggle('breathe', ev.data == 0 || ev.data == 1)
+    })
+    eventSource.addEventListener("close", onConnectionLost)
+    eventSource.addEventListener("error", onConnectionLost)
+  }
+
+  function establishConnection() {
+    fetch('/api/v2/server-status', { cache: 'no-store' })
+    .then(r => r.text())
+    .catch(ex => '')
+    .then(status => {
+      let msg = MESSAGES[status]
+      if(msg) STATUS.textContent = msg[LANG]
+      STATUS.classList.toggle('show', !!msg)
+      //switch
+        status == 'STARTING'? startProgressListener()
+      : status == 'UP'? stopAndRedirectToApp()
+      : waitForServer()
+    })
+    .catch(console.error)
+  }
+
+  function waitForServer() {
+    clearTimeout(connectHandle) // clear any hanging timeouts
+    connectHandle = setTimeout(establishConnection, RECONNECT_INTERVAL)
+  }
+
+  function onConnectionLost() {
+    // try to re-establish SSE connection
+    if(eventSource != null) eventSource.close()
+    clearTimeout(connectHandle) // clear any hanging timeouts
+    establishConnection()
+  }
+
+  function stopAndRedirectToApp() {
+    if(eventSource != null) eventSource.close()  // close SSE channel
+    clearTimeout(connectHandle)  // stop trying to reconnect
+    location.replace(location.origin + location.hash) // redirect to app server
+  }
+</script>
+</html>
