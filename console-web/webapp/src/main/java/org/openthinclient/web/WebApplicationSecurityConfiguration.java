@@ -184,7 +184,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
   @Override
   public void configure(WebSecurity web) throws Exception {
     web.ignoring().antMatchers("/VAADIN/**")
-                  .antMatchers("/actuator/health")
                   .antMatchers("/api/v1/**")
                   .antMatchers("/api/v2/**")
                   .antMatchers("/openthinclient/files/**")

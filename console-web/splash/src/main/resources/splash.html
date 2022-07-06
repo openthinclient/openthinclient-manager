@@ -71,12 +71,18 @@
   const MESSAGES = {
     STARTING: { en: 'Starting server', de: 'Starte Server' },
     UPDATING: { en: 'Update is running', de: 'Updäte wird durchgeführt' },
+    RESTARTING: { en: 'Server restarts', de: 'Server startet neu' },
   }
   const STATUS = document.querySelector('#status')
   const PROGRESS = document.querySelector('#progress')
 
   const LANG = navigator.languages.find(lang => /^(en|de)\b/i.test(lang)) || 'en'
   document.documentElement.lang = LANG
+
+  let is_restart = ( location.pathname == '/splash.html'
+                      && location.hash == '#restart'     )
+  let INITIAL_STATUS = is_restart ? 'RESTARTING' : null
+  const REDIRECT_TARGET = location.pathname.startsWith('/splash.html')? '/' : location.href
 
   establishConnection()
 
@@ -96,15 +102,21 @@
 
   function establishConnection() {
     fetch('/api/v2/server-status', { cache: 'no-store' })
-    .then(r => r.text())
+    .then(r => r.ok? r.text() : '')
     .catch(ex => '')
     .then(status => {
+      if(!status && INITIAL_STATUS) {
+        status = INITIAL_STATUS
+      } else {
+        INITIAL_STATUS = null
+      }
       let msg = MESSAGES[status]
       if(msg) STATUS.textContent = msg[LANG]
       STATUS.classList.toggle('show', !!msg)
       //switch
         status == 'STARTING'? startProgressListener()
       : status == 'UP'? stopAndRedirectToApp()
+      : status == 'RESTARTING'? waitForServer()
       : status == 'UPDATING'? waitForServer()
       : waitForServer()
     })
@@ -126,7 +138,7 @@
   function stopAndRedirectToApp() {
     if(eventSource != null) eventSource.close()  // close SSE channel
     clearTimeout(connectHandle)  // stop trying to reconnect
-    location.replace(location.origin + location.hash) // redirect to app server
+    location.replace(REDIRECT_TARGET) // redirect to app server
   }
 </script>
 </html>

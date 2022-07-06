@@ -81,9 +81,8 @@ public class SystemInstallProgressPresenter {
       // boot into the normal manager mode.
       publisher.publishEvent(new RestartApplicationEvent(this));
 
-      // redirecting the user to the server restart page. This page will continously check whether the server successfully restarted.
-      // Once started, the page will forward the user to the administration frontend.
-      UI.getCurrent().getPage().setLocation("/restart/server-restart.html");
+      // Redirecting the user to the server start page.
+      UI.getCurrent().getPage().setLocation("/splash.html#restart");
     }
 
   }
