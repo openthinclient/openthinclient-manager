@@ -1,5 +1,7 @@
 package org.openthinclient.api;
 
+import org.openthinclient.service.update.UpdateRunnerEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,5 +18,12 @@ public class StatusEndpoint {
 	@GetMapping("/api/v2/startup-progress")
 	public String progress() {
 		return "1";
+	}
+
+	@EventListener
+	private void updateRunnerFinished(UpdateRunnerEvent event) {
+		if (event.getExitValue() == 0) {
+			status = "UPDATING";
+		}
 	}
 }

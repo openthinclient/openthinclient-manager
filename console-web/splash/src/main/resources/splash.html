@@ -70,6 +70,7 @@
 
   const MESSAGES = {
     STARTING: { en: 'Starting server', de: 'Starte Server' },
+    UPDATING: { en: 'Update is running', de: 'Updäte wird durchgeführt' },
   }
   const STATUS = document.querySelector('#status')
   const PROGRESS = document.querySelector('#progress')
@@ -104,6 +105,7 @@
       //switch
         status == 'STARTING'? startProgressListener()
       : status == 'UP'? stopAndRedirectToApp()
+      : status == 'UPDATING'? waitForServer()
       : waitForServer()
     })
     .catch(console.error)

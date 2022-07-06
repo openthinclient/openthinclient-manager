@@ -3,6 +3,7 @@ package org.openthinclient.web.support;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
@@ -212,6 +213,8 @@ public class UpdateManagerView extends Panel implements View {
       }
     } else {
       this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_INSTALLING));
+      Page page = ui.getPage();
+      page.setLocation("/VAADIN/splash.html#" + ui.getUiRootPath() + "#" + page.getUriFragment());
     }
     ui.push();
   }
