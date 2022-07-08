@@ -1,17 +1,12 @@
 package org.openthinclient.web.ui;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_LOGIN;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_PASSWORD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_REMEMBERME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_USERNAME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_WELCOME;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
+import java.util.function.Consumer;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
@@ -19,13 +14,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
@@ -37,9 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.vaadin.spring.security.shared.VaadinSharedSecurity;
 
-/**
- * LoginUI
- */
+
 @SpringUI(path = "/login")
 @Theme("openthinclient")
 public class LoginUI extends UI {
@@ -50,7 +41,6 @@ public class LoginUI extends UI {
     VaadinSharedSecurity vaadinSecurity;
 
     private IMessageConveyor mc;
-    private CheckBox rememberMe;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -65,82 +55,64 @@ public class LoginUI extends UI {
         rootLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
         setContent(rootLayout);
         setSizeFull();
-
     }
 
     private Component buildLoginForm() {
-        final VerticalLayout loginPanel = new VerticalLayout();
-        loginPanel.setSizeUndefined();
-        Responsive.makeResponsive(loginPanel);
+        final CssLayout loginPanel = new CssLayout();
         loginPanel.addStyleName("login-panel");
-        loginPanel.addComponent(buildLabels());
+
+        Label title = new Label("openthinclient");
+        title.addStyleName("title");
 
         Label loginFailed = new Label();
-        loginFailed.setStyleName("login-failed");
-        loginFailed.setVisible(false);
-        loginPanel.addComponents(loginFailed);
+        loginFailed.addStyleName("login-failed");
 
-        HorizontalLayout fields = new HorizontalLayout();
-        fields.setSpacing(true);
-        fields.addStyleName("fields");
+        TextField usernameInput = new TextField(mc.getMessage(ConsoleWebMessages.UI_LOGIN_USERNAME));
+        CssLayout username = new CssLayout(usernameInput);
+        username.addStyleName("username");
 
-        final TextField username = new TextField(mc.getMessage(UI_LOGIN_USERNAME));
-        username.setIcon(FontAwesome.USER);
-        username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+        PasswordField passwordInput = new PasswordField(mc.getMessage(ConsoleWebMessages.UI_LOGIN_PASSWORD));
+        CssLayout password = new CssLayout(passwordInput);
+        password.addStyleName("password");
 
-        final PasswordField password = new PasswordField(mc.getMessage(UI_LOGIN_PASSWORD));
-        password.setIcon(FontAwesome.LOCK);
-        password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-
-        final Button signin = new Button(mc.getMessage(UI_LOGIN_LOGIN));
-        signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        final Button signin = new Button(mc.getMessage(ConsoleWebMessages.UI_LOGIN_LOGIN));
         signin.setClickShortcut(KeyCode.ENTER);
+
+        CheckBox rememberMe = new CheckBox(mc.getMessage(ConsoleWebMessages.UI_LOGIN_REMEMBERME));
+
+        loginPanel.addComponents(
+            title,
+            username,
+            password,
+            signin,
+            rememberMe,
+            loginFailed
+        );
+
+        usernameInput.addValueChangeListener(ev -> loginFailed.setValue(""));
+        passwordInput.addValueChangeListener(ev -> loginFailed.setValue(""));
+        signin.addClickListener( ev -> doLogin( usernameInput.getValue(), passwordInput.getValue(),
+                                                rememberMe.getValue(),
+                                                msg -> loginFailed.setValue(mc.getMessage(msg)) ) );
+
         signin.focus();
-        signin.addClickListener(event -> {
-              final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-              try {
-                  final Authentication authentication = vaadinSecurity.login(username.getValue(), password.getValue(), rememberMe.getValue());
-                  LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
-              } catch (AuthenticationException | AccessDeniedException ex) {
-                loginFailed.getParent().addStyleName("failed");
-                if (ex.getCause() instanceof CommunicationException) {
-                    loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_COMMUNICATION_EXCEPTION));
-                } else {
-                    loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
-                }
-                loginFailed.setVisible(true);
-              } catch (Exception ex) {
-                loginFailed.getParent().getParent().addStyleName("error");
-                loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
-                loginFailed.setVisible(true);
-                LOGGER.error("Unexpected error while logging in", ex);
-              }
-        });
-
-        fields.addComponents(username, password, signin);
-        fields.setComponentAlignment(signin, Alignment.BOTTOM_LEFT);
-        loginPanel.addComponent(fields);
-
-        loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
 
         return loginPanel;
     }
 
-    private Component buildLabels() {
-        CssLayout labels = new CssLayout();
-        labels.addStyleName("labels");
-
-        Label welcome = new Label(mc.getMessage(UI_LOGIN_WELCOME));
-        welcome.setSizeUndefined();
-        welcome.addStyleName(ValoTheme.LABEL_H4);
-        welcome.addStyleName(ValoTheme.LABEL_COLORED);
-        labels.addComponent(welcome);
-
-        Label title = new Label("openthinclient.org");
-        title.setSizeUndefined();
-        title.addStyleName(ValoTheme.LABEL_H3);
-        title.addStyleName(ValoTheme.LABEL_LIGHT);
-        labels.addComponent(title);
-        return labels;
+    private void doLogin(String username, String password, Boolean rememberMe, Consumer<ConsoleWebMessages> setError) {
+        try {
+            final Authentication authentication = vaadinSecurity.login(username, password, rememberMe);
+            LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
+        } catch (AuthenticationException | AccessDeniedException ex) {
+            if (ex.getCause() instanceof CommunicationException) {
+                setError.accept(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_COMMUNICATION_EXCEPTION);
+            } else {
+                setError.accept(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED);
+            }
+        } catch (Exception ex) {
+            setError.accept(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR);
+            LOGGER.error("Unexpected error while logging in", ex);
+        }
     }
 }
