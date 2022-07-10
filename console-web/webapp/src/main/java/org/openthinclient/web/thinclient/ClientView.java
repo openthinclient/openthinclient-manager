@@ -21,6 +21,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.ClientStatus;
+import org.openthinclient.web.ClientStatusUpdateEvent;
 import org.openthinclient.web.component.Popup;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -43,9 +44,11 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -141,16 +144,11 @@ public final class ClientView extends AbstractProfileView<Client> {
                                                   mc.getMessage(UI_CLIENT),
                                                   Client.class);
 
-    boolean isDefaultClient = DEFAULT_CLIENT_MAC.equals(profile.getMacAddress());
-
-    if (clientStatus.isOnline(profile.getMacAddress())) {
-      profilePanel.addStyleName("online");
-    } else if (profile.getMacAddress() != null && !isDefaultClient) {
-      profilePanel.addStyleName("offline");
-    }
+    String mac = profile.getMacAddress();
+    profilePanel.setStyleName("mac-"+mac);
 
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    if (!isDefaultClient) {
+    if (!DEFAULT_CLIENT_MAC.equals(mac)) {
       presenter.addPanelCaptionComponent(createWOLButton(profile));
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
@@ -308,7 +306,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-    plop.setDataProvider(dataProvider, clientStatus.getOnlineMACs());
+    plop.setDataProvider(dataProvider, clientStatus);
     plopPresenter.addWolButtonClickHandler(clients -> {
       wakeOnLan(clients.toArray(new ClientMetaData[0]));
     });
@@ -735,6 +733,19 @@ public final class ClientView extends AbstractProfileView<Client> {
     );
 
     Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
+  }
+
+  @EventListener
+  public void onClientStatusUpdate(ClientStatusUpdateEvent ev) {
+    LOGGER.info("onClientStatusUpdate", ev);
+    StringBuilder sb = new StringBuilder("on_client_status(");
+    sb.append("\"");
+    ev.getOnline().forEach(mac -> sb.append(".mac-").append(mac).append(","));
+    sb.append("\",\"");
+    ev.getOffline().forEach(mac -> sb.append(".mac-").append(mac).append(","));
+    sb.append("\")");
+    LOGGER.info(sb.toString());
+    JavaScript.eval(sb.toString());
   }
 
   @Override

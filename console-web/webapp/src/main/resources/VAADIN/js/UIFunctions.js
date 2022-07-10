@@ -1,3 +1,15 @@
+function on_client_status(online_selector, offline_selector) {
+  console.log("on_client_status", online, offline)
+  document.querySelectorAll(online_selector).forEach(node => {
+    node.classList.add('online')
+    node.classList.remove('offline')
+  })
+  document.querySelectorAll(offline_selector).forEach(node => {
+    node.classList.add('offline')
+    node.classList.remove('online')
+  })
+}
+
 function installInfoButtonFunction() {
   document.documentElement.addEventListener('click', ({target}) => {
     if(target.classList.contains('context-info-button')) {

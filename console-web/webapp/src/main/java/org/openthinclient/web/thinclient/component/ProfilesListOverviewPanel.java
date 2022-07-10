@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.web.ClientStatus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.springframework.web.util.HtmlUtils;
@@ -29,7 +30,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
   private CssLayout gridWrapper;
   private List<SelectionRow> selectionRows = new ArrayList<>();
   private ListDataProvider<DirectoryObject> dataProvider;
-  private Collection<String> onlineMACs = Collections.emptyList();
+  private ClientStatus clientStatus;
 
   private Button addNew;
   private Button deleteProfileAction;
@@ -210,13 +211,13 @@ public class ProfilesListOverviewPanel extends CssLayout {
   }
 
   public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
-    this.setDataProvider(dataProvider, Collections.emptyList());
+    this.setDataProvider(dataProvider, null);
   }
 
-  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider, Collection<String> onlineMACs) {
+  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider, ClientStatus clientStatus) {
     this.dataProvider = dataProvider;
     this.dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-    this.onlineMACs = onlineMACs;
+    this.clientStatus = clientStatus;
     updateRowList();
   }
 
@@ -247,10 +248,9 @@ public class ProfilesListOverviewPanel extends CssLayout {
       Button button = new Button();
       button.setCaptionAsHtml(true);
       if (isClient) {
-        button.addStyleName("client");
-        if(onlineMACs.contains(((ClientMetaData)directoryObject).getMacAddress())) {
-          button.addStyleName("online");
-        }
+        String mac = ((ClientMetaData)directoryObject).getMacAddress();
+        button.addStyleNames("client", "mac-"+mac);
+        button.setStyleName("online", clientStatus.isOnline(mac));
       }
 
       StringBuilder caption = new StringBuilder();
