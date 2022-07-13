@@ -116,7 +116,6 @@ public class DirectoryService
 
       // LDIF import
       cfg.setLdifDirectory(configuration.getEmbeddedLDIFDir());
-      cfg.setLdifFilters(addCustomLdifFilters());
 
       // Addditional bootstrap schema
       cfg.setBootstrapSchemas(addCustomBootstrapSchema(cfg
@@ -160,25 +159,6 @@ public class DirectoryService
     }
   }
 
-  private List addCustomLdifFilters() {
-    final List filters = new ArrayList();
-
-    final Hashtable ht = getPropertiesFromElement(configuration.getLdifFilters());
-    final Enumeration en = ht.elements();
-    Class clazz = null;
-
-    while (en.hasMoreElements())
-      try {
-        clazz = Class.forName((String) en.nextElement());
-        filters.add(clazz.newInstance());
-      } catch (final Exception e) {
-        if (LOG.isErrorEnabled())
-          LOG.error(e.toString());
-      }
-
-    return filters;
-  }
-
   private Set<BootstrapSchema> addCustomBootstrapSchema(Set<BootstrapSchema> schema) {
 
     schema.add(new NisSchema());
@@ -186,21 +166,8 @@ public class DirectoryService
     return schema;
   }
 
-  private void addAdditionalEnv(Hashtable env) {
-    final Hashtable ht = getPropertiesFromElement(configuration.getAdditionalEnv());
-    final Enumeration en = ht.keys();
-    String key = null;
-
-    while (en.hasMoreElements()) {
-      key = (String) en.nextElement();
-      env.put(key, ht.get(key));
-    }
-  }
-
   private Hashtable createContextEnv() {
     final Hashtable env = new Properties();
-
-    addAdditionalEnv(env);
 
     env.put(Context.PROVIDER_URL, configuration.getContextProviderURL());
     env.put(Context.INITIAL_CONTEXT_FACTORY, ServerContextFactory.class.getName());
@@ -413,58 +380,5 @@ public class DirectoryService
       LOG.warn("Unable to flush as embedded server is not enabled.");
 
     return false;
-  }
-
-  // Embedded lists inside the Mbean service definition are made available as
-  // DOM elements
-  // and are parsed into a java collection before use
-  private Hashtable getPropertiesFromElement(Element element) {
-    final Hashtable ht = new Hashtable();
-
-    // remove the wrapping element around the actual content that we're interested in
-    if (element != null && element.getFirstChild() instanceof Element)
-      element = (Element) element.getFirstChild();
-
-    if (null != element) {
-      if (LOG.isInfoEnabled())
-        LOG.info("Adding custom configuration elements:");
-
-      final NodeList nl = element.getChildNodes();
-      Node el = null;
-
-      for (int ii = 0; ii < nl.getLength(); ii++) {
-        el = nl.item(ii);
-
-        String val = null;
-        String name = null;
-
-        if (el.getNodeType() == Node.ELEMENT_NODE) {
-          name = el.getAttributes().getNamedItem("name").getNodeValue();
-
-          final NodeList vnl = el.getChildNodes();
-
-          for (int jj = 0; jj < vnl.getLength(); jj++) {
-            el = vnl.item(jj);
-
-            if (el.getNodeType() == Node.TEXT_NODE) {
-              val = el.getNodeValue();
-
-              break;
-            }
-          }
-
-          if (null != name && null != val) {
-            if (LOG.isInfoEnabled())
-              LOG.info("    " + name + ": " + val);
-
-            ht.put(name, val);
-
-            break;
-          }
-        }
-      }
-    }
-
-    return ht;
   }
 }

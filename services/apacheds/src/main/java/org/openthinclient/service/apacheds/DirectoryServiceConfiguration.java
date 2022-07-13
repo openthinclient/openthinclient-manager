@@ -68,14 +68,6 @@ public class DirectoryServiceConfiguration implements ServiceConfiguration {
   @XmlElement
   private boolean embeddedAnonymousAccess;
 
-  // FIXME is this required at all? If yes, create a nicer model representation
-  @XmlAnyElement
-  private Element additionalEnv;
-
-  // FIXME is this required at all? If yes, create a nicer model representation
-  @XmlAnyElement
-  private Element ldifFilters;
-
   @XmlElement
   private boolean accessControlEnabled;
 
@@ -174,22 +166,6 @@ public class DirectoryServiceConfiguration implements ServiceConfiguration {
 
   public void setEmbeddedAnonymousAccess(boolean embeddedAnonymousAccess) {
     this.embeddedAnonymousAccess = embeddedAnonymousAccess;
-  }
-
-  public Element getAdditionalEnv() {
-    return additionalEnv;
-  }
-
-  public void setAdditionalEnv(Element additionalEnv) {
-    this.additionalEnv = additionalEnv;
-  }
-
-  public Element getLdifFilters() {
-    return ldifFilters;
-  }
-
-  public void setLdifFilters(Element ldifFilters) {
-    this.ldifFilters = ldifFilters;
   }
 
   public boolean isAccessControlEnabled() {
