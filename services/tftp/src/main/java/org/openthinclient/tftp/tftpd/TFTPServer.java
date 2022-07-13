@@ -431,7 +431,7 @@ public class TFTPServer implements Runnable {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private void initTransfer(SocketAddress peer, DatagramChannel serverChannel)
+    private void initTransfer()
             throws IOException, InstantiationException, IllegalAccessException {
       channel = DatagramChannel.open();
       channel.socket().bind(new InetSocketAddress(0));
@@ -576,7 +576,7 @@ public class TFTPServer implements Runnable {
     public void run() {
       try {
         long start = System.currentTimeMillis();
-        initTransfer(peer, serverChannel);
+        initTransfer();
         logger.info("TFTP startup took " + (System.currentTimeMillis() - start));
 
         try {
