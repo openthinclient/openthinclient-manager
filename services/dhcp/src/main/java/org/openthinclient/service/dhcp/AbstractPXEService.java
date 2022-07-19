@@ -36,10 +36,8 @@ import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.common.model.util.Config;
 import org.openthinclient.common.model.util.ConfigProperty;
@@ -69,29 +67,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   protected static final Map<RequestID, Conversation> conversations = Collections
           .synchronizedMap(new HashMap<RequestID, Conversation>());
   private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
-  private final RealmService realmService;
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
-  private final Set<Realm> realms;
   private String defaultNextServerAddress;
   private volatile boolean trackUnrecognizedPXEClients;
   private DhcpServiceConfiguration.PXEPolicy policy;
 
-  public AbstractPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    this.realmService = realmService;
+  public AbstractPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
     this.clientService = clientService;
     this.unrecognizedClientService = unrecognizedClientService;
-
-    try {
-      realms = this.realmService.findAllRealms();
-
-      for (final Realm realm : realms) {
-        logger.info("Serving realm " + realm);
-      }
-    } catch (final Exception e) {
-      logger.error("Can't init directory", e);
-      throw e;
-    }
   }
 
   protected static void expireConversations() {

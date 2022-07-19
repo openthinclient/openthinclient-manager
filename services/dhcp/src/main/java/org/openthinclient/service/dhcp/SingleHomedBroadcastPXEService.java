@@ -5,7 +5,6 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 
@@ -28,8 +27,8 @@ import java.util.Enumeration;
 public class SingleHomedBroadcastPXEService extends BasePXEService {
 	private InetAddress serverAddress;
 
-  public SingleHomedBroadcastPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    super(realmService, clientService, unrecognizedClientService);
+  public SingleHomedBroadcastPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+    super(clientService, unrecognizedClientService);
   }
 
 	@Override

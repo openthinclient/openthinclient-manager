@@ -8,7 +8,6 @@ import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.common.model.util.Config;
 import org.openthinclient.ldap.DirectoryException;
@@ -28,8 +27,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 	protected static final Logger logger = LoggerFactory
 					.getLogger(BasePXEService.class);
 
-	public BasePXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService);
+	public BasePXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+		super(clientService, unrecognizedClientService);
 	}
 
 	/*

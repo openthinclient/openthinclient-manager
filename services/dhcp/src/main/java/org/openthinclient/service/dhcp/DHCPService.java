@@ -28,11 +28,9 @@ import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.Service;
-import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +43,12 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  *
  * @author levigo
  */
-public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
+public class DHCPService implements Service<DhcpServiceConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(DHCPService.class);
 
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
-  private final RealmService realmService;
   private IoAcceptor acceptor;
   private AbstractPXEService dhcpService;
   private IoAcceptorConfig config;
@@ -59,8 +56,7 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
   private DhcpServiceConfiguration configuration;
 
 
-  public DHCPService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
-    this.realmService = realmService;
+  public DHCPService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
     this.clientService = clientService;
     this.unrecognizedClientService = unrecognizedClientService;
   }
@@ -108,13 +104,13 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
 
     switch (configuration.getPxe().getType()) {
       case BIND_TO_ADDRESS:
-        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService);
+        return new BindToAddressPXEService(clientService, unrecognizedClientService);
       case EAVESDROPPING:
-        return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService);
+        return new EavesdroppingPXEService(clientService, unrecognizedClientService);
       case SINGLE_HOMED_BROADCAST:
-        return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService);
+        return new SingleHomedBroadcastPXEService(clientService, unrecognizedClientService);
       case SINGLE_HOMED:
-        return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
+        return new SingleHomedPXEService(clientService, unrecognizedClientService);
       case AUTO:
         // fall through
       default:
@@ -131,24 +127,24 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
       final String osName = System.getProperty("os.name", "");
       if (osName.startsWith("Windows")) {
         logger.info("This seems to be Windows - going for the IndividualBind implementation");
-        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService);
+        return new BindToAddressPXEService(clientService, unrecognizedClientService);
       }
     } catch (final Exception e) {
       logger.info("Can't use BindToAddress implementation");
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
+      return new SingleHomedPXEService(clientService, unrecognizedClientService);
     }
 
     try {
-      return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService);
+      return new SingleHomedBroadcastPXEService(clientService, unrecognizedClientService);
     } catch (final Exception e) {
       logger.info("Can't use SingleHomedBroadcastPXEService implementation");
 
       // try native implementation here, once we have it.
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
+      return new SingleHomedPXEService(clientService, unrecognizedClientService);
     }
   }
 
@@ -161,11 +157,6 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
     config = null;
     dhcpService = null;
     handler = null;
-  }
-
-  public boolean reloadRealms() throws DirectoryException {
-    realmService.reload();
-    return true;
   }
 
 }

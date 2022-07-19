@@ -11,7 +11,6 @@ import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
@@ -42,8 +41,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
 
-  public EavesdroppingPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    super(realmService, clientService, unrecognizedClientService);
+  public EavesdroppingPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+    super(clientService, unrecognizedClientService);
   }
 
   protected InetSocketAddress determineServerAddress(
