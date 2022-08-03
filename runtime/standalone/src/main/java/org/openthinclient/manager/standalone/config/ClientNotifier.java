@@ -15,7 +15,11 @@ public class ClientNotifier {
     @EventListener
     public void onPackageEvent(PackageEvent ev) {
         if(ev.changesOccured()) {
-            webSocket.sendToAll("package-update");
+            // Call in a new thread to avoid deadlock when event is sent
+            // directly from web interface.
+            new Thread(() ->
+                webSocket.sendToAll("package-update")
+            ).start();
         }
     }
 }
