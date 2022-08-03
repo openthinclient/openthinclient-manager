@@ -33,17 +33,17 @@
     <!-- log file for events received by syslog -->
     <appender name="syslogAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
         <discriminator>
-            <key>hostname</key>
+            <key>filename</key>
             <defaultValue>-</defaultValue>
         </discriminator>
         <sift>
-            <appender name="FILE-${hostname}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <appender name="FILE-${filename}" class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <encoder>
                     <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
                 </encoder>
-                <file>${LOG_PATH}/syslog/${hostname}.log</file>
+                <file>${LOG_PATH}/syslog/${filename}.log</file>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-                    <fileNamePattern>${LOG_PATH}/syslog/${hostname}.%i.log.zip</fileNamePattern>
+                    <fileNamePattern>${LOG_PATH}/syslog/${filename}.%i.log.zip</fileNamePattern>
                     <minIndex>1</minIndex>
                     <maxIndex>3</maxIndex>
                 </rollingPolicy>
@@ -82,7 +82,7 @@
     </logger>
 
     <!--<logger name="org.openthinclient.ldap.TypeMapping" level="DEBUG" />-->
-    
+
     <logger name="org.apache.directory" level="OFF"/>
 
 </configuration>
