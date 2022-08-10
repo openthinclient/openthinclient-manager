@@ -11,6 +11,16 @@
     <artifactId>manager-service-tftp</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-store</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!--
         OUR COMMON API THAT ALL SERVICES SHARE

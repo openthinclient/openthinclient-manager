@@ -20,8 +20,6 @@
  *******************************************************************************/
 package org.openthinclient.tftp;
 
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.tftp.tftpd.FilesystemProvider;
@@ -55,10 +53,6 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
 
   @Autowired
   private ManagerHome managerHome;
-  @Autowired
-  private RealmService realmService;
-  @Autowired
-  private ClientService clientService;
 
   @Override
   public TFTPServiceConfiguration getConfiguration() {
@@ -92,20 +86,14 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
       final Path tftpHome = managerHome.getLocation().toPath().resolve(DEFAULT_ROOT_PATH);
       tftpServer.addExport(new TFTPExport("/pxelinux.cfg", new PXEConfigTFTProvider(
               tftpHome,
-              realmService,
-              clientService,
               "template-http.txt",
               "template-tftp.txt")));
       tftpServer.addExport(new TFTPExport("/ipxe.cfg", new PXEConfigTFTProvider(
               tftpHome,
-              realmService,
-              clientService,
               "ipxe.cfg",
               "ipxe.cfg")));
       tftpServer.addExport(new TFTPExport("/localboot.cfg", new PXEConfigTFTProvider(
               tftpHome,
-              realmService,
-              clientService,
               "localboot.cfg",
               "localboot.cfg")));
 

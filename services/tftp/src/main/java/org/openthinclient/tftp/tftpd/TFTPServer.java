@@ -577,7 +577,7 @@ public class TFTPServer implements Runnable {
       try {
         long start = System.currentTimeMillis();
         initTransfer();
-        logger.info("TFTP startup took " + (System.currentTimeMillis() - start));
+        logger.debug("TFTP startup took {}", (System.currentTimeMillis() - start));
 
         try {
           // init two buffers so that we can keep re-sending the xmitBuffer if
@@ -612,9 +612,9 @@ public class TFTPServer implements Runnable {
             block++;
           } while (bytesInBuffer == blksize);
 
-          logger.info("TFTP send to " + peer + " finished normally.");
+          logger.debug("TFTP send to " + peer + " finished normally.");
         } catch (IOException e) {
-          logger.info("TFTP send to " + peer + " failed.", e);
+          logger.warn("TFTP send to " + peer + " failed.", e);
           // try to send error packet
           sendErrorPacket(peer, channel, ERROR_UNDEFINED, e.toString());
         }

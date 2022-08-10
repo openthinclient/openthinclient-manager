@@ -1,32 +1,25 @@
 package org.openthinclient.tftp;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMetaData;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
-import org.openthinclient.common.model.util.Config.BootOptions;
-import org.openthinclient.ldap.DirectoryException;
-import org.springframework.core.env.MapPropertySource;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.service.store.ClientBootData;
 
 public class PXEConfigTFTProviderTest {
 
-  private static final String DEFAULT_TEMPLATE = "DEFAULT tcos\n" + //
+  private static final String DEFAULT_TEMPLATE =
+          "DEFAULT tcos\n" + //
           "\n" + //
           "LABEL tcos\n" + //
           "\tKERNEL\t${BootOptions.KernelName}\n" + //
@@ -45,7 +38,8 @@ public class PXEConfigTFTProviderTest {
           "\n" + //
           "##\n";
 
-  private static final String RESOLVED_TEMPLATE = "DEFAULT tcos\n" + //
+  private static final String RESOLVED_TEMPLATE =
+          "DEFAULT tcos\n" + //
           "\n" + //
           "LABEL tcos\n" + //
           "\tKERNEL\tBOOTOPTIONS_KERNELNAME\n" + //
@@ -60,17 +54,6 @@ public class PXEConfigTFTProviderTest {
           "\t\tBOOTOPTIONS_DEBUG \\\n" + //
           "\t\tBOOTOPTIONS_EXTRAOPTIONS\n" + //
           "\tIPAPPEND 1\n" + //
-          "\n" + //
-          "\n" + //
-          "##\n";
-
-  private static final String COMPRESSED_TEMPLATE = "DEFAULT tcos\n" + //
-          "\n" + //
-          "LABEL tcos\n" + //
-          " KERNEL BOOTOPTIONS_KERNELNAME\n" + //
-          " INITRD BOOTOPTIONS_INITRDNAME,BOOTOPTIONS_KERNELNAME-modules.imgBOOTOPTIONS_FIRMWAREIMAGE\n" + //
-          " APPEND nfsroot=BOOTOPTIONS_NFSROOTSERVER:BOOTOPTIONS_NFSROOTPATH nfshome=HOMEOPTIONS_NFSHOMESERVER:HOMEOPTIONS_NFSHOMEPATH ldapurl=DIRECTORY_PRIMARY_LDAPURLS????bindname=DIRECTORY_PRIMARY_READONLY_PRINCIPAL,X-BINDPW=RElSRUNUT1JZX1BSSU1BUllfUkVBRE9OTFkuU0VDUkVU ro max_loop=256 VERBOSITYOPTIONS_VERBOSITY BOOTOPTIONS_GPUMODULE splashImage=VERBOSITYOPTIONS_SPLASHIMAGE BOOTOPTIONS_DEBUG BOOTOPTIONS_EXTRAOPTIONS\n" + //
-          " IPAPPEND 1\n" + //
           "\n" + //
           "\n" + //
           "##\n";
@@ -142,146 +125,77 @@ public class PXEConfigTFTProviderTest {
   }
 
   @Test
-  public void testProcessTheDefaultTemplate() throws Exception {
-
-    final PXEConfigTFTProvider provider = createProvider();
-
-    final MapPropertySource propertySource = createPropertySource();
-
-    final String processed = provider.resolveVariables(DEFAULT_TEMPLATE, propertySource);
-
-
-    assertEquals(RESOLVED_TEMPLATE, processed);
-  }
-
-  @Test
   public void testCompressTemplate() throws Exception {
 
     final PXEConfigTFTProvider provider = createProvider();
-    final MapPropertySource propertySource = createPropertySource();
-    final String processed = provider.resolveVariables(DEFAULT_TEMPLATE, propertySource);
+    final String result = provider.resolveVariables(
+        DEFAULT_TEMPLATE,
+        new ClientBootData("cn=mock", "192.0.2.120", createProperties()),
+        "192.0.2.1");
 
-    final String result = provider.compressTemplate(processed);
-
-
-    assertEquals(COMPRESSED_TEMPLATE, result);
+    if (!RESOLVED_TEMPLATE.equals(result)) {
+      fail(String.format(
+            "Comparision failure! Expected\n%s\n\nBut gor:\n%s\n",
+            RESOLVED_TEMPLATE, result));
+    }
   }
 
   private PXEConfigTFTProvider createProvider() throws DirectoryException {
-    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.fastTemplate, config.fastTemplate);
-  }
-
-  @Test
-  public void testResolveTemplateNoConfiguredTemplate() throws Exception {
-    final PXEConfigTFTProvider provider = createProvider();
-
-    final Client client = new Client();
-    final Path path = provider.getTemplatePath(client);
-
-    assertEquals(config.tftpHome.resolve(config.fastTemplate), path);
+    return new PXEConfigTFTProvider(config.tftpHome, config.fastTemplate, config.fastTemplate);
   }
 
   @Test
   public void testResolveTemplateWithConfiguredTemplate() throws Exception {
     final PXEConfigTFTProvider provider = createProvider();
 
-    final Client client = new Client();
-    BootOptions.BootLoaderTemplate.set(client, "another-template.txt");
-    final Path path = provider.getTemplatePath(client);
+    List<Map<String, String>> props = createProperties();
+    props.get(0).put("BootOptions.BootLoaderTemplate", "another-template.txt");
+    props.get(0).put("BootOptions.BootMode", "safe");
+    System.out.println(String.format("THIS:\n%s", props));
+    final ClientBootData bootData = new ClientBootData( "cn=mock",
+                                                        "192.0.2.120",
+                                                        props);
+    final Path path = provider.getTemplatePath(bootData);
 
     assertEquals(config.tftpHome.resolve(config.safeTemplate), path);
   }
 
-  private MapPropertySource createPropertySource() {
-    final MapPropertySource propertySource = new MapPropertySource("testProperties", new HashMap<>());
-    propertySource.getSource().put("BootOptions.KernelName", "KERNEL_NAME");
-    propertySource.getSource().put("BootOptions.InitrdName", "INITRD_NAME");
-    propertySource.getSource().put("BootOptions.FirmwareImage", "INITRD_NAME");
+  private List<Map<String, String>> createProperties() {
+    List<Map<String, String>> props = new ArrayList<>();
+    Map<String, String> subProps = new HashMap<>();
+    subProps.put("BootOptions.KernelName", "BOOTOPTIONS_KERNELNAME");
+    subProps.put("BootOptions.InitrdName", "BOOTOPTIONS_INITRDNAME");
+    subProps.put("BootOptions.FirmwareImage", "BOOTOPTIONS_FIRMWAREIMAGE");
+    props.add(subProps);
 
-    propertySource.getSource().put("BootOptions.Debug", "BOOTOPTIONS_DEBUG");
-    propertySource.getSource().put("BootOptions.ExtraOptions", "BOOTOPTIONS_EXTRAOPTIONS");
-    propertySource.getSource().put("BootOptions.FirmwareImage", "BOOTOPTIONS_FIRMWAREIMAGE");
-    propertySource.getSource().put("BootOptions.GpuModule", "BOOTOPTIONS_GPUMODULE");
-    propertySource.getSource().put("BootOptions.InitrdName", "BOOTOPTIONS_INITRDNAME");
-    propertySource.getSource().put("BootOptions.KernelName", "BOOTOPTIONS_KERNELNAME");
-    propertySource.getSource().put("BootOptions.NFSRootPath", "BOOTOPTIONS_NFSROOTPATH");
-    propertySource.getSource().put("BootOptions.NFSRootserver", "BOOTOPTIONS_NFSROOTSERVER");
-    propertySource.getSource().put("Directory.Primary.LDAPURLs", "DIRECTORY_PRIMARY_LDAPURLS");
-    propertySource.getSource().put("Directory.Primary.ReadOnly.Secret", "DIRECTORY_PRIMARY_READONLY.SECRET");
-    propertySource.getSource().put("Directory.Primary.ReadOnly.Principal", "DIRECTORY_PRIMARY_READONLY_PRINCIPAL");
-    propertySource.getSource().put("HomeOptions.NFSHomePath", "HOMEOPTIONS_NFSHOMEPATH");
-    propertySource.getSource().put("HomeOptions.NFSHomeserver", "HOMEOPTIONS_NFSHOMESERVER");
-    propertySource.getSource().put("VerbosityOptions.SplashImage", "VERBOSITYOPTIONS_SPLASHIMAGE");
-    propertySource.getSource().put("VerbosityOptions.Verbosity", "VERBOSITYOPTIONS_VERBOSITY");
-    return propertySource;
+    subProps = new HashMap<>(subProps);
+    subProps.put("BootOptions.KernelName", "this should be overwritten");
+    subProps.put("BootOptions.FirmwareImage", "this should be overwritten");
+    subProps.put("BootOptions.Debug", "BOOTOPTIONS_DEBUG");
+    subProps.put("BootOptions.ExtraOptions", "BOOTOPTIONS_EXTRAOPTIONS");
+    subProps.put("BootOptions.FirmwareImage", "BOOTOPTIONS_FIRMWAREIMAGE");
+    subProps.put("BootOptions.GpuModule", "BOOTOPTIONS_GPUMODULE");
+    subProps.put("BootOptions.InitrdName", "BOOTOPTIONS_INITRDNAME");
+    subProps.put("BootOptions.KernelName", "BOOTOPTIONS_KERNELNAME");
+    subProps.put("BootOptions.NFSRootPath", "BOOTOPTIONS_NFSROOTPATH");
+    props.add(subProps);
+
+    subProps = new HashMap<>(subProps);
+    subProps.put("BootOptions.InitrdName", "this should be replaces");
+    subProps.put("BootOptions.FirmwareImage", "this should be replaces");
+    subProps.put("BootOptions.KernelName", "this should be replaces");
+    subProps.put("BootOptions.NFSRootPath", "this should be replaces");
+    subProps.put("BootOptions.NFSRootserver", "BOOTOPTIONS_NFSROOTSERVER");
+    subProps.put("Directory.Primary.LDAPURLs", "DIRECTORY_PRIMARY_LDAPURLS");
+    subProps.put("Directory.Primary.ReadOnly.Secret", "DIRECTORY_PRIMARY_READONLY.SECRET");
+    subProps.put("Directory.Primary.ReadOnly.Principal", "DIRECTORY_PRIMARY_READONLY_PRINCIPAL");
+    subProps.put("HomeOptions.NFSHomePath", "HOMEOPTIONS_NFSHOMEPATH");
+    subProps.put("HomeOptions.NFSHomeserver", "HOMEOPTIONS_NFSHOMESERVER");
+    subProps.put("VerbosityOptions.SplashImage", "VERBOSITYOPTIONS_SPLASHIMAGE");
+    subProps.put("VerbosityOptions.Verbosity", "VERBOSITYOPTIONS_VERBOSITY");
+    props.add(subProps);
+
+    return props;
   }
 
-  private static class NoopClientService implements ClientService {
-    @Override
-    public Set<Client> findByHwAddress(String hwAddressString) {
-      return null;
-    }
-
-    @Override
-    public Set<Client> findAll() {
-      return null;
-    }
-
-    @Override
-    public Client getDefaultClient() {
-      return null;
-    }
-
-    @Override
-    public Set<ClientMetaData> findAllClientMetaData() {
-      return null;
-    }
-
-    @Override
-    public Set<ClientMetaData> findByLocation(String locationName) {
-      return null;
-    }
-
-    @Override
-    public void reloadAllSchemas() {
-
-    }
-
-    @Override
-    public int count() {
-      return 0;
-    }
-
-    @Override
-    public Set<String> queryNames() {
-      return null;
-    }
-
-    @Override
-    public Client findByName(String name) {
-      return null;
-    }
-
-    @Override
-    public void save(Client object) {
-
-    }
-  }
-
-  private static class NoopRealmService implements RealmService {
-    @Override
-    public Realm getDefaultRealm() {
-      return null;
-    }
-
-    @Override
-    public Set<Realm> findAllRealms() {
-      return Collections.emptySet();
-    }
-
-    @Override
-    public void reload() {
-
-    }
-  }
 }
