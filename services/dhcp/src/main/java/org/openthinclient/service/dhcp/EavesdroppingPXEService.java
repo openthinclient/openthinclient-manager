@@ -9,10 +9,7 @@ import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.service.store.ClientBootData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +37,6 @@ import java.util.Enumeration;
 public class EavesdroppingPXEService extends AbstractPXEService {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
-
-  public EavesdroppingPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    super(clientService, unrecognizedClientService);
-  }
 
   protected InetSocketAddress determineServerAddress(
 			InetSocketAddress localAddress, DhcpMessage message) {
@@ -124,16 +117,16 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 			// check whether client is eligible for PXE service
 			final String hwAddressString = request.getHardwareAddress()
 					.getNativeRepresentation();
-			final Client client = getClient(hwAddressString, clientAddress, request);
+			final ClientBootData bootData = ClientBootData.load(hwAddressString);
 
 			// we create a conversation, even if the client was NOT found, since this
 			// will allow us to track unrecognized PXE clients
-			if (client == null) {
+			if (bootData == null) {
 				logger.info("Client not eligible for PXE proxy service");
 				return null;
 			}
 
-			conversation.setClient(client);
+			conversation.setClient(bootData);
 
 			logger.info("Conversation started");
 
@@ -188,7 +181,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 				logger.info("Got OFFER within " + conversation);
 
 			// track unrecognized clients
-			if (conversation.getClient() == null) {
+			if (conversation.getBootData() == null) {
 				trackUnrecognizedClient(conversation.getDiscover(),
 						offer.getAssignedClientAddress().getHostAddress());
 			} else {

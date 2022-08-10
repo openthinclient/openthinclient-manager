@@ -4,9 +4,6 @@ import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
-import org.openthinclient.ldap.DirectoryException;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -26,10 +23,6 @@ import java.util.Enumeration;
  */
 public class SingleHomedBroadcastPXEService extends BasePXEService {
 	private InetAddress serverAddress;
-
-  public SingleHomedBroadcastPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    super(clientService, unrecognizedClientService);
-  }
 
 	@Override
 	protected InetSocketAddress determineServerAddress(

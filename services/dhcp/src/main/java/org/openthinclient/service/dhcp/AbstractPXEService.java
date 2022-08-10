@@ -35,13 +35,8 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.UnrecognizedClient;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
-import org.openthinclient.common.model.util.Config;
-import org.openthinclient.common.model.util.ConfigProperty;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.service.store.ClientBootData;
+import org.openthinclient.service.store.LDAPConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +48,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+
+import javax.naming.NamingException;
 
 /**
  * @author levigo
@@ -67,16 +63,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   protected static final Map<RequestID, Conversation> conversations = Collections
           .synchronizedMap(new HashMap<RequestID, Conversation>());
   private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
-  private final ClientService clientService;
-  private final UnrecognizedClientService unrecognizedClientService;
   private String defaultNextServerAddress;
   private volatile boolean trackUnrecognizedPXEClients;
   private DhcpServiceConfiguration.PXEPolicy policy;
-
-  public AbstractPXEService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-    this.clientService = clientService;
-    this.unrecognizedClientService = unrecognizedClientService;
-  }
 
   protected static void expireConversations() {
     synchronized (conversations) {
@@ -147,9 +136,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     return true;
   }
 
-  private String getBootfileName(DhcpMessage message, Client client) {
+  private String getBootfileName(DhcpMessage message, ClientBootData bootData) {
     // new simplified schema
-    boolean safe = "safe".equals(Config.BootOptions.BootMode.get(client));
+    boolean safe = "safe".equals(bootData.get("BootOptions.BootMode", null));
     switch(ArchType.fromMessage(message)) {
     case UEFI32:
       return safe ? "ipxe32.efi" : "syslinux32.efi";
@@ -157,7 +146,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       return safe ? "ipxe64.efi" : "syslinux64.efi";
     default:
       // old schema value if installation is not yet migrated
-      String bootfile = Config.BootOptions.BootfileName.get(client);
+      String bootfile = bootData.get("BootOptions.BootfileName", null);
       if (bootfile != null) {
         return bootfile;
       }
@@ -200,33 +189,13 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     final String hwAddressString = discover.getHardwareAddress()
             .getNativeRepresentation().toLowerCase();
 
-    try {
-      VendorClassIdentifier vci = (VendorClassIdentifier) discover.getOptions()
-              .get(VendorClassIdentifier.class);
-
-      // NOTE: This description will be used in the UI to sort the clients.
-      String description = String.format("last seen: %s (%s)", Instant.now(),
-                                         vci != null ? vci.getString() : "");
-
-      unrecognizedClientService.findByHwAddress(hwAddressString).forEach(uc -> {
-        try {
-          uc.getRealm().getDirectory().delete(uc);
-        } catch (DirectoryException e) {
-          logger.error("Cannot delete unrecognizedClient: " + uc, e);
-          return;
-        }
-      });
-
-      UnrecognizedClient uc = new UnrecognizedClient();
-
-      uc.setName(hwAddressString);
-      uc.setMacAddress(hwAddressString);
-      uc.setIpHostNumber(ipHostNumber);
-      uc.setDescription(description);
-
-      unrecognizedClientService.add(uc);
-    } catch (final RuntimeException e) {
-      logger.error("Can't track unrecognized client", e);
+    try (LDAPConnection ldapCon = new LDAPConnection()) {
+      ldapCon.updateUnrecognizedClient(
+          hwAddressString,
+          ipHostNumber != null? ipHostNumber : "0.0.0.0",
+          String.format("last seen: %s", Instant.now()));
+    } catch (NamingException /* | InterruptedException */ ex) {
+      logger.error("Can't track unrecognized client", ex);
     }
   }
 
@@ -251,42 +220,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   }
 
   /**
-   * Check whether the PXE client which originated the message is elegible for
-   * PXE proxy service.
-   */
-  protected Client getClient(String hwAddressString,
-                             InetSocketAddress clientAddress, DhcpMessage request) {
-    try {
-      Set<Client> found = clientService.findByHwAddress(hwAddressString);
-
-      if (found.size() > 0) {
-        if (found.size() > 1)
-          logger.warn("Found more than one client for hardware address "
-                  + request.getHardwareAddress());
-
-        return found.iterator().next();
-      } else if (found.size() == 0) {
-        // all clients may be served, if there is a default client configured
-        if (policy == DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT) {
-          return clientService.getDefaultClient();
-        }
-      }
-      return null;
-    } catch (final RuntimeException e) {
-      logger.error("Can't query for client for PXE service", e);
-      return null;
-    }
-  }
-
-  /**
    * @param localAddress
-   * @param client
+   * @param bootData
    * @return
    */
-  protected InetAddress getNextServerAddress(ConfigProperty<String> configProperty,
-                                             InetSocketAddress localAddress, Client client) {
+  protected InetAddress getNextServerAddress(String property,
+                                             InetSocketAddress localAddress,
+                                             ClientBootData bootData) {
     InetAddress nsa = null;
-    final String value = configProperty.get(client);
+    final String value = bootData.get(property, null);
     if (value != null && !value.contains("${myip}"))
       nsa = safeGetInetAddress(value);
 
@@ -378,8 +320,8 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         // we simply begin a new "conversation" and send the last ACK with the
         // PXE boot data.
         String hwAddressString = request.getHardwareAddress().getNativeRepresentation();
-        Client client = getClient(hwAddressString, clientAddress, request);
-        if(client == null) {
+        ClientBootData bootData = ClientBootData.load(hwAddressString);
+        if(bootData == null) {
           // client not eligible for PXE proxy service
           return null;
         }
@@ -387,7 +329,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
             + getLogDetail(localAddress, clientAddress, request));
         conversation = new Conversation(request, archType);
         synchronized (conversation) {
-            conversation.setClient(client);
+            conversation.setClient(bootData);
             InetSocketAddress serverAddress = determineServerAddress(localAddress, request);
             conversation.setApplicableServerAddress(serverAddress);
         }
@@ -407,8 +349,8 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         return null;
       }
 
-      final Client client = conversation.getClient();
-      if (null == client) {
+      final ClientBootData bootData = conversation.getBootData();
+      if (null == bootData) {
         logger.warn("Got PXE request which we didn't send an offer. "
                 + "Someone else is serving PXE around here?");
         return null;
@@ -427,12 +369,11 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
         return null; // not me!
       }
 
-      client.setIpHostNumber(clientAddress.getAddress().toString().split("/")[1]);
-      // Run in background because clientService.save(…) takes its time and some
-      // clients would abort PXE boot before the delayed ACK reaches them.
-      new Thread(() -> {
-        clientService.save(client);
-      }).start();
+      try {
+        bootData.saveIP(clientAddress.getAddress().toString().split("/")[1]);
+      } catch (Exception ex) {
+        logger.error("Could not save client IP", ex);
+      }
 
       final InetSocketAddress serverAddress = conversation.getApplicableServerAddress();
       final DhcpMessage reply = initGeneralReply(serverAddress, request);
@@ -446,14 +387,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       options.add(vci);
 
       reply.setNextServerAddress(getNextServerAddress(
-              Config.BootOptions.TFTPBootserver, serverAddress, client));
+              "BootOptions.TFTPBootserver", serverAddress, bootData));
 
-      final String rootPath = getNextServerAddress(Config.BootOptions.NFSRootserver,
-              serverAddress, client).getHostAddress()
-              + ":" + Config.BootOptions.NFSRootPath.get(client);
+      final String rootPath = getNextServerAddress(
+          "BootOptions.NFSRootserver",
+          serverAddress,
+          bootData).getHostAddress() + ":" + bootData.get("BootOptions.NFSRootPath", null);
       options.add(new RootPath(rootPath));
 
-      reply.setBootFileName(getBootfileName(request, client));
+      reply.setBootFileName(getBootfileName(request, bootData));
 
       if (logger.isInfoEnabled())
         logger.info("Sending PXE proxy ACK rootPath=" + rootPath
@@ -516,7 +458,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     private static final int CONVERSATION_EXPIRY = 60000;
     private final DhcpMessage discover;
     private final ArchType archType;
-    private Client client;
+    private ClientBootData bootData;
     private DhcpMessage offer;
     private long lastAccess;
     private InetSocketAddress applicableServerAddress;
@@ -554,20 +496,20 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       return archType;
     }
 
-    public Client getClient() {
+    public ClientBootData getBootData() {
       touch();
-      return client;
+      return bootData;
     }
 
-    public void setClient(Client client) {
-      this.client = client;
+    public void setClient(ClientBootData bootData) {
+      this.bootData = bootData;
     }
 
     @Override
     public String toString() {
       return "Conversation[" + discover.getHardwareAddress() + "/"
               + discover.getTransactionId() + "]: age="
-              + (System.currentTimeMillis() - lastAccess) + ", client=" + client;
+              + (System.currentTimeMillis() - lastAccess) + ", client=" + bootData;
     }
 
     public InetSocketAddress getApplicableServerAddress() {

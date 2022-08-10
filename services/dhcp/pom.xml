@@ -23,6 +23,11 @@
 
         <dependency>
             <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-store</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
             <artifactId>manager-common</artifactId>
             <version>${revision}</version>
         </dependency>

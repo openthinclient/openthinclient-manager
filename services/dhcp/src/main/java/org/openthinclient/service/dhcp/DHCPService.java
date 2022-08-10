@@ -27,8 +27,6 @@ import org.apache.mina.common.IoAcceptorConfig;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
@@ -47,19 +45,12 @@ public class DHCPService implements Service<DhcpServiceConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(DHCPService.class);
 
-  private final ClientService clientService;
-  private final UnrecognizedClientService unrecognizedClientService;
   private IoAcceptor acceptor;
   private AbstractPXEService dhcpService;
   private IoAcceptorConfig config;
   private DhcpProtocolHandler handler;
   private DhcpServiceConfiguration configuration;
 
-
-  public DHCPService(ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
-    this.clientService = clientService;
-    this.unrecognizedClientService = unrecognizedClientService;
-  }
 
   @Override
   public DhcpServiceConfiguration getConfiguration() {
@@ -104,13 +95,13 @@ public class DHCPService implements Service<DhcpServiceConfiguration> {
 
     switch (configuration.getPxe().getType()) {
       case BIND_TO_ADDRESS:
-        return new BindToAddressPXEService(clientService, unrecognizedClientService);
+        return new BindToAddressPXEService();
       case EAVESDROPPING:
-        return new EavesdroppingPXEService(clientService, unrecognizedClientService);
+        return new EavesdroppingPXEService();
       case SINGLE_HOMED_BROADCAST:
-        return new SingleHomedBroadcastPXEService(clientService, unrecognizedClientService);
+        return new SingleHomedBroadcastPXEService();
       case SINGLE_HOMED:
-        return new SingleHomedPXEService(clientService, unrecognizedClientService);
+        return new SingleHomedPXEService();
       case AUTO:
         // fall through
       default:
@@ -127,24 +118,24 @@ public class DHCPService implements Service<DhcpServiceConfiguration> {
       final String osName = System.getProperty("os.name", "");
       if (osName.startsWith("Windows")) {
         logger.info("This seems to be Windows - going for the IndividualBind implementation");
-        return new BindToAddressPXEService(clientService, unrecognizedClientService);
+        return new BindToAddressPXEService();
       }
     } catch (final Exception e) {
       logger.info("Can't use BindToAddress implementation");
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(clientService, unrecognizedClientService);
+      return new SingleHomedPXEService();
     }
 
     try {
-      return new SingleHomedBroadcastPXEService(clientService, unrecognizedClientService);
+      return new SingleHomedBroadcastPXEService();
     } catch (final Exception e) {
       logger.info("Can't use SingleHomedBroadcastPXEService implementation");
 
       // try native implementation here, once we have it.
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(clientService, unrecognizedClientService);
+      return new SingleHomedPXEService();
     }
   }
 
