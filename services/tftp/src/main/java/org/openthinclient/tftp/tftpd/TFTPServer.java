@@ -431,7 +431,7 @@ public class TFTPServer implements Runnable {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private void initTransfer(SocketAddress peer, DatagramChannel serverChannel)
+    private void initTransfer()
             throws IOException, InstantiationException, IllegalAccessException {
       channel = DatagramChannel.open();
       channel.socket().bind(new InetSocketAddress(0));
@@ -576,8 +576,8 @@ public class TFTPServer implements Runnable {
     public void run() {
       try {
         long start = System.currentTimeMillis();
-        initTransfer(peer, serverChannel);
-        logger.info("TFTP startup took " + (System.currentTimeMillis() - start));
+        initTransfer();
+        logger.debug("TFTP startup took {}", (System.currentTimeMillis() - start));
 
         try {
           // init two buffers so that we can keep re-sending the xmitBuffer if
@@ -612,9 +612,9 @@ public class TFTPServer implements Runnable {
             block++;
           } while (bytesInBuffer == blksize);
 
-          logger.info("TFTP send to " + peer + " finished normally.");
+          logger.debug("TFTP send to " + peer + " finished normally.");
         } catch (IOException e) {
-          logger.info("TFTP send to " + peer + " failed.", e);
+          logger.warn("TFTP send to " + peer + " failed.", e);
           // try to send error packet
           sendErrorPacket(peer, channel, ERROR_UNDEFINED, e.toString());
         }

@@ -8,22 +8,17 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>manager-service-dhcp</artifactId>
+    <artifactId>manager-service-store</artifactId>
 
     <dependencies>
-
-        <!--
-        OUR COMMON API THAT ALL SERVICES SHARE
-        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-apacheds</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-service-store</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -31,28 +26,21 @@
             <artifactId>manager-common</artifactId>
             <version>${revision}</version>
         </dependency>
-
-        <!--
-            REQUIRED LIBRARIES FOR THE APACHE DS
-        -->
         <dependency>
-
             <groupId>org.openthinclient.3rd-party.apacheds</groupId>
-            <artifactId>apacheds-protocol-dhcp</artifactId>
             <version>${revision}</version>
-            <exclusions>
-            	<exclusion>
-            		<artifactId>slf4j-log4j12</artifactId>
-            		<groupId>org.slf4j</groupId>
-            	</exclusion>
-            </exclusions>
+            <artifactId>apacheds-server-jndi</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-core</artifactId>
-            <version>1.0.2</version>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.11</version>
+        </dependency>
     </dependencies>
 </project>

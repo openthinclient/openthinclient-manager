@@ -4,7 +4,7 @@
     <label lang="de" value="ThinClient"/>
     <!--
     The boot options are contained in several profiles:
-    client, location, hardware type and realm.
+    client, hardware type, location and realm.
     Although the values may therefore be configured in several places
     (with inheritance/precedence in the order stated above), the fallback
     defaults are managed just here.

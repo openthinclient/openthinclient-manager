@@ -3,10 +3,6 @@ package org.openthinclient.service.dhcp;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
-import org.openthinclient.ldap.DirectoryException;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -28,10 +24,6 @@ import java.util.Enumeration;
  * @author levigo
  */
 public class BindToAddressPXEService extends BasePXEService {
-	public BindToAddressPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService);
-	}
-
 	@Override
 	public void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException {

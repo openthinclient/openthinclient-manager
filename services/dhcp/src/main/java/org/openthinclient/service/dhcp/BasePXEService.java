@@ -6,12 +6,8 @@ import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
-import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.RealmService;
-import org.openthinclient.common.model.service.UnrecognizedClientService;
-import org.openthinclient.common.model.util.Config;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.service.store.ClientBootData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +23,6 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 	protected static final Logger logger = LoggerFactory
 					.getLogger(BasePXEService.class);
-
-	public BasePXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService);
-	}
 
 	/*
 	 * @see
@@ -81,20 +73,26 @@ public abstract class BasePXEService extends AbstractPXEService {
 			// check whether client is eligible for PXE service
 			final String hwAddressString = request.getHardwareAddress()
 					.getNativeRepresentation();
-			final Client client = getClient(hwAddressString, clientAddress, request);
 
-			// we create a conversation, even if the client was NOT found, since this
-			// will allow us to track unrecognized PXE clients
-			if (null == client) {
+			//final ClientBootData bootData = ClientBootData.load(hwAddressString);
+			ClientBootData bootData = null;
+			try {
+				bootData = ClientBootData.load(hwAddressString);
+			} catch (Exception ex) {
+				logger.error("Could not load client data for {}", hwAddressString, ex);
+				return null;
+			}
+
+			if (null == bootData) {
 				logger.info("Client not eligible for PXE proxy service");
 
 				trackUnrecognizedClient(request, null);
 				return null;
-			} else if (ClientService.DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
+			} else if (ClientService.DEFAULT_CLIENT_MAC.equals(bootData.getIP()))
 				// also track "unrecognized" MAC if we are serving DEFAULT_CLIENT
 				trackUnrecognizedClient(request, null);
 
-			conversation.setClient(client);
+			conversation.setClient(bootData);
 
 			logger.info("Conversation started");
 
@@ -149,10 +147,13 @@ public abstract class BasePXEService extends AbstractPXEService {
 			if (archType.isHTTP()) {
 				reply.setBootFileName(getBootFileURI(conversation));
 			} else {
-				final Client client = conversation.getClient();
-				if (null != client)
-					reply.setNextServerAddress(getNextServerAddress(Config.BootOptions.TFTPBootserver,
-							conversation.getApplicableServerAddress(), client));
+				final ClientBootData bootData = conversation.getBootData();
+				if (null != bootData)
+					reply.setNextServerAddress(
+							getNextServerAddress(
+									"BootOptions.TFTPBootserver",
+									conversation.getApplicableServerAddress(),
+									bootData));
 			}
 			if (logger.isInfoEnabled())
 				logger.info("Sending PXE proxy offer " + offer);
