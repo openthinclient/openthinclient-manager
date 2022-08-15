@@ -137,11 +137,12 @@ public final class ClientView extends AbstractProfileView<Client> {
   public ProfilePanel createProfilePanel (Client profile) throws BuildProfileException {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
-                                                  mc.getMessage(UI_CLIENT),
-                                                  Client.class);
-
     boolean isDefaultClient = DEFAULT_CLIENT_MAC.equals(profile.getMacAddress());
+
+    String subtitle = mc.getMessage(isDefaultClient? UI_DEFAULT_CLIENT: UI_CLIENT);
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(),
+                                                  subtitle,
+                                                  Client.class);
 
     if (clientStatus.isOnline(profile.getMacAddress())) {
       profilePanel.addStyleName("online");
