@@ -782,6 +782,10 @@ $ok-button-color: #2db200;
               border: 1px solid #ccc;
             }
 
+            &.client.default .v-button-caption::before {
+              visibility: hidden;
+            }
+
             &.client.online .v-button-caption::before {
               background: var(--section-color);
               box-shadow: 0 0 3px var(--section-color);

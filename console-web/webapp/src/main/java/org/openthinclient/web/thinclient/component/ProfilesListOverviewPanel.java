@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.springframework.web.util.HtmlUtils;
@@ -247,9 +248,14 @@ public class ProfilesListOverviewPanel extends CssLayout {
       Button button = new Button();
       button.setCaptionAsHtml(true);
       if (isClient) {
+        String mac = ((ClientMetaData) directoryObject).getMacAddress();
         button.addStyleName("client");
-        if(onlineMACs.contains(((ClientMetaData)directoryObject).getMacAddress())) {
-          button.addStyleName("online");
+        if (ClientService.DEFAULT_CLIENT_MAC.equals(mac)) {
+          button.addStyleName("default");
+        } else {
+          if(onlineMACs.contains(mac)) {
+            button.addStyleName("online");
+          }
         }
       }
 
