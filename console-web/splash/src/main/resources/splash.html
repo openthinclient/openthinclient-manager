@@ -82,7 +82,6 @@
   let is_restart = ( location.pathname == '/splash.html'
                       && location.hash == '#restart'     )
   let INITIAL_STATUS = is_restart ? 'RESTARTING' : null
-  const REDIRECT_TARGET = location.pathname.startsWith('/splash.html')? '/' : location.href
 
   establishConnection()
 
@@ -138,7 +137,10 @@
   function stopAndRedirectToApp() {
     if(eventSource != null) eventSource.close()  // close SSE channel
     clearTimeout(connectHandle)  // stop trying to reconnect
-    location.replace(REDIRECT_TARGET) // redirect to app server
+    // reload URL or redirect to start page if URL is this splash page
+    location.pathname.startsWith('/splash.html')?
+        location.replace(location.origin)
+      : location.reload()
   }
 </script>
 </html>
