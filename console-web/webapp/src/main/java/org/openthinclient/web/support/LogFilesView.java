@@ -137,7 +137,7 @@ public class LogFilesView extends Panel implements View {
       if(client == null) {
         component = unselectedLabel;
       } else {
-        String glob = String.format("%s.", client.getMacAddress());
+        String glob = String.format("%s.", client.getMacAddress()).replace(":", "-");
         component = buildFileListing("syslog", glob);
       }
       content.removeComponent(content.getComponent(content.getComponentCount() - 1));
