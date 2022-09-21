@@ -93,8 +93,7 @@ public class ProfilesListOverviewPanelPresenter {
     VerticalLayout content = new VerticalLayout();
     Window window = new Window(null, content);
     window.setModal(true);
-    window.setPositionX(200);
-    window.setPositionY(50);
+    window.center();
 
     boolean deletionAllowed = true;
     // HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt

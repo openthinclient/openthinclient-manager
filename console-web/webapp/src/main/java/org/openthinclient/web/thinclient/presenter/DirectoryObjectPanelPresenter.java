@@ -62,8 +62,7 @@ public class DirectoryObjectPanelPresenter {
     VerticalLayout content = new VerticalLayout();
     Window window = new Window(null, content);
     window.setModal(true);
-    window.setPositionX(200);
-    window.setPositionY(50);
+    window.center();
 
     boolean deletionAllowed = true;
     if (deleteMandatSupplier != null) {
