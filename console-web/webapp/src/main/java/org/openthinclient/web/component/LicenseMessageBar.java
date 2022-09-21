@@ -43,6 +43,7 @@ public class LicenseMessageBar extends Label {
     licenseStateMessage.put(TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
     licenseStateMessage.put(OLD,              buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
     licenseStateMessage.put(EXPIRED,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage.put(COMMUNITY,        buildMessageHTML(UI_SUPPORT_LICENSE_STATE_COMMUNITY));
   }
 
   private String buildMessageHTML(ConsoleWebMessages... keys) {
@@ -64,7 +65,7 @@ public class LicenseMessageBar extends Label {
 
       setValue(licenseStateMessage.get(licenseState));
 
-      this.removeStyleNames("warning", "error");
+      this.removeStyleNames("community", "warning", "error");
       addStyleName("license-messagebar");
       switch(licenseState) {
         case REQUIRED_TOO_OLD:
@@ -73,6 +74,9 @@ public class LicenseMessageBar extends Label {
         case INVALID:
         case REQUIRED_MISSING:
           this.addStyleName("error");
+          break;
+        case COMMUNITY:
+          this.addStyleName("community");
           break;
         default:
           this.addStyleName("warning");

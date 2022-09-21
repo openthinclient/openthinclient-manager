@@ -28,7 +28,7 @@ public class License {
     // SOFT_EXPIRED
     // OK
     // INVALID
-    // OK
+    COMMUNITY
   }
 
   public String getName() {
@@ -56,7 +56,7 @@ public class License {
 
   public static State getState(License license, String serverID, int clientCount) {
     if(license == null) {
-      return clientCount >= 50? State.REQUIRED_MISSING : State.OK;
+      return clientCount >= 50? State.REQUIRED_MISSING : State.COMMUNITY;
     } else {
       return license.getState(serverID, clientCount);
     }

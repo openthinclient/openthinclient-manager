@@ -134,15 +134,18 @@ public class DashboardView extends Panel implements View {
       License.State licenseState = licenseManager.getLicenseState(clientCount);
       ConsoleWebMessages licenseStatusKey;
       String licenseStatusClass;
-      if (licenseState != License.State.OK) {
-        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_PROBLEM;
-        licenseStatusClass = "problem";
-      } else if (license == null) {
-        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_NO_LICENSE_REQUIRED;
-        licenseStatusClass = "ok";
-      } else {
-        licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_OK;
-        licenseStatusClass = "ok";
+      switch (licenseState) {
+        case COMMUNITY:
+          licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_COMMUNITY_LICENSE;
+          licenseStatusClass = "ok";
+          break;
+        case OK:
+          licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_OK;
+          licenseStatusClass = "ok";
+          break;
+        default:
+          licenseStatusKey = UI_DASHBOARDVIEW_LICENSE_INFO_LICENSE_PROBLEM;
+          licenseStatusClass = "problem";
       }
       Label licenseLabel = new Label(mc.getMessage(licenseStatusKey));
       licenseLabel.addStyleNames("license-status", licenseStatusClass);
