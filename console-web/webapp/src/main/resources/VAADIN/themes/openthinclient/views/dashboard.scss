@@ -146,6 +146,9 @@
         }
       }
 
+      .license-status {
+        line-height: 1.5;
+      }
       .license-status::before {
         padding-right: 1ch;
         font-family: Vaadin-Icons;
