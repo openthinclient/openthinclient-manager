@@ -110,7 +110,8 @@ public class LDAPConnection implements AutoCloseable {
     boolean found = results.hasMore();
     if (!found && isDefaultClientEnabled()) {
       results = ctx.search( CLIENT_DN,
-                            "macaddress=" + ClientService.DEFAULT_CLIENT_MAC,
+                            "(macaddress={0})",
+                            new String[] { ClientService.DEFAULT_CLIENT_MAC },
                             CLIENT_SC);
       found = results.hasMore();
     }
