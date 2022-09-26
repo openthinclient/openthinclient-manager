@@ -111,9 +111,14 @@
     }
   }
 
-  // if the current view is panel based, don't show borders
-  .view-content > .v-panel {
-    border: none;
+  .view-content {
+    & > .v-panel {
+      border: none;
+      background: rgba(255, 255, 255, .66);
+    }
+    .v-treegrid {
+      background: transparent;
+    }
   }
 
   // workaround for vaadin's vanishing scrollbars

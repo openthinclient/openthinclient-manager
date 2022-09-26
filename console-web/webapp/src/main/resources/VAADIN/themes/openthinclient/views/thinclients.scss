@@ -176,6 +176,7 @@ $ok-button-color: #2db200;
       display: flex;
       flex-flow: column nowrap;
       height: 100%;
+      background: white;
 
       .context-info-button {
         display: flex;
@@ -440,9 +441,10 @@ $ok-button-color: #2db200;
 
       .referenceComponents {
         width: 100%;
-        height: 100%;
+        max-height: 100%;
         overflow-y: auto;
         margin-bottom: 1em;
+        background: white;
 
         .referenceComponent {
           display: block;
@@ -628,6 +630,7 @@ $ok-button-color: #2db200;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(42ch, 1fr));
     grid-gap: 2ch;
+    align-items: start;
     height: 100%;
     overflow: hidden;
 
@@ -642,6 +645,7 @@ $ok-button-color: #2db200;
       max-width: 75ch;
       max-height: 100%;
       overflow: hidden !important;
+      background: #fff;
 
       .caption .create-new {
         display: flex;

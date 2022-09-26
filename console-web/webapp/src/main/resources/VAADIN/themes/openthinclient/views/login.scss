@@ -1,8 +1,4 @@
 @mixin login-view {
-  &.loginui {
-    background: url(/VAADIN/themes/openthinclient/loginbg.jpg) center / cover;
-  }
-
   .login-panel {
     display: inline-grid;
     gap: 1em;
