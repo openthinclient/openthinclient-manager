@@ -54,8 +54,7 @@
 
     display: flex;
     flex-flow: row wrap;
-    margin-top: 12px;
-    margin-left: 12px;
+    margin: 1ex 2ch;
 
     .dashboard-panel {
       display: grid;
@@ -64,7 +63,7 @@
       height: 14em;
       overflow: hidden;
       margin: 0 2em 2em 0;
-      border: 1px solid #0b0;
+      border: 1px solid #ccc;
       border-radius: 4px;
       padding: 1ex 1ch;
       background: #fefefe;
