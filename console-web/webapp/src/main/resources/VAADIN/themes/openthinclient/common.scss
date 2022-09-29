@@ -77,6 +77,8 @@
     width: 100%;
     padding: 0 2ch;
     z-index: 1;
+    margin: 1ex 2ch;
+    width: calc(100% - 4ch);
 
     &.warning {
       background: #ffc;
