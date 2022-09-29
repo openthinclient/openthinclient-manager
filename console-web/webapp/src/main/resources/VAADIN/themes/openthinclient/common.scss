@@ -90,8 +90,14 @@
     }
 
     &.community {
-      background: #2b2e33;
+      background: #2b2e33 url(/VAADIN/themes/openthinclient/warn.svg) no-repeat 2ch center / 2em;
+      padding-left: 7ch;
       color: #fff;
+    }
+
+    a {
+      color: #197de1;
+      text-shadow: 0 0 0 white;
     }
   }
 

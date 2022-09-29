@@ -125,14 +125,14 @@ public class LicenseView extends Panel implements View {
           new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EXPIRATION_DATE)),
           new Label(license.getSoftExpiredDate().format(dateFormatter))
         );
-      } else if(clientCount < 50) {
+      } else if(clientCount < 25) {
         Label noLicense = new Label(mc.getMessage(UI_SUPPORT_LICENSE_NOT_REQUIRED),
                                     ContentMode.HTML);
         noLicense.addStyleName("nolicense");
         content.addComponents(
           noLicense,
           new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)),
-          new Label(clientCount + " / 49")
+          new Label(clientCount + " / 24")
         );
       } else {
         Label noLicense = new Label(mc.getMessage(UI_SUPPORT_LICENSE_NOT_INSTALLED));

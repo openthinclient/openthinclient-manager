@@ -117,7 +117,7 @@ public class DashboardView extends Panel implements View {
 
       License license = licenseManager.getLicense();
 
-      Integer maxCount = 49;
+      Integer maxCount = 24;
       if(license != null) {
         maxCount = license.getCount();
       }

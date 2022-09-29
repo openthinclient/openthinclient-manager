@@ -13,12 +13,10 @@ public class License {
   LocalDate createdDate;
 
   public enum State {
-    // sorted as per https://support.openthinclient.com/openthinclient/secure/attachment/18501/Lizenz_im_Manager.png
     REQUIRED_TOO_OLD,
     REQUIRED_OLD,
     REQUIRED_EXPIRED,
     SOFT_EXPIRED,
-    TOO_MANY,
     OK,
     INVALID,
     REQUIRED_MISSING,
@@ -28,7 +26,8 @@ public class License {
     // SOFT_EXPIRED
     // OK
     // INVALID
-    COMMUNITY
+    COMMUNITY,
+    TOO_MANY,
   }
 
   public String getName() {
@@ -56,7 +55,7 @@ public class License {
 
   public static State getState(License license, String serverID, int clientCount) {
     if(license == null) {
-      return clientCount >= 50? State.REQUIRED_MISSING : State.COMMUNITY;
+      return clientCount >= 25? State.REQUIRED_MISSING : State.COMMUNITY;
     } else {
       return license.getState(serverID, clientCount);
     }
@@ -66,14 +65,14 @@ public class License {
     LocalDate now = LocalDate.now();
     if(!serverID.equals(server)) {
       return State.INVALID;
-    } else if(createdDate.plusDays(31).isBefore(now)) {
-      return State.REQUIRED_TOO_OLD;
-    } else if(createdDate.plusDays(7).isBefore(now)) {
-      return clientCount >= 50? State.REQUIRED_OLD: State.OLD;
     } else if(expiredDate.isBefore(now)) {
-      return clientCount >= 50? State.REQUIRED_EXPIRED: State.EXPIRED;
+      return clientCount >= 25? State.REQUIRED_EXPIRED: State.EXPIRED;
     } else if(softExpiredDate.isBefore(now)) {
       return State.SOFT_EXPIRED;
+    } else if(createdDate.plusDays(47).isBefore(now)) {
+      return State.REQUIRED_TOO_OLD;
+    } else if(createdDate.plusDays(33).isBefore(now)) {
+      return clientCount >= 25? State.REQUIRED_OLD: State.OLD;
     } else if(clientCount > count) {
       return State.TOO_MANY;
     } else {
