@@ -639,7 +639,7 @@ public final class ClientView extends AbstractProfileView<Client> {
     private Stream<List<String>> readLogLines(Path logDir, String macaddress) {
       // Read the current log file;
       Stream<List<String>> logLines;
-      Path logPath = logDir.resolve(String.format("%s.log", macaddress));
+      Path logPath = logDir.resolve(String.format("%s.log", macaddress.replace(":", "-")));
       if(logPath.toFile().exists()) {
         try {
           logLines = Stream.of(Files.readAllLines(logPath));
