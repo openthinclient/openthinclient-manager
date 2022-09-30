@@ -231,13 +231,8 @@
     color: red;
   }
 
-  // multiselect
-  .v-label-filterinput {
-
-  }
   .v-grid-filterselect {
     z-index: 10;
-
   }
 
   // ----
@@ -306,7 +301,7 @@
 
   .viewheader {
     padding-top: $view-padding;
-    padding-rigth: $view-padding;
+    padding-right: $view-padding;
     width: 100%;
     text-align: right;
     white-space: normal;
