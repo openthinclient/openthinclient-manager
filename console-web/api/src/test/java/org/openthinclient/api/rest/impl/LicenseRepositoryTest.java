@@ -30,7 +30,7 @@ public class LicenseRepositoryTest {
   @Test
   public void testLicenseOK() {
 
-    Mockito.when(clientService.findAll()).thenReturn(java.util.Collections.singleton(new Client()));
+    Mockito.when(clientService.count()).thenReturn(1);
     Mockito.when(licenseManager.getLicenseState(1)).thenReturn(License.State.OK);
 
     final LicenseResource lr = new LicenseResource(clientService, licenseManager);

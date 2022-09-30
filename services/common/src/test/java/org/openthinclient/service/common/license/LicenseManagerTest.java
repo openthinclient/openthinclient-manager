@@ -94,9 +94,9 @@ public class LicenseManagerTest {
     assertTrue(success);
 
     // Test: TODO: add testcases which make sense
-    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(1));
-    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(42));
-    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(43));
+    assertEquals(License.State.EXPIRED, licenseManager.getLicenseState(1));
+    assertEquals(License.State.REQUIRED_EXPIRED, licenseManager.getLicenseState(42));
+    assertEquals(License.State.REQUIRED_EXPIRED, licenseManager.getLicenseState(43));
 
   }
 
