@@ -37,7 +37,7 @@ public class ApplicationControl {
             LOG.info("\n" + //
                             "========================================================\n" + //
                             "\n" + //
-                            "Starting the open thinclient server\n" + //
+                            "Starting the openthinclient server\n" + //
                             "\n" + //
                             "Home Directory:\n" + //
                             "{}\n" + //
@@ -50,7 +50,7 @@ public class ApplicationControl {
             LOG.info("\n" + //
                             "========================================================\n" + //
                             "\n" + //
-                            "open thinclient\n" + //
+                            "openthinclient\n" + //
                             "First Time Installation\n" + //
                             "\n" + //
                             "========================================================", //
