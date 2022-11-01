@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnio.XnioWorker;
 
 
 public enum SplashServer {
@@ -69,7 +70,13 @@ public enum SplashServer {
         LOG.error("Failed to stop splash server", ex);
       }
     });
+    // Get the worker now. getWorker() return null after stop()
+    XnioWorker worker = server.getWorker();
     server.stop();
+    try {
+      worker.awaitTermination();
+    } catch (InterruptedException ex) {
+    }
   }
 
   public void beanLoaded() {

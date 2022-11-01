@@ -49,11 +49,6 @@ class WebServerWrapper implements WebServer {
   @Override
   public void start() throws WebServerException {
     SplashServer.INSTANCE.stop();
-    try {
-      Thread.sleep(100);
-    } catch (InterruptedException ex) {
-      return;
-    }
     webServer.start();
   }
 
