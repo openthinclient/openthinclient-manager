@@ -101,6 +101,10 @@ public class UpdateManagerView extends Panel implements View {
       buildUpdateRunner(),
       buildWikilinks()
     );
+
+    if(updateChecker.isRunning()) {
+      displayUpdateCheckerRunning();
+    }
   }
 
   private void updateNewVersionLabel() {
@@ -119,10 +123,6 @@ public class UpdateManagerView extends Panel implements View {
     this.updateCheckerButton = new Button(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CHECK_APPLICATION_VERSION_BUTTON));
     this.updateCheckerButtonLabel = new Label();
     updateCheckerContainer.addComponents(this.updateCheckerButton, this.updateCheckerButtonLabel);
-
-    if(updateChecker.isRunning()) {
-      displayUpdateCheckerRunning();
-    }
 
     this.updateCheckerButton.addClickListener(e -> {
         displayUpdateCheckerRunning();
