@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
@@ -160,6 +159,11 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
         .antMatchers(vaadinServletUrlMapping + "login/**").anonymous()
         .antMatchers(vaadinServletUrlMapping + "UIDL/**").permitAll()
         .antMatchers(vaadinServletUrlMapping + "HEARTBEAT/**").permitAll()
+        .antMatchers("/VAADIN/**").permitAll()
+        .antMatchers("/api/v1/**").permitAll()
+        .antMatchers("/api/v2/**").permitAll()
+        .antMatchers("/openthinclient/files/**").permitAll()
+        .antMatchers("/ws/**").permitAll()
         .anyRequest().authenticated();
 
     http.httpBasic().disable();
@@ -176,16 +180,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
     http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
 
     http.sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy());
-  }
-
-  @Override
-  public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/VAADIN/**")
-                  .antMatchers("/api/v1/**")
-                  .antMatchers("/api/v2/**")
-                  .antMatchers("/openthinclient/files/**")
-                  .antMatchers("/ws/**")
-    ;
   }
 
   @Override
