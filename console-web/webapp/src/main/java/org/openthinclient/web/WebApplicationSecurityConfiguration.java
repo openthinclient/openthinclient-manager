@@ -62,9 +62,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
   @Value("${vaadin.servlet.urlMapping}")
   private String vaadinServletUrlMapping;
 
-  @Autowired
-  private VaadinRedirectStrategy redirectStrategy;
-
 
   @Override
   protected UserDetailsService userDetailsService() {
