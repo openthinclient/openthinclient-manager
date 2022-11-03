@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.progress.NoopProgressReceiver;
@@ -33,9 +35,23 @@ public class LicenseUpdater {
 
   private ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-  public void updateLicense(String serverID) {
-    LOG.info("Updating license information.");
+  public CompletableFuture<Void> updateLicense(String serverID) {
+    CompletableFuture<Void> completableFuture = new CompletableFuture<>();
 
+    Executors.newCachedThreadPool().submit(() -> {
+      new Thread(() -> {
+        try {
+          updateLicense_(serverID);
+        } finally {
+          completableFuture.complete(null);
+        }
+      }).start();
+    });
+    return completableFuture;
+  }
+
+  private void updateLicense_(String serverID) {
+    LOG.info("Updating license information.");
     URI uri;
     try {
       uri = new URI(LICENSE_REST_URL + serverID);

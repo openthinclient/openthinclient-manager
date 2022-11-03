@@ -157,9 +157,11 @@ public class LicenseView extends Panel implements View {
     void build() {
       content.addComponents(
         new Button(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON), ev -> {
-            licenseUpdater.updateLicense(serverID);
+          licenseUpdater.updateLicense(serverID).thenRun(() -> {
             overviewBox.update();
             errorBox.update();
+            getUI().access(() -> getUI().push());
+          });
         }),
         new Label(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON_HINT)),
         new Button(mc.getMessage(UI_SUPPORT_LICENSE_ENTRY_BUTTON), ev ->  {
