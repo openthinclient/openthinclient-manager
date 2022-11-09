@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +24,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
@@ -49,41 +51,16 @@ import org.vaadin.spring.security.web.VaadinRedirectStrategy;
  * Configure Spring Security.
  */
 @Configuration
-@EnableVaadin
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
-@EnableVaadinSharedSecurity
-public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(
+  securedEnabled = true,
+  prePostEnabled = true,
+  jsr250Enabled = true,
+  proxyTargetClass = true)
+public class WebApplicationSecurityConfiguration {
 
   @Autowired
   private ManagerHome managerHome;
-
-  @Value("${vaadin.servlet.urlMapping}")
-  private String vaadinServletUrlMapping;
-
-
-  @Override
-  protected UserDetailsService userDetailsService() {
-    return new LdapUserDetailsService(userSearch(), defaultLdapAuthoritiesPopulator());
-  }
-
-  @Override
-  public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-    DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
-    String ldapUrl = createLdapURL(dsc);
-
-    final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth.ldapAuthentication();
-    ldapAuthBuilder.contextSource() //
-        .url(ldapUrl) //
-        .managerDn(dsc.getContextSecurityPrincipal()) //
-        .managerPassword(dsc.getContextSecurityCredentials());
-
-    ldapAuthBuilder
-        .userDnPatterns("cn={0},ou=users")
-        .ldapAuthoritiesPopulator(defaultLdapAuthoritiesPopulator())
-        .contextSource();
-  }
 
   @Bean
   public DefaultLdapAuthoritiesPopulator defaultLdapAuthoritiesPopulator() {
@@ -129,83 +106,140 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
     return "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
   }
 
-  /**
-   * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
-   * potential index.html on the classpath will not be preferred.
-   *
-   * @return the filter configuration
-   */
-  @Bean
-  public FilterRegistrationBean redirectToDashboardUIFilter() {
-    final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
-    // handle the root request only
-    redirectFilter.addUrlPatterns("/");
-    redirectFilter.addUrlPatterns(vaadinServletUrlMapping + "first-start");
 
-    redirectFilter.setFilter(new OncePerRequestFilter() {
-      @Override
-      protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
-        response.sendRedirect(vaadinServletUrlMapping);
-      }
-    });
-    return redirectFilter;
+  public class AbstractSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Override
+    protected UserDetailsService userDetailsService() {
+      return new LdapUserDetailsService(userSearch(), defaultLdapAuthoritiesPopulator());
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+      DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
+      String ldapUrl = createLdapURL(dsc);
+
+      final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth
+          .ldapAuthentication();
+      ldapAuthBuilder.contextSource()
+          .url(ldapUrl)
+          .managerDn(dsc.getContextSecurityPrincipal())
+          .managerPassword(dsc.getContextSecurityCredentials());
+
+      ldapAuthBuilder
+          .userDnPatterns("cn={0},ou=users")
+          .ldapAuthoritiesPopulator(defaultLdapAuthoritiesPopulator())
+          .contextSource();
+    }
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable();
 
-    http.authorizeRequests()
-        .antMatchers(vaadinServletUrlMapping + "login/**").anonymous()
-        .antMatchers(vaadinServletUrlMapping + "UIDL/**").permitAll()
-        .antMatchers(vaadinServletUrlMapping + "HEARTBEAT/**").permitAll()
-        .antMatchers("/VAADIN/**").permitAll()
-        .antMatchers("/api/v1/**").permitAll()
-        .antMatchers("/api/v2/**").permitAll()
-        .antMatchers("/openthinclient/files/**").permitAll()
-        .antMatchers("/ws/**").permitAll()
-        .anyRequest().authenticated();
+  @Configuration
+  @Order(1)
+  public class RESTSecurityConfiguration extends AbstractSecurityConfiguration {
 
-    http.httpBasic().disable();
-    http.formLogin().disable();
-
-    http.logout()
-        .addLogoutHandler(new VaadinSessionClosingLogoutHandler())
-        .logoutUrl(vaadinServletUrlMapping + "logout")
-        .logoutSuccessUrl(vaadinServletUrlMapping + "login?logout")
-        .permitAll();
-
-    http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(vaadinServletUrlMapping + "login"));
-
-    http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
-
-    http.sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy());
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+      http.requestMatchers().antMatchers("/api/**")
+          .and()
+          .httpBasic().realmName("openthinclient");
+      http.sessionManagement()
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
   }
 
-  @Override
-  @Bean
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
 
-  @Bean
-  public RememberMeServices rememberMeServices() {
-    return new TokenBasedRememberMeServices("openthinclient-manager", userDetailsService());
-  }
+  @Configuration
+  @Order(2)
+  @EnableVaadin
+  @EnableVaadinSharedSecurity
+  public class UISecurityConfiguration extends AbstractSecurityConfiguration {
 
-  @Bean
-  public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-    return new SessionFixationProtectionStrategy();
-  }
+    @Value("${vaadin.servlet.urlMapping}")
+    private String vaadinServletUrlMapping;
 
-  @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
-  public VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
-    return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, vaadinServletUrlMapping);
-  }
+    /**
+     * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
+     * potential index.html on the classpath will not be preferred.
+     *
+     * @return the filter configuration
+     */
+    @Bean
+    public FilterRegistrationBean redirectToDashboardUIFilter() {
+      final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
+      // handle the root request only
+      redirectFilter.addUrlPatterns("/");
+      redirectFilter.addUrlPatterns(vaadinServletUrlMapping + "first-start");
 
-  @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_LOGOUT_HANDLER_BEAN)
-  public VaadinRedirectLogoutHandler vaadinRedirectLogoutHandler(VaadinRedirectStrategy vaadinRedirectStrategy) {
-    return new VaadinRedirectLogoutHandler(vaadinRedirectStrategy, vaadinServletUrlMapping + "logout");
+      redirectFilter.setFilter(new OncePerRequestFilter() {
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
+          response.sendRedirect(vaadinServletUrlMapping);
+        }
+      });
+      return redirectFilter;
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+      http.csrf().disable();
+
+      http.requestMatchers().antMatchers(
+          vaadinServletUrlMapping + "**",
+          "/VAADIN/**",
+          "/openthinclient/files/**",
+          "/ws/**"
+        ).and()
+          .authorizeRequests()
+          .antMatchers(vaadinServletUrlMapping + "login/**").anonymous()
+          .antMatchers(vaadinServletUrlMapping + "UIDL/**").permitAll()
+          .antMatchers(vaadinServletUrlMapping + "HEARTBEAT/**").permitAll()
+          .antMatchers("/VAADIN/**").permitAll()
+          .antMatchers("/openthinclient/files/**").permitAll()
+          .antMatchers("/ws/**").permitAll()
+          .anyRequest().authenticated();
+
+      http.httpBasic().disable();
+      http.formLogin().disable();
+
+      http.logout()
+          .addLogoutHandler(new VaadinSessionClosingLogoutHandler())
+          .logoutUrl(vaadinServletUrlMapping + "logout")
+          .logoutSuccessUrl(vaadinServletUrlMapping + "login?logout")
+          .permitAll();
+
+      http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(vaadinServletUrlMapping + "login"));
+
+      http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
+
+      http.sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy());
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+      return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+      return new TokenBasedRememberMeServices("openthinclient-manager", userDetailsService());
+    }
+
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+      return new SessionFixationProtectionStrategy();
+    }
+
+    @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
+    public VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
+      return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, vaadinServletUrlMapping);
+    }
+
+    @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_LOGOUT_HANDLER_BEAN)
+    public VaadinRedirectLogoutHandler vaadinRedirectLogoutHandler(VaadinRedirectStrategy vaadinRedirectStrategy) {
+      return new VaadinRedirectLogoutHandler(vaadinRedirectStrategy, vaadinServletUrlMapping + "logout");
+    }
   }
 
 }
