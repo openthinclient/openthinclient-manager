@@ -76,6 +76,14 @@ public enum SplashServer {
     try {
       worker.awaitTermination();
     } catch (InterruptedException ex) {
+      return;
+    }
+    while (sseHandler.getConnections().size() > 0) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException ex) {
+        return;
+      }
     }
   }
 
