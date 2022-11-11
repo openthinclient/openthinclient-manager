@@ -23,6 +23,8 @@ public class ApplicationControl {
 
     public void start(String[] args) {
 
+        System.setProperty("com.sun.jndi.ldap.object.disableEndpointIdentification", "true");
+
         if (context != null)
             throw new IllegalStateException("The application has already been started");
 
