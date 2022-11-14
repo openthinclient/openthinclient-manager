@@ -36,8 +36,8 @@
 	</scm>
 
 	<properties>
-		<revision>2022.1</revision>
-		<application.meta-package-version>2022.1</application.meta-package-version>
+		<revision>2022.1.1</revision>
+		<application.meta-package-version>2022.1.1</application.meta-package-version>
 		<application.repository>http://archive.openthinclient.org/openthinclient/v2022/packages</application.repository>
 		<application.distribution>http://archive.openthinclient.org/openthinclient/v2022/first-start-profiles/distributions.xml</application.distribution>
 
