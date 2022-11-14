@@ -24,7 +24,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
@@ -285,7 +285,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
          } else {
             iconHtml = VaadinIcons.FILE_O.getHtml();
          }
-         return iconHtml + " " + Jsoup.clean(file.getName(), Whitelist.simpleText());
+         return iconHtml + " " + Jsoup.clean(file.getName(), Safelist.simpleText());
       }, new HtmlRenderer()).setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_NAME)).setId("file-name");
 
       docList.addColumn(
