@@ -78,13 +78,11 @@ public enum SplashServer {
     } catch (InterruptedException ex) {
       return;
     }
-    while (sseHandler.getConnections().size() > 0) {
+    sseHandler.getConnections().forEach(conn -> {
       try {
-        Thread.sleep(100);
-      } catch (InterruptedException ex) {
-        return;
-      }
-    }
+        conn.close();
+      } catch (IOException ex) {}
+    });
   }
 
   public void beanLoaded() {
