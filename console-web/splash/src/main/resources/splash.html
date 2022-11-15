@@ -138,7 +138,7 @@
     if(eventSource != null) eventSource.close()  // close SSE channel
     clearTimeout(connectHandle)  // stop trying to reconnect
     // reload URL or redirect to start page if URL is this splash page
-    location.pathname.startsWith('/splash.html')?
+    location.pathname.match('.*/splash.html')?
         location.replace(location.origin)
       : location.reload()
   }
