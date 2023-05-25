@@ -130,6 +130,19 @@ public class LDAPConnection implements AutoCloseable {
   }
 
 
+  private static final SearchControls CLIENT_DN_SC = singleSC();
+  /**
+   * @return DN of client for given MAC address or null if nothing was found
+   */
+  public String searchClientDN(String mac) throws NamingException {
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( CLIENT_DN,
+                    "(macaddress={0})", new String[] { mac },
+                    CLIENT_DN_SC);
+    return r.hasMore() ? r.next().getName() : null;
+  }
+
+
   private static final String HWTYPE_DN = "ou=hwtypes," + BASE_DN;
   private static final SearchControls HWTYPE_SC = singleSC();
   /**

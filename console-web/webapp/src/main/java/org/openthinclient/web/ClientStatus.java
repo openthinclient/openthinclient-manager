@@ -1,8 +1,9 @@
 package org.openthinclient.web;
 
 import org.openthinclient.api.ws.WebSocketHandler;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.service.store.LDAPConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,10 +17,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.naming.NamingException;
 
 @Component
 @EnableScheduling
 public class ClientStatus {
+    private static final Logger LOG = LoggerFactory.getLogger(ClientStatus.class);
 
     /** Check for offline clients every _ milliseconds */
     private static final long STATUS_UPDATE_INTERVAL = 3 * 1000;
@@ -34,9 +37,6 @@ public class ClientStatus {
 
     @Autowired
     WebSocketHandler webSocket;
-
-    @Autowired
-    ClientService clientService;
 
     Map<String, Long> clients;
 
@@ -53,12 +53,14 @@ public class ClientStatus {
             while(matcher.find()) {
                 String mac = matcher.group(1);
                 if(!clients.containsKey(mac)) {
-                    for(Client client: clientService.findByHwAddress(mac)) {
-                        client.setIpHostNumber(remote_ip);
-                        // Run in background, as saving can take a lot of time.
-                        new Thread(() -> {
-                            clientService.save(client);
-                        }).start();
+                    try (LDAPConnection ldapCon = new LDAPConnection()) {
+                        String dn = ldapCon.searchClientDN(mac);
+                        if(dn == null) {
+                            continue;
+                        }
+                        ldapCon.saveIP(dn, remote_ip);
+                    } catch (NamingException ex) {
+                        LOG.error("Failed to save IP for {}", mac, ex);
                     }
                 }
                 clients.put(mac, System.currentTimeMillis());
