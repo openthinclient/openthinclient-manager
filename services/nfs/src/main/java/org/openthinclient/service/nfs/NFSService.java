@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -226,10 +227,26 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 		} catch(Exception ex) {
 			LOG.error("Error while stopping NFS server for restart:", ex);
 		}
-		try {
-			startService();
-		} catch(Exception ex) {
-			LOG.error("Error while restarting NFS server:", ex);
+		boolean restarted = false;
+		long wait = 10;
+		while(!restarted) {
+			try {
+				startService();
+				restarted = true;
+			} catch(BindException ex) {
+				LOG.warn(
+					"Failed to bind to ports. Retrying in {} seconds...",
+					(float)wait / 1000);
+			} catch(Exception ex) {
+				LOG.error("Error while restarting NFS server:", ex);
+				break;
+			}
+			try {
+				Thread.sleep(wait);
+			} catch (InterruptedException e) {
+				break;
+			}
+			wait = Math.min(5000, wait * 2);
 		}
 	}
 
