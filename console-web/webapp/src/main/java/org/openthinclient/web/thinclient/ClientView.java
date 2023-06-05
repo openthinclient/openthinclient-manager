@@ -12,6 +12,7 @@ import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -266,37 +267,51 @@ public final class ClientView extends AbstractProfileView<Client> {
   }
 
   private Component createWOLButton(Client profile) {
-    Button button = new Button();
-    button.addStyleName("wol");
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
-    button.setIcon(VaadinIcons.POWER_OFF);
-    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    button.addStyleName(ValoTheme.BUTTON_SMALL);
-    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> wakeOnLan(profile));
-    return button;
+    return createIconButton(
+        VaadinIcons.POWER_OFF,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL,
+        "wol",
+        ev -> wakeOnLan(profile)
+    );
   }
 
   private Component createVNCButton(Client profile) {
-    Button button = new Button();
-    button.addStyleName("vnc");
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
-    button.setIcon(VaadinIcons.DESKTOP);
-    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    button.addStyleName(ValoTheme.BUTTON_SMALL);
-    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
-    return button;
+    return createIconButton(
+        VaadinIcons.DESKTOP,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC,
+        "vnc",
+        ev -> openNoVncInNewBrowserWindow(profile.getName())
+    );
   }
 
   private Component createLOGButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.FILE_TEXT_O,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG,
+        ev -> showClientLogs(profile)
+    );
+  }
+
+  private Component createIconButton( VaadinIcons icon,
+                                      ConsoleWebMessages description,
+                                      ClickListener clickListener ) {
+    return createIconButton(icon, description, null, clickListener);
+  }
+
+  private Component createIconButton( VaadinIcons icon,
+                                      ConsoleWebMessages description,
+                                      String styleName,
+                                      ClickListener clickListener ) {
     Button button = new Button();
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
-    button.setIcon(VaadinIcons.FILE_TEXT_O);
+    button.setIcon(icon);
+    button.setDescription(mc.getMessage(description));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> showClientLogs(profile));
+    if (styleName != null) {
+      button.addStyleName(styleName);
+    }
+    button.addClickListener(clickListener);
     return button;
   }
 
