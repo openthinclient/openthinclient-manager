@@ -54,8 +54,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
     setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
     packageList.setSelectionMode(Grid.SelectionMode.MULTI);
-    packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
+    packageList.addColumn(AbstractPackageItem::getName).setSortable(false).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
     Column<ResolvedPackageItem, ?> versionColumn = packageList.addColumn(AbstractPackageItem::getDisplayVersion)
+                                                              .setSortable(false)
                                                               .setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION))
                                                               .setId("displayVersion");
 
@@ -71,6 +72,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
       });
       return moreButton;
     }, new ComponentRenderer())
+    .setSortable(false)
     .setCaption("");
 
     packageList.addItemClickListener(event -> {
