@@ -152,6 +152,11 @@
       tbody .v-grid-row:hover .v-grid-cell.frozen:first-child + .v-grid-cell:before {
         border: 2px solid #ccc
       }
+
+      .v-grid-row-selected > .v-grid-cell {
+        color: #fff;
+        text-shadow: 0 0 0 #fff;
+      }
     }
 
     // keep details button readable after selection
