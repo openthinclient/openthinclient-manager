@@ -106,6 +106,54 @@
       background: $v-grid-row-background-color;
     }
 
+    .packageList {
+      // hide checkbox since selection is re-implemented via click handler
+      .v-grid-cell:first-child, .v-grid-cell:first-child * {
+        max-width: 0;
+        padding: 0;
+      }
+      // and then redraw the checkbox for the visual indicator
+      // (yes this is ridiculous)
+      tbody .v-grid-cell.frozen:first-child + .v-grid-cell {
+        padding-left: 50px;
+
+        &:before, &:after {
+          display: inline-block;
+          position: absolute;
+          top: 8px;
+          left: 10px;
+          box-sizing: border-box;
+          width: 19px;
+          height: 19px;
+          line-height: 20px;
+          font-size: 11px;
+          text-align: center;
+        }
+        &:before {
+          content: "";
+          border: 1px solid #e1e5e8;
+          border-radius: 50%;
+          padding: 0;
+          font-weight: 400;
+          color: #191919;
+          background: #eef0ef;
+        }
+        &:after {
+          content: "\f00c";
+          font-family: ThemeIcons;
+          color: transparent;
+          transition: color 100ms;
+        }
+
+      }
+      tbody .v-grid-row-selected .v-grid-cell.frozen:first-child + .v-grid-cell:after {
+        color: #5099c6;
+      }
+      tbody .v-grid-row:hover .v-grid-cell.frozen:first-child + .v-grid-cell:before {
+        border: 2px solid #ccc
+      }
+    }
+
     // keep details button readable after selection
     .v-grid-row-selected .details-button {
       color: white;

@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.event.selection.MultiSelectionEvent;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
@@ -26,10 +27,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_S
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_PREVIEW_VERSIONS;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,13 +74,13 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     .setCaption("");
 
     packageList.addItemClickListener(event -> {
-      if (event.getColumn() == null) {
-        return;
-      }
-      if (packageList.getSelectedItems().contains(event.getItem())) {
-        packageList.deselect(event.getItem());
+      // De/Select row on click on any column
+      ResolvedPackageItem item = event.getItem();
+      if (packageList.getSelectedItems().contains(item)) {
+        packageList.deselect(item);
       } else {
-        packageList.select(event.getItem());}
+        packageList.select(item);
+      }
     });
 
     filterInput = new TextField();
@@ -125,9 +123,67 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addSelectionListener(event -> {
-      Set<ResolvedPackageItem> value = event.getAllSelectedItems();
-      consumer.accept(value.stream().map(rpi -> ((ResolvedPackageItem) rpi).getPackage()).collect(Collectors.toCollection(ArrayList::new)));
+      Set<ResolvedPackageItem> selectedItems = event.getAllSelectedItems();
+      if (event instanceof MultiSelectionEvent) {  // this should always be true
+        if (deduplicatePackageSelection(
+            (MultiSelectionEvent<ResolvedPackageItem>)event)
+        ) {
+          // If the selection has been changed, abort and don't call the
+          // consumer (yet), as the changes will be reflected in a new event.
+          return;
+        }
+      }
+      consumer.accept(
+        selectedItems.stream()
+            .map(item -> item.getPackage())
+            .collect(Collectors.toCollection(ArrayList::new)));
     });
+  }
+
+  private boolean deduplicatePackageSelection(
+      MultiSelectionEvent<ResolvedPackageItem> event
+  ) {
+    // Ensure that only one version of a package is selected.
+    // Deselect all but one version of a package if multiple versions are
+    // selected. Prefer user choice. If all fails prefer newer version.
+    Set<ResolvedPackageItem> newlySelectedItems = event.getAddedSelection();
+    if (newlySelectedItems.size() == 0) {
+      return false;
+    }
+
+    Map<String, ResolvedPackageItem> selectCandidates = new HashMap<>();
+    Set<ResolvedPackageItem> deselectItems = new HashSet<>();
+
+    // first deduplicate the newly selected items
+    for (ResolvedPackageItem item : newlySelectedItems) {
+      if (!selectCandidates.containsKey(item.getName())) {
+        selectCandidates.put(item.getName(), item);
+      } else {
+        // prefer newer version
+        ResolvedPackageItem candidate = selectCandidates.get(item.getName());
+        if (0 > candidate.getPackage().getVersion().compareTo(
+            item.getPackage().getVersion())) {
+          deselectItems.add(candidate);
+          selectCandidates.put(item.getName(), item);
+        } else {
+          deselectItems.add(item);
+        }
+      }
+    }
+    // then deselect all packages that have newly selected other versions
+    for (ResolvedPackageItem item : event.getAllSelectedItems()) {
+      ResolvedPackageItem selectedItem = selectCandidates.get(item.getName());
+      if (selectedItem != null && selectedItem != item) {
+        deselectItems.add(item);
+      }
+    }
+
+    if (deselectItems.size() > 0) {
+      deselectItems.forEach(packageList::deselect);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
