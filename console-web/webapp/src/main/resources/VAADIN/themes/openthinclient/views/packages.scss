@@ -157,6 +157,20 @@
         color: #fff;
         text-shadow: 0 0 0 #fff;
       }
+
+      // Focus indicator for row
+      tbody .v-grid-row-focused {
+        border-color: #5099c6 !important;
+        & + .v-grid-row {
+          border-top-color: #5099c6;
+        }
+      }
+      tbody .v-grid-row-selected.v-grid-row-focused {
+        border-color: #000 !important;
+        & + .v-grid-row {
+          border-top-color: #000;
+        }
+      }
     }
 
     // keep details button readable after selection
