@@ -38,7 +38,12 @@ public class ClientStatus {
     @Autowired
     WebSocketHandler webSocket;
 
-    Map<String, Long> clients;
+    class ClientInfo {
+        long lastHeartbeat;
+        WebSocketSession wsSession;
+    }
+
+    Map<String, ClientInfo> clients;
 
     @PostConstruct
     public void init() {
@@ -48,6 +53,10 @@ public class ClientStatus {
 
     private void onHeartbeat(WebSocketSession session, String message) {
         String remote_ip = session.getRemoteAddress().getAddress().getHostAddress();
+        ClientInfo clientInfo = new ClientInfo() {{
+            lastHeartbeat = System.currentTimeMillis();
+            wsSession = session;
+        }};
         Matcher matcher = MAC_LINE.matcher(message);
         synchronized(clients) {
             while(matcher.find()) {
@@ -63,7 +72,7 @@ public class ClientStatus {
                         LOG.error("Failed to save IP for {}", mac, ex);
                     }
                 }
-                clients.put(mac, System.currentTimeMillis());
+                clients.put(mac, clientInfo);
             }
         }
     }
@@ -72,7 +81,7 @@ public class ClientStatus {
     public void checkClientsStatus() {
         long cutOff = System.currentTimeMillis() - HEARTBEAT_TOLERANCE;
         synchronized(clients) {
-            clients.values().removeIf(timestamp -> timestamp < cutOff);
+            clients.values().removeIf(info -> info.lastHeartbeat < cutOff);
         }
     }
 
