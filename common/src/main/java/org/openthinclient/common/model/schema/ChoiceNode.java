@@ -100,20 +100,6 @@ public class ChoiceNode extends EntryNode {
     this.style = style;
   }
 
-  /*
-   * @see org.openthinclient.common.model.schema.EntryNode#getUID()
-   */
-  @Override
-  public long getUID() {
-    long uid = 0;
-    for (final Iterator i = options.iterator(); i.hasNext(); ) {
-      final Option opt = (Option) i.next();
-      uid ^= opt.getValue().hashCode();
-    }
-
-    return super.getUID() ^ uid;
-  }
-
   public enum Style {
     COMBOBOX, LIST, LIST_MULTI, CHECKBOXES, RADIOBUTTONS
   }

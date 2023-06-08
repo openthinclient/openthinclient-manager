@@ -39,13 +39,4 @@ public class EntryNode extends Node {
   public void setValue(String value) {
     this.defaultValue = value;
   }
-
-  /*
-   * @see org.openthinclient.common.model.schema.Node#getUID()
-   */
-  @Override
-  public long getUID() {
-    return super.getUID()
-            ^ (null != defaultValue ? defaultValue.hashCode() : 123424234);
-  }
 }

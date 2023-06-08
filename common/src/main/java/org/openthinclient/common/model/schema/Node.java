@@ -45,7 +45,6 @@ import javax.xml.bind.annotation.XmlType;
         "labels", "tips", "children"
 })
 @XmlAccessorType(XmlAccessType.NONE)
-//@XmlAccessorOrder(value = XmlAccessOrder.UNDEFINED)
 public abstract class Node implements Iterable<Node>, Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -211,9 +210,6 @@ public abstract class Node implements Iterable<Node>, Serializable {
     return key;
   }
 
-  /*
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return getLabel();
@@ -254,19 +250,6 @@ public abstract class Node implements Iterable<Node>, Serializable {
         return tip.getLabel();
 
     return null;
-  }
-
-  protected long getUID() {
-    long uid = getClass().getSimpleName().hashCode();
-
-    for (Iterator i = children.iterator(); i.hasNext(); ) {
-      Node child = (Node) i.next();
-      uid ^= child.getUID();
-    }
-
-    uid ^= getKey().hashCode() ^ getName().hashCode();
-
-    return uid;
   }
 
   /**
