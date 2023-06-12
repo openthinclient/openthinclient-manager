@@ -93,4 +93,27 @@ public class ClientStatus {
         return Collections.unmodifiableSet(clients.keySet());
     }
 
+
+    public void restartClients(Iterable<String> macs) {
+        haltClients("restart", macs);
+    }
+
+    public void shutdownClients(Iterable<String> macs) {
+        haltClients("shutdown", macs);
+    }
+
+    private void haltClients(String type, Iterable<String> macs) {
+        synchronized(clients) {
+            for(String mac : macs) {
+                if(clients.containsKey(mac)) {
+                    ClientInfo info = clients.get(mac);
+                    boolean ok = webSocket.send(info.wsSession, type);
+                    if (ok) {
+                        webSocket.endSession(info.wsSession);
+                        clients.remove(mac);
+                    }
+                }
+            }
+        }
+    }
 }

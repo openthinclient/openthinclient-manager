@@ -154,6 +154,8 @@ public final class ClientView extends AbstractProfileView<Client> {
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if (!isDefaultClient) {
       presenter.addPanelCaptionComponent(createWOLButton(profile));
+      presenter.addPanelCaptionComponent(createRestartButton(profile));
+      presenter.addPanelCaptionComponent(createShutdownButton(profile));
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
         presenter.addPanelCaptionComponent(createIPButton(profile));
@@ -268,11 +270,27 @@ public final class ClientView extends AbstractProfileView<Client> {
 
   private Component createWOLButton(Client profile) {
     return createIconButton(
-        VaadinIcons.POWER_OFF,
+        VaadinIcons.PLAY,
         UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL,
         "wol",
         ev -> wakeOnLan(profile)
     );
+  }
+
+  private Component createRestartButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.REFRESH,
+        UI_PROFILE_PANEL_BUTTON_RESTART,
+        "restart",
+        ev -> restartClients(profile));
+  }
+
+  private Component createShutdownButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.STOP,
+        UI_PROFILE_PANEL_BUTTON_SHUTDOWN,
+        "shutdown",
+        ev -> shutdownClients(profile));
   }
 
   private Component createVNCButton(Client profile) {
@@ -327,6 +345,12 @@ public final class ClientView extends AbstractProfileView<Client> {
     plop.setDataProvider(dataProvider, clientStatus.getOnlineMACs());
     plopPresenter.addWolButtonClickHandler(clients -> {
       wakeOnLan(clients.toArray(new ClientMetaData[0]));
+    });
+    plopPresenter.addRestartButtonClickHandler(clients -> {
+      restartClients(clients.toArray(new ClientMetaData[0]));
+    });
+    plopPresenter.addShutdownButtonClickHandler(clients -> {
+      shutdownClients(clients.toArray(new ClientMetaData[0]));
     });
     plopPresenter.setVisible(true);
     return plopPresenter;
@@ -736,6 +760,43 @@ public final class ClientView extends AbstractProfileView<Client> {
     }
   }
 
+  private void restartClients(ClientMetaData... profiles) {
+    if (profiles.length == 0) {
+      return;
+    }
+    (new ConfimationPopup(
+        ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_TITLE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_SINGLE_MESSAGE:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_MULTI_MESSAGE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_SINGLE_OK:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_MULTI_OK,
+        () -> clientStatus.restartClients(
+                  Arrays.stream(profiles)
+                        .map(ClientMetaData::getMacAddress)
+                        .collect(Collectors.toList()))
+    )).open();
+  }
+
+  private void shutdownClients(ClientMetaData... profiles) {
+    if (profiles.length == 0) {
+      return;
+    }
+    (new ConfimationPopup(
+        ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_TITLE,
+        profiles.length == 1? UI_PROFILE_CONFIRM_SHUTDOWN_SINGLE_MESSAGE
+                            : UI_PROFILE_CONFIRM_SHUTDOWN_MULTI_MESSAGE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_SINGLE_OK:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_MULTI_OK,
+        () -> clientStatus.shutdownClients(
+                  Arrays.stream(profiles)
+                        .map(ClientMetaData::getMacAddress)
+                        .collect(Collectors.toList()))
+    )).open();
+  }
+
   private void openNoVncInNewBrowserWindow(String clientName) {
     String ipHostNumber = getFreshProfile(clientName).getIpHostNumber();
     boolean isNoVNCConsoleEncrypted = false;
@@ -763,4 +824,24 @@ public final class ClientView extends AbstractProfileView<Client> {
     return TITLE_KEY;
   }
 
+  class ConfimationPopup extends Popup {
+    ConfimationPopup(
+        ConsoleWebMessages title_key,
+        ConsoleWebMessages message_key,
+        ConsoleWebMessages cofirmation_button_key,
+        Runnable onConfirm
+    ) {
+      super(title_key);
+      setWidth("420px");
+      addContent(new Label(mc.getMessage(message_key), ContentMode.HTML));
+      addButton(
+          new Button(mc.getMessage(UI_BUTTON_CANCEL), ev -> {
+            close();
+          }),
+          new Button(mc.getMessage(cofirmation_button_key), ev -> {
+            close();
+            onConfirm.run();
+          }));
+    }
+  }
 }

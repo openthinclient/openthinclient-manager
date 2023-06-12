@@ -162,6 +162,8 @@ $ok-button-color: #2db200;
         content: " - offline";
       }
 
+      .restart,
+      .shutdown,
       .ip,
       .vnc {
         color: #999;
@@ -682,18 +684,42 @@ $ok-button-color: #2db200;
           flex: 1;
         }
 
+        & > :not(:first-child) {
+          padding: 0 1ch;
+          border: 1px solid transparent;
+
+          &:hover, &:focus-visible {
+            background: #f0f0f0;
+            border: 1px solid #eee;
+          }
+        }
+
+        .deleteProfile:hover,
+        .deleteProfile:focus-visible {
+          color: #e0061e;
+        }
+        .ldifExport:hover,
+        .ldifExport:focus-visible {
+          color: #0064a2;
+        }
+        .wol:hover,
+        .wol:focus-visible {
+          color: #00b400;
+        }
+        .restart:hover,
+        .restart:focus-visible {
+          color: #e0061e;
+        }
+        .shutdown:hover,
+        .shutdown:focus-visible {
+          color: #e0061e;
+        }
+
         .v-button {
           height: auto;
           width: auto;
         }
 
-        .addNew {
-          color: #03ab00;
-        }
-
-        .deleteProfile {
-          color: #e0061e;
-        }
       }
 
       .table {

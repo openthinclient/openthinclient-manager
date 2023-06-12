@@ -96,4 +96,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             send(session, message_type, null);
         }
 	}
+
+    public void endSession(WebSocketSession session) {
+        if(sessions.remove(session)) {
+            try {
+                session.close();
+            } catch(IOException ex) {
+                LOG.error("Failed to close websocket session", ex);
+            }
+        }
+    }
 }
