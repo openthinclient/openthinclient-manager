@@ -134,31 +134,6 @@ public abstract class Profile extends DirectoryObject {
 		return getInheritedValue(key);
 	}
 
-	/*
-	 * @see org.openthinclient.Profile#getDefiningProfile(javax.swing.tree.String)
-	 */
-	public String getDefiningProfile(String path, boolean excludeThis) {
-		if (!excludeThis && containsValue(path))
-			return getName();
-
-		for (final Profile inherited : getInheritedProfiles())
-			if (null != inherited && inherited.containsValue(path))
-				return inherited.getName();
-
-		if (schema.contains(path))
-			return "Schema '" + schema.getName() + "'";
-
-		for (final Profile inherited : getInheritedProfiles())
-			if (null != inherited) {
-				final String definingProfile = inherited.getDefiningProfile(path,
-						excludeThis);
-				if (null != definingProfile)
-					return definingProfile;
-			}
-
-		return null;
-	}
-
 	/**
 	 * Sets the schema for this Profile. The Propertis for this schema type are
 	 * generated too.

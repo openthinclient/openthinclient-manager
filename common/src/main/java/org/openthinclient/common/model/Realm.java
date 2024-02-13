@@ -196,12 +196,6 @@ public class Realm extends Profile implements Serializable {
 	}
 
 	@Override
-	public String getDefiningProfile(String path, boolean excludeThis) {
-		checkRefresh();
-		return super.getDefiningProfile(path, excludeThis);
-	}
-
-	@Override
 	public String getOverriddenValue(String key) {
 		checkRefresh();
 		return super.getOverriddenValue(key);
