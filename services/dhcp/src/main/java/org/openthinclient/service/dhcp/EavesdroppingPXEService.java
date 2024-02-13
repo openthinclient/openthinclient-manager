@@ -35,7 +35,7 @@ import java.util.Enumeration;
  * @author levigo
  */
 public class EavesdroppingPXEService extends AbstractPXEService {
-	private static final Logger logger = LoggerFactory
+  private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
 
   protected InetSocketAddress determineServerAddress(

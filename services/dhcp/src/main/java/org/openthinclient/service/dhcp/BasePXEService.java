@@ -74,7 +74,6 @@ public abstract class BasePXEService extends AbstractPXEService {
 			final String hwAddressString = request.getHardwareAddress()
 					.getNativeRepresentation();
 
-			//final ClientBootData bootData = ClientBootData.load(hwAddressString);
 			ClientBootData bootData = null;
 			try {
 				bootData = ClientBootData.load(hwAddressString);

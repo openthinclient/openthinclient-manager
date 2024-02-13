@@ -146,7 +146,7 @@ public class LDAPConnection implements AutoCloseable {
   private static final String HWTYPE_DN = "ou=hwtypes," + BASE_DN;
   private static final SearchControls HWTYPE_SC = singleSC();
   /**
-   * @return DN of hardware type for the cliend or null if nothing was found
+   * @return DN of hardware type for the client or null if nothing was found
    */
   public String searchHwTypeDN(String clientDN) throws NamingException {
     NamingEnumeration<SearchResult> r;

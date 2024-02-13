@@ -109,7 +109,7 @@ public class ClientBootData {
   /**
    * Get value for key from client or inherited value from hardware type,
    * location or realm (in this order). If no value was found return
-   * default value from schema (againt following the above hierarchy).
+   * default value from schema (again following the above hierarchy).
    * If also no default value was found return the given orElse.
    */
   public String get(String key, String orElse) {

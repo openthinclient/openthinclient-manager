@@ -3,7 +3,6 @@ package org.openthinclient.web.thinclient.presenter;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
@@ -87,9 +86,6 @@ public class ProfilesListOverviewPanelPresenter {
   private void handleDeleteAction(Button.ClickEvent event) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-// TODO: delete action
-//    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) panel.getItemGrid().getSelectionModel();
-//    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
     Set<DirectoryObject> selectedItems = panel.getSelectedItems();
 
     VerticalLayout content = new VerticalLayout();
@@ -98,7 +94,7 @@ public class ProfilesListOverviewPanelPresenter {
     window.center();
 
     boolean deletionAllowed = true;
-    // HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt
+    // hardware type und location must not be delted if they are in use
     if (deleteMandatSupplier != null) {
       StringBuilder messages = new StringBuilder();
       for (DirectoryObject directoryObject : selectedItems) {
