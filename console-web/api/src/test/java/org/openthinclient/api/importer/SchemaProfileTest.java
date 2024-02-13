@@ -54,7 +54,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Random;
 import java.util.Set;
 
@@ -302,9 +301,6 @@ public class SchemaProfileTest {
         admins.setName("administrators"); //$NON-NLS-1$
         // admins.setAdminGroup(true);
         realm.setAdministrators(admins);
-
-        final String date = new Date().toString();
-        realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
 
         final User roPrincipal = new User();
         roPrincipal.setName("roPrincipal");

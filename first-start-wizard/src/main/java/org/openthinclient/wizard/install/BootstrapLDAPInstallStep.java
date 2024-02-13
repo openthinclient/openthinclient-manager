@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Import;
 import java.io.File;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -182,9 +181,6 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
     admins.setName("administrators"); //$NON-NLS-1$
     // admins.setAdminGroup(true);
     realm.setAdministrators(admins);
-
-    final String date = new Date().toString();
-    realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
 
     final User roPrincipal = new User();
     roPrincipal.setName("roPrincipal");
