@@ -42,9 +42,7 @@ public enum SchemaStore {
 
   private final String[] BOOT_DATA_SCHEMAS = new String[]{
       "client", "hardwaretype", "location", "realm"};
-  private final Set<Path> BOOT_DATA_FILES =
-      Stream.of(BOOT_DATA_SCHEMAS)
-      .map(s -> s + ".xml").map(Paths::get).collect(Collectors.toSet());
+  private Set<Path> BOOT_DATA_FILES;
 
 
   private Path schemaPath;
@@ -57,6 +55,10 @@ public enum SchemaStore {
     schemaPath = Paths.get(
         (new ManagerHomeFactory()).getManagerHomeDirectory().getAbsolutePath(),
         "nfs", "root", "schema");
+    BOOT_DATA_FILES = Stream.of(BOOT_DATA_SCHEMAS)
+                      .map(s -> s + ".xml")
+                      .map(schemaPath::resolve)
+                      .collect(Collectors.toSet());
     try {
       jaxbContext = JAXBContext.newInstance(Schema.class);
       initSchemas();
