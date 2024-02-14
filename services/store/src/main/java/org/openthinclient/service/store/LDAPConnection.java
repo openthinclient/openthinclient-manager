@@ -1,7 +1,7 @@
 package org.openthinclient.service.store;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -149,6 +149,18 @@ public class LDAPConnection implements AutoCloseable {
     return r.hasMore() ? r.next().getName() : null;
   }
 
+  /**
+   * @return either DN of client, DN of default client (MAC 00:00:00:00:00:00)
+   * if no client with given mac was found and default client is enabled, or
+   * null
+   */
+  public String getClientDNorDefaultDN(String mac) throws NamingException {
+    String clientDN = searchClientDN(mac);
+    if (clientDN == null && isDefaultClientEnabled()) {
+      clientDN = searchClientDN(ClientService.DEFAULT_CLIENT_MAC);
+    }
+    return clientDN;
+  }
 
   private static final String HWTYPE_DN = "ou=hwtypes," + BASE_DN;
   private static final SearchControls HWTYPE_SC = singleSC();
@@ -163,6 +175,77 @@ public class LDAPConnection implements AutoCloseable {
     return r.hasMore() ? r.next().getName() : null;
   }
 
+  private static final String CLIENTGROUPS_DN = "ou=clientgroups," + BASE_DN;
+  private static final SearchControls CLIENTGROUPS_SC = multiSC();
+  /**
+   * @return list of DNs of client groups for the client
+   */
+  public List<String> searchClientgroupDNs(String clientDN) throws NamingException {
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( CLIENTGROUPS_DN,
+                    "(uniquemember={0})", new String[] { clientDN },
+                    CLIENTGROUPS_SC);
+    List<String> clientgroupDNs = new ArrayList<>();
+    while (r.hasMore()) {
+      clientgroupDNs.add(r.next().getName());
+    }
+    return clientgroupDNs;
+  }
+
+
+  private static final SearchControls PROFILE_SC = multiSC("cn", "description");
+  /**
+   * Load all profiles of given type that have any given memeberDNs as
+   * uniquemember and add name, description and type attributes
+   */
+  private Collection<Map<String, String>> loadRelatedProfiles(
+        String type, String searchDN, String... memberDNs)
+        throws NamingException {
+    Collection<Map<String, String>> profiles = new ArrayList<>();
+    if (memberDNs.length == 0) return profiles;
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( searchDN,
+                    getUniquememberFilter(memberDNs.length),
+                    memberDNs,
+                    PROFILE_SC);
+    while (r.hasMore()) {
+      SearchResult sr = r.next();
+      Map<String, String> profile = loadProfileWithType(type, sr.getName());
+      if (profile == null) continue;
+      Attributes attrs = sr.getAttributes();
+      profile.put("name", (String) attrs.get("cn").get());
+      Attribute descriptionAttr = attrs.get("description");
+      if (descriptionAttr != null) {
+        profile.put("description", (String) descriptionAttr.get());
+      }
+      profiles.add(profile);
+    }
+    return profiles;
+  }
+
+  private static Map<Integer, String> uniquememberFilters = new ConcurrentHashMap<>();
+  /**
+   * Helper for loadRelatedProfiles: Generate a parameterized OR filter for
+   * uniquemembers and cache it to avoid repeatedly building the same filters.
+   */
+  private static String getUniquememberFilter(int length) {
+    return uniquememberFilters.computeIfAbsent(length, l -> {
+      StringBuilder sb = new StringBuilder("(|");
+      for (int i = 0; i < l; i++) {
+        sb.append("(uniquemember={").append(i).append("})");
+      }
+      sb.append(")");
+      return sb.toString();
+    });
+  }
+
+
+  private static final String DEVICE_DN = "ou=devices," + BASE_DN;
+  public Collection<Map<String, String>> loadDevices(String... dns)
+        throws NamingException {
+    return loadRelatedProfiles("device", DEVICE_DN, dns);
+  }
+
 
   /**
    * Close LDAP connection. This instance should be thrown away afterwards.
@@ -173,6 +256,31 @@ public class LDAPConnection implements AutoCloseable {
       ctx.close();
     } catch (NamingException ex) {
     }
+  }
+
+
+  private static final SearchControls SUBTYPE_SC = singleSC("description");
+  /**
+   * Load all entries from "profile" nismap via loadProfile and add a "type" key
+   * in the form type'/'subtype with given type and subtype from profile's
+   * description.
+   *
+   * @return profile map or null if nothing was found or an error occurred
+   */
+  private Map<String, String> loadProfileWithType(String type, String dn)
+      throws NamingException {
+    Map<String, String> profile = loadProfile(dn);
+    if (profile == null) return null;
+    // get subtype
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search(dn, "(nismapname=profile)", SUBTYPE_SC);
+    if (!r.hasMore()) {
+      LOG.error("Profile {} has no subtype", dn);
+      return null;
+    }
+    String subtype = (String) r.next().getAttributes().get("description").get();
+    profile.put("type", type + "/" + subtype);
+    return profile;
   }
 
 
