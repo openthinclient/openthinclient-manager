@@ -1,6 +1,7 @@
 package org.openthinclient.service.store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +65,12 @@ public class ClientBootData {
           }
 
           final List<Map<String, String>> props = new ArrayList<>(4);
-          props.add(ldapCon.loadProfile(client.dn));
+          Map<String, String> clientProfile = ldapCon.loadProfile(client.dn);
+          clientProfile.put("name", client.name);
+          clientProfile.put("mac", mac);
+          clientProfile.put("ip", client.ip);
+          clientProfile.put("description", client.description);
+          props.add(clientProfile);
 
           for (String dn: new String[]{hwTypeDN, client.locationDN, LDAPConnection.REALM_DN}){
             Map<String, String> map = propsCache.get(dn, ldapCon::loadProfile);
@@ -121,6 +127,19 @@ public class ClientBootData {
     }
     return SchemaStore.getClientBootDefaults().getOrDefault(key, orElse);
   }
+
+
+  public Map<String, String> getAll() {
+    Map<String, String> result = new HashMap<>();
+    for (String key: new String[]{"name", "mac", "ip", "description"}) {
+      result.put(key, get(key, null));
+    }
+    for (String key: SchemaStore.getClientKeys()) {
+      result.put(key, get(key, null));
+    }
+    return result;
+  }
+
 
   /**
    * IP from LDAP entry

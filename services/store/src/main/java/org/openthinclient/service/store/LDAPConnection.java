@@ -40,6 +40,8 @@ public class LDAPConnection implements AutoCloseable {
   // Return type of Connection.loadClientData
   public static class ClientData {
     public String dn;
+    public String name;
+    public String description;
     public String locationDN;
     public String ip;
   }
@@ -94,7 +96,7 @@ public class LDAPConnection implements AutoCloseable {
 
   private static final String CLIENT_DN = "ou=clients," + BASE_DN;
   private static final SearchControls CLIENT_SC = singleSC(
-      "l", "iphostnumber");
+      "l", "iphostnumber", "description", "cn");
   /**
    * Find client entry for given MAC address and return (selected)
    * attributes as LDAPConnection.ClientData object.
@@ -125,6 +127,11 @@ public class LDAPConnection implements AutoCloseable {
     clientData.dn = r.getName();
     clientData.locationDN = (String) attrs.get("l").get();
     clientData.ip = (String) attrs.get("iphostnumber").get();
+    Attribute description = attrs.get("description");
+    if (description != null) {
+      clientData.description = (String) description.get();
+    }
+    clientData.name = (String) attrs.get("cn").get();
 
     return clientData;
   }
@@ -150,7 +157,9 @@ public class LDAPConnection implements AutoCloseable {
    */
   public String searchHwTypeDN(String clientDN) throws NamingException {
     NamingEnumeration<SearchResult> r;
-    r = ctx.search(HWTYPE_DN, "(uniquemember=" + clientDN + ")", HWTYPE_SC);
+    r = ctx.search( HWTYPE_DN,
+                    "(uniquemember={0})", new String[] { clientDN },
+                    HWTYPE_SC);
     return r.hasMore() ? r.next().getName() : null;
   }
 
