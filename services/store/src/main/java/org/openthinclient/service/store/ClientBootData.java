@@ -114,8 +114,9 @@ public class ClientBootData {
    */
   public String get(String key, String orElse) {
     for (Map<String, String> map : props) {
-      if (map.containsKey(key)) {
-        return map.get(key);
+      String value = map.get(key);
+      if (value != null) {
+        return value;
       }
     }
     return SchemaStore.getClientBootDefaults().getOrDefault(key, orElse);
