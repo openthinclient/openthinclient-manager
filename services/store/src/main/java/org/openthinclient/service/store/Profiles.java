@@ -1,7 +1,10 @@
 package org.openthinclient.service.store;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,6 +60,56 @@ public class Profiles {
       LOG.error("Error loading devices for MAC {}.", mac, ex);
     }
     return devices;
+  }
+
+
+  public static Iterable<Map<String, String>> getApps(String mac, String userDN) {
+    Iterable<Map<String, String>> apps = loadApps(mac, userDN);
+    for (Map<String, String> app : apps) {
+      String type = app.get("type");
+      if (type == null) {
+        LOG.warn("App {} has no type", app.get("name"));
+        continue;
+      }
+      Map<String, String> schema = SchemaStore.getSchema(type);
+      if (schema == null) {
+        LOG.warn( "No schema for type {} of app {}.",
+                  type, app.get("name"));
+        continue;
+      }
+      schema.forEach((key, value) ->
+                  app.computeIfAbsent(key, k -> value));
+    }
+    return apps;
+  }
+
+  private static Iterable<Map<String, String>> loadApps(String mac, String userDN) {
+    List<String> relatedDNs = new ArrayList<>();
+    try (LDAPConnection ldapCon = new LDAPConnection()) {
+
+      if (mac != null ) {
+        String clientDN = ldapCon.getClientDNorDefaultDN(mac);
+        if (clientDN == null) {
+          LOG.warn("No client found for MAC {}", mac);
+        } else {
+          relatedDNs.add(clientDN);
+          relatedDNs.addAll(ldapCon.searchClientgroupDNs(clientDN));
+        }
+      }
+
+      if (userDN != null) {
+        relatedDNs.add(userDN);
+        relatedDNs.addAll(ldapCon.searchUsergroupDNs(userDN));
+      }
+
+      relatedDNs.addAll(ldapCon.searchAppgroupDNs(relatedDNs.toArray(new String[0])));
+      return ldapCon.loadApplications(relatedDNs.toArray(new String[0]));
+
+    } catch (NamingException ex) {
+      LOG.error("Error loading apps for MAC {} and user {}.",
+                mac, userDN, ex);
+      return Collections.emptyList();
+    }
   }
 
 }

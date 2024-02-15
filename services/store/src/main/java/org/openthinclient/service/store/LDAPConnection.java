@@ -192,6 +192,43 @@ public class LDAPConnection implements AutoCloseable {
     return clientgroupDNs;
   }
 
+  private static final String APPGROUPS_DN = "ou=appgroups," + BASE_DN;
+  private static final SearchControls APPGROUPS_SC = multiSC();
+  /**
+   * @return list of DNs of associated application groups for the given dns
+   */
+  public List<String> searchAppgroupDNs(String... memberDNs)
+      throws NamingException {
+    List<String> appgroupDNs = new ArrayList<>();
+    if (memberDNs.length == 0) return appgroupDNs;
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( APPGROUPS_DN,
+                    getUniquememberFilter(memberDNs.length),
+                    memberDNs,
+                    APPGROUPS_SC);
+    while (r.hasMore()) {
+      appgroupDNs.add(r.next().getName());
+    }
+    return appgroupDNs;
+  }
+
+  private static final String USERGROUPS_DN = "ou=usergroups," + BASE_DN;
+  private static final SearchControls USERGROUPS_SC = multiSC();
+  /**
+   * @return list of DNs of user groups for userDN
+   */
+  public List<String> searchUsergroupDNs(String userDN) throws NamingException {
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( USERGROUPS_DN,
+                    "(uniquemember={0})", new String[] { userDN },
+                    USERGROUPS_SC);
+    List<String> usergroupDNs = new ArrayList<>();
+    while (r.hasMore()) {
+      usergroupDNs.add(r.next().getName());
+    }
+    return usergroupDNs;
+  }
+
 
   private static final SearchControls PROFILE_SC = multiSC("cn", "description");
   /**
@@ -244,6 +281,12 @@ public class LDAPConnection implements AutoCloseable {
   public Collection<Map<String, String>> loadDevices(String... dns)
         throws NamingException {
     return loadRelatedProfiles("device", DEVICE_DN, dns);
+  }
+
+  private static final String APPLICATIONS_DN = "ou=apps," + BASE_DN;
+  public Collection<Map<String, String>> loadApplications(String... dns)
+      throws NamingException {
+    return loadRelatedProfiles("application", APPLICATIONS_DN, dns);
   }
 
 
