@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Profiles {
-  private static final Logger LOG = LoggerFactory.getLogger(LDAPConnection.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Profiles.class);
 
   public static Iterable<Map<String, String>> getDevices(String mac) {
     Iterable<Map<String, String>> devices = loadDevices(mac);
