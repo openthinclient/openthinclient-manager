@@ -226,7 +226,6 @@ public class ProfilesListOverviewPanel extends CssLayout {
     return selectAll;
   }
 
-  @Deprecated
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     this.itemButtonClickedConsumer = itemButtonClickedConsumer;
     if (itemButtonClickedConsumer == null && itemBtn != null) { // hide Button-Column if no action is provided
