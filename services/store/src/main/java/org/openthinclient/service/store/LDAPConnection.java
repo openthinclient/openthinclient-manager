@@ -59,6 +59,23 @@ public class LDAPConnection implements AutoCloseable {
   private static SearchControls singleSC(String... a) {return SC(1, a);}
   private static SearchControls multiSC(String... a) {return SC(0, a);}
 
+  private static Map<Integer, String>
+  uniquememberFilters = new ConcurrentHashMap<>();
+  /**
+   * Generate a parameterized OR filter for uniquemembers and cache it to
+   * avoid repeatedly building the same filters.
+   */
+  private static String getUniquememberFilter(int length) {
+    return uniquememberFilters.computeIfAbsent(length, l -> {
+      StringBuilder sb = new StringBuilder("(|");
+      for (int i = 0; i < l; i++) {
+        sb.append("(uniquemember={").append(i).append("})");
+      }
+      sb.append(")");
+      return sb.toString();
+    });
+  }
+
 
   // The actual instance
 
@@ -258,22 +275,6 @@ public class LDAPConnection implements AutoCloseable {
       profiles.add(profile);
     }
     return profiles;
-  }
-
-  private static Map<Integer, String> uniquememberFilters = new ConcurrentHashMap<>();
-  /**
-   * Helper for loadRelatedProfiles: Generate a parameterized OR filter for
-   * uniquemembers and cache it to avoid repeatedly building the same filters.
-   */
-  private static String getUniquememberFilter(int length) {
-    return uniquememberFilters.computeIfAbsent(length, l -> {
-      StringBuilder sb = new StringBuilder("(|");
-      for (int i = 0; i < l; i++) {
-        sb.append("(uniquemember={").append(i).append("})");
-      }
-      sb.append(")");
-      return sb.toString();
-    });
   }
 
 
