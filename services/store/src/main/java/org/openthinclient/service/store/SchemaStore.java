@@ -46,6 +46,10 @@ public enum SchemaStore {
     return INSTANCE.schemas.get(schemaName);
   }
 
+  public static Map<String, Map<String, String>> getSchemas() {
+    return INSTANCE.schemas;
+  }
+
 
   private final Logger LOG = LoggerFactory.getLogger(SchemaStore.class);
 

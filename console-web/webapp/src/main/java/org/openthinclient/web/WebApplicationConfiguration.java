@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
         ClientDataEndpoint.class,
         DevicesEndpoint.class,
         ApplicationsEndpoint.class,
+        DefaultsEndpoint.class,
         LicenseEndpoint.class,
 })
 @EnableCaching
