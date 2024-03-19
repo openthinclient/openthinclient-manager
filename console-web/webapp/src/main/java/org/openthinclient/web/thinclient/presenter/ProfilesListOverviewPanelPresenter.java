@@ -14,12 +14,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.openthinclient.api.ldif.export.LdifExporterService;
+import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.viritin.button.MButton;
 
 import java.io.ByteArrayInputStream;
@@ -40,6 +42,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE_NO
 
 public class ProfilesListOverviewPanelPresenter {
 
+  private ApplicationContext applicationContext;
   private AbstractDirectoryObjectView directoryObjectView;
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
@@ -51,10 +54,11 @@ public class ProfilesListOverviewPanelPresenter {
   private LdifExporterService ldifExporterService;
   private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
 
-  public ProfilesListOverviewPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
+  public ProfilesListOverviewPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService, ApplicationContext applicationContext) {
     this.directoryObjectView = directoryObjectView;
     this.panel = panel;
     this.ldifExporterService = ldifExporterService;
+    this.applicationContext = applicationContext;
 
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(directoryObjectView.getViewName() + "/create"));
@@ -141,6 +145,12 @@ public class ProfilesListOverviewPanelPresenter {
             panel.getCheckBox().setValue(false);
             window.close();
             UI.getCurrent().removeWindow(window);
+
+            if (applicationContext != null) {
+              // Send event to inform about client count change
+              // (applicationContext is only set by ClientView)
+              applicationContext.publishEvent(new ClientCountChangeEvent());
+            }
           }));
       content.addComponent(hl);
     }
