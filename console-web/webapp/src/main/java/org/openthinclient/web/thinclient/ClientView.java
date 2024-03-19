@@ -23,7 +23,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.ClientStatus;
 import org.openthinclient.web.component.Popup;
-import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -44,6 +44,8 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import org.vaadin.spring.events.EventBus;
@@ -102,6 +104,8 @@ public final class ClientView extends AbstractProfileView<Client> {
   private RealmService realmService;
   @Autowired
   private ClientStatus clientStatus;
+  @Autowired
+  private ApplicationContext applicationContext;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -591,7 +595,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
 
-    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+    applicationContext.publishEvent(new ClientCountChangeEvent());
 
   }
 
@@ -606,7 +610,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
     super.delete(profile);
-    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+    applicationContext.publishEvent(new ClientCountChangeEvent());
   }
 
   private void showClientLogs(Client profile) {

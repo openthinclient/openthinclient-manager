@@ -14,16 +14,16 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import org.openthinclient.api.ldif.export.LdifExporterService;
 import org.openthinclient.api.ldif.export.LdifImporterService;
+import org.openthinclient.common.Events.LDAPImportEvent;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -53,8 +53,9 @@ public class LdifImportExportView extends Panel implements View {
   protected ManagerHome managerHome;
   @Autowired
   private RealmService realmService;
+  @Autowired
+  private ApplicationContext applicationContext;
 
-  private EventBus.SessionEventBus eventBus;
   final MessageConveyor mc;
   final CssLayout root;
 
@@ -65,10 +66,7 @@ public class LdifImportExportView extends Panel implements View {
   private Label exportErrorLabel;
   private Label exportSuccessLabel;
 
-  public LdifImportExportView(EventBus.SessionEventBus eventBus) {
-
-    this.eventBus = eventBus;
-
+  public LdifImportExportView() {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     setSizeFull();
 
@@ -189,7 +187,7 @@ public class LdifImportExportView extends Panel implements View {
       importErrorLabel.setVisible(true);
     }
     getUI().access(() -> getUI().push());
-    eventBus.publish(this, new DashboardEvent.LDAPImportEvent());
+    applicationContext.publishEvent(new LDAPImportEvent());
     file.delete();
   }
 

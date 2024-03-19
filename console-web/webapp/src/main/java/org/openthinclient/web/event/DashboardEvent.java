@@ -105,11 +105,4 @@ public abstract class DashboardEvent {
       return directoryObjects;
     }
   }
-
-  public static class ClientCountChangeEvent {
-  }
-
-  public static class LDAPImportEvent extends ClientCountChangeEvent {
-  }
-
 }
