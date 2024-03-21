@@ -112,6 +112,24 @@ public class LDAPConnection implements AutoCloseable {
 
 
   private static final String CLIENT_DN = "ou=clients," + BASE_DN;
+
+  private static final SearchControls CLIENT_COUNT_SC = multiSC();
+  /**
+   * @return number of clients
+   */
+  public int countClients() throws NamingException {
+    NamingEnumeration<SearchResult> results;
+    results = ctx.search( CLIENT_DN,
+                          "(objectClass=device)",
+                          CLIENT_COUNT_SC);
+    int count = 0;
+    while (results.hasMore()) {
+      count++;
+      results.next();
+    }
+    return count;
+  }
+
   private static final SearchControls CLIENT_SC = singleSC(
       "l", "iphostnumber", "description", "cn");
   /**

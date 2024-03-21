@@ -48,6 +48,7 @@ import java.util.concurrent.TimeUnit;
         ApplicationsEndpoint.class,
         DefaultsEndpoint.class,
         LicenseEndpoint.class,
+        UsageStatusEndpoint.class,
 })
 @EnableCaching
 public class WebApplicationConfiguration {
