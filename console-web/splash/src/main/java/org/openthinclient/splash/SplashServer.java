@@ -39,10 +39,15 @@ public enum SplashServer {
       connection.send(progress, "progress", null, null);
     });
 
+    HttpHandler serviceUnavailableHandler = ex -> {
+      ex.setStatusCode(503);
+    };
+
     ResourceManager rm = new ClassPathResourceManager(SplashServer.class.getClassLoader());
     HttpHandler handler = Handlers.path(resourceFile(rm, "splash.html"))
                           .addPrefixPath("/api/v2/server-status", statusHandler)
                           .addPrefixPath("/api/v2/startup-progress", sseHandler)
+                          .addPrefixPath("/api/", serviceUnavailableHandler)
                           .addExactPath("/favicon.ico", resourceFile(rm, "favicon.ico"));
 
     server = Undertow.builder()
