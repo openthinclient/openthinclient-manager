@@ -80,16 +80,29 @@ public class LDAPConnection implements AutoCloseable {
   // The actual instance
 
   private LdapContext ctx;
+  private Set<String> seenDNs;
 
-  public LDAPConnection() throws NamingException {
+  /**
+   * Create a new LDAP connection. If dedupe is true, all DNs found during the
+   * lifetime of this connection by any multi-result search will be remembered
+   * and not returned again by any subsequent multi-result search. (A multi-
+   * result search is a search that can return more than one result. E.g.
+   * the searching for related DNs or profiles, but not searchClientDN(mac).)
+   */
+  public LDAPConnection(boolean dedupe) throws NamingException {
     ctx = (ServerLdapContext) DirectoryService.getInstance().getJndiContext(
         new LdapDN(dsc.getContextSecurityPrincipal()),
         dsc.getContextSecurityPrincipal(),
         dsc.getContextSecurityCredentials().getBytes(),
         "simple",
-        "");
+        ""
+    );
+    seenDNs = dedupe ? new HashSet<>() : null;
   }
 
+  public LDAPConnection() throws NamingException {
+    this(false);
+  }
 
   private static final String REALM_PROPS_DN = "nismapname=profile," + REALM_DN;
   private static final SearchControls NISMAPENTRY_SC = singleSC("nismapEntry");
@@ -213,6 +226,7 @@ public class LDAPConnection implements AutoCloseable {
   private static final String CLIENTGROUPS_DN = "ou=clientgroups," + BASE_DN;
   private static final SearchControls CLIENTGROUPS_SC = multiSC();
   /**
+   * @implNote This method will consider the dedupe flag of the connection.
    * @return list of DNs of client groups for the client
    */
   public List<String> searchClientgroupDNs(String clientDN) throws NamingException {
@@ -222,7 +236,9 @@ public class LDAPConnection implements AutoCloseable {
                     CLIENTGROUPS_SC);
     List<String> clientgroupDNs = new ArrayList<>();
     while (r.hasMore()) {
-      clientgroupDNs.add(r.next().getName());
+      String dn = r.next().getName();
+      if (seenDNs != null && !seenDNs.add(dn)) continue;
+      clientgroupDNs.add(dn);
     }
     return clientgroupDNs;
   }
@@ -230,6 +246,7 @@ public class LDAPConnection implements AutoCloseable {
   private static final String APPGROUPS_DN = "ou=appgroups," + BASE_DN;
   private static final SearchControls APPGROUPS_SC = multiSC();
   /**
+   * @implNote This method will consider the dedupe flag of the connection.
    * @return list of DNs of associated application groups for the given dns
    */
   public List<String> searchAppgroupDNs(String... memberDNs)
@@ -242,7 +259,9 @@ public class LDAPConnection implements AutoCloseable {
                     memberDNs,
                     APPGROUPS_SC);
     while (r.hasMore()) {
-      appgroupDNs.add(r.next().getName());
+      String dn = r.next().getName();
+      if (seenDNs != null && !seenDNs.add(dn)) continue;
+      appgroupDNs.add(dn);
     }
     return appgroupDNs;
   }
@@ -250,6 +269,7 @@ public class LDAPConnection implements AutoCloseable {
   private static final String USERGROUPS_DN = "ou=usergroups," + BASE_DN;
   private static final SearchControls USERGROUPS_SC = multiSC();
   /**
+   * @implNote This method will consider the dedupe flag of the connection.
    * @return list of DNs of user groups for userDN
    */
   public List<String> searchUsergroupDNs(String userDN) throws NamingException {
@@ -259,7 +279,9 @@ public class LDAPConnection implements AutoCloseable {
                     USERGROUPS_SC);
     List<String> usergroupDNs = new ArrayList<>();
     while (r.hasMore()) {
-      usergroupDNs.add(r.next().getName());
+      String dn = r.next().getName();
+      if (seenDNs != null && !seenDNs.add(dn)) continue;
+      usergroupDNs.add(dn);
     }
     return usergroupDNs;
   }
@@ -267,13 +289,15 @@ public class LDAPConnection implements AutoCloseable {
 
   private static final SearchControls PROFILE_SC = multiSC("cn", "description");
   /**
-   * Load all profiles of given type that have any given memeberDNs as
-   * uniquemember and add name, description and type attributes
+   * Load all profiles of given type that have any given memberDNs as
+   * uniquemember and add cn (as "name"), the description and type attributes
+   *
+   * @implNote This method will consider the dedupe flag of the connection.
    */
-  private Collection<Map<String, String>> loadRelatedProfiles(
+  private List<Map<String, String>> loadRelatedProfiles(
         String type, String searchDN, String... memberDNs)
         throws NamingException {
-    Collection<Map<String, String>> profiles = new ArrayList<>();
+    List<Map<String, String>> profiles = new ArrayList<>();
     if (memberDNs.length == 0) return profiles;
     NamingEnumeration<SearchResult> r;
     r = ctx.search( searchDN,
@@ -282,7 +306,11 @@ public class LDAPConnection implements AutoCloseable {
                     PROFILE_SC);
     while (r.hasMore()) {
       SearchResult sr = r.next();
-      Map<String, String> profile = loadProfileWithType(type, sr.getName());
+
+      String dn = sr.getName();
+      if (seenDNs != null && !seenDNs.add(dn)) continue;
+
+      Map<String, String> profile = loadProfileWithType(type, dn);
       if (profile == null) continue;
       Attributes attrs = sr.getAttributes();
       profile.put("name", (String) attrs.get("cn").get());
@@ -297,13 +325,19 @@ public class LDAPConnection implements AutoCloseable {
 
 
   private static final String DEVICE_DN = "ou=devices," + BASE_DN;
-  public Collection<Map<String, String>> loadDevices(String... dns)
+  /**
+   * @return list of devices for the given dns.
+   * @see loadRelatedProfiles
+   */
         throws NamingException {
     return loadRelatedProfiles("device", DEVICE_DN, dns);
   }
 
   private static final String APPLICATIONS_DN = "ou=apps," + BASE_DN;
-  public Collection<Map<String, String>> loadApplications(String... dns)
+  /**
+   * @return list of applications for the given dns.
+   * @see loadRelatedProfiles
+   */
       throws NamingException {
     return loadRelatedProfiles("application", APPLICATIONS_DN, dns);
   }
