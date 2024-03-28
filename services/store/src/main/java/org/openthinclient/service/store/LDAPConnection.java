@@ -295,7 +295,7 @@ public class LDAPConnection implements AutoCloseable {
    * @implNote This method will consider the dedupe flag of the connection.
    */
   private List<Map<String, String>> loadRelatedProfiles(
-        String type, String searchDN, String... memberDNs)
+        String type, String searchDN, String relation, String... memberDNs)
         throws NamingException {
     List<Map<String, String>> profiles = new ArrayList<>();
     if (memberDNs.length == 0) return profiles;
@@ -318,6 +318,7 @@ public class LDAPConnection implements AutoCloseable {
       if (descriptionAttr != null) {
         profile.put("description", (String) descriptionAttr.get());
       }
+      profile.put("relation", relation);
       profiles.add(profile);
     }
     return profiles;
@@ -326,20 +327,26 @@ public class LDAPConnection implements AutoCloseable {
 
   private static final String DEVICE_DN = "ou=devices," + BASE_DN;
   /**
-   * @return list of devices for the given dns.
+   * @return list of devices for the given memberDNs.
    * @see loadRelatedProfiles
    */
+  public List<Map<String, String>> loadDevices(
+        String relation, String... memberDNs)
         throws NamingException {
-    return loadRelatedProfiles("device", DEVICE_DN, dns);
+    return loadRelatedProfiles(
+          "device", DEVICE_DN, relation, memberDNs);
   }
 
   private static final String APPLICATIONS_DN = "ou=apps," + BASE_DN;
   /**
-   * @return list of applications for the given dns.
+   * @return list of applications for the given memberDNs.
    * @see loadRelatedProfiles
    */
+  public List<Map<String, String>> loadApplications(
+      String relation, String... memberDNs)
       throws NamingException {
-    return loadRelatedProfiles("application", APPLICATIONS_DN, dns);
+    return loadRelatedProfiles(
+          "application", APPLICATIONS_DN, relation, memberDNs);
   }
 
 

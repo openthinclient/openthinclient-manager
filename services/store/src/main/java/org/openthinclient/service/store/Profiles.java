@@ -2,11 +2,8 @@ package org.openthinclient.service.store;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.naming.NamingException;
 
@@ -36,26 +33,42 @@ public class Profiles {
     return devices;
   }
 
+  /**
+   * Load all assigned devices for the given MAC.
+   *
+   * The devices are loaded in order of precedence. The order is:
+   *
+   * <pre>
+   *   1.  client
+   *   2.    |-- hwtype
+   *   3.    '-- clientgroups
+   * </pre>
+   *
+   * @param mac MAC address of the client
+   * @return all assigned devices as a list of maps
+   */
   private static Iterable<Map<String, String>> loadDevices(String mac) {
-    // Use LinkedHashSet to avoid duplicates.
     // Load all assigned devices in order of precedence.
-    Set<Map<String, String>> devices = new LinkedHashSet<>();
-    try (LDAPConnection ldapCon = new LDAPConnection()) {
+    List<Map<String, String>> devices = new ArrayList<>();
+
+    try (LDAPConnection ldapCon = new LDAPConnection(true)) {
       String clientDN = ldapCon.getClientDNorDefaultDN(mac);
       if (clientDN == null) {
         LOG.warn("No client found for MAC {}", mac);
         return devices;
       }
-      devices.addAll(ldapCon.loadDevices(clientDN));
-      devices.addAll(ldapCon.loadDevices(
-        ldapCon.searchClientgroupDNs(clientDN).toArray(new String[0]))
-      );
+      devices.addAll(ldapCon.loadDevices("client", clientDN));
+
       String hwTypeDN = ldapCon.searchHwTypeDN(clientDN);
       if (hwTypeDN == null) {
         LOG.warn("No hardware type found for {} ({})", clientDN, mac);
       } else {
-        devices.addAll(ldapCon.loadDevices(hwTypeDN));
+        devices.addAll(ldapCon.loadDevices("hwtype", hwTypeDN));
       }
+
+      devices.addAll(ldapCon.loadDevices("clientgroup",
+          ldapCon.searchClientgroupDNs(clientDN).toArray(new String[0])));
+
     } catch (NamingException ex) {
       LOG.error("Error loading devices for MAC {}.", mac, ex);
     }
@@ -63,8 +76,8 @@ public class Profiles {
   }
 
 
-  public static Iterable<Map<String, String>> getApps(String mac, String userDN) {
-    Iterable<Map<String, String>> apps = loadApps(mac, userDN);
+  public static List<Map<String, String>> getApps(String mac, String userDN) {
+    List<Map<String, String>> apps = loadApps(mac, userDN);
     for (Map<String, String> app : apps) {
       String type = app.get("type");
       if (type == null) {
@@ -83,33 +96,61 @@ public class Profiles {
     return apps;
   }
 
-  private static Iterable<Map<String, String>> loadApps(String mac, String userDN) {
-    List<String> relatedDNs = new ArrayList<>();
-    try (LDAPConnection ldapCon = new LDAPConnection()) {
+  /**
+   * Load all assigned applications for the given MAC and userDN.
+   *
+   * The applications are loaded in order of precedence. The order is:
+   *
+   * <pre>
+   *   1.  user
+   *   2.    |-- appgroups
+   *   3.    '-- usergroups
+   *   4.          '-- appgroups
+   *   5.  client
+   *   6.    |-- appgroups
+   *   7.    '-- clientgroups
+   *   8.         '-- appgroups
+   * </pre>
+   *
+   * @param mac    MAC address of the client or null
+   * @param userDN full DN of the user or null
+   * @return all assigned applications as a list of maps
+   */
+  private static List<Map<String, String>> loadApps(String mac, String userDN) {
+    List<Map<String, String>> apps = new ArrayList<>();
 
-      if (mac != null ) {
+    try (LDAPConnection ldapCon = new LDAPConnection(true)) {
+      if (userDN != null) {
+        apps.addAll(ldapCon.loadApplications("user", userDN));
+        apps.addAll(ldapCon.loadApplications("user-appgroup",
+            ldapCon.searchAppgroupDNs(userDN).toArray(new String[0])));
+        String[] usergroupDNs = ldapCon.searchUsergroupDNs(userDN)
+                                .toArray(new String[0]);
+        apps.addAll(ldapCon.loadApplications("usergroup", usergroupDNs));
+        apps.addAll(ldapCon.loadApplications("usergroup-appgroup",
+            ldapCon.searchAppgroupDNs(usergroupDNs).toArray(new String[0])));
+      }
+      if (mac != null) {
         String clientDN = ldapCon.getClientDNorDefaultDN(mac);
         if (clientDN == null) {
           LOG.warn("No client found for MAC {}", mac);
         } else {
-          relatedDNs.add(clientDN);
-          relatedDNs.addAll(ldapCon.searchClientgroupDNs(clientDN));
+          apps.addAll(ldapCon.loadApplications("client", clientDN));
+          apps.addAll(ldapCon.loadApplications("client-appgroup",
+              ldapCon.searchAppgroupDNs(clientDN).toArray(new String[0])));
+          String[] clientgroupDNs = ldapCon.searchClientgroupDNs(clientDN)
+                                    .toArray(new String[0]);
+          apps.addAll(ldapCon.loadApplications("clientgroup", clientgroupDNs));
+          apps.addAll(ldapCon.loadApplications("clientgroup-appgroup",
+              ldapCon.searchAppgroupDNs(clientgroupDNs).toArray(new String[0])));
         }
       }
-
-      if (userDN != null) {
-        relatedDNs.add(userDN);
-        relatedDNs.addAll(ldapCon.searchUsergroupDNs(userDN));
-      }
-
-      relatedDNs.addAll(ldapCon.searchAppgroupDNs(relatedDNs.toArray(new String[0])));
-      return ldapCon.loadApplications(relatedDNs.toArray(new String[0]));
-
     } catch (NamingException ex) {
       LOG.error("Error loading apps for MAC {} and user {}.",
                 mac, userDN, ex);
       return Collections.emptyList();
     }
+    return apps;
   }
 
 }
