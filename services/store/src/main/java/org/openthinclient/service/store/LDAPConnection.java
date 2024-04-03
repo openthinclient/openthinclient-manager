@@ -2,6 +2,7 @@ package org.openthinclient.service.store;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -102,6 +103,88 @@ public class LDAPConnection implements AutoCloseable {
 
   public LDAPConnection() throws NamingException {
     this(false);
+  }
+
+  private static final Pattern SPECIAL_CHARS = Pattern.compile("[^\\w,= ]+");
+  /**
+   * Very ugly workaround. The builtin ancient LDAP server neither supports
+   * escaped characters in filters nor can it handle special characters in
+   * filter args. This method replaces all *suspicious* character sequences
+   * with a wildcard and filters the results to avoid false positives.
+   *
+   * Note: The cons parameter MUST include the "uniquemember" attribute for this
+   * to work correctly.
+   */
+  private NamingEnumeration<SearchResult> safeUniqueMembersSearch(String name,
+    String[] memberDNs, SearchControls cons)
+    throws NamingException {
+      boolean escaped = false;
+      String[] escapedDNs = new String[memberDNs.length];
+      for (int i = 0; i < memberDNs.length; i++) {
+        escapedDNs[i] = SPECIAL_CHARS.matcher(memberDNs[i]).replaceAll("*");
+        escaped = escaped || memberDNs[i] != escapedDNs[i];
+      }
+      NamingEnumeration<SearchResult> r;
+      r = ctx.search( name,
+                      getUniquememberFilter(memberDNs.length),
+                      escapedDNs,
+                      cons);
+      if (!escaped) return r; // no need to filter if no escaping was done
+
+      return new NamingEnumeration<SearchResult>() {
+        private SearchResult next = null;
+
+        /** Get the next result that matches one of the memberDNs or null if
+         * no more results are available. */
+        private SearchResult getNext() throws NamingException {
+          NamingEnumeration<?> uniquemembers;
+          while (r.hasMore()) {
+            SearchResult sr = r.next();
+            uniquemembers = sr.getAttributes().get("uniquemember").getAll();
+            while (uniquemembers.hasMore()) {
+              String uniquemember = (String) uniquemembers.next();
+              for (String memberDN : memberDNs) {
+                if (uniquemember.equals(memberDN)) {
+                  return sr;
+                }
+              }
+            }
+          }
+          return null;
+        }
+
+        // NamingEnumeration interface
+
+        @Override
+        public boolean hasMore() throws NamingException {
+          if (next == null) next = getNext();
+          return next != null;
+        }
+        @Override
+        public SearchResult next() throws NamingException {
+          if (next == null) next = getNext();
+          if (next == null) throw new NoSuchElementException();
+          SearchResult r = next;
+          next = null;
+          return r;
+        }
+        @Override
+        public void close() throws NamingException {
+          r.close();
+        }
+        @Override
+        public boolean hasMoreElements() {
+          try { return r.hasMore(); }
+          catch (NamingException ex) { return false; }
+        }
+        @Override
+        public SearchResult nextElement() {
+          try { return r.next(); }
+          catch (NamingException ex) {
+            throw new NoSuchElementException(ex.toString());
+          }
+        }
+      };
   }
 
   private static final String REALM_PROPS_DN = "nismapname=profile," + REALM_DN;
@@ -244,7 +327,7 @@ public class LDAPConnection implements AutoCloseable {
   }
 
   private static final String APPGROUPS_DN = "ou=appgroups," + BASE_DN;
-  private static final SearchControls APPGROUPS_SC = multiSC();
+  private static final SearchControls APPGROUPS_SC = multiSC("uniquemember");
   /**
    * @implNote This method will consider the dedupe flag of the connection.
    * @return list of DNs of associated application groups for the given dns
@@ -254,10 +337,7 @@ public class LDAPConnection implements AutoCloseable {
     List<String> appgroupDNs = new ArrayList<>();
     if (memberDNs.length == 0) return appgroupDNs;
     NamingEnumeration<SearchResult> r;
-    r = ctx.search( APPGROUPS_DN,
-                    getUniquememberFilter(memberDNs.length),
-                    memberDNs,
-                    APPGROUPS_SC);
+    r = safeUniqueMembersSearch(APPGROUPS_DN, memberDNs, APPGROUPS_SC);
     while (r.hasMore()) {
       String dn = r.next().getName();
       if (seenDNs != null && !seenDNs.add(dn)) continue;
@@ -287,7 +367,8 @@ public class LDAPConnection implements AutoCloseable {
   }
 
 
-  private static final SearchControls PROFILE_SC = multiSC("cn", "description");
+  private static final SearchControls PROFILE_SC = multiSC(
+      "cn", "description", "uniquemember");
   /**
    * Load all profiles of given type that have any given memberDNs as
    * uniquemember and add cn (as "name"), the description and type attributes
@@ -300,10 +381,8 @@ public class LDAPConnection implements AutoCloseable {
     List<Map<String, String>> profiles = new ArrayList<>();
     if (memberDNs.length == 0) return profiles;
     NamingEnumeration<SearchResult> r;
-    r = ctx.search( searchDN,
-                    getUniquememberFilter(memberDNs.length),
-                    memberDNs,
-                    PROFILE_SC);
+    r = safeUniqueMembersSearch(searchDN, memberDNs, PROFILE_SC);
+
     while (r.hasMore()) {
       SearchResult sr = r.next();
 
