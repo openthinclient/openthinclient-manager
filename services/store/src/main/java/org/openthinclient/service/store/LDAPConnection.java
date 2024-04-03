@@ -293,6 +293,31 @@ public class LDAPConnection implements AutoCloseable {
     return clientDN;
   }
 
+  private static final SearchControls CLIENT_LOCATION_SC = singleSC("l");
+  /**
+   * @return client DN and location DN for given MAC address or default client
+   * (if no client with given mac was found and default client is enabled)
+   */
+  public String[] getClientAndLocationDNs(String mac)
+      throws NamingException {
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search(CLIENT_DN,
+        "(macaddress={0})", new String[] { mac },
+        CLIENT_LOCATION_SC);
+    if (!r.hasMore() && isDefaultClientEnabled()) {
+      r = ctx.search( CLIENT_DN,
+                      "(macaddress={0})",
+                      new String[] { ClientService.DEFAULT_CLIENT_MAC },
+                      CLIENT_LOCATION_SC);
+    }
+    if (!r.hasMore()) return null;
+    SearchResult sr = r.next();
+    return new String[] {
+        sr.getName(),
+        (String) sr.getAttributes().get("l").get()
+    };
+  }
+
   private static final String HWTYPE_DN = "ou=hwtypes," + BASE_DN;
   private static final SearchControls HWTYPE_SC = singleSC();
   /**
@@ -426,6 +451,18 @@ public class LDAPConnection implements AutoCloseable {
       throws NamingException {
     return loadRelatedProfiles(
           "application", APPLICATIONS_DN, relation, memberDNs);
+  }
+
+  private static final String PRINTERS_DN = "ou=printers," + BASE_DN;
+  /**
+   * @return list of applications for the given memberDNs.
+   * @see loadRelatedProfiles
+   */
+  public List<Map<String, String>> loadPrinters(
+      String relation, String... memberDNs)
+      throws NamingException {
+    return loadRelatedProfiles(
+          "printer", PRINTERS_DN, relation, memberDNs);
   }
 
 

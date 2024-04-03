@@ -153,4 +153,71 @@ public class Profiles {
     return apps;
   }
 
+
+  public static List<Map<String, String>> getPrinters(String mac, String userDN) {
+    List<Map<String, String>> printers = loadPrinters(mac, userDN);
+    for (Map<String, String> printer : printers) {
+      String type = printer.get("type");
+      if (type == null) {
+        LOG.warn("Printer {} has no type", printer.get("name"));
+        continue;
+      }
+      Map<String, String> schema = SchemaStore.getSchema(type);
+      if (schema == null) {
+        LOG.warn("No schema for type {} of printer {}.",
+            type, printer.get("name"));
+        continue;
+      }
+      schema.forEach((key, value) -> printer.computeIfAbsent(key, k -> value));
+    }
+    return printers;
+  }
+
+  /**
+   * Load all assigned printers for the given MAC and userDN.
+   *
+   * The printers are loaded in order of precedence. The order is:
+   *
+   * <pre>
+   *   1.  user
+   *   3.    '-- usergroups
+   *   5.  client
+   *   6.    '-- location
+   * </pre>
+   *
+   * @param mac    MAC address of the client or null
+   * @param userDN full DN of the user or null
+   * @return all assigned printers as a list of maps
+   */
+  private static List<Map<String, String>> loadPrinters(String mac, String userDN) {
+    List<Map<String, String>> printers = new ArrayList<>();
+
+    try (LDAPConnection ldapCon = new LDAPConnection(true)) {
+      if (userDN != null) {
+        printers.addAll(ldapCon.loadPrinters("user", userDN));
+        printers.addAll(ldapCon.loadPrinters("usergroup",
+            ldapCon.searchUsergroupDNs(userDN).toArray(new String[0])));
+      }
+      if (mac != null) {
+        String[] clientAndLocationDNs = ldapCon.getClientAndLocationDNs(mac);
+        if (clientAndLocationDNs == null) {
+          LOG.warn("No client found for MAC {}", mac);
+        } else {
+          printers.addAll(ldapCon.loadPrinters( "client",
+                                                clientAndLocationDNs[0]));
+          if (clientAndLocationDNs[1] == null) {
+            LOG.warn("No location found for MAC {}", mac);
+          } else {
+            printers.addAll(ldapCon.loadPrinters( "location",
+                                                  clientAndLocationDNs[1]));
+          }
+        }
+      }
+    } catch (NamingException ex) {
+      LOG.error("Error loading printers for MAC {} and user {}.",
+          mac, userDN, ex);
+    }
+    return printers;
+  }
+
 }
