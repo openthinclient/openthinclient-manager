@@ -3,6 +3,8 @@ package org.openthinclient.api;
 import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.service.store.LDAPConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UsageStatusEndpoint {
+
+  private static final Logger LOG = LoggerFactory.getLogger(UsageStatusEndpoint.class);
 
   @Autowired
   LicenseManager licenseManager;
@@ -35,6 +39,7 @@ public class UsageStatusEndpoint {
     try (LDAPConnection ldapCon = new LDAPConnection()) {
       clientCount = ldapCon.countClients();
     } catch (Exception ex) {
+      LOG.error("Could not count clients", ex);
       return "OK";
     }
     switch (licenseManager.getLicenseState(clientCount)) {

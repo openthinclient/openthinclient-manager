@@ -50,6 +50,7 @@ public class ClientBootData {
 
           LDAPConnection.ClientData client = ldapCon.loadClientData(mac);
           if (client == null) {
+            LOG.error("No client found for MAC {}.", mac);
             return null;
           }
 
