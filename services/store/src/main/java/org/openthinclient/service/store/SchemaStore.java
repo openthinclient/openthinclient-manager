@@ -242,9 +242,7 @@ public enum SchemaStore {
         LOG.warn("Ignoring <{}> without name in {}.", node.getClass(), key);
         return;
       }
-      // use computeIfAbsent (instead of putIfAbsent) to skip possible null
-      // values (from node.getValue)
-      map.computeIfAbsent(key, k -> ((EntryNode)node).getValue());
+      map.putIfAbsent(key, ((EntryNode) node).getValue());
     } else {
       for (Node child: node.getChildren()) {
         updateMap(map, child, key);
