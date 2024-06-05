@@ -6,13 +6,13 @@
 	<artifactId>manager</artifactId>
 	<packaging>pom</packaging>
 
-	<name>openthinclient.org Manager</name>
+	<name>openthinclient Management Server</name>
 	<version>${revision}</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
 	<organization>
-		<name>openthinclient GmbH</name>
+		<name>openthinclient gmbh</name>
 		<url>http://www.openthinclient.com</url>
 	</organization>
 
@@ -23,17 +23,6 @@
 			<url>http://www.gnu.org/copyleft/gpl.html</url>
 		</license>
 	</licenses>
-
-	<issueManagement>
-		<system>github</system>
-        <url>https://github.com/openthinclient/openthinclient-manager/issues</url>
-	</issueManagement>
-
-	<scm>
-        <connection>scm:git:git@github.com/openthinclient/openthinclient-manager.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/opentinclient/openthinclient-manager.git
-        </developerConnection>
-	</scm>
 
 	<properties>
 		<revision>2024.1-BETA</revision>
