@@ -36,10 +36,10 @@
 	</scm>
 
 	<properties>
-		<revision>2022.1.1</revision>
-		<application.meta-package-version>2022.1.1</application.meta-package-version>
-		<application.repository>http://archive.openthinclient.org/openthinclient/v2022/packages</application.repository>
-		<application.distribution>http://archive.openthinclient.org/openthinclient/v2022/first-start-profiles/distributions.xml</application.distribution>
+		<revision>2024.1-BETA</revision>
+		<application.meta-package-version>2024.1~beta</application.meta-package-version>
+		<application.repository>http://archive.openthinclient.org/openthinclient/v2024/packages</application.repository>
+		<application.distribution>http://archive.openthinclient.org/openthinclient/v2024/first-start-profiles/distributions.xml</application.distribution>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
