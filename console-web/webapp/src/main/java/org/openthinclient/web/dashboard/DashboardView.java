@@ -88,11 +88,11 @@ public class DashboardView extends Panel implements View {
     dashboardPanels = new CssLayout();
     dashboardPanels.addStyleName("dashboard-panels");
 
-    ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
+    ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/docs.svg"));
 	  helpPanel.addStyleName("size-1x2");
     helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
 
-    ContentPanel toolsPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/meter.svg"));
+    ContentPanel toolsPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/tools.svg"));
 	  toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
@@ -112,7 +112,7 @@ public class DashboardView extends Panel implements View {
     private static final String licenseManagerURL = "/ui/settings#!license";
 
     public LicensePanel() {
-      super(mc.getMessage(UI_DASHBOARDVIEW_LICENSE_INFO_CAPTION));
+      super(mc.getMessage(UI_DASHBOARDVIEW_LICENSE_INFO_CAPTION), new ThemeResource("icon/contract.svg"));
       addStyleName("license-info");
 
       License license = licenseManager.getLicense();
@@ -166,7 +166,7 @@ public class DashboardView extends Panel implements View {
     private Label newPackagesLabel = new Label();
 
     public UpdatePanel() {
-      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION), new ThemeResource("icon/bell.svg"));
+      super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION), new ThemeResource("icon/updates.svg"));
       addStyleNames("update-notification", "size-1x2");
 
       if(updateChecker.hasNetworkError()) {
@@ -245,7 +245,7 @@ public class DashboardView extends Panel implements View {
     private ComboBox<String> macCombo;
 
     public UnregisteredClientsPanel() {
-      super(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS));
+      super(mc.getMessage(UI_DASHBOARDVIEW_UNREGISTERED_CLIENTS), new ThemeResource("icon/new-thinclient.svg"));
       addStyleName("unregistered-clients");
 
       macCombo = new ComboBox<>();

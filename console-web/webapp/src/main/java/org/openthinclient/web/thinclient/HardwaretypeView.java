@@ -33,7 +33,7 @@ public final class HardwaretypeView extends AbstractProfileView<HardwareType> {
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
 
   public static final String NAME = "hardwaretype_view";
-  public static final String ICON = "icon/hardwaretype.svg";
+  public static final String ICON = "icon/hardwaretypes.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_HWTYPE_HEADER;
 
   @Autowired
