@@ -148,7 +148,6 @@ public class Profiles {
     } catch (NamingException ex) {
       LOG.error("Error loading apps for MAC {} and user {}.",
                 mac, userDN, ex);
-      return Collections.emptyList();
     }
     return apps;
   }
