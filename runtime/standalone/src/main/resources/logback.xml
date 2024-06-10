@@ -17,10 +17,10 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <fileNamePattern>${LOG_PATH}/openthinclient-manager.%i.log.zip</fileNamePattern>
             <minIndex>1</minIndex>
-            <maxIndex>19</maxIndex>
+            <maxIndex>49</maxIndex>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>25MB</maxFileSize>
+            <maxFileSize>5MB</maxFileSize>
         </triggeringPolicy>
     </appender>
 

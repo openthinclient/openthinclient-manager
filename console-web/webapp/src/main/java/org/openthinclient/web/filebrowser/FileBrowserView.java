@@ -55,7 +55,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser", ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 90)
-@ThemeIcon("icon/filebrowser.svg")
+@ThemeIcon("icon/custom-folder.svg")
 public final class FileBrowserView extends Panel implements View, FileUploadView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);

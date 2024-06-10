@@ -15,7 +15,7 @@ import java.io.Serializable;
  * Menu-link to Settings view
  */
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_CLOSE_SETTINGS_HEADER")
-@ThemeIcon("icon/thinclient.svg")
+@ThemeIcon("icon/atom.svg")
 @Component
 @UIScope
 public class MenuLinkFromSettings implements Runnable, Serializable {

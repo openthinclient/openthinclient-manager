@@ -236,30 +236,4 @@
 		</entry>
 	</section>
 	
-<!--These entries shouldn't be seen at DetailView and at the Editor	-->
-	<section name="invisibleObjects">
-		<label lang="de" value="unsichtbare Objekte" />
-		<label lang="en" value="invisible objects" />
-		
-		<entry name="hwtypes" value="${hashSum}">
-			<label lang="de" value="hwtypes" />
-			<label lang="en" value="hwtypes" />
-		</entry>
-		
-		<entry name="devices" value="${hashSum}">
-			<label lang="de" value="devices" />
-			<label lang="en" value="devices" />
-		</entry>
-		
-		<entry name="locations" value="${hashSum}">
-			<label lang="de" value="locations" />
-			<label lang="en" value="locations" />
-		</entry>
-		
-		<entry name="initialized" value="${Date}">
-			<label lang="de" value="initialized" />
-			<label lang="en" value="initialized" />
-		</entry>
-	</section>
-	
 </schema>

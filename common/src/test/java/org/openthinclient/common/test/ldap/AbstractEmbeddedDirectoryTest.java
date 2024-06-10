@@ -22,7 +22,6 @@ import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Random;
 
 import javax.naming.NameNotFoundException;
@@ -125,9 +124,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 			admins.setName("administrators"); //$NON-NLS-1$
 			// admins.setAdminGroup(true);
 			realm.setAdministrators(admins);
-
-			final String date = new Date().toString();
-			realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
 
 			final User roPrincipal = new User();
 			roPrincipal.setName("roPrincipal");

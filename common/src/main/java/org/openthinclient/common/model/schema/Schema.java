@@ -80,33 +80,18 @@ public class Schema extends Node implements Comparable<Schema> {
     return this;
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#contains(java.lang.String)
-   */
   public boolean contains(String key) {
     return null != getChild(key);
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#getKeys()
-   */
   public Set<String> getKeys() {
     return null;
   }
 
-  /*
-   * @see
-   * org.openthinclient.common.model.Profile#getOverriddenValue(java.lang.String
-   * )
-   */
   public String getOverriddenValue(String key) {
     return null;
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#getValue(java.lang.String,
-   * boolean)
-   */
   public String getValue(String key) {
     final Node n = getChild(key);
     return null != n && n instanceof EntryNode
@@ -114,24 +99,14 @@ public class Schema extends Node implements Comparable<Schema> {
             : null;
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#getValues()
-   */
   public Map<String, String> getValues() {
     return null;
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#setValues(java.util.SortedMap)
-   */
   public void setValues(SortedMap<String, String> values) {
     throw new IllegalArgumentException("Can't set the value here.");
   }
 
-  /*
-   * @see org.openthinclient.common.model.Profile#setValue(java.lang.String,
-   * java.lang.String)
-   */
   public void setValue(String path, String value) {
     throw new IllegalArgumentException("Can't set the value here.");
   }

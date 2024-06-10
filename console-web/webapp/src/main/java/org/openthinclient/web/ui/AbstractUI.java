@@ -16,6 +16,7 @@ import com.vaadin.shared.communication.PushMode;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.i18n.LocaleUtil;
@@ -25,19 +26,18 @@ import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.component.LicenseMessageBar;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.openthinclient.web.event.DashboardEvent.ClientCountChangeEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 
 import java.util.Locale;
@@ -192,12 +192,12 @@ public abstract class AbstractUI extends UI {
     return "";
   }
 
-  @EventBusListenerMethod
+  @EventListener
   public void licenseChange(LicenseChangeEvent ev) {
     this.updateLicenseBar();
   }
 
-  @EventBusListenerMethod
+  @EventListener
   public void userCountChange(ClientCountChangeEvent ev) {
     this.updateLicenseBar();
   }

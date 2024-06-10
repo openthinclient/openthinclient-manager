@@ -3,7 +3,6 @@ package org.openthinclient.web.thinclient.presenter;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
@@ -15,12 +14,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.openthinclient.api.ldif.export.LdifExporterService;
+import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.ProfileNotDeletedException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
+import org.springframework.context.ApplicationContext;
 import org.vaadin.viritin.button.MButton;
 
 import java.io.ByteArrayInputStream;
@@ -41,19 +42,23 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE_NO
 
 public class ProfilesListOverviewPanelPresenter {
 
+  private ApplicationContext applicationContext;
   private AbstractDirectoryObjectView directoryObjectView;
   private ProfilesListOverviewPanel panel;
   private Registration addClickListenerRegistration = null;
   private Registration deleteClickListenerRegistration = null;
   private Registration wolClickListenerRegistration = null;
+  private Registration restartClickListenerRegistration = null;
+  private Registration shutdownClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
   private LdifExporterService ldifExporterService;
   private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
 
-  public ProfilesListOverviewPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService) {
+  public ProfilesListOverviewPanelPresenter(AbstractDirectoryObjectView directoryObjectView, ProfilesListOverviewPanel panel, LdifExporterService ldifExporterService, ApplicationContext applicationContext) {
     this.directoryObjectView = directoryObjectView;
     this.panel = panel;
     this.ldifExporterService = ldifExporterService;
+    this.applicationContext = applicationContext;
 
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(directoryObjectView.getViewName() + "/create"));
@@ -85,9 +90,6 @@ public class ProfilesListOverviewPanelPresenter {
   private void handleDeleteAction(Button.ClickEvent event) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-// TODO: delete action
-//    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) panel.getItemGrid().getSelectionModel();
-//    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
     Set<DirectoryObject> selectedItems = panel.getSelectedItems();
 
     VerticalLayout content = new VerticalLayout();
@@ -96,7 +98,7 @@ public class ProfilesListOverviewPanelPresenter {
     window.center();
 
     boolean deletionAllowed = true;
-    // HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt
+    // hardware type und location must not be delted if they are in use
     if (deleteMandatSupplier != null) {
       StringBuilder messages = new StringBuilder();
       for (DirectoryObject directoryObject : selectedItems) {
@@ -143,6 +145,12 @@ public class ProfilesListOverviewPanelPresenter {
             panel.getCheckBox().setValue(false);
             window.close();
             UI.getCurrent().removeWindow(window);
+
+            if (applicationContext != null) {
+              // Send event to inform about client count change
+              // (applicationContext is only set by ClientView)
+              applicationContext.publishEvent(new ClientCountChangeEvent());
+            }
           }));
       content.addComponent(hl);
     }
@@ -173,6 +181,20 @@ public class ProfilesListOverviewPanelPresenter {
     button.setVisible(true);
     if (wolClickListenerRegistration != null) wolClickListenerRegistration.remove();
     wolClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
+  }
+
+  public void addRestartButtonClickHandler(Consumer<Set<DirectoryObject>> clickListener) {
+    Button button = panel.getRestartButton();
+    button.setVisible(true);
+    if (restartClickListenerRegistration != null) restartClickListenerRegistration.remove();
+    restartClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
+  }
+
+  public void addShutdownButtonClickHandler(Consumer<Set<DirectoryObject>> clickListener) {
+    Button button = panel.getShutdownButton();
+    button.setVisible(true);
+    if (shutdownClickListenerRegistration != null) shutdownClickListenerRegistration.remove();
+    shutdownClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
   }
 
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {

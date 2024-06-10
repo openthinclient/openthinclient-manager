@@ -6,13 +6,13 @@
 	<artifactId>manager</artifactId>
 	<packaging>pom</packaging>
 
-	<name>openthinclient.org Manager</name>
+	<name>openthinclient Management Server</name>
 	<version>${revision}</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
 	<organization>
-		<name>openthinclient GmbH</name>
+		<name>openthinclient gmbh</name>
 		<url>http://www.openthinclient.com</url>
 	</organization>
 
@@ -24,22 +24,11 @@
 		</license>
 	</licenses>
 
-	<issueManagement>
-		<system>github</system>
-        <url>https://github.com/openthinclient/openthinclient-manager/issues</url>
-	</issueManagement>
-
-	<scm>
-        <connection>scm:git:git@github.com/openthinclient/openthinclient-manager.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/opentinclient/openthinclient-manager.git
-        </developerConnection>
-	</scm>
-
 	<properties>
-		<revision>2022.1.1</revision>
-		<application.meta-package-version>2022.1.1</application.meta-package-version>
-		<application.repository>http://archive.openthinclient.org/openthinclient/v2022/packages</application.repository>
-		<application.distribution>http://archive.openthinclient.org/openthinclient/v2022/first-start-profiles/distributions.xml</application.distribution>
+		<revision>2024.1-BETA</revision>
+		<application.meta-package-version>2024.1~beta</application.meta-package-version>
+		<application.repository>http://archive.openthinclient.org/openthinclient/v2024/packages</application.repository>
+		<application.distribution>http://archive.openthinclient.org/openthinclient/v2024/first-start-profiles/distributions.xml</application.distribution>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -53,7 +42,7 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-		<vaadin.version>8.17.0</vaadin.version>
+		<vaadin.version>8.25.2</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
 

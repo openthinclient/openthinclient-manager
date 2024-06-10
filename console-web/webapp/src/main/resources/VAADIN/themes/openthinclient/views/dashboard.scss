@@ -88,19 +88,14 @@
         & > * + * {
           margin-left: 1ch;
         }
+
+        img {
+          height: 2em;
+        }
       }
     }
 
     .dashboard-panel.unregistered-clients {
-      .dashboard-panel-title::before {
-        content: "";
-        display: inline-block;
-        min-height: 2em;
-        min-width: 2em;
-        margin-right: 1ch;
-        background: #509dc9  url("/VAADIN/themes/openthinclient/icon/thinclient.svg") 0 0 / contain;
-        border-radius: 50%;
-      }
       * {
         text-align: left;
       }
@@ -121,17 +116,6 @@
     }
 
     .dashboard-panel.license-info {
-
-      .dashboard-panel-title::before {
-        display: inline-block;
-        margin-right: 1ch;
-        content: "\e964";
-        font-family: Vaadin-Icons;
-        font-size: 2em;
-        vertical-align: middle;
-        color: #509dc9;
-      }
-
       .client-count {
         & > :first-child {
           font-size: 2em;
@@ -230,10 +214,6 @@
 
     .dashboard-panel.size-1x2 {
       width: 30em;
-
-      .dashboard-panel-image {
-        height: 2em;
-      }
     }
 
     .dashboard-panel.size-2x3 {

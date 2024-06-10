@@ -25,13 +25,4 @@ package org.openthinclient.common.model.schema;
  */
 public class PasswordNode extends EntryNode {
 	private static final long serialVersionUID = 1L;
-
-	/*
-	 * @see org.openthinclient.common.model.schema.Node#getUID()
-	 */
-	@Override
-	public long getUID() {
-		return super.getUID()
-				^ (null != defaultValue ? defaultValue.hashCode() : 87612534);
-	}
 }

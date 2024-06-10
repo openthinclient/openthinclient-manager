@@ -27,7 +27,6 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserGroupView.class);
 
   public static final String NAME = "usergroup_view";
-  public static final String ICON = "icon/applicationgroup-white.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_USERGROUP_HEADER;
 
   @Autowired

@@ -33,7 +33,7 @@ public final class DeviceView extends AbstractProfileView<Device> {
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);
 
   public static final String NAME = "device_view";
-  public static final String ICON = "icon/device.svg";
+  public static final String ICON = "icon/components.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_DEVICE_HEADER;
 
   @Autowired

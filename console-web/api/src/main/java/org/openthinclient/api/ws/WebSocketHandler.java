@@ -65,18 +65,45 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    public boolean send(WebSocketSession session, String type) {
+        return send(session, type, null);
+    }
+
+    public boolean send(WebSocketSession session, String type, String message) {
+        try (WebSocketSession wrappedSession =
+                new ConcurrentWebSocketSessionDecorator(
+                    session, 1000 /*ms*/, 1024/*B*/, TERMINATE)
+        ) {
+            wrappedSession.sendMessage(new TextMessage(
+                (message == null) ? type
+                                  : type + "\n" + message
+            ));
+            return true;
+        } catch(IOException ex) {
+            LOG.error("Failed to send {} to {}",
+                      type, session.getRemoteAddress());
+            return false;
+        } catch(SessionLimitExceededException ex) {
+            LOG.info("Could not send {} to {}. Seems to be offline.",
+                    type, session.getRemoteAddress());
+            sessions.remove(session);
+            return false;
+        }
+    }
 
 	public void sendToAll(String message_type) {
         for(WebSocketSession session: sessions) {
-            try (WebSocketSession wrappedSession = new ConcurrentWebSocketSessionDecorator(
-                    session, 1000 /*ms*/, 1024/*B*/, TERMINATE)) {
-                wrappedSession.sendMessage(new TextMessage(message_type));
-            } catch(IOException ex) {
-                LOG.error("Failed to send {} to {}", message_type, session.getRemoteAddress());
-            } catch(SessionLimitExceededException ex) {
-                LOG.info("Could not send {} to {}. Seems to be offline.", message_type, session.getRemoteAddress());
-                sessions.remove(session);
-            }
+            send(session, message_type, null);
         }
 	}
+
+    public void endSession(WebSocketSession session) {
+        if(sessions.remove(session)) {
+            try {
+                session.close();
+            } catch(IOException ex) {
+                LOG.error("Failed to close websocket session", ex);
+            }
+        }
+    }
 }

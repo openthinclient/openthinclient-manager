@@ -38,7 +38,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "package-management", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 50)
-//@ThemeIcon("icon/package-white.svg")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
   private static final long serialVersionUID = -1596921762830560217L;

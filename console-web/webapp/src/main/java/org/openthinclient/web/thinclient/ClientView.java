@@ -12,6 +12,7 @@ import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.Audit;
 import org.openthinclient.web.ClientStatus;
 import org.openthinclient.web.component.Popup;
-import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.common.Events.ClientCountChangeEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -43,6 +44,8 @@ import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import org.vaadin.spring.events.EventBus;
@@ -101,6 +104,8 @@ public final class ClientView extends AbstractProfileView<Client> {
   private RealmService realmService;
   @Autowired
   private ClientStatus clientStatus;
+  @Autowired
+  private ApplicationContext applicationContext;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -153,6 +158,8 @@ public final class ClientView extends AbstractProfileView<Client> {
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     if (!isDefaultClient) {
       presenter.addPanelCaptionComponent(createWOLButton(profile));
+      presenter.addPanelCaptionComponent(createRestartButton(profile));
+      presenter.addPanelCaptionComponent(createShutdownButton(profile));
       String ip = profile.getIpHostNumber();
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
         presenter.addPanelCaptionComponent(createIPButton(profile));
@@ -266,37 +273,67 @@ public final class ClientView extends AbstractProfileView<Client> {
   }
 
   private Component createWOLButton(Client profile) {
-    Button button = new Button();
-    button.addStyleName("wol");
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL));
-    button.setIcon(VaadinIcons.POWER_OFF);
-    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    button.addStyleName(ValoTheme.BUTTON_SMALL);
-    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> wakeOnLan(profile));
-    return button;
+    return createIconButton(
+        VaadinIcons.PLAY,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_WOL,
+        "wol",
+        ev -> wakeOnLan(profile)
+    );
+  }
+
+  private Component createRestartButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.REFRESH,
+        UI_PROFILE_PANEL_BUTTON_RESTART,
+        "restart",
+        ev -> restartClients(profile));
+  }
+
+  private Component createShutdownButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.STOP,
+        UI_PROFILE_PANEL_BUTTON_SHUTDOWN,
+        "shutdown",
+        ev -> shutdownClients(profile));
   }
 
   private Component createVNCButton(Client profile) {
-    Button button = new Button();
-    button.addStyleName("vnc");
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
-    button.setIcon(VaadinIcons.DESKTOP);
-    button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    button.addStyleName(ValoTheme.BUTTON_SMALL);
-    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
-    return button;
+    return createIconButton(
+        VaadinIcons.DESKTOP,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC,
+        "vnc",
+        ev -> openNoVncInNewBrowserWindow(profile.getName())
+    );
   }
 
   private Component createLOGButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.FILE_TEXT_O,
+        UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG,
+        ev -> showClientLogs(profile)
+    );
+  }
+
+  private Component createIconButton( VaadinIcons icon,
+                                      ConsoleWebMessages description,
+                                      ClickListener clickListener ) {
+    return createIconButton(icon, description, null, clickListener);
+  }
+
+  private Component createIconButton( VaadinIcons icon,
+                                      ConsoleWebMessages description,
+                                      String styleName,
+                                      ClickListener clickListener ) {
     Button button = new Button();
-    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
-    button.setIcon(VaadinIcons.FILE_TEXT_O);
+    button.setIcon(icon);
+    button.setDescription(mc.getMessage(description));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(ev -> showClientLogs(profile));
+    if (styleName != null) {
+      button.addStyleName(styleName);
+    }
+    button.addClickListener(clickListener);
     return button;
   }
 
@@ -305,13 +342,20 @@ public final class ClientView extends AbstractProfileView<Client> {
   public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean enabled) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey, enabled);
-    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()));
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()),
+        applicationContext);
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
     plop.setDataProvider(dataProvider, clientStatus.getOnlineMACs());
     plopPresenter.addWolButtonClickHandler(clients -> {
       wakeOnLan(clients.toArray(new ClientMetaData[0]));
+    });
+    plopPresenter.addRestartButtonClickHandler(clients -> {
+      restartClients(clients.toArray(new ClientMetaData[0]));
+    });
+    plopPresenter.addShutdownButtonClickHandler(clients -> {
+      shutdownClients(clients.toArray(new ClientMetaData[0]));
     });
     plopPresenter.setVisible(true);
     return plopPresenter;
@@ -552,7 +596,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
 
-    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+    applicationContext.publishEvent(new ClientCountChangeEvent());
 
   }
 
@@ -567,7 +611,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
     super.delete(profile);
-    eventBus.publish(this, new DashboardEvent.ClientCountChangeEvent());
+    applicationContext.publishEvent(new ClientCountChangeEvent());
   }
 
   private void showClientLogs(Client profile) {
@@ -721,6 +765,43 @@ public final class ClientView extends AbstractProfileView<Client> {
     }
   }
 
+  private void restartClients(ClientMetaData... profiles) {
+    if (profiles.length == 0) {
+      return;
+    }
+    (new ConfimationPopup(
+        ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_TITLE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_SINGLE_MESSAGE:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_MULTI_MESSAGE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_SINGLE_OK:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_RESTART_MULTI_OK,
+        () -> clientStatus.restartClients(
+                  Arrays.stream(profiles)
+                        .map(ClientMetaData::getMacAddress)
+                        .collect(Collectors.toList()))
+    )).open();
+  }
+
+  private void shutdownClients(ClientMetaData... profiles) {
+    if (profiles.length == 0) {
+      return;
+    }
+    (new ConfimationPopup(
+        ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_TITLE,
+        profiles.length == 1? UI_PROFILE_CONFIRM_SHUTDOWN_SINGLE_MESSAGE
+                            : UI_PROFILE_CONFIRM_SHUTDOWN_MULTI_MESSAGE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_SINGLE_OK:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_MULTI_OK,
+        () -> clientStatus.shutdownClients(
+                  Arrays.stream(profiles)
+                        .map(ClientMetaData::getMacAddress)
+                        .collect(Collectors.toList()))
+    )).open();
+  }
+
   private void openNoVncInNewBrowserWindow(String clientName) {
     String ipHostNumber = getFreshProfile(clientName).getIpHostNumber();
     boolean isNoVNCConsoleEncrypted = false;
@@ -748,4 +829,24 @@ public final class ClientView extends AbstractProfileView<Client> {
     return TITLE_KEY;
   }
 
+  class ConfimationPopup extends Popup {
+    ConfimationPopup(
+        ConsoleWebMessages title_key,
+        ConsoleWebMessages message_key,
+        ConsoleWebMessages cofirmation_button_key,
+        Runnable onConfirm
+    ) {
+      super(title_key);
+      setWidth("420px");
+      addContent(new Label(mc.getMessage(message_key), ContentMode.HTML));
+      addButton(
+          new Button(mc.getMessage(UI_BUTTON_CANCEL), ev -> {
+            close();
+          }),
+          new Button(mc.getMessage(cofirmation_button_key), ev -> {
+            close();
+            onConfirm.run();
+          }));
+    }
+  }
 }

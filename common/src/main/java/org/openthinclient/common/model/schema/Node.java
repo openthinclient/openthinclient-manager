@@ -45,7 +45,6 @@ import javax.xml.bind.annotation.XmlType;
         "labels", "tips", "children"
 })
 @XmlAccessorType(XmlAccessType.NONE)
-//@XmlAccessorOrder(value = XmlAccessOrder.UNDEFINED)
 public abstract class Node implements Iterable<Node>, Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -73,7 +72,7 @@ public abstract class Node implements Iterable<Node>, Serializable {
    * The node's name
    */
   @XmlAttribute(name = "name")
-  private String name;
+  private String name = "";
   /**
    * The KB article page key for this node
    */
@@ -109,7 +108,12 @@ public abstract class Node implements Iterable<Node>, Serializable {
       String name = child.getName();
       if (path.startsWith(name)) {
         int length = name.length();
-        if (length == path.length()) {
+        if (length == 0) {
+          Node node = child.getChild(path);
+          if (node != null) {
+            return node;
+          }
+        } else if (length == path.length()) {
           return child;
         } else if (path.charAt(length) == '.') {
           Node node = child.getChild(path.substring(length + 1));
@@ -196,17 +200,16 @@ public abstract class Node implements Iterable<Node>, Serializable {
    */
   public String getKey() {
     if (null == key)
-      if (null == parent || parent instanceof Schema)
+      if (null == parent || parent instanceof Schema || parent.getKey() == "")
         key = name;
+      else if (name == "")
+        key = parent.getKey();
       else
         key = parent.getKey() + "." + name;
 
     return key;
   }
 
-  /*
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return getLabel();
@@ -247,19 +250,6 @@ public abstract class Node implements Iterable<Node>, Serializable {
         return tip.getLabel();
 
     return null;
-  }
-
-  protected long getUID() {
-    long uid = getClass().getSimpleName().hashCode();
-
-    for (Iterator i = children.iterator(); i.hasNext(); ) {
-      Node child = (Node) i.next();
-      uid ^= child.getUID();
-    }
-
-    uid ^= getKey().hashCode() ^ getName().hashCode();
-
-    return uid;
   }
 
   /**

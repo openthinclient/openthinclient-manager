@@ -27,7 +27,7 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGroupView.class);
 
   public static final String NAME = "applicationgroup_view";
-  public static final String ICON = "icon/applicationgroup-white.svg";
+  public static final String ICON = "";
   public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATIONGROUP_HEADER;
 
   @Autowired

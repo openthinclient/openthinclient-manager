@@ -24,7 +24,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "services", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 20)
-//@ThemeIcon("icon/eye-white.svg")
 public class ServicesView extends Panel implements View {
 
   private static final long serialVersionUID = 7856636768058411222L;

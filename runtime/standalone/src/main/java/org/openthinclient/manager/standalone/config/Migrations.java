@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import com.google.common.base.Strings;
 
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.common.Events.LDAPImportEvent;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.service.HardwareTypeService;
@@ -22,7 +23,6 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReportT
 import org.openthinclient.service.common.ServerIDFactory;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.event.PackageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,7 @@ public class Migrations {
   }
 
   @EventListener
-  public void runLDAPMigration(DashboardEvent.LDAPImportEvent ev) {
+  public void runLDAPMigration(LDAPImportEvent ev) {
     runLDAPMigration();
   }
 

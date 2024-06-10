@@ -34,7 +34,7 @@ public final class ApplicationView extends AbstractProfileView<Application> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
   public static final String NAME = "application_view";
-  public static final String ICON = "icon/application.svg";
+  public static final String ICON = "icon/apps.svg";
   public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_HEADER;
 
   @Autowired

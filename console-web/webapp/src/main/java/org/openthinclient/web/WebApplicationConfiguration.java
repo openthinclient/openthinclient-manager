@@ -7,8 +7,7 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.spring.annotation.UIScope;
 
-import org.openthinclient.api.LicenseEndpoint;
-import org.openthinclient.api.StatusEndpoint;
+import org.openthinclient.api.*;
 import org.openthinclient.api.rest.RestApiConfiguration;
 import org.openthinclient.api.ws.WebSocketConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -44,7 +43,13 @@ import java.util.concurrent.TimeUnit;
         WebSocketConfiguration.class,
         SystemReportingConfiguration.class,
         StatusEndpoint.class,
+        ClientDataEndpoint.class,
+        DevicesEndpoint.class,
+        ApplicationsEndpoint.class,
+        PrintersEndpoint.class,
+        DefaultsEndpoint.class,
         LicenseEndpoint.class,
+        UsageStatusEndpoint.class,
 })
 @EnableCaching
 public class WebApplicationConfiguration {

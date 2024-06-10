@@ -47,6 +47,10 @@ public class PackageListMasterDetailsPresenter {
   public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService, ApplicationContext applicationContext) {
     this.view = view;
     this.dataProvider = new ListDataProvider<>(new ArrayList<>());
+    dataProvider.setSortOrder(ResolvedPackageItem::getName,
+                              SortDirection.ASCENDING);
+    dataProvider.addSortOrder(item -> item.getPackage().getVersion(),
+                              SortDirection.DESCENDING);
     this.view.setDataProvider(this.dataProvider);
     this.packageManager = packageManager;
     this.mc = new MessageConveyor(UI.getCurrent().getLocale());

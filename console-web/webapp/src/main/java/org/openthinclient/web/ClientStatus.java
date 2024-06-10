@@ -1,8 +1,9 @@
 package org.openthinclient.web;
 
 import org.openthinclient.api.ws.WebSocketHandler;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.service.store.LDAPConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,10 +17,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.naming.NamingException;
 
 @Component
 @EnableScheduling
 public class ClientStatus {
+    private static final Logger LOG = LoggerFactory.getLogger(ClientStatus.class);
 
     /** Check for offline clients every _ milliseconds */
     private static final long STATUS_UPDATE_INTERVAL = 3 * 1000;
@@ -35,10 +38,12 @@ public class ClientStatus {
     @Autowired
     WebSocketHandler webSocket;
 
-    @Autowired
-    ClientService clientService;
+    class ClientInfo {
+        long lastHeartbeat;
+        WebSocketSession wsSession;
+    }
 
-    Map<String, Long> clients;
+    Map<String, ClientInfo> clients;
 
     @PostConstruct
     public void init() {
@@ -48,20 +53,26 @@ public class ClientStatus {
 
     private void onHeartbeat(WebSocketSession session, String message) {
         String remote_ip = session.getRemoteAddress().getAddress().getHostAddress();
+        ClientInfo clientInfo = new ClientInfo() {{
+            lastHeartbeat = System.currentTimeMillis();
+            wsSession = session;
+        }};
         Matcher matcher = MAC_LINE.matcher(message);
         synchronized(clients) {
             while(matcher.find()) {
                 String mac = matcher.group(1);
                 if(!clients.containsKey(mac)) {
-                    for(Client client: clientService.findByHwAddress(mac)) {
-                        client.setIpHostNumber(remote_ip);
-                        // Run in background, as saving can take a lot of time.
-                        new Thread(() -> {
-                            clientService.save(client);
-                        }).start();
+                    try (LDAPConnection ldapCon = new LDAPConnection()) {
+                        String dn = ldapCon.searchClientDN(mac);
+                        if(dn == null) {
+                            continue;
+                        }
+                        ldapCon.saveIP(dn, remote_ip);
+                    } catch (NamingException ex) {
+                        LOG.error("Failed to save IP for {}", mac, ex);
                     }
                 }
-                clients.put(mac, System.currentTimeMillis());
+                clients.put(mac, clientInfo);
             }
         }
     }
@@ -70,7 +81,7 @@ public class ClientStatus {
     public void checkClientsStatus() {
         long cutOff = System.currentTimeMillis() - HEARTBEAT_TOLERANCE;
         synchronized(clients) {
-            clients.values().removeIf(timestamp -> timestamp < cutOff);
+            clients.values().removeIf(info -> info.lastHeartbeat < cutOff);
         }
     }
 
@@ -82,4 +93,27 @@ public class ClientStatus {
         return Collections.unmodifiableSet(clients.keySet());
     }
 
+
+    public void restartClients(Iterable<String> macs) {
+        haltClients("restart", macs);
+    }
+
+    public void shutdownClients(Iterable<String> macs) {
+        haltClients("shutdown", macs);
+    }
+
+    private void haltClients(String type, Iterable<String> macs) {
+        synchronized(clients) {
+            for(String mac : macs) {
+                if(clients.containsKey(mac)) {
+                    ClientInfo info = clients.get(mac);
+                    boolean ok = webSocket.send(info.wsSession, type);
+                    if (ok) {
+                        webSocket.endSession(info.wsSession);
+                        clients.remove(mac);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -36,6 +36,8 @@ public class ProfilesListOverviewPanel extends CssLayout {
   private Button deleteProfileAction;
   private Button ldifExportAction;
   private Button wolAction;
+  private Button restartAction;
+  private Button shutdownAction;
   private boolean enabled = true;
 
   private Consumer<DirectoryObject> itemButtonClickedConsumer = null;
@@ -78,7 +80,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
     filterLine.addComponent(filter);
     content.addComponent(filterLine);
 
-    HorizontalLayout actionLine = new HorizontalLayout();
+    CssLayout actionLine = new CssLayout();
     actionLine.addStyleNames("actionLine");
     actionLine.setVisible(enabled);
     content.addComponent(actionLine);
@@ -90,30 +92,45 @@ public class ProfilesListOverviewPanel extends CssLayout {
     deleteProfileAction = new Button();
     deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
     deleteProfileAction.setIcon(VaadinIcons.TRASH);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     deleteProfileAction.addStyleName("deleteProfile");
     actionLine.addComponent(deleteProfileAction);
 
     ldifExportAction = new Button("");
     ldifExportAction.setDescription("Export LDIF");
-    ldifExportAction.setIcon(VaadinIcons.ARROW_CIRCLE_DOWN_O);
-    ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    ldifExportAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
     ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     ldifExportAction.addStyleName("ldifExport");
     actionLine.addComponent(ldifExportAction);
 
     wolAction = new Button("");
     wolAction.setDescription("Wake On LAN");
-    wolAction.setIcon(VaadinIcons.POWER_OFF);
+    wolAction.setIcon(VaadinIcons.PLAY);
     wolAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-    wolAction.addStyleName(ValoTheme.BUTTON_SMALL);
     wolAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     wolAction.addStyleName("wol");
     wolAction.setVisible(false);
     actionLine.addComponent(wolAction);
+
+    restartAction = new Button("");
+    restartAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_RESTART));
+    restartAction.setIcon(VaadinIcons.REFRESH);
+    restartAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    restartAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    restartAction.addStyleName("restart");
+    restartAction.setVisible(false);
+    actionLine.addComponent(restartAction);
+
+    shutdownAction = new Button("");
+    shutdownAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_SHUTDOWN));
+    shutdownAction.setIcon(VaadinIcons.STOP);
+    shutdownAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    shutdownAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    shutdownAction.addStyleName("shutdown");
+    shutdownAction.setVisible(false);
+    actionLine.addComponent(shutdownAction);
 
     gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table", "detectOverflow");
@@ -197,11 +214,18 @@ public class ProfilesListOverviewPanel extends CssLayout {
     return wolAction;
   }
 
+  public Button getRestartButton() {
+    return restartAction;
+  }
+
+  public Button getShutdownButton() {
+    return shutdownAction;
+  }
+
   public CheckBox getCheckBox() {
     return selectAll;
   }
 
-  @Deprecated
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     this.itemButtonClickedConsumer = itemButtonClickedConsumer;
     if (itemButtonClickedConsumer == null && itemBtn != null) { // hide Button-Column if no action is provided
