@@ -32,9 +32,7 @@ public class ContextInfoUtil {
 			LOGGER.error("Could not read application version");
 			return null;
 		}
-		return "https://wiki.openthinclient.org/display/_PK/OMD"
-				+ version.replaceAll("(\\d+)\\.(\\d+).*","$1$2")
-				+ "/";
+		return "https://docs.openthinclient.com/" + version.replaceAll("(\\d+)\\.(\\d+).*","$1-$2") + "/key/";
 	}
 
 	public static String getLink(String kbArticle) {
