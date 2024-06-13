@@ -173,8 +173,7 @@ public class UpdateManagerView extends Panel implements View {
     CssLayout wikilinks = new CssLayout();
     wikilinks.addComponents(
       new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_CAPTION)),
-      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_VERSION_INFORMATION), ContentMode.HTML),
-      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_ROADMAP), ContentMode.HTML)
+      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_VERSION_INFORMATION), ContentMode.HTML)
       );
     wikilinks.addStyleName("wikilinks");
     return wikilinks;
