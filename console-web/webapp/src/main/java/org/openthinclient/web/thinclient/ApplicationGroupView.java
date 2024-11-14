@@ -112,6 +112,7 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
       } else {
         LOGGER.info("Remove oldValue from applicationGroup: " + oldItem);
         if (oldItem.getMembers().contains(applicationGroup)) {
+          applicationGroup.getApplications().remove(oldItem);
           oldItem.getMembers().remove(applicationGroup);
           applicationService.save(oldItem);
         } else {
