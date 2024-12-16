@@ -80,56 +80,43 @@ public abstract class AbstractProfileView<P extends Profile> extends AbstractDir
             .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
             .collect(Collectors.toList())
             .forEach(otcProperty -> {
-                boolean isPasswordProperty = otcProperty instanceof OtcPasswordProperty;
-                ItemConfiguration bean = otcProperty.getConfiguration();
-                String propertyKey = otcProperty.getKey();
+                String key = otcProperty.getKey();
+                String current = otcProperty.getConfiguration().getValue();
+                if (current != null && current.isEmpty()) current = null;
+
                 String orig;
-                if (propertyKey.equals("name")) {
+                if (key.equals("name")) {
                     orig = profile.getName();
-                } else if (propertyKey.equals("description")) {
+                } else if (key.equals("description")) {
                     orig = profile.getDescription();
-                } else if (propertyKey.equals("type") && profile.getRealm() != null) {
+                } else if (key.equals("type") && profile.getRealm() != null) {
                     orig = profile.getSchema(profile.getRealm()).getName();
                 } else {
-                    orig = profile.getValueLocal(propertyKey);
+                    orig = profile.getValueLocal(key);
                 }
-                String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
 
-                if (!StringUtils.equals(orig, current)) {
-                    if (current != null) {
-                    LOGGER.debug(" Apply value for " + propertyKey + "=" + (isPasswordProperty ? "***" : orig) + " with new value '" + (isPasswordProperty ? "***" : current) + "'");
-                    switch (propertyKey) {
-                        case "name":
-                        profile.setName(current);
-                        break;
-                        case "description":
-                        profile.setDescription(current);
-                        break;
-                        // handle type-change is working, but disabled at UI
-                        case "type": {
-                        profile.setSchema(getSchema(current));
-                        // remove old schema values
-                        Schema orgSchema = getSchema(otcProperty.getInitialValue());
-                        if (orgSchema != null) {
-                            orgSchema.getChildren().forEach(o -> profile.removeValue(o.getName()));
-                        }
-                        break;
-                        }
-                        default:
-                        profile.setValue(propertyKey, current);
-                        break;
-                    }
-                    } else {
-                    if (propertyKey.equals("description")) {
-                        LOGGER.debug(" Apply null value for description");
-                        profile.setDescription(null);
-                    } else {
-                        LOGGER.debug(" Remove empty value for " + propertyKey);
-                        profile.removeValue(propertyKey);
-                    }
-                    }
+                if (StringUtils.equals(orig, current)) return;  // Nothing to do
+
+                if (current != null) {
+                  switch (key) {
+                    case "name":
+                      profile.setName(current);
+                      break;
+                    case "description":
+                      profile.setDescription(current);
+                      break;
+                    case "type":
+                      LOGGER.warn("Aborted item type change!");
+                      break;
+                    default:
+                      profile.setValue(key, current);
+                  }
                 } else {
-                    LOGGER.debug(" Unchanged " + propertyKey + "=" + orig);
+                  if (key.equals("description")) {
+                      profile.setDescription(null);
+                  } else {
+                      profile.removeValue(key);
+                  }
                 }
             });
     });
