@@ -193,7 +193,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
         // should never happen
         LOG.error("That's silly: UTF8-encoding is unsupported!");
       }
-      m.appendReplacement(result, value);
+      m.appendReplacement(result, Matcher.quoteReplacement(value));
     }
     m.appendTail(result);
 
