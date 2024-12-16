@@ -27,11 +27,11 @@ import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.directory.shared.ldap.util.Base64;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.store.ClientBootData;
 import org.openthinclient.service.store.LDAPConnection;
@@ -181,7 +181,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
       // encode value: urlencoded,
       try {
         if (encoding.equalsIgnoreCase("base64"))
-          value = new String(Base64.encode(value.getBytes("UTF-8")));
+          value = Base64.getEncoder().encodeToString(value.getBytes("UTF-8"));
         else if (encoding.equalsIgnoreCase("urlencoded"))
           // java.net.URLEncoder converts " " into "+" as per the HTML
           // specification for form URL encoding.

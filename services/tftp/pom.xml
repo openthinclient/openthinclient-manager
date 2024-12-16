@@ -37,11 +37,6 @@
             <artifactId>manager-common</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.directory.shared</groupId>
-            <artifactId>shared-ldap</artifactId>
-            <version>0.9.5.5</version>
-        </dependency>
 
     </dependencies>
 
