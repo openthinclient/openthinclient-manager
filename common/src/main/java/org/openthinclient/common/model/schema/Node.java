@@ -79,6 +79,11 @@ public abstract class Node implements Iterable<Node>, Serializable {
   @XmlAttribute(name = "kbarticle")
   private String kbarticle;
   /**
+   * Whether to present this node in the UI
+   */
+  @XmlAttribute(name = "hidden")
+  private String hidden = "";
+  /**
    * The node's parent
    */
   private transient Node parent;
@@ -161,6 +166,18 @@ public abstract class Node implements Iterable<Node>, Serializable {
 
   public void setKBArticle(String kbarticle) {
     this.kbarticle = kbarticle;
+  }
+
+  public boolean isHidden() {
+    return hidden != null && hidden.toLowerCase().equals("true");
+  }
+
+  public String getHidden() {
+    return hidden;
+  }
+
+  public void setHidden(String hidden) {
+    this.hidden = hidden;
   }
 
   /**

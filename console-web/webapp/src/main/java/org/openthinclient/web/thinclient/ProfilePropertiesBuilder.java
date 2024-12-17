@@ -99,7 +99,7 @@ public class ProfilePropertiesBuilder {
 
   private void extractChildren(Node node, OtcPropertyGroup group, Profile profile) {
 
-    if (node instanceof SectionNode && "invisibleObjects".equals(node.getName())) {
+    if (node.isHidden()) {
       return;
     }
 
