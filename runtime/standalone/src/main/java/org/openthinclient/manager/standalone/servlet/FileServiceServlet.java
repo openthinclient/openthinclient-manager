@@ -80,14 +80,14 @@ public class FileServiceServlet extends HttpServlet {
 
     File f = makeFile(request.getPathInfo());
     if (!f.exists() || !f.canRead()) {
-      logger.info("HTTP 404 – File not found for "
+      logger.info("HTTP 404 - File not found for "
                 + request.getRemoteAddr() + ": "
                 + request.getServletPath() + request.getPathInfo());
 
       response.sendError(404);
     } else {
       if (f.isDirectory()) {
-        logger.info("HTTP 200 – Sending directory listing "
+        logger.info("HTTP 200 - Sending directory listing "
                     + request.getServletPath() + request.getPathInfo()
                     + " to " + request.getRemoteAddr());
 
@@ -101,7 +101,7 @@ public class FileServiceServlet extends HttpServlet {
           w.write("\n");
         }
       } else {
-        logger.info("HTTP 200 – Sending file "
+        logger.info("HTTP 200 - Sending file "
                     + request.getServletPath() + request.getPathInfo()
                     + " to " + request.getRemoteAddr());
 
