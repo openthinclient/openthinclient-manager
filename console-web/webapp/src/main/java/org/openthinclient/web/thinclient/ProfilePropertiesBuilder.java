@@ -57,7 +57,13 @@ public class ProfilePropertiesBuilder {
   private void bindModel2Properties(Profile profile, List<OtcPropertyGroup> propertyGroups) {
     propertyGroups.forEach(otcPropertyGroup -> {
       otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
-        String profileValue = profile.getValueLocal(otcProperty.getKey());
+        String profileValue;
+        if (otcProperty instanceof OtcPasswordProperty
+            && ((OtcPasswordProperty) otcProperty).isHashed()){
+          profileValue = null;
+        } else {
+          profileValue = profile.getValueLocal(otcProperty.getKey());
+        }
         ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), profileValue);
         otcProperty.setConfiguration(ic);
       });
@@ -111,8 +117,13 @@ public class ProfilePropertiesBuilder {
                         .collect(Collectors.toList())
         ));
       } else if (node instanceof PasswordNode) {
-         group.addProperty(new OtcPasswordProperty(node.getLabel(), ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
-                                              ((EntryNode) node).getValue()));
+        group.addProperty(new OtcPasswordProperty(
+            node.getLabel(),
+            ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()),
+            node.getKey(),
+            ((EntryNode) node).getValue(),
+            ((PasswordNode) node).getHashed() != null
+        ));
       } else if (node instanceof EntryNode) {
         group.addProperty(new OtcTextProperty(node.getLabel(), ContextInfoUtil.prepareTip(node.getTip(), node.getKBArticle()), node.getKey(),
                                               currentValue,

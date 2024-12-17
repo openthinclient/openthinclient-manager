@@ -1,5 +1,6 @@
 package org.openthinclient.web.thinclient;
 
+import org.apache.commons.codec.digest.Sha2Crypt;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
@@ -83,6 +84,17 @@ public abstract class AbstractProfileView<P extends Profile> extends AbstractDir
                 String key = otcProperty.getKey();
                 String current = otcProperty.getConfiguration().getValue();
                 if (current != null && current.isEmpty()) current = null;
+
+                // Special case: Hashed passwords can only be set
+                if (otcProperty instanceof OtcPasswordProperty
+                    && ((OtcPasswordProperty) otcProperty).isHashed()
+                ) {
+                  if (current != null) {
+                    profile.setValue(
+                        key, Sha2Crypt.sha512Crypt(current.getBytes()));
+                  }
+                  return;
+                }
 
                 String orig;
                 if (key.equals("name")) {

@@ -20,9 +20,22 @@
  *******************************************************************************/
 package org.openthinclient.common.model.schema;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * @author Joerg Henne
  */
 public class PasswordNode extends EntryNode {
 	private static final long serialVersionUID = 1L;
+
+	@XmlAttribute(name = "hashed")
+	protected String hash;
+
+	public String getHashed() {
+		return hash;
+	}
+
+	public void setHashed(String hash) {
+		this.hash = hash;
+	}
 }
