@@ -7,7 +7,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.nfs.NFSService;
@@ -31,7 +30,6 @@ public class ServicesView extends Panel implements View {
 
   @Autowired
   private DhcpServiceConfigurationForm dhcpServiceConfigurationForm;
-  private final ServicePanel directoryServicePanel;
   private final ServicePanel tftpServicePanel;
   private final ServicePanel syslogServicePanel;
   private final ServicePanel nfsServicePanel;
@@ -42,7 +40,6 @@ public class ServicesView extends Panel implements View {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    directoryServicePanel = new ServicePanel(serviceManager, DirectoryService.class, mc.getMessage(UI_SERVICE_CAPTION_DIRECTORY));
     tftpServicePanel = new ServicePanel(serviceManager, TFTPService.class, mc.getMessage(UI_SERVICE_CAPTION_TFTP));
     syslogServicePanel = new ServicePanel(serviceManager, SyslogService.class, mc.getMessage(UI_SERVICE_CAPTION_SYSLOG));
     nfsServicePanel = new ServicePanel(serviceManager, NFSService.class, mc.getMessage(UI_SERVICE_CAPTION_NFS));
@@ -61,7 +58,6 @@ public class ServicesView extends Panel implements View {
     servicePanels.setStyleName("services-wrap");
     servicePanels.setSpacing(true);
     servicePanels.setMargin(false);
-    servicePanels.addComponent(directoryServicePanel);
     servicePanels.addComponent(tftpServicePanel);
     servicePanels.addComponent(syslogServicePanel);
     servicePanels.addComponent(nfsServicePanel);
@@ -76,7 +72,6 @@ public class ServicesView extends Panel implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-    directoryServicePanel.refresh();
     tftpServicePanel.refresh();
     syslogServicePanel.refresh();
     nfsServicePanel.refresh();
