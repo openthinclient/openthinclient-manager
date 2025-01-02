@@ -118,7 +118,11 @@ public abstract class AbstractProfileView<P extends Profile> extends AbstractDir
                       profile.setDescription(current);
                       break;
                     case "type":
-                      LOGGER.warn("Aborted item type change!");
+                      if (orig == null || orig.isEmpty()) {
+                        profile.setSchema(getSchema(current));
+                      } else {
+                        LOGGER.warn("Aborted item type change!");
+                      }
                       break;
                     default:
                       profile.setValue(key, current);
