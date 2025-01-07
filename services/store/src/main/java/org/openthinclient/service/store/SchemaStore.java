@@ -42,11 +42,16 @@ public enum SchemaStore {
     return INSTANCE.clientKeys;
   }
 
-  public static Map<String, String> getSchema(String schemaName) {
-    return INSTANCE.schemas.get(schemaName);
+  public static void validate(String schemaName, Map<String, String> props) {
+    SchemaData schema = INSTANCE.schemas.get(schemaName);
+    if (schema != null) {
+      INSTANCE.schemas.get(schemaName).validate(props);
+    } else {
+      INSTANCE.LOG.warn("No schema for {}", schemaName);
+    }
   }
 
-  public static Map<String, Map<String, String>> getSchemas() {
+  public static Map<String, SchemaData> getSchemas() {
     return INSTANCE.schemas;
   }
 
@@ -60,7 +65,7 @@ public enum SchemaStore {
 
   private Path schemaPath;
   private JAXBContext jaxbContext;
-  private Map<String, Map<String, String>> schemas = new ConcurrentHashMap<>();
+  private Map<String, SchemaData> schemas = new ConcurrentHashMap<>();
   private Map<String, String> clientBootDefaults;
   private Set<String> clientKeys;
 
@@ -121,9 +126,7 @@ public enum SchemaStore {
     if (Files.isRegularFile(path)) {
       LOG.info("Loading schema {}", schemaName);
       try {
-        Map<String, String> map = new HashMap<>();
-        updateMap(map, loadSchema(path), null);
-        schemas.put(schemaName, map);
+        schemas.put(schemaName, new SchemaData(loadSchema(path)));
       } catch (Exception ex) {
         LOG.error("Could not load schema from {}", path, ex);
         return;
@@ -222,7 +225,7 @@ public enum SchemaStore {
     for (String key: clientKeys) {
       for (String schemaName: BOOT_DATA_SCHEMAS) {
         if(!schemas.containsKey(schemaName)) continue;
-        String value = schemas.get(schemaName).get(key);
+        String value = schemas.get(schemaName).getDefault(key);
         if (value != null) {
           map.put(key, value);
           break;
@@ -232,20 +235,47 @@ public enum SchemaStore {
     clientBootDefaults = Collections.unmodifiableMap(map);
   }
 
-  private void updateMap(Map<String, String> map, Node node, String key) {
-    // key for this node. Skip the <schema> node and nameless groups.
-    if (node.getParent() != null && node.getName() != null)  {
-      key = (key == null)? node.getName() : key + "." + node.getName();
+  public class SchemaData {
+    private Map<String, String> defaults = new HashMap<>();
+    private Set<String> keySet = new HashSet<>();;
+
+    SchemaData(Node root) {
+      populateNodeData(root, null);
     }
-    if (node instanceof EntryNode) {
-      if (node.getName() == null) {
-        LOG.warn("Ignoring <{}> without name in {}.", node.getClass(), key);
+
+    public String getDefault(String key) {
+      return defaults.get(key);
+    }
+
+    public Map<String, String> defaults() {
+      return defaults;
+    }
+
+    public Set<String> keySet() {
+      return keySet;
+    }
+
+    public void validate(Map<String, String> values) {
+      for (String key: defaults.keySet()) {
+        values.computeIfAbsent(key, k -> defaults.get(k));
+      }
+    }
+
+    private void populateNodeData(Node node, String key) {
+      // key for this node. Skip the <schema> root node and nameless groups.
+      if (node.getParent() != null && node.getName() != null)  {
+        key = (key == null) || key.isEmpty() ? node.getName() : key + "." + node.getName();
+      }
+      if (!(node instanceof EntryNode)) {  // container (section, group etc.)
+        for (Node child: node.getChildren()) {
+          populateNodeData(child, key);
+        }
         return;
       }
-      map.putIfAbsent(key, ((EntryNode) node).getValue());
-    } else {
-      for (Node child: node.getChildren()) {
-        updateMap(map, child, key);
+      keySet.add(key);
+      String defaultValue = ((EntryNode) node).getValue();
+      if (defaultValue != null) {
+        defaults.put(key, defaultValue);
       }
     }
   }

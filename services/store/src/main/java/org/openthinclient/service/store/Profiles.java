@@ -21,14 +21,7 @@ public class Profiles {
         LOG.warn("Device {} has no type", device.get("name"));
         continue;
       }
-      Map<String, String> schema = SchemaStore.getSchema(type);
-      if (schema == null) {
-        LOG.warn( "No schema for type {} of device {}.",
-          type, device.get("name"));
-        continue;
-      }
-      schema.forEach((key, value) ->
-                  device.computeIfAbsent(key, k -> value));
+      SchemaStore.validate(type, device);
     }
     return devices;
   }
@@ -84,14 +77,7 @@ public class Profiles {
         LOG.warn("App {} has no type", app.get("name"));
         continue;
       }
-      Map<String, String> schema = SchemaStore.getSchema(type);
-      if (schema == null) {
-        LOG.warn( "No schema for type {} of app {}.",
-                  type, app.get("name"));
-        continue;
-      }
-      schema.forEach((key, value) ->
-                  app.computeIfAbsent(key, k -> value));
+      SchemaStore.validate(type, app);
     }
     return apps;
   }
@@ -161,13 +147,7 @@ public class Profiles {
         LOG.warn("Printer {} has no type", printer.get("name"));
         continue;
       }
-      Map<String, String> schema = SchemaStore.getSchema(type);
-      if (schema == null) {
-        LOG.warn("No schema for type {} of printer {}.",
-            type, printer.get("name"));
-        continue;
-      }
-      schema.forEach((key, value) -> printer.computeIfAbsent(key, k -> value));
+      SchemaStore.validate(type, printer);
     }
     return printers;
   }
