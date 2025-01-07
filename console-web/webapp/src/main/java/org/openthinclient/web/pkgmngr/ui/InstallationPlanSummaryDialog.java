@@ -155,10 +155,9 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     Label label = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
     label.setContentMode(ContentMode.HTML);
     Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
-      List<Window> windows = new ArrayList<>(UI.getCurrent().getWindows());
-      windows.forEach(UI.getCurrent()::removeWindow);
     link.addClickListener((e) -> {
       UI.getCurrent().getNavigator().navigateTo("support");
+      UI.getCurrent().getWindows().forEach(UI.getCurrent()::removeWindow);
     });
     updateServerHint.addComponents(label, link);
     content.add(updateServerHint);
