@@ -13,6 +13,8 @@ import java.util.stream.StreamSupport;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.openthinclient.common.model.schema.ChoiceNode;
+import org.openthinclient.common.model.schema.ChoiceNode.Option;
 import org.openthinclient.common.model.schema.EntryNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
@@ -237,6 +239,8 @@ public enum SchemaStore {
 
   public class SchemaData {
     private Map<String, String> defaults = new HashMap<>();
+    private Map<String, Collection<String>> choices = new HashMap<>();
+    private Collection<String> defaultsKeys = new ArrayList<>();
     private Set<String> keySet = new HashSet<>();;
 
     SchemaData(Node root) {
@@ -256,7 +260,15 @@ public enum SchemaStore {
     }
 
     public void validate(Map<String, String> values) {
-      for (String key: defaults.keySet()) {
+      // Check all choices for validity. Fall back to defaults if invalid.
+      for (Map.Entry<String, Collection<String>> entry: choices.entrySet()) {
+        String key = entry.getKey();
+        if (!entry.getValue().contains(values.get(key))) {
+          values.put(key, defaults.get(key));
+        }
+      }
+      // Fill in all other missing defaults.
+      for (String key: defaultsKeys) {
         values.computeIfAbsent(key, k -> defaults.get(k));
       }
     }
@@ -274,8 +286,16 @@ public enum SchemaStore {
       }
       keySet.add(key);
       String defaultValue = ((EntryNode) node).getValue();
-      if (defaultValue != null) {
+      if (node instanceof ChoiceNode) {
+        choices.put(key, ((ChoiceNode) node).getOptions().stream()
+                         .map(Option::getValue)
+                         .collect(Collectors.toSet()));
+        // Fallback for invalid choices. Assume the default is a valid choice.
+        // This but parallels the behavior of the UI.
         defaults.put(key, defaultValue);
+      } else if (defaultValue != null) {
+        defaults.put(key, defaultValue);
+        defaultsKeys.add(key);
       }
     }
   }
