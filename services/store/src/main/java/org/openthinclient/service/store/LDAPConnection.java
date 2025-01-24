@@ -330,8 +330,8 @@ public class LDAPConnection implements AutoCloseable {
    */
   public List<String> searchAppgroupDNs(String... memberDNs)
       throws NamingException {
+    if (memberDNs.length == 0) return Collections.emptyList();
     List<String> appgroupDNs = new ArrayList<>();
-    if (memberDNs.length == 0) return appgroupDNs;
     NamingEnumeration<SearchResult> r;
     r = safeUniqueMembersSearch(APPGROUPS_DN, memberDNs, APPGROUPS_SC);
     while (r.hasMore()) {
@@ -374,8 +374,8 @@ public class LDAPConnection implements AutoCloseable {
   private List<Map<String, String>> loadRelatedProfiles(
         String type, String searchDN, String relation, String... memberDNs)
         throws NamingException {
+    if (memberDNs.length == 0) return Collections.emptyList();
     List<Map<String, String>> profiles = new ArrayList<>();
-    if (memberDNs.length == 0) return profiles;
     NamingEnumeration<SearchResult> r;
     r = safeUniqueMembersSearch(searchDN, memberDNs, PROFILE_SC);
 
