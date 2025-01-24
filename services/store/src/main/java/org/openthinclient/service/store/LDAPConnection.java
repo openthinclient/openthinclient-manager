@@ -1,8 +1,6 @@
 package org.openthinclient.service.store;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -60,23 +58,6 @@ public class LDAPConnection implements AutoCloseable {
   private static SearchControls singleSC(String... a) {return SC(1, a);}
   private static SearchControls multiSC(String... a) {return SC(0, a);}
 
-  private static Map<Integer, String>
-  uniquememberFilters = new ConcurrentHashMap<>();
-  /**
-   * Generate a parameterized OR filter for uniquemembers and cache it to
-   * avoid repeatedly building the same filters.
-   */
-  private static String getUniquememberFilter(int length) {
-    return uniquememberFilters.computeIfAbsent(length, l -> {
-      StringBuilder sb = new StringBuilder("(|");
-      for (int i = 0; i < l; i++) {
-        sb.append("(uniquemember={").append(i).append("})");
-      }
-      sb.append(")");
-      return sb.toString();
-    });
-  }
-
 
   // The actual instance
 
@@ -105,12 +86,12 @@ public class LDAPConnection implements AutoCloseable {
     this(false);
   }
 
-  private static final Pattern SPECIAL_CHARS = Pattern.compile("[^\\w,= ]+");
-  /**
-   * Very ugly workaround. The builtin ancient LDAP server neither supports
-   * escaped characters in filters nor can it handle special characters in
-   * filter args. This method replaces all *suspicious* character sequences
-   * with a wildcard and filters the results to avoid false positives.
+  /** uniqueMemberMatch is utterly broken in the builtin ancient ApacheDS.
+   *  It neither supports escaped characters in filters nor can it handle
+   *  special characters in filter args and compares DNs case-sensitively
+   *  (which is very wrong).
+   *  This is a straightforward, ugly workaround that loads all entries and
+   *  then filters them less wrongly.
    *
    * Note: The cons parameter MUST include the "uniquemember" attribute for this
    * to work correctly.
@@ -118,18 +99,8 @@ public class LDAPConnection implements AutoCloseable {
   private NamingEnumeration<SearchResult> safeUniqueMembersSearch(String name,
     String[] memberDNs, SearchControls cons)
     throws NamingException {
-      boolean escaped = false;
-      String[] escapedDNs = new String[memberDNs.length];
-      for (int i = 0; i < memberDNs.length; i++) {
-        escapedDNs[i] = SPECIAL_CHARS.matcher(memberDNs[i]).replaceAll("*");
-        escaped = escaped || memberDNs[i] != escapedDNs[i];
-      }
       NamingEnumeration<SearchResult> r;
-      r = ctx.search( name,
-                      getUniquememberFilter(memberDNs.length),
-                      escapedDNs,
-                      cons);
-      if (!escaped) return r; // no need to filter if no escaping was done
+      r = ctx.search(name, "(objectClass=*)", cons);
 
       return new NamingEnumeration<SearchResult>() {
         private SearchResult next = null;
@@ -144,7 +115,7 @@ public class LDAPConnection implements AutoCloseable {
             while (uniquemembers.hasMore()) {
               String uniquemember = (String) uniquemembers.next();
               for (String memberDN : memberDNs) {
-                if (uniquemember.equals(memberDN)) {
+                if (uniquemember.equalsIgnoreCase(memberDN)) {
                   return sr;
                 }
               }
