@@ -20,6 +20,11 @@
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-progress</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
