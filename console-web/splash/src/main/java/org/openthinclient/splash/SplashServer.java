@@ -23,7 +23,7 @@ public enum SplashServer {
 
   private final Logger LOG = LoggerFactory.getLogger(SplashServer.class);
 
-  private final static float MAX_BEANS = 689;
+  private final static float MAX_BEANS = 695;
 
   private int beansLoaded = 0;
   private String progress = "0";
