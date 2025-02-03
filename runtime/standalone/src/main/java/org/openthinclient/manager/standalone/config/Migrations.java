@@ -38,6 +38,7 @@ public class Migrations {
   private static Version v2020 = Version.parse("2020");
   private static Version v2021 = Version.parse("2021");
   private static Version v2021b2 = Version.parse("2021.2~beta2~");
+  private static Version v2025 = Version.parse("2025.1");
 
   @Autowired
   private ManagerHome managerHome;
@@ -59,6 +60,9 @@ public class Migrations {
   private static String[] obsoleteWithTcosLibs2020PackageNames = {
     "tcos-devices",
     "desktop"
+  };
+  private static String[] obsoleteWithTcosLibs2025PackageNames = {
+    "tcos-license"
   };
   private static String[] extensions = {
     "sfs",
@@ -97,6 +101,9 @@ public class Migrations {
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2021b2)) {
       updateHardwaretypeBootOptions();
+    }
+    if(isUpdate(ev.getReports(), "tcos-libs", v2025)) {
+      removeObsoletePackageFiles(obsoleteWithTcosLibs2025PackageNames);
     }
   }
 
