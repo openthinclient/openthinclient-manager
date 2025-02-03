@@ -39,6 +39,12 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-progress</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- MapDB for package database persistence -->
 
         <dependency>
