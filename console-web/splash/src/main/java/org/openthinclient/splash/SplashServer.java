@@ -83,17 +83,27 @@ public enum SplashServer {
     } catch (InterruptedException ex) {
       return;
     }
-    sseHandler.getConnections().forEach(conn -> {
-      try {
-        conn.close();
-      } catch (IOException ex) {}
-    });
+    closeSSEConnections();
   }
 
   public void beanLoaded() {
     beansLoaded++;
-    progress = String.valueOf(Math.min(1, beansLoaded/MAX_BEANS));
-    sseHandler.getConnections().forEach(conn -> conn.send(progress, "progress", null, null));
+    setProgress(beansLoaded/MAX_BEANS);
+  }
+
+  private void setProgress(double newProgress) {
+    progress = String.valueOf(Math.min(1, newProgress));
+    sseHandler.getConnections().forEach(conn ->
+        conn.send(progress, "progress", null, null));
+  }
+
+  private void closeSSEConnections() {
+    sseHandler.getConnections().forEach(conn -> {
+      conn.send(null, "close", null, null);
+      try {
+        conn.close();
+      } catch (IOException ex) {}
+    });
   }
 
   private HttpHandler resourceFile(ResourceManager rm, String resourcePath) {
