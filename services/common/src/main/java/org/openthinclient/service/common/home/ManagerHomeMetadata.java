@@ -19,4 +19,8 @@ public interface ManagerHomeMetadata {
   int getAcknowledgedPrivacyNoticeVersion();
 
   void setAcknowledgedPrivacyNoticeVersion(int version);
+
+  String getLastPackagesUpdateVersion();
+
+  void setLastPackagesUpdateVersion(String version);
 }

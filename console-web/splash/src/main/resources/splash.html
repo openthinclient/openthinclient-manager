@@ -71,6 +71,8 @@
   const MESSAGES = {
     STARTING: { en: 'Starting server', de: 'Starte Server' },
     UPDATING: { en: 'Update is running', de: 'Update wird durchgeführt' },
+    UPDATING_OS: {
+        en: 'Updating OS packages', de: 'OS Pakete werden aktualisiert' },
     RESTARTING: { en: 'Server restarts', de: 'Server startet neu' },
   }
   const STATUS = document.querySelector('#status')
@@ -113,7 +115,7 @@
       if(msg) STATUS.textContent = msg[LANG]
       STATUS.classList.toggle('show', !!msg)
       //switch
-        status == 'STARTING'? startProgressListener()
+        status == 'STARTING' || status == 'UPDATING_OS'? startProgressListener()
       : status == 'UP'? stopAndRedirectToApp()
       : status == 'RESTARTING'? waitForServer()
       : status == 'UPDATING'? waitForServer()

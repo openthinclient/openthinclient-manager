@@ -29,10 +29,13 @@ public enum SplashServer {
   private String progress = "0";
   private ServerSentEventHandler sseHandler;
   private Undertow server;
+  private boolean updatingPackages = false;
 
   private SplashServer() {
     HttpHandler statusHandler = ex ->
-        ex.getResponseSender().send("STARTING", IoCallback.END_EXCHANGE);
+        ex.getResponseSender().send(
+            updatingPackages ? "UPDATING_OS" : "STARTING",
+            IoCallback.END_EXCHANGE);
 
     sseHandler = Handlers.serverSentEvents((connection, lastID) -> {
       connection.sendRetry(1000);
@@ -91,10 +94,16 @@ public enum SplashServer {
     setProgress(beansLoaded/MAX_BEANS);
   }
 
-  private void setProgress(double newProgress) {
+  public void setProgress(double newProgress) {
     progress = String.valueOf(Math.min(1, newProgress));
     sseHandler.getConnections().forEach(conn ->
         conn.send(progress, "progress", null, null));
+  }
+
+  public void setUpdatingPackages(boolean updatingPackages) {
+    this.updatingPackages = updatingPackages;
+    this.progress = "0";
+    closeSSEConnections();  // close to force status update in splash.html
   }
 
   private void closeSSEConnections() {

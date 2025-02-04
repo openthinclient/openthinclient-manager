@@ -27,6 +27,7 @@
 	<properties>
 		<revision>2024.1-BETA3</revision>
 		<application.meta-package-version>2024.1~beta3</application.meta-package-version>
+		<application.packages-update-version>2024.1</application.packages-update-version>
 		<application.repository>http://archive.openthinclient.org/openthinclient/v2024/packages</application.repository>
 		<application.distribution>http://archive.openthinclient.org/openthinclient/v2024/first-start-profiles/distributions.xml</application.distribution>
 

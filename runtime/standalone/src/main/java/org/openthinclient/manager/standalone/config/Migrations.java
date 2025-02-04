@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
@@ -14,22 +17,31 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.common.Events.LDAPImportEvent;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Version;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReportType;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.service.common.ServerIDFactory;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
+import org.openthinclient.splash.SplashServer;
 import org.openthinclient.web.pkgmngr.event.PackageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Component
 @DependsOn({"serviceManager", "liquibase"})
@@ -48,6 +60,15 @@ public class Migrations {
   private HardwareTypeService hardwareTypeService;
   @Autowired
   private LocationService locationService;
+  @Autowired
+  private ClientService clientService;
+  @Autowired
+  private ApplicationContext applicationContext;
+
+  @Value("${application.is-preview}")
+  private boolean applicationIsPreview;
+  @Value("${application.packages-update-version}")
+  private String packagesUpdateVersion;
 
   private static String[] obsoletePackageNames = {
     "openthinclient-manager",
@@ -83,6 +104,8 @@ public class Migrations {
   @PostConstruct
   public void init() {
     setServerId();
+
+    autoUpdatePackages();
 
     runLDAPMigration();
 
@@ -125,6 +148,74 @@ public class Migrations {
     if(isInstalled("tcos-libs", v2021b2)) {
       updateHardwaretypeBootOptions();
     }
+  }
+
+  private void autoUpdatePackages() {
+    ManagerHomeMetadata meta = managerHome.getMetadata();
+    try {
+      Version requiredVersion = Version.parse(packagesUpdateVersion);
+      String current = meta.getLastPackagesUpdateVersion();
+      if (current == null) current = "0";
+      if (Version.parse(current).compareTo(requiredVersion) >= 0) {
+        return;
+      }
+    } catch(Exception ex) {
+      LOG.error("Failed to determine whether to auto-update packages", ex);
+      return;
+    }
+
+    LOG.info("Auto-updating OS packages");
+    SplashServer.INSTANCE.setUpdatingPackages(true);
+    try {
+      if (runPackageUpdate()) {
+        // Save successful update version, so we don't do it again
+        meta.setLastPackagesUpdateVersion(packagesUpdateVersion);
+        meta.save();
+      }
+    } catch(Exception ex) {
+      LOG.error("Failed to auto-update packages", ex);
+    } finally {
+      SplashServer.INSTANCE.setUpdatingPackages(false);
+    }
+  }
+
+  private boolean runPackageUpdate() throws InterruptedException,
+                                            ExecutionException,
+                                            CancellationException {
+    // Get updatable packages
+    pkgManager.updateCacheDB().get();  // wait for package list update
+    Collection<Package> updatablePkgs;
+    updatablePkgs = pkgManager.getUpdateablePackages(applicationIsPreview);
+    if(updatablePkgs.isEmpty()) {
+      LOG.warn("No updatable packages found");
+      return false;
+    }
+
+    // Create installation operation
+    PackageManagerOperation op = pkgManager.createOperation();
+    updatablePkgs.forEach(op::install);
+    op.resolve();
+
+    // Run installation and report progress to splash server.
+    // (Note: We don't use a ProgressReceiver on the ListenableProgressFuture
+    // which is extremely verbose and would overwhelm the browser displaying
+    // the progress with too many updates.)
+    ListenableProgressFuture<PackageManagerOperationReport> installation;
+    installation = pkgManager.execute(op);
+
+    PackageManagerOperationReport installationReport = null;
+    while(installationReport == null) {
+      SplashServer.INSTANCE.setProgress(installation.getProgress());
+      try {
+        installationReport = installation.get(500, MILLISECONDS);
+      } catch(java.util.concurrent.TimeoutException ex) {}
+    }
+
+    // Notify listeners about the package update and reload schemas
+    applicationContext.publishEvent(new PackageEvent(installationReport));
+    clientService.reloadAllSchemas();
+
+    return true;
   }
 
   private void removeObsoleteSyslogFiles() {
