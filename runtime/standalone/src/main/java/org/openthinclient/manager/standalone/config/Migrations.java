@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -191,9 +193,19 @@ public class Migrations {
       return false;
     }
 
+    Map<String, Package> latestPackages = new HashMap<>();
+    for (Package pkg : updatablePkgs) {
+      String pkgName = pkg.getName();
+      Version pkgVersion = pkg.getVersion();
+      Package latest = latestPackages.get(pkgName);
+      if (latest == null || pkgVersion.compareTo(latest.getVersion()) > 0) {
+        latestPackages.put(pkgName, pkg);
+      }
+    }
+
     // Create installation operation
     PackageManagerOperation op = pkgManager.createOperation();
-    updatablePkgs.forEach(op::install);
+    latestPackages.values().forEach(op::install);
     op.resolve();
 
     // Run installation and report progress to splash server.
