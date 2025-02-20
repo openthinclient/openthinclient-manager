@@ -13,7 +13,8 @@
         'openthinclient-server-nfs', 
         'tcos-scripts', 
         'tcos-devices', 
-        'desktop'
+        'desktop',
+        'tcos-license'
         )"/>
 
     <changeSet id="1" author="François Fernandès" dbms="h2,derby">
