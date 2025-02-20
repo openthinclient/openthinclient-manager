@@ -53,7 +53,7 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   @XmlElement(name = "acknowledged-privacy-notice-version")
   private int acknowledgedPrivacyNoticeVersion = 0;
   @XmlElement(name = "last-packages-update-version")
-  private String lastPackagesUpdateVersion;
+  private String lastPackagesUpdateVersion = "0";
   @XmlTransient
   private Path metaFile;
   @XmlElement(name= ELEMENT_USAGE_STATISTICS_ENABLED)

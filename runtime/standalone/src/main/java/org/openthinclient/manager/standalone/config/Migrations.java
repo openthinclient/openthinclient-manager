@@ -154,15 +154,10 @@ public class Migrations {
 
   private void autoUpdatePackages() {
     ManagerHomeMetadata meta = managerHome.getMetadata();
-    try {
-      Version requiredVersion = Version.parse(packagesUpdateVersion);
-      String current = meta.getLastPackagesUpdateVersion();
-      if (current == null) current = "0";
-      if (Version.parse(current).compareTo(requiredVersion) >= 0) {
-        return;
-      }
-    } catch(Exception ex) {
-      LOG.error("Failed to determine whether to auto-update packages", ex);
+    Version requiredVersion = Version.parse(packagesUpdateVersion);
+    Version currentVersion = Version.parse(meta.getLastPackagesUpdateVersion());
+
+    if (currentVersion.compareTo(requiredVersion) >= 0) {
       return;
     }
 
