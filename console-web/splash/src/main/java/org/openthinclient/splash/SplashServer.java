@@ -111,7 +111,7 @@ public enum SplashServer {
       conn.send(null, "close", null, null);
       try {
         conn.close();
-      } catch (IOException ex) {}
+      } catch (Exception ex) {}
     });
   }
 
