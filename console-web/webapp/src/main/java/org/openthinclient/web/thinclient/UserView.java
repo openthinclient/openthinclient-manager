@@ -209,8 +209,8 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
     nameConfiguration.addValidator(new AbstractValidator<String>(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
       public ValidationResult apply(String value, ValueContext context) {
-        Optional<User> optional = userService.findBySAMAccountName(value.toString());
-        return toResult(value, !optional.isPresent());
+        User existingUser = userService.findByName(value.toString());
+        return toResult(value, existingUser == null);
       }
     });
     if (secondaryDirectory) nameConfiguration.disable();

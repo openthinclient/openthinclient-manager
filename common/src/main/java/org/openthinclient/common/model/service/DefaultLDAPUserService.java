@@ -1,6 +1,5 @@
 package org.openthinclient.common.model.service;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.openthinclient.common.model.User;
@@ -20,11 +19,4 @@ public class DefaultLDAPUserService extends AbstractLDAPService<User> implements
   public Set<User> findAll() {
     return super.findAll().stream().collect(Collectors.toSet());
   }
-
-
-  @Override
-  public Optional<User> findBySAMAccountName(String name) {
-    return findByName(User.class, name).findFirst();
-  }
-
 }

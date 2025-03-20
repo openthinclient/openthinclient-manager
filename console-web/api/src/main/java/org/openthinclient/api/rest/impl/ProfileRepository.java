@@ -259,13 +259,11 @@ public class ProfileRepository {
 
   @RequestMapping("/users/{sAMAccountName}/applications")
   public ResponseEntity<List<Application>> getApplicationByUser(@PathVariable("sAMAccountName") String sAMAccountName) {
-    final Optional<User> opt = userService.findBySAMAccountName(sAMAccountName);
+    final User user = userService.findByName(sAMAccountName);
 
-    if (!opt.isPresent()) {
+    if (user == null) {
       return notFound();
     }
-
-    final User user = opt.get();
 
     final Realm realm = user.getRealm();
     final List<Application> res = Stream.concat(
@@ -287,13 +285,10 @@ public class ProfileRepository {
 
   @RequestMapping("/users/{sAMAccountName}/printers")
   public ResponseEntity<List<Printer>> getPrinterByUser(@PathVariable("sAMAccountName") String sAMAccountName) {
-    final Optional<User> opt = userService.findBySAMAccountName(sAMAccountName);
-
-    if (!opt.isPresent()) {
+    final User user = userService.findByName(sAMAccountName);
+    if (user == null) {
       return notFound();
     }
-
-    final User user = opt.get();
 
     final Realm realm = user.getRealm();
     final List<Printer> res = Stream.concat(
