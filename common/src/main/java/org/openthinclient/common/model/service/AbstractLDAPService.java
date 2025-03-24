@@ -104,16 +104,7 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
 
   @Override
   public int count() {
-    long start = System.currentTimeMillis();
-    int size = withAllReams(realm -> {
-      try {
-        return realm.getDirectory().query(type, null, null, TypeMapping.SearchScope.SUBTREE).stream();
-      } catch (DirectoryException e) {
-        throw new RuntimeException(e);
-      }
-    }).collect(Collectors.toSet()).size();
-    LOGGER.debug(type.getSimpleName() + "-count took " + (System.currentTimeMillis() - start) + "ms");
-    return size;
+    return queryNames().size();
   }
 
   @Override

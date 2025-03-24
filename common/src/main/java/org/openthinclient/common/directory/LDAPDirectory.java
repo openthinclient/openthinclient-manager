@@ -393,12 +393,7 @@ public class LDAPDirectory implements Directory {
 	 */
 	public <T> Set<T> list(Class<T> type, Filter filter,
 			TypeMapping.SearchScope scope) throws DirectoryException {
-		assertInitialized();
-
-		final Set<T> list = mapping.list(type, filter, null, scope);
-		associateWithRealm(list);
-
-		return list;
+		return list(type, filter, null, scope);
 	}
 
 	/**
