@@ -262,35 +262,13 @@ public class LDAPDirectory implements Directory {
 			rootMapping.setDirectoryFacade(df);
 			rootMapping.refresh(realm);
 
-			String version = realm.getValue("UserGroupSettings.DirectoryVersion");
-			final String secondaryUrlString = realm
-					.getValue("Directory.Secondary.LDAPURLs");
-
-			if (null == version)
-				version = "";
-
-			secondaryClasses = new HashSet<Class>();
-			if (version.equals("secondary") && null != secondaryUrlString)
-				if (null != secondaryUrlString) {
-					final LDAPConnectionDescriptor secLcd = realm
-							.createSecondaryConnectionDescriptor();
-					try {
-						assertBaseDNReachable(secLcd);
-
-						final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
-						final Mapping secondaryMapping = loadMapping(secondaryDF);
-
-						copyTypeMapping(rootMapping, secondaryMapping, User.class,
-						    UserGroup.class);
-
-						secondaryClasses.add(User.class);
-						secondaryClasses.add(UserGroup.class);
-					} catch (final Exception e) {
-						logger.error(e.getMessage(), e);
-					} finally {
-						rootMapping.refresh(realm);
-					}
-				}
+			try {
+				secondaryClasses = initSecondaryMapping(realm, rootMapping);
+			} catch (final Exception e) {
+				logger.error(e.getMessage(), e);
+			} finally {
+				rootMapping.refresh(realm);
+			}
 
 			try {
 				return new LDAPDirectory(rootMapping, realm);
@@ -302,6 +280,31 @@ public class LDAPDirectory implements Directory {
 		} catch (final Exception e) {
 			throw new DirectoryException("Can't init directory", e);
 		}
+	}
+
+	private static Set<Class>
+	initSecondaryMapping(Realm realm, Mapping rootMapping) throws Exception {
+		Set<Class> classes = new HashSet<>();
+
+		if (!"secondary".equals(
+				realm.getValue("UserGroupSettings.DirectoryVersion")))
+			return classes;
+		if (null == realm.getValue("Directory.Secondary.LDAPURLs"))
+			return classes;
+		final LDAPConnectionDescriptor lcd;
+		lcd = realm.createSecondaryConnectionDescriptor();
+		assertBaseDNReachable(lcd);
+
+		final DirectoryFacade df = lcd.createDirectoryFacade();
+		final Mapping mapping = loadMapping(df);
+
+		copyTypeMapping(rootMapping, mapping,
+						User.class, UserGroup.class);
+
+		classes.add(User.class);
+		classes.add(UserGroup.class);
+
+		return classes;
 	}
 
 	private static void copyTypeMapping(final Mapping rootMapping,
