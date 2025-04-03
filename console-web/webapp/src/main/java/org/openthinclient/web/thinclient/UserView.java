@@ -100,22 +100,21 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
     Set<UserGroup> userGroups = user.getUserGroups();
 
     Set<UserGroup> allUserGroups = userGroupService.findAll();
-
+    Consumer<List<Item>> profileReferenceChangeConsumer = null;
+    if(!secondaryDirectory) {
+      profileReferenceChangeConsumer = values -> saveReference(user, values, allUserGroups, UserGroup.class);
+    }
     refPresenter.showReference(userGroups,
                                 mc.getMessage(UI_USERGROUP_HEADER),
                                 allUserGroups,
-                                values -> saveReference(user, values, allUserGroups, UserGroup.class),
+                                profileReferenceChangeConsumer,
                                 null);
 
     Set<Application> allApplications = applicationService.findAll();
-    Consumer<List<Item>> profileReferenceChangeConsumer = null;
-    if(!secondaryDirectory) {
-      profileReferenceChangeConsumer = values -> saveReference(user, values, allApplications, Application.class);
-    }
     refPresenter.showReference(user.getApplications(),
                                 mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications,
-                                profileReferenceChangeConsumer);
+                                values -> saveReference(user, values, allApplications, Application.class));
 
     Set<UserGroup> userGroupsWithApplications = userGroups.stream()
                                                 .filter(group -> group.getApplications().size() > 0)
