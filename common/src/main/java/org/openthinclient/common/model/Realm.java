@@ -173,6 +173,24 @@ public class Realm extends Profile implements Serializable {
 		return secLcd;
 	}
 
+	private boolean isSet(String key) {
+		String value = getValue(key);
+		return (value != null && !value.trim().isEmpty());
+	}
+
+	/** Test whether all necessary parameters for a secondary server are set. */
+	public boolean isSecondaryConfigured() {
+		return (
+			"secondary".equals(
+					getValue("UserGroupSettings.DirectoryVersion")) &&
+			isSet("Directory.Secondary.LDAPURLs") &&
+			isSet("Directory.Secondary.ReadOnly.Principal") &&
+			isSet("Directory.Secondary.ReadOnly.Secret") &&
+			isSet("Directory.Secondary.UserObjectFilter") &&
+			isSet("Directory.Secondary.UserNameAttribute")
+		);
+	}
+
 	public void setNeedsRefresh() {
 		this.needRefresh = true;
 	}

@@ -44,7 +44,7 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
 
   @PostConstruct
   public void setup() {
-    secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+    secondaryDirectory = getRealmService().getDefaultRealm().isSecondaryConfigured();
     addStyleName(UserView.NAME);
   }
 

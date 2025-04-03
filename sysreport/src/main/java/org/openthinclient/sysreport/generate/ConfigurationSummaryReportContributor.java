@@ -153,9 +153,7 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     report.getConfiguration().setPrinterUsage(countSchemaObjects(printers, printerClients));
 
     // secondary ldap
-    String secondaryLdapUrl = realmService.getDefaultRealm().getValue("Directory.Secondary.LDAPURLs");
-    String version = realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion");
-    boolean secondaryLdapActive = version != null && version.equals("secondary") && secondaryLdapUrl != null && secondaryLdapUrl.length() > 0;
+    boolean secondaryLdapActive = realmService.getDefaultRealm().isSecondaryConfigured();
     report.getConfiguration().setSecondaryLdapActive(secondaryLdapActive);
     // user count on primary ldap
     if (!secondaryLdapActive) {

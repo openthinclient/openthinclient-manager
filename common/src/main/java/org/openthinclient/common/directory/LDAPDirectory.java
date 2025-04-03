@@ -286,11 +286,9 @@ public class LDAPDirectory implements Directory {
 	initSecondaryMapping(Realm realm, Mapping rootMapping) throws Exception {
 		Set<Class> classes = new HashSet<>();
 
-		if (!"secondary".equals(
-				realm.getValue("UserGroupSettings.DirectoryVersion")))
+		if (!realm.isSecondaryConfigured())
 			return classes;
-		if (null == realm.getValue("Directory.Secondary.LDAPURLs"))
-			return classes;
+
 		final LDAPConnectionDescriptor lcd;
 		lcd = realm.createSecondaryConnectionDescriptor();
 		assertBaseDNReachable(lcd);

@@ -63,7 +63,7 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
 
   @PostConstruct
   private void setup() {
-    secondaryDirectory = "secondary".equals(getRealmService().getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+    secondaryDirectory = getRealmService().getDefaultRealm().isSecondaryConfigured();
 
     addStyleName(NAME);
   }
