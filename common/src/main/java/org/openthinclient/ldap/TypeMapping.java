@@ -145,7 +145,7 @@ public class TypeMapping implements Cloneable {
 	 * base dn. May be overridden by specifying a filter as an argument to the
 	 * load method.
 	 */
-	private final String searchFilter;
+	private String searchFilter;
 
 	/**
 	 * Paged results control to receive search results in a controlled manner
@@ -1241,6 +1241,10 @@ public class TypeMapping implements Cloneable {
 		}
 
 		return clone;
+	}
+
+	public void setSearchFilter(String searchFilter) {
+		this.searchFilter = searchFilter;
 	}
 
 	public String getSearchFilter() {

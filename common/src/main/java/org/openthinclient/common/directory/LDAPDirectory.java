@@ -50,6 +50,7 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.UserNameAttributeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,12 +290,25 @@ public class LDAPDirectory implements Directory {
 		if (!realm.isSecondaryConfigured())
 			return classes;
 
+		String userObjectFilter =
+				realm.getValue("Directory.Secondary.UserObjectFilter");
+		if (!userObjectFilter.startsWith("(")) {
+			userObjectFilter = "(objectClass=" + userObjectFilter + ")";
+		}
+
+		String userNameAttribute =
+				realm.getValue("Directory.Secondary.UserNameAttribute");
+
 		final LDAPConnectionDescriptor lcd;
 		lcd = realm.createSecondaryConnectionDescriptor();
 		assertBaseDNReachable(lcd);
 
 		final DirectoryFacade df = lcd.createDirectoryFacade();
 		final Mapping mapping = loadMapping(df);
+
+		final TypeMapping userTM = mapping.getTypes().get(User.class);
+		userTM.setSearchFilter(userObjectFilter);
+		userTM.add(new UserNameAttributeMapping(userNameAttribute));
 
 		copyTypeMapping(rootMapping, mapping,
 						User.class, UserGroup.class);

@@ -43,6 +43,7 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	private Location location;
 
 	private String sn;
+	private String userName;  // the dynamicly configurable username attribute
 	private String givenName;
 	private byte[] userPassword;
 	private String newPassword = "";
@@ -88,6 +89,22 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	public void setUserGroups(Set<UserGroup> userGroups) {
 		this.userGroups = userGroups;
 		firePropertyChange("userGroups", null, userGroups);
+	}
+
+	public String getName() {
+		String name = getUserName();  // set if secondary LDAP is used
+		if (null == name || name.isEmpty())
+			name = super.getName();   // else it's primary LDAP
+		return name;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+		firePropertyChange("userName", null, userName);
 	}
 
 	public String getGivenName() {
