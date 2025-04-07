@@ -275,11 +275,9 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
 
   @Override
   public void save(User profile) {
-    if (!secondaryDirectory) {
-      LOGGER.info("Save: " + profile);
-      userService.save(profile);
-      Audit.logSave(profile);
-    }
+    LOGGER.info("Save: " + profile);
+    userService.save((User) profile);
+    Audit.logSave(profile);
   }
 
   public void showProfileMetadata(User profile) {
