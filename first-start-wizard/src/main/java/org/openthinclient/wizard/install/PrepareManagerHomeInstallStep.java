@@ -13,10 +13,12 @@ import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_I
 public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
   private final NetworkConfigurationModel networkConfigurationModel;
+  private final String packagesUpdateVersion;
 
-  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, NetworkConfigurationModel networkConfigurationModel) {
+  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, NetworkConfigurationModel networkConfigurationModel, String packagesUpdateVersion) {
     this.managerHomeFactory = managerHomeFactory;
     this.networkConfigurationModel = networkConfigurationModel;
+    this.packagesUpdateVersion = packagesUpdateVersion;
   }
 
   @Override
@@ -34,6 +36,7 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     // generating and persisting a server id
     final ManagerHomeMetadata metadata = managerHome.getMetadata();
     metadata.setServerID(ServerIDFactory.create());
+    metadata.setLastPackagesUpdateVersion(packagesUpdateVersion);
     metadata.save();
 
     log.info("\n#########################################################\n" +

@@ -2,6 +2,8 @@ package org.openthinclient.runtime.control.cmd;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Properties;
+
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.kohsuke.args4j.Option;
 import org.openthinclient.api.distributions.InstallableDistribution;
@@ -16,6 +18,8 @@ import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Options> {
 
@@ -70,7 +74,10 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
     managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
 
-    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel, options.isPreview);
+    ClassPathResource resource = new ClassPathResource("application.properties");
+    Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+    String version = properties.getProperty("application.packages-update-version");
+    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel, options.isPreview, version);
 
     task.call();
   }
