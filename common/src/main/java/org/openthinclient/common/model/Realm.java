@@ -178,6 +178,12 @@ public class Realm extends Profile implements Serializable {
 		return (value != null && !value.trim().isEmpty());
 	}
 
+	/** Special case for backward compatibility with old Realm schema. */
+	private boolean isSetOrNull(String key) {
+		String value = getValue(key);
+		return (value == null || !value.trim().isEmpty());
+	}
+
 	/** Test whether all necessary parameters for a secondary server are set. */
 	public boolean isSecondaryConfigured() {
 		return (
@@ -187,7 +193,9 @@ public class Realm extends Profile implements Serializable {
 			isSet("Directory.Secondary.ReadOnly.Principal") &&
 			isSet("Directory.Secondary.ReadOnly.Secret") &&
 			isSet("Directory.Secondary.UserObjectFilter") &&
-			isSet("Directory.Secondary.UserNameAttribute")
+			isSet("Directory.Secondary.UserNameAttribute") &&
+			isSetOrNull("Directory.Secondary.GroupObjectFilter") &&
+			isSetOrNull("Directory.Secondary.GroupMemberAttribute")
 		);
 	}
 

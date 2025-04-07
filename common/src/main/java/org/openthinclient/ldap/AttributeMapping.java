@@ -361,7 +361,7 @@ public class AttributeMapping implements Cloneable {
 		this.cardinality = Cardinality.valueOf(cardinality);
 	}
 
-	protected String getFieldName() {
+	public String getFieldName() {
 		return fieldName;
 	}
 

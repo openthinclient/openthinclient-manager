@@ -94,7 +94,7 @@ public class TypeMapping implements Cloneable {
 	 * overridden by specifying a base RDN as an argument to the load/list/save
 	 * methods.
 	 */
-	private final String baseRDN;
+	private String baseRDN;
 
 	/**
 	 * This marker indicates an unchanged attribute, whatever the current value
@@ -274,6 +274,10 @@ public class TypeMapping implements Cloneable {
 	 */
 	private Object setDN(String dn, Object o) throws DirectoryException {
 		return dnAttribute.setValue(o, dn);
+	}
+
+	public void setBaseRDN(String baseRDN) {
+		this.baseRDN = baseRDN;
 	}
 
 	public String getBaseRDN() {

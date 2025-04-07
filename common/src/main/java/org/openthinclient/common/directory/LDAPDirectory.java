@@ -44,10 +44,12 @@ import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.common.model.*;
+import org.openthinclient.ldap.AttributeMapping;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.ManyToManyMapping;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.UserNameAttributeMapping;
@@ -299,6 +301,23 @@ public class LDAPDirectory implements Directory {
 		String userNameAttribute =
 				realm.getValue("Directory.Secondary.UserNameAttribute");
 
+		String groupObjectFilter =
+				realm.getValue("Directory.Secondary.GroupObjectFilter");
+		if (groupObjectFilter == null) {
+			groupObjectFilter = "(objectClass=group)";
+		} else if (!groupObjectFilter.startsWith("(")) {
+			groupObjectFilter = "(objectClass=" + groupObjectFilter + ")";
+		}
+
+		String groupMemberAttribute =
+				realm.getValue("Directory.Secondary.GroupMemberAttribute");
+		if (groupMemberAttribute == null) {
+			groupMemberAttribute = "member";
+		}
+
+		String groupBaseRDN =
+				realm.getValue("Directory.Secondary.GroupBaseRDN");
+
 		final LDAPConnectionDescriptor lcd;
 		lcd = realm.createSecondaryConnectionDescriptor();
 		assertBaseDNReachable(lcd);
@@ -309,6 +328,19 @@ public class LDAPDirectory implements Directory {
 		final TypeMapping userTM = mapping.getTypes().get(User.class);
 		userTM.setSearchFilter(userObjectFilter);
 		userTM.add(new UserNameAttributeMapping(userNameAttribute));
+
+		final TypeMapping groupTM = mapping.getTypes().get(UserGroup.class);
+		groupTM.setSearchFilter(groupObjectFilter);
+		groupTM.setBaseRDN(groupBaseRDN);
+
+		List<AttributeMapping> attrs = groupTM.getAttributeMappings();
+		for (AttributeMapping am : attrs) {
+			if (am instanceof ManyToManyMapping
+					&& am.getFieldName().equals("uniqueMember")) {
+				ManyToManyMapping m2m = (ManyToManyMapping) am;
+				m2m.setMemberField(groupMemberAttribute);
+			}
+		}
 
 		copyTypeMapping(rootMapping, mapping,
 						User.class, UserGroup.class);
