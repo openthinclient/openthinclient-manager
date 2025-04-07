@@ -69,8 +69,9 @@ public class Profiles {
   }
 
 
-  public static List<Map<String, String>> getApps(String mac, String userDN) {
-    List<Map<String, String>> apps = loadApps(mac, userDN);
+  public static List<Map<String, String>>
+  getApps(String mac, String userDN, String[] usergroupDNs) {
+    List<Map<String, String>> apps = loadApps(mac, userDN, usergroupDNs);
     for (Map<String, String> app : apps) {
       String type = app.get("type");
       if (type == null) {
@@ -102,7 +103,8 @@ public class Profiles {
    * @param userDN full DN of the user or null
    * @return all assigned applications as a list of maps
    */
-  private static List<Map<String, String>> loadApps(String mac, String userDN) {
+  private static List<Map<String, String>>
+  loadApps(String mac, String userDN, String[] usergroupDNs) {
     List<Map<String, String>> apps = new ArrayList<>();
 
     try (LDAPConnection ldapCon = new LDAPConnection(true)) {
@@ -110,8 +112,10 @@ public class Profiles {
         apps.addAll(ldapCon.loadApplications("user", userDN));
         apps.addAll(ldapCon.loadApplications("user-appgroup",
             ldapCon.searchAppgroupDNs(userDN).toArray(new String[0])));
-        String[] usergroupDNs = ldapCon.searchUsergroupDNs(userDN)
+        if (usergroupDNs == null) {
+          usergroupDNs = ldapCon.searchUsergroupDNs(userDN)
                                 .toArray(new String[0]);
+        }
         apps.addAll(ldapCon.loadApplications("usergroup", usergroupDNs));
         apps.addAll(ldapCon.loadApplications("usergroup-appgroup",
             ldapCon.searchAppgroupDNs(usergroupDNs).toArray(new String[0])));
@@ -139,8 +143,10 @@ public class Profiles {
   }
 
 
-  public static List<Map<String, String>> getPrinters(String mac, String userDN) {
-    List<Map<String, String>> printers = loadPrinters(mac, userDN);
+  public static List<Map<String, String>>
+  getPrinters(String mac, String userDN, String[] usergroupDNs) {
+    List<Map<String, String>> printers =
+        loadPrinters(mac, userDN, usergroupDNs);
     for (Map<String, String> printer : printers) {
       String type = printer.get("type");
       if (type == null) {
@@ -168,14 +174,19 @@ public class Profiles {
    * @param userDN full DN of the user or null
    * @return all assigned printers as a list of maps
    */
-  private static List<Map<String, String>> loadPrinters(String mac, String userDN) {
+  private static List<Map<String, String>>
+  loadPrinters(String mac, String userDN, String[] usergroupDNs) {
     List<Map<String, String>> printers = new ArrayList<>();
 
     try (LDAPConnection ldapCon = new LDAPConnection(true)) {
       if (userDN != null) {
         printers.addAll(ldapCon.loadPrinters("user", userDN));
+        if (usergroupDNs == null) {
+          usergroupDNs = ldapCon.searchUsergroupDNs(userDN)
+                                .toArray(new String[0]);
+        }
         printers.addAll(ldapCon.loadPrinters("usergroup",
-            ldapCon.searchUsergroupDNs(userDN).toArray(new String[0])));
+                                             usergroupDNs));
       }
       if (mac != null) {
         String[] clientAndLocationDNs = ldapCon.getClientAndLocationDNs(mac);
