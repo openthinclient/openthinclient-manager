@@ -125,7 +125,7 @@ public final class UserGroupView extends AbstractThinclientGroupView<UserGroup> 
 
   @Override
   public ProfilePanel createProfilePanel(UserGroup profile, boolean isNew) {
-    return super.createProfilePanel(profile, isNew || secondaryDirectory);
+    return super.createProfilePanel(profile, !secondaryDirectory && isNew);
   }
 
   @Override
