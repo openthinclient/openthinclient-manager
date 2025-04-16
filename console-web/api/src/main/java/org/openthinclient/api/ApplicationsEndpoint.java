@@ -17,7 +17,8 @@ public class ApplicationsEndpoint {
     String userDN = params.getFirst("userDN");
     String[] usergroupDNs = null;
     String withUsergroups = params.getFirst("withUsergroups");
-    if (withUsergroups != null && !withUsergroups.isEmpty()) {
+    if (withUsergroups != null && !withUsergroups.isEmpty()
+        && params.containsKey("usergroupDN")) {
       usergroupDNs = params.get("usergroupDN").toArray(new String[0]);
     }
     return Profiles.getApps(mac, userDN, usergroupDNs);
