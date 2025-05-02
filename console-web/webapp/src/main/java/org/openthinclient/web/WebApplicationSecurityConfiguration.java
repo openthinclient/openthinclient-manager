@@ -15,6 +15,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -140,7 +141,14 @@ public class WebApplicationSecurityConfiguration {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-      http.requestMatchers().antMatchers("/api/**")
+      http.csrf().disable()
+          .requestMatchers()
+          .antMatchers("/api/**")
+          .and()
+          .authorizeRequests()
+          .antMatchers(HttpMethod.GET, "/api/**").permitAll()
+          .antMatchers(HttpMethod.POST, "/api/**").permitAll()
+          .anyRequest().authenticated()
           .and()
           .httpBasic().realmName("openthinclient");
       http.sessionManagement()
@@ -243,4 +251,3 @@ public class WebApplicationSecurityConfiguration {
   }
 
 }
-
