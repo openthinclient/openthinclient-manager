@@ -162,8 +162,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	private Hashtable<String, Object> extraEnv = new Hashtable<String, Object>();
 
-	// private String referralPreference = "ignore";
-	private final String referralPreference = "follow";
+	private String referralPreference = "ignore";
 
 	/**
 	 * Flag indicating whether this connection should be read-only. This is
@@ -176,12 +175,17 @@ public class LDAPConnectionDescriptor implements Serializable {
 	 * 
 	 * @param connectionDescriptor
 	 */
-	public LDAPConnectionDescriptor() {
+	public LDAPConnectionDescriptor(boolean followReferrals) {
+		this.referralPreference = followReferrals ? "follow" : "ignore";
 		this.connectionMethod = ConnectionMethod.PLAIN;
 		this.authenticationMethod = AuthenticationMethod.NONE;
 		this.hostname = "localhost";
 		this.portNumber = -1; // getPortNumber() will figure out a default!
 		this.baseDN = "";
+	}
+
+	public LDAPConnectionDescriptor() {
+		this(false);
 	}
 
 	/**
@@ -199,6 +203,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 		this.callbackHandler = lcd.callbackHandler;
 		this.extraEnv.putAll(lcd.extraEnv);
 		this.readOnly = lcd.readOnly;
+		this.referralPreference = lcd.referralPreference;
 	}
 
 	public String getLDAPUrl() {
