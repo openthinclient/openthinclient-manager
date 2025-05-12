@@ -42,6 +42,7 @@ import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.PartialResultException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
@@ -446,6 +447,8 @@ public class TypeMapping implements Cloneable {
 					logger.warn("NameNotFoundException listing objects of " + modelClass
 							+ " for base=" + searchBaseName
 							+ ". Returning empty set instead.");
+				} catch (final PartialResultException e) {
+					logger.debug("Partial results while listing " + modelClass);
 				}
 				return results;
 

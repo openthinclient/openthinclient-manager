@@ -36,6 +36,7 @@ import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.PartialResultException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -775,64 +776,69 @@ public class Mapping {
 
 			// issue query to find referencing objects
 			DiropLogger.LOG.logSearch("", filterExpr, filterArgs, sc, "searching references");
-			final NamingEnumeration<SearchResult> ne = ctx.search("", filterExpr, filterArgs, sc);
 
-			while (ne.hasMore()) {
-				final SearchResult result = ne.next();
-				final Attributes attributes = result.getAttributes();
-				List<ModificationItem> mods = null;
+			try {
+				final NamingEnumeration<SearchResult> ne = ctx.search("", filterExpr, filterArgs, sc);
 
-				// Determine applicable TypeMapper for the referencing object
-				final TypeMapping m = getMapping(directory.makeAbsoluteName(result
-						.getName()), attributes.get("objectClass"), mappers);
+				while (ne.hasMore()) {
+					final SearchResult result = ne.next();
+					final Attributes attributes = result.getAttributes();
+					List<ModificationItem> mods = null;
 
-				if (null == m) {
-					logger.warn("Could not determine TypeMapping for referencing object at "
-								+ result.getName());
-					continue;
-				}
+					// Determine applicable TypeMapper for the referencing object
+					final TypeMapping m = getMapping(directory.makeAbsoluteName(result
+							.getName()), attributes.get("objectClass"), mappers);
 
-				for (final ReferenceAttributeMapping ra : refererAttributes) {
-					// check whether the reference matches the type of object we found
-					if (ra.getTypeMapping() != m)
+					if (null == m) {
+						logger.warn("Could not determine TypeMapping for referencing object at "
+									+ result.getName());
 						continue;
+					}
 
-					final Attribute attr = attributes.get(ra.getFieldName());
-					if (attr != null) {
-						// for rename: re-add new name
-						if (null != newDN && null == mods) {
-							mods = new LinkedList<ModificationItem>();
+					for (final ReferenceAttributeMapping ra : refererAttributes) {
+						// check whether the reference matches the type of object we found
+						if (ra.getTypeMapping() != m)
+							continue;
 
-							attr.remove(oldDN);
-							attr.add(newDN);
+						final Attribute attr = attributes.get(ra.getFieldName());
+						if (attr != null) {
+							// for rename: re-add new name
+							if (null != newDN && null == mods) {
+								mods = new LinkedList<ModificationItem>();
 
-							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
-						}
+								attr.remove(oldDN);
+								attr.add(newDN);
 
-						if (null == mods) {
-							mods = new LinkedList<ModificationItem>();
-							attr.remove(oldDN);
+								mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+							}
 
-							// check whether we need to re-add the dummy member
-							if (attr.size() == 0
-									&& (ra.getCardinality() == Cardinality.ONE || ra
-											.getCardinality() == Cardinality.ONE_OR_MANY))
-								attr.add(directory.getDummyMember());
+							if (null == mods) {
+								mods = new LinkedList<ModificationItem>();
+								attr.remove(oldDN);
 
-							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+								// check whether we need to re-add the dummy member
+								if (attr.size() == 0
+										&& (ra.getCardinality() == Cardinality.ONE || ra
+												.getCardinality() == Cardinality.ONE_OR_MANY))
+									attr.add(directory.getDummyMember());
+
+								mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+							}
 						}
 					}
+
+					if (null != mods) {
+						final ModificationItem[] modsArray = mods
+								.toArray(new ModificationItem[mods.size()]);
+
+						DiropLogger.LOG.logModify(result.getName(), modsArray,
+								"cascading update due to DN change of referenced object");
+
+						ctx.modifyAttributes(result.getName(), modsArray);
+					}
 				}
-
-				if (null != mods) {
-					final ModificationItem[] modsArray = mods
-							.toArray(new ModificationItem[mods.size()]);
-
-					DiropLogger.LOG.logModify(result.getName(), modsArray,
-							"cascading update due to DN change of referenced object");
-
-					ctx.modifyAttributes(result.getName(), modsArray);
-				}
+			} catch (final PartialResultException ex) {
+				logger.debug("Partial results while updating references");
 			}
 		}
 	}
