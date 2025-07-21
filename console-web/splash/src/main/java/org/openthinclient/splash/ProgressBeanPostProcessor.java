@@ -48,7 +48,9 @@ class WebServerWrapper implements WebServer {
 
   @Override
   public void start() throws WebServerException {
-    SplashServer.INSTANCE.stop();
+    try {
+      SplashServer.INSTANCE.stop();
+    } catch (Exception ex) {}
     webServer.start();
   }
 
