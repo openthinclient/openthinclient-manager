@@ -50,14 +50,21 @@
     }
     .wrapper {
       display: grid;
-      grid-template-rows: 1fr auto;
+      grid-template:
+          "content content" 1fr
+          "status  buttons" auto / 1fr auto;
       height: 100%;
       overflow: hidden;
 
       .content {
+        grid-area: content;
         padding: 12px;
         overflow: auto;
         background: unquote("local linear-gradient(transparent, white) no-repeat bottom/100% 20px, linear-gradient(transparent, #eee) no-repeat bottom/100% 4px");
+      }
+      .status {
+        grid-area: status;
+        padding: 12px;
       }
       .buttons {
         display: flex;

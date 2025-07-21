@@ -3,10 +3,12 @@ package org.openthinclient.web.component;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -17,6 +19,7 @@ import ch.qos.cal10n.MessageConveyor;
 public class Popup {
   private Window popup;
   private CssLayout contentLayout = new CssLayout();
+  private Label statusLabel = new Label("", ContentMode.HTML);
   private CssLayout buttonsLayout = new CssLayout();
   private String width;
   private WindowMode windowMode = WindowMode.NORMAL;
@@ -29,8 +32,10 @@ public class Popup {
   public Popup(String title, String... styleNames) {
     contentLayout.addStyleName("content");
     contentLayout.addStyleNames(styleNames);
+    statusLabel.addStyleName("status");
     buttonsLayout.addStyleName("buttons");
-    CssLayout wrapper = new CssLayout(contentLayout, buttonsLayout);
+    CssLayout wrapper = new CssLayout(contentLayout,
+                                      statusLabel, buttonsLayout);
     wrapper.addStyleName("wrapper");
     popup = new Window(title, wrapper);
     popup.addStyleName("otc-popup");
@@ -63,6 +68,9 @@ public class Popup {
   }
   public void addContent(Component... content) {
     this.contentLayout.addComponents(content);
+  }
+  public void setStatus(String status) {
+    this.statusLabel.setValue(status);
   }
   public void addButton(Button... buttons) {
     this.buttonsLayout.addComponents(buttons);
