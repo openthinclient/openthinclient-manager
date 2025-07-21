@@ -633,6 +633,9 @@ public final class ClientView extends AbstractProfileView<Client> {
     public FileContentWindow(Path logDir, String name, String macAddress) {
       super(mc.getMessage(ConsoleWebMessages.UI_THINCLIENT_LOG_CAPTION, name, macAddress), "logview");
 
+      setStatus(mc.getMessage(
+          ConsoleWebMessages.UI_THINCLIENT_LOG_DOWNLOAD_HINT));
+
       setWidth("642px");
       setMaximized(true);
 

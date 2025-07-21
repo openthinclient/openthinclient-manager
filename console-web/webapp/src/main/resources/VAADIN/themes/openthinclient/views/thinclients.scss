@@ -850,6 +850,12 @@ $ok-button-color: #2db200;
       height: 100%;
     }
   }
+
+  .logview + .status::before {
+    content: "\e699";
+    font-family: Vaadin-Icons;
+    padding-right: 1ch;
+  }
 }
 
 @mixin thinclients-view-small {
