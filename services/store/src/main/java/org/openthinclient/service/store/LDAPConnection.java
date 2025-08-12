@@ -526,6 +526,35 @@ public class LDAPConnection implements AutoCloseable {
   }
 
 
+  public Map<String, String> loadUnrecognizedClients() throws NamingException {
+    Map<String, String> map = new HashMap<>();
+    NamingEnumeration<SearchResult> r = ctx.search(UNRECOG_DN, null);
+
+    while (r.hasMore()) {
+      SearchResult i = r.next();
+
+      Attributes attrs = i.getAttributes();
+      Attribute description_attr = attrs.get("description");
+
+      String description;
+      if (description_attr == null) {
+        description = new String();
+      } else {
+        description = (String) description_attr.get();
+      }
+
+      map.put((String) attrs.get("cn").get(), description);
+    }
+
+    return map;
+  }
+
+
+  public void removeUnrecognizedClient(String mac) throws NamingException {
+    ctx.unbind(String.format("cn=%s,%s", mac, UNRECOG_DN));
+  }
+
+
   /**
    * Update iphostnumber and description attributes of unrecognized-clients
    * entry or create a new entry (if none exists).

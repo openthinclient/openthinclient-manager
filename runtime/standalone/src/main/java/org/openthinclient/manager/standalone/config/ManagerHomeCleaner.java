@@ -4,11 +4,15 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.naming.NamingException;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -16,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.openthinclient.service.store.LDAPConnection;
 
 @Component
 public class ManagerHomeCleaner {
@@ -42,6 +47,7 @@ public class ManagerHomeCleaner {
     cleanReports(notBefore);
     cleanLogs(notBefore);
     cleanPackagesCache(notBefore);
+    cleanUnrecognizedClients(notBefore);
   }
 
   private static final Path REPORTS_PATH = Paths.get("nfs", "home", "reports");
@@ -131,6 +137,30 @@ public class ManagerHomeCleaner {
           }
         }
       }
+    }
+  }
+
+  private void cleanUnrecognizedClients(long notBefore) {
+    try(LDAPConnection ldap = new LDAPConnection()) {
+      Map<String, String> clients = ldap.loadUnrecognizedClients();
+      for(Entry<String, String> entry : clients.entrySet()) {
+        String mac = entry.getKey();
+        String description = entry.getValue();
+
+        OffsetDateTime last_seen = null;
+        try {
+          last_seen = OffsetDateTime.parse(description.split(":", 2)[1].trim());
+        } catch (DateTimeParseException ex) {
+        } catch (IndexOutOfBoundsException ex) {
+        }
+
+        if (last_seen == null || last_seen.toEpochSecond() * 1000 < notBefore) {
+          LOG.info("Deleting outdated unrecognized client: {}", mac);
+          ldap.removeUnrecognizedClient(mac);
+        }
+      }
+    } catch (NamingException ex) {
+      LOG.error("Error cleaning up unrecognized clients.", ex);
     }
   }
 
