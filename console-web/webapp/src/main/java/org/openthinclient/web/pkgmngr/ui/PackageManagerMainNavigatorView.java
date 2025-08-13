@@ -116,6 +116,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     bindPackageLists();
+    this.updateablePackagesPresenter.selectAll();
     this.sourcesListPresenter.setPackageManager(packageManager);
   }
 

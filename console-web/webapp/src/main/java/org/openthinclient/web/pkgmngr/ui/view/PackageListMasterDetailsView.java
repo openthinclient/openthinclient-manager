@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.event.selection.MultiSelectionEvent;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -229,6 +230,13 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public Button getSourceUpdateButton() {
     return sourceUpdateButton;
+  }
+
+  @Override
+  public void selectAll() {
+    packageListDataProvider
+    .fetch(new Query<>())
+    .forEach(item -> packageList.select(item));
   }
 
   @Override

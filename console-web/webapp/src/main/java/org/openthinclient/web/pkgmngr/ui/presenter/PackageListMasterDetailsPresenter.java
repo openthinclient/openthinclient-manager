@@ -141,6 +141,10 @@ public class PackageListMasterDetailsPresenter {
     dataProvider.addFilter(new HideOTCManagerVersionFilter());
   }
 
+  public void selectAll() {
+    view.selectAll();
+  }
+
   public void showPackageListLoadingError(Exception e) {
     // FIXME implement me!
   }
@@ -162,6 +166,8 @@ public class PackageListMasterDetailsPresenter {
   public interface View {
 
     TextField getFilterInput();
+
+    void selectAll();
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
 
