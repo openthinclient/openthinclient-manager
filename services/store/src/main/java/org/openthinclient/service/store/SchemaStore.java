@@ -129,7 +129,7 @@ public enum SchemaStore {
       try {
         schemas.put(schemaName, new SchemaData(loadSchema(path)));
       } catch (Exception ex) {
-        LOG.error("Could not load schema from {}", path, ex);
+        LOG.error("Could not load schema from " + path, ex);
         return;
       }
     } else {
