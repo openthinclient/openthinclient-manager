@@ -6,6 +6,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -150,10 +151,20 @@ public enum SchemaStore {
 
   private void startFileChangeWatcher() throws IOException {
     WatchService watchService = FileSystems.getDefault().newWatchService();
-    schemaPath.register(watchService,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_MODIFY);
+
+    Consumer<Path> watch = path -> {
+      LOG.info("Observing schemas in {}", path);
+      try {
+        path.register(watchService,
+                      StandardWatchEventKinds.ENTRY_CREATE,
+                      StandardWatchEventKinds.ENTRY_DELETE,
+                      StandardWatchEventKinds.ENTRY_MODIFY);
+      } catch (IOException ex) {
+        LOG.error("Failed to register schema watcher for " + path, ex);
+      }
+    };
+
+    watch.accept(schemaPath);
 
     new Thread(() -> {
       WatchKey watchKey;
@@ -188,14 +199,7 @@ public enum SchemaStore {
 
           // register new subdirs with this watcher and add schemas
           for (Path path: affectedSubPaths) {
-            try {
-              path.register(watchService,
-                            StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_DELETE,
-                            StandardWatchEventKinds.ENTRY_MODIFY);
-            } catch (IOException ex) {
-              LOG.error("Failed to register schema watcher for {}", path, ex);
-            }
+            watch.accept(path);
             try {
               initSchemas(path);
             } catch (IOException ex) {
