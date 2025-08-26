@@ -165,6 +165,9 @@ public enum SchemaStore {
     };
 
     watch.accept(schemaPath);
+    Files.list(schemaPath)
+         .filter(Files::isDirectory)
+         .forEach(watch::accept);
 
     new Thread(() -> {
       WatchKey watchKey;
