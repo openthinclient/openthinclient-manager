@@ -94,20 +94,18 @@ public enum SchemaStore {
     return path.getFileName().toString().toLowerCase().endsWith(".xml");
   }
 
-  private void initSchemas(Path dir) throws IOException {
+  private void initSchemas(Path dir) {
     LOG.info("Initializing schemas in {}", dir);
     try (Stream<Path> paths = Files.list(dir)) {
       paths.forEach(path -> {
         if (Files.isRegularFile(path) && isXML(path)) {
           updateSchema(path);
         } else if (Files.isDirectory(path)) {
-          try {
-            initSchemas(path);
-          } catch (IOException ex) {
-            LOG.error("Failed to initialize schemas in {}", path, ex);
-          }
+          initSchemas(path);
         }
       });
+    } catch (IOException ex) {
+      LOG.error("Failed to list schemas in " + dir, ex);
     }
   }
 
@@ -203,11 +201,7 @@ public enum SchemaStore {
           // register new subdirs with this watcher and add schemas
           for (Path path: affectedSubPaths) {
             watch.accept(path);
-            try {
-              initSchemas(path);
-            } catch (IOException ex) {
-              LOG.error("Failed to initialize schemas in {}", path, ex);
-            }
+            initSchemas(path);
           }
         }
       } catch (InterruptedException ex) {
