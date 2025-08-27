@@ -139,6 +139,9 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
     }
+    if(isUpdate(ev.getReports(), "freerdp-git", v2025_2)) {
+      separateFreeRdpAuthenticationOption();
+    }
   }
 
   @EventListener
@@ -162,6 +165,10 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
+    }
+
+    if(isInstalled("freerdp-git", v2025_2)) {
+      separateFreeRdpAuthenticationOption();
     }
   }
 
@@ -346,6 +353,42 @@ public class Migrations {
       }
 
       application.removeValue("session");
+      applicationService.save(application);
+    }
+  }
+
+  private void separateFreeRdpAuthenticationOption() {
+    for(Application application : applicationService.findAll()) {
+      Schema schema = application.getSchema(application.getRealm());
+
+      if (!schema.getName().equals("freerdp-git")) {
+        continue;
+      }
+
+      String authMethod = application.getValueLocal(
+        "Application.Account.Authentication"
+      );
+
+      if (authMethod != null && !authMethod.equals("default")) {
+        continue;
+      }
+
+      String user = application.getValueLocal("Application.Account.User");
+      String password = application.getValueLocal(
+        "Application.Account.Password"
+      );
+
+      String newAuthMethod;
+      if (user != null && password != null
+          && !user.trim().isEmpty() && !password.trim().isEmpty()) {
+        newAuthMethod = "pre-configured";
+      } else {
+        newAuthMethod = "auth-manual-simple";
+      }
+
+      application.setValue(
+        "Application.Account.Authentication", newAuthMethod
+      );
       applicationService.save(application);
     }
   }
