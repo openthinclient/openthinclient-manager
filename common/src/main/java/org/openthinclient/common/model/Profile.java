@@ -191,8 +191,14 @@ public abstract class Profile extends DirectoryObject {
 					+ (null != schemaName ? ", schemaName=" + schemaName : ""));
 	}
 
+	// NEVERFIXME: Don't even think about changing the visibility of this
+	//             method. It will break everything!
 	protected String getSchemaName() {
 		return getProperties().getDescription();
+	}
+
+	public String getSchemaName2() {
+		return getSchemaName();
 	}
 
 	/**
