@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.common.Events.LDAPImportEvent;
@@ -111,6 +113,35 @@ public class Migrations {
     "changelog"
   };
 
+  private static Map<String, String> oldToNewAudioOptions = ImmutableMap
+    .<String, String>builder()
+      .put("pulseaudio.default-sink", "devices.default-sink")
+      .put("pulseaudio.default-port", "devices.default-port")
+      .put("pulseaudio.default-source", "devices.default-source")
+      .put(
+        "pulseaudio.sound-card-0-profile",
+        "devices.sound-card-0-profile"
+      )
+      .put(
+        "pulseaudio.sound-card-1-profile",
+        "devices.sound-card-1-profile"
+      )
+      .put(
+        "pulseaudio.sound-card-2-profile",
+        "devices.sound-card-2-profile"
+      )
+      .put(
+        "pulseaudio.sound-card-3-profile",
+        "devices.sound-card-3-profile"
+      )
+      .put("pulseaudio.master-volume", "volume.master-output")
+      .put(
+        "pulseaudio.master-input-volume", "volume.master-input"
+      )
+      .put("pulseaudio.bell-volume", "bell.volume")
+      .put("pulseaudio.custom-bell-sound", "bell.custom-sound")
+      .build();
+
   public void setServerId() {
     final ManagerHomeMetadata meta = managerHome.getMetadata();
     if (Strings.isNullOrEmpty(meta.getServerID())) {
@@ -150,6 +181,7 @@ public class Migrations {
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
+      separateAudioSettings();
       mergeSsoAndAutologinComponents();
     }
     if(isUpdate(ev.getReports(), "freerdp-git", v2025_2)) {
@@ -178,6 +210,7 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
+      separateAudioSettings();
       mergeSsoAndAutologinComponents();
     }
 
@@ -404,6 +437,49 @@ public class Migrations {
         "Application.Account.Authentication", newAuthMethod
       );
       applicationService.save(application);
+    }
+  }
+
+  private void separateAudioSettings() {
+    for(Application application : applicationService.findAll()) {
+      Schema schema = application.getSchema(application.getRealm());
+
+      if (!schema.getName().equals("desktop")) {
+        continue;
+      }
+
+      LOG.info(
+        "Separating audio settings for desktop application '{}'",
+        application.getName()
+      );
+
+      Schema audioSchema = schemaProvider.getSchema(Application.class, "audio");
+      Application audio = new Application();
+      audio.setSchema(audioSchema);
+      audio.setName(String.format("Audio - %s", application.getName()));
+      audio.setMembers(new HashSet<DirectoryObject>(application.getMembers()));
+
+      boolean hasValuesSet = false;
+
+      for(Entry<String, String> entry : oldToNewAudioOptions.entrySet()) {
+        String oldValName = entry.getKey();
+        String newValName = entry.getValue();
+
+        String value = application.getValueLocal(oldValName);
+
+        if (value == null || value.isEmpty()) {
+          continue;
+        }
+
+        hasValuesSet = true;
+        audio.setValue(newValName, value);
+        application.removeValue(oldValName);
+      }
+
+      if (hasValuesSet) {
+        applicationService.save(audio);
+        applicationService.save(application);
+      }
     }
   }
 
