@@ -18,7 +18,10 @@ import com.google.common.base.Strings;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.common.Events.LDAPImportEvent;
 import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
@@ -53,11 +56,14 @@ public class Migrations {
   private static Version v2021 = Version.parse("2021");
   private static Version v2021b2 = Version.parse("2021.2~beta2~");
   private static Version v2025_1 = Version.parse("2025.1");
+  private static Version v2025_2 = Version.parse("2025.2");
 
   @Autowired
   private ManagerHome managerHome;
   @Autowired
   private PackageManager pkgManager;
+  @Autowired
+  private ApplicationService applicationService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
   @Autowired
@@ -130,6 +136,9 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2025_1)) {
       removeObsoletePackageFiles(obsoleteWithTcosLibs2025PackageNames);
     }
+    if(isUpdate(ev.getReports(), "tcos-libs", v2025_2)) {
+      rewriteKioskModeSettings();
+    }
   }
 
   @EventListener
@@ -149,6 +158,10 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2021b2)) {
       updateHardwaretypeBootOptions();
+    }
+
+    if(isInstalled("tcos-libs", v2025_2)) {
+      rewriteKioskModeSettings();
     }
   }
 
@@ -299,6 +312,41 @@ public class Migrations {
       hwtype.removeValue("BootOptions.BootfileName");
       hwtype.removeValue("BootOptions.BootLoaderTemplate");
       hardwareTypeService.save(hwtype);
+    }
+  }
+
+  private void rewriteKioskModeSettings() {
+    for(Application application : applicationService.findAll()) {
+      Schema schema = application.getSchema(application.getRealm());
+
+      if (!schema.getName().equals("desktop")) {
+        continue;
+      }
+
+      if (!application.containsValue("session")) {
+        continue;
+      }
+
+      LOG.info("Updating kiosk mode settings for {}", application.getName());
+
+      String session = application.getValueLocal("session");
+      boolean anyKioskMode = !session.equals("mate");
+
+      application.setValue("kiosk_mode", String.valueOf(anyKioskMode));
+
+      if (session.equals("kiosk")) {
+        application.setValue("panel.panel", "false");
+      } else if (session.equals("kiosk-panel")) {
+        application.setValue("panel.panel", "true");
+        application.setValue("panel.menu", "false");
+        application.setValue("panel.ip", "false");
+        application.setValue("panel.cpu_monitor", "false");
+        application.setValue("panel.systray", "false");
+        application.setValue("panel.clock", "false");
+      }
+
+      application.removeValue("session");
+      applicationService.save(application);
     }
   }
 
