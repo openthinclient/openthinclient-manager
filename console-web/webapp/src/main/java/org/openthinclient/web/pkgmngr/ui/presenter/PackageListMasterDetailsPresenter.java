@@ -104,6 +104,7 @@ public class PackageListMasterDetailsPresenter {
         public void close() {
           super.close();
           refreshUpdatePanel();
+          selectAfterPackageListUpdate();
         }
       };
       dialog.watch(update);
@@ -143,6 +144,9 @@ public class PackageListMasterDetailsPresenter {
 
   public void selectAll() {
     view.selectAll();
+  }
+
+  public void selectAfterPackageListUpdate() {
   }
 
   public void showPackageListLoadingError(Exception e) {

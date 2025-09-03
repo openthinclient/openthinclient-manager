@@ -19,4 +19,9 @@ public class UpdateablePackageListMasterDetailsPresenter extends PackageListMast
 
     dataProvider.addFilter(new LatestVersionOnlyFilter(dataProvider));
   }
+
+  @Override
+  public void selectAfterPackageListUpdate() {
+    selectAll();
+  }
 }
