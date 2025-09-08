@@ -1,7 +1,5 @@
 package org.openthinclient.sysreport;
 
-import java.util.List;
-
 public class Package {
 
   private Long id;
@@ -14,15 +12,6 @@ public class Package {
   private String priority;
   private long size;
   private boolean installed;
-  private List<PackageInstalledContent> installedContents;
-
-  public List<PackageInstalledContent> getInstalledContents() {
-    return installedContents;
-  }
-
-  public void setInstalledContents(List<PackageInstalledContent> installedContents) {
-    this.installedContents = installedContents;
-  }
 
   public Long getId() {
     return id;
