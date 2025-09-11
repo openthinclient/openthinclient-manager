@@ -96,8 +96,6 @@ public class ManagerHomeCleaner {
     }
   }
 
-  private static final Path ARCHIVES_PATH = Paths.get(
-      "nfs", "root", "var", "cache", "archives");
   /**
    * Delete old files from package manager cache.
    *
@@ -112,7 +110,7 @@ public class ManagerHomeCleaner {
       return;
     }
 
-    File archivesDir = managerHomePath.resolve(ARCHIVES_PATH).toFile();
+    File archivesDir = packageManager.getConfiguration().getArchivesDir();
 
     // Collect all files for packages
     Map<String, List<File>> packages = new HashMap<>();
