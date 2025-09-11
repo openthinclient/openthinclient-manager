@@ -60,9 +60,9 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.85d));
+        downloadPackages(installation, progressReceiver.subprogress(0, 0.85d));
 
-        PackageManagerOperationReport report = executeSteps(installation, installDir, installPlan.getSteps(), progressReceiver.subprogress(0.85d, 1));
+        PackageManagerOperationReport report = executeSteps(installation, installPlan.getSteps(), progressReceiver.subprogress(0.85d, 1));
 
         installation.setEnd(LocalDateTime.now());
 
@@ -73,7 +73,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return report;
     }
 
-    private PackageManagerOperationReport executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps, ProgressReceiver progressReceiver) {
+    private PackageManagerOperationReport executeSteps(Installation installation, List<InstallPlanStep> steps, ProgressReceiver progressReceiver) {
 
         final List<PackageOperation> operations = new ArrayList<>(steps.size());
 
@@ -98,14 +98,14 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             }
         }
 
-        return execute(installation, installDir, operations, progressReceiver);
+        return execute(installation, operations, progressReceiver);
     }
 
     /**
      * Download all packages that are not available in the {@link #localPackageRepository local
      * package repository}
      */
-    private void downloadPackages(Installation installation, Path targetDirectory, ProgressReceiver progressReceiver) {
+    private void downloadPackages(Installation installation, ProgressReceiver progressReceiver) {
 
         List<PackageOperationDownload> operations = Stream.concat( //
                 installPlan.getPackageInstallSteps()
@@ -118,10 +118,10 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
                 .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
                 .collect(Collectors.toList());
 
-        execute(installation, targetDirectory, operations, progressReceiver);
+        execute(installation, operations, progressReceiver);
     }
 
-    private PackageManagerOperationReport execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations, ProgressReceiver progressReceiver) {
+    private PackageManagerOperationReport execute(Installation installation, List<? extends PackageOperation> operations, ProgressReceiver progressReceiver) {
                 final PackageManagerOperationReport report = new PackageManagerOperationReport();
         final double operationCount = operations.size();
 
@@ -131,7 +131,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             PackageOperation operation = operations.get(i);
 
             try {
-              report.addPackageReport(execute(installation, targetDirectory, operation, progressReceiver.subprogress(i * step, (i * step) + step)));
+              report.addPackageReport(execute(installation, operation, progressReceiver.subprogress(i * step, (i * step) + step)));
             } catch (IOException exception) {
               LOGGER.error("Failed to execute PackageOperation: " + operation, exception);
               // add FAIL-report entry
@@ -141,7 +141,10 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return report;
     }
 
-    private PackageReport execute(Installation installation, Path targetDirectory, PackageOperation operation, ProgressReceiver progressReceiver) throws IOException {
+    private PackageReport execute(Installation installation, PackageOperation operation, ProgressReceiver progressReceiver) throws IOException {
+
+        final Path targetDirectory = configuration.getInstallDir().toPath();
+
         final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository,
             packageManagerDatabase, installation, targetDirectory, operation.getPackage());
         operation.execute(context, progressReceiver);
