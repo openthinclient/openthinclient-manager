@@ -66,6 +66,8 @@ public class FirstStartWizardUI extends UI {
   private boolean applicationisPreview;
   @Value("${application.packages-update-version}")
   private String packagesUpdateVersion;
+  @Value("${application.version}")
+  private String homeUpdateVersion;
 
   @Override
   protected void init(VaadinRequest request) {
@@ -171,7 +173,7 @@ public class FirstStartWizardUI extends UI {
                         distributionXml, installableDistribution);
           }
 
-        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution, applicationisPreview, packagesUpdateVersion);
+        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution, applicationisPreview, packagesUpdateVersion, homeUpdateVersion);
 
         root.removeComponent(wizardWrapper);
 

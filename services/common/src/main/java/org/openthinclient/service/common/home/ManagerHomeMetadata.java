@@ -23,4 +23,8 @@ public interface ManagerHomeMetadata {
   String getLastPackagesUpdateVersion();
 
   void setLastPackagesUpdateVersion(String version);
+
+  String getLastHomeUpdateVersion();
+
+  void setLastHomeUpdateVersion(String version);
 }

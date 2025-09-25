@@ -14,11 +14,13 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
   private final NetworkConfigurationModel networkConfigurationModel;
   private final String packagesUpdateVersion;
+  private final String homeUpdateVersion;
 
-  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, NetworkConfigurationModel networkConfigurationModel, String packagesUpdateVersion) {
+  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, NetworkConfigurationModel networkConfigurationModel, String packagesUpdateVersion, String homeUpdateVersion) {
     this.managerHomeFactory = managerHomeFactory;
     this.networkConfigurationModel = networkConfigurationModel;
     this.packagesUpdateVersion = packagesUpdateVersion;
+    this.homeUpdateVersion = homeUpdateVersion;
   }
 
   @Override
@@ -37,6 +39,7 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     final ManagerHomeMetadata metadata = managerHome.getMetadata();
     metadata.setServerID(ServerIDFactory.create());
     metadata.setLastPackagesUpdateVersion(packagesUpdateVersion);
+    metadata.setLastHomeUpdateVersion(homeUpdateVersion);
     metadata.save();
 
     log.info("\n#########################################################\n" +

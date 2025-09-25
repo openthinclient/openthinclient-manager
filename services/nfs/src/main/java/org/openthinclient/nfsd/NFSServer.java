@@ -63,6 +63,7 @@ import org.openthinclient.nfsd.tea.statfsokres;
 import org.openthinclient.nfsd.tea.statfsres;
 import org.openthinclient.nfsd.tea.symlinkargs;
 import org.openthinclient.nfsd.tea.writeargs;
+import org.openthinclient.service.nfs.NFSExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +103,11 @@ public class NFSServer extends NFSServerStub {
 		a[3] = (byte) (i & 0xff);
 	}
 
+	boolean isReadOnly(NFSFile file) {
+		return file.getExport().getGroups().stream()
+					.anyMatch(NFSExport.Group::isReadOnly);
+	}
+
 	private final PathManager pathManager;
 
 	/**
@@ -126,6 +132,12 @@ public class NFSServer extends NFSServerStub {
 			final NFSFile dir = pathManager.getNFSFileByHandle(params.where.dir);
 			if (!dir.getFile().isDirectory()) {
 				ret.status = nfsstat.NFSERR_NOENT;
+				return ret;
+			}
+
+			if (isReadOnly(dir)) {
+				LOG.info("Ignored CREATE for read-only export");
+				ret.status = nfsstat.NFSERR_ROFS;
 				return ret;
 			}
 
@@ -317,6 +329,12 @@ public class NFSServer extends NFSServerStub {
 
 		try {
 			final NFSFile dir = pathManager.getNFSFileByHandle(params.where.dir);
+
+			if (isReadOnly(dir)) {
+				LOG.info("Ignored MKDIR for read-only export");
+				ret.status = nfsstat.NFSERR_ROFS;
+				return ret;
+			}
 
 			String name = params.where.name.value;
 			name = replaceColon(name, false);
@@ -576,6 +594,11 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile dir = pathManager.getNFSFileByHandle(params.dir);
 
+			if (isReadOnly(dir)) {
+				LOG.info("Ignored REMOVE for read-only export");
+				return nfsstat.NFSERR_ROFS;
+			}
+
 			String name = params.name.value.trim();
 			name = replaceColon(name, false);
 			File f = makeFile(name, dir.getFile());
@@ -618,6 +641,11 @@ public class NFSServer extends NFSServerStub {
 			try {
 				final NFSFile fromdir = pathManager.getNFSFileByHandle(params.from.dir);
 				final NFSFile todir = pathManager.getNFSFileByHandle(params.to.dir);
+
+				if (isReadOnly(fromdir) || isReadOnly(todir)) {
+					LOG.info("Ignored RENAME for read-only export");
+					return nfsstat.NFSERR_ROFS;
+				}
 
 				String fromName = params.from.name.value;
 				String toName = params.to.name.value;
@@ -701,6 +729,12 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile f = pathManager.getNFSFileByHandle(params.file);
 
+			if (isReadOnly(f)) {
+				LOG.info("Ignored SETATTR for read-only export");
+				ret.status = nfsstat.NFSERR_ROFS;
+				return ret;
+			}
+
 			if (LOG.isDebugEnabled())
 				LOG.debug("SETATTR: " + f);
 
@@ -765,6 +799,11 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile fromdir = pathManager.getNFSFileByHandle(params.from.dir);
 
+			if (isReadOnly(fromdir)) {
+				LOG.info("Ignored SYMLINK for read-only export");
+				return nfsstat.NFSERR_ROFS;
+			}
+
 			String dest = params.to.value;
 			dest = replaceColon(dest, false);
 
@@ -810,6 +849,12 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile f = pathManager.getNFSFileByHandle(params.file);
 
+			if (isReadOnly(f)) {
+				LOG.info("Ignored WRITE for read-only export");
+				ret.status = nfsstat.NFSERR_ROFS;
+				return ret;
+			}
+
 			if (LOG.isDebugEnabled())
 				LOG.debug("WRITE: " + f + " of " + count + " bytes");
 
@@ -820,6 +865,12 @@ public class NFSServer extends NFSServerStub {
 			}
 
 			ret.attributes = f.getAttributes();
+
+			if (isReadOnly(f)) {
+				LOG.info("Ignored WRITE for read-only export");
+				ret.status = nfsstat.NFSERR_ROFS;
+				return ret;
+			}
 
 			// we need to flush the attributes, since the subsequent
 			// write will most likely change the mtime and the size.

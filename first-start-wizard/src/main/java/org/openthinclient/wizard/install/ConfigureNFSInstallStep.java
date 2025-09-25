@@ -35,11 +35,11 @@ public class ConfigureNFSInstallStep extends AbstractInstallStep {
 //    <nfsexport spec="${jboss.server.data.dir}/nfs/home|/home|*(rw)" />
 
     if (!containsExport(nfsServiceConfiguration, "/openthinclient"))
-      nfsServiceConfiguration.getExports().add(createExport(managerHome, "/openthinclient", Paths.get("nfs", "root")));
+      nfsServiceConfiguration.getExports().add(createExport(managerHome, "/openthinclient", Paths.get("nfs", "root"), true));
     else
       log.info("Skipping /openthinclient export. Such an export already exists");
     if (!containsExport(nfsServiceConfiguration, "/home"))
-      nfsServiceConfiguration.getExports().add(createExport(managerHome, "/home", Paths.get("nfs", "home")));
+      nfsServiceConfiguration.getExports().add(createExport(managerHome, "/home", Paths.get("nfs", "home"), false));
     else
       log.info("Skipping /home export. Such an export already exists");
 
@@ -64,22 +64,22 @@ public class ConfigureNFSInstallStep extends AbstractInstallStep {
             .findFirst().isPresent();
   }
 
-  private NFSExport createExport(ManagerHome managerHome, String name, Path relativePath) {
+  private NFSExport createExport(ManagerHome managerHome, String name, Path relativePath, boolean readOnly) {
     final NFSExport export = new NFSExport();
     export.setName(name);
     final File root = managerHome.getLocation().toPath().resolve(relativePath).toFile();
 
     export.setRoot(root);
-    final NFSExport.Group wildcardGroup = createWildcardGroup();
-    export.getGroups().add(wildcardGroup);
+    final NFSExport.Group group = createNFSExportGroup(readOnly);
+    export.getGroups().add(group);
     return export;
   }
 
-  private NFSExport.Group createWildcardGroup() {
-    final NFSExport.Group wildcardGroup = new NFSExport.Group();
-    wildcardGroup.setWildcard(true);
-    wildcardGroup.setReadOnly(false);
-    return wildcardGroup;
+  private NFSExport.Group createNFSExportGroup(boolean readOnly) {
+    final NFSExport.Group group = new NFSExport.Group();
+    group.setWildcard(true);
+    group.setReadOnly(readOnly);
+    return group;
   }
 
   @Override

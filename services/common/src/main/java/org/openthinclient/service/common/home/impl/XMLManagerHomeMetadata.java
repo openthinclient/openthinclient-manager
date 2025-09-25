@@ -54,6 +54,8 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   private int acknowledgedPrivacyNoticeVersion = 0;
   @XmlElement(name = "last-packages-update-version")
   private String lastPackagesUpdateVersion = "0";
+  @XmlElement(name = "last-home-update-version")
+  private String lastHomeUpdateVersion = "0";
   @XmlTransient
   private Path metaFile;
   @XmlElement(name= ELEMENT_USAGE_STATISTICS_ENABLED)
@@ -105,6 +107,16 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   @Override
   public void setLastPackagesUpdateVersion(String version) {
     this.lastPackagesUpdateVersion = version;
+  }
+
+  @Override
+  public String getLastHomeUpdateVersion() {
+    return lastHomeUpdateVersion;
+  }
+
+  @Override
+  public void setLastHomeUpdateVersion(String version) {
+    this.lastHomeUpdateVersion = version;
   }
 
   @SuppressWarnings("unused")

@@ -77,7 +77,9 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     ClassPathResource resource = new ClassPathResource("application.properties");
     Properties properties = PropertiesLoaderUtils.loadProperties(resource);
     String version = properties.getProperty("application.packages-update-version");
-    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel, options.isPreview, version);
+    String homeVersion = properties.getProperty("application.version");
+
+    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel, options.isPreview, version, homeVersion);
 
     task.call();
   }
