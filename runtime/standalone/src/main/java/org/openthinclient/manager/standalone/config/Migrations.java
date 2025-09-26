@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -19,12 +21,18 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.common.Events.LDAPImportEvent;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.Device;
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -67,11 +75,15 @@ public class Migrations {
   @Autowired
   private HardwareTypeService hardwareTypeService;
   @Autowired
+  private DeviceService deviceService;
+  @Autowired
   private LocationService locationService;
   @Autowired
   private ClientService clientService;
   @Autowired
   private ApplicationContext applicationContext;
+  @Autowired
+  private SchemaProvider schemaProvider;
 
   @Value("${application.is-preview}")
   private boolean applicationIsPreview;
@@ -138,6 +150,7 @@ public class Migrations {
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
+      mergeSsoAndAutologinComponents();
     }
     if(isUpdate(ev.getReports(), "freerdp-git", v2025_2)) {
       separateFreeRdpAuthenticationOption();
@@ -165,6 +178,7 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2025_2)) {
       rewriteKioskModeSettings();
+      mergeSsoAndAutologinComponents();
     }
 
     if(isInstalled("freerdp-git", v2025_2)) {
@@ -390,6 +404,157 @@ public class Migrations {
         "Application.Account.Authentication", newAuthMethod
       );
       applicationService.save(application);
+    }
+  }
+
+  private void mergeSsoAndAutologinComponents() {
+    try {
+      if (!mergeSsoAndAutologinComponentsConvert()) {
+        LOG.info("No components converted");
+        return;
+      }
+      mergeSsoAndAutologinComponentsUnlink();
+      mergeSsoAndAutologinComponentsDelete();
+    } catch (DirectoryException ex) {
+      LOG.error("Merging sso and autologin components failed", ex);
+    }
+  }
+
+  // First step of the `mergeSsoAndAutologinComponents` migration.
+  // Converts all sso and autologin components to login components.
+  private boolean mergeSsoAndAutologinComponentsConvert() throws DirectoryException {
+    boolean anyConverted = false;
+    Schema loginSchema = schemaProvider.getSchema(Device.class, "login");
+
+    for (Device device : deviceService.findAll()) {
+      String schemaName = device.getSchemaName2();
+
+      if (!(schemaName.equals("sso") || schemaName.equals("autologin"))) {
+        continue;
+      }
+
+      anyConverted = true;
+      LOG.info(
+        "Converting {} device '{}' to login device.",
+        schemaName, device.getName()
+      );
+
+      Device login = new Device();
+      login.setSchema(loginSchema);
+      login.setName(device.getName());
+      login.setMembers(new HashSet<DirectoryObject>(device.getMembers()));
+
+      if (schemaName.equals("sso")) {
+        login.setValue("login.type", "sso");
+      } else {
+        login.setValue("login.type", "autologin");
+      }
+
+      deviceService.delete(device);
+      deviceService.save(login);
+    }
+
+    return anyConverted;
+  }
+
+  // Second step of the `mergeSsoAndAutologinComponents` migration.
+  // Unlinks some login components from clients and/or hardware types.
+  private void mergeSsoAndAutologinComponentsUnlink() {
+    Schema loginSchema = schemaProvider.getSchema(Device.class, "login");
+
+    for (HardwareType hwType : hardwareTypeService.findAll()) {
+      Set<Device> devices = hwType.getDevices();
+      Set<Device> autologinDevices = new HashSet<>();
+      Set<Device> ssoDevices = new HashSet<>();
+
+      for (Device device : devices) {
+        String schema = device.getSchemaName2();
+
+        if (!schema.equals("login")) {
+          continue;
+        }
+
+        String loginType = device.getValueLocal("login.type");
+
+        if (loginType == null | loginType.equals("autologin")) {
+          autologinDevices.add(device);
+        } else if (loginType.equals("sso")) {
+          ssoDevices.add(device);
+        }
+      }
+
+      boolean hwTypeHasAutologin = false;
+
+      if (!autologinDevices.isEmpty()) {
+        devices.removeAll(autologinDevices);
+        devices.removeAll(ssoDevices);
+        hwTypeHasAutologin = true;
+      } else if (!ssoDevices.isEmpty()) {
+        ssoDevices.remove(ssoDevices.iterator().next());
+        devices.removeAll(ssoDevices);
+      } else {
+        Device credentialsDevice = new Device();
+        credentialsDevice.setSchema(loginSchema);
+        credentialsDevice.setName(String.format("Login - %s", hwType.getName()));
+        credentialsDevice.setValue("login.type", "credentials");
+        deviceService.save(credentialsDevice);
+        devices.add(credentialsDevice);
+      }
+
+      hardwareTypeService.save(hwType);
+
+      for (Client client : hwType.getMembers()) {
+        Set<Device> clientDevices = client.getDevices();
+        Set<Device> clientAutologinDevices = new HashSet<>();
+        Set<Device> clientSsoDevices = new HashSet<>();
+
+        for (Device device : clientDevices) {
+          String schema = device.getSchemaName2();
+
+          if (!schema.equals("login")) {
+            continue;
+          }
+
+          String loginType = device.getValueLocal("login.type");
+
+          if (loginType == null | loginType.equals("autologin")) {
+            clientAutologinDevices.add(device);
+          } else if (loginType.equals("sso")) {
+            clientSsoDevices.add(device);
+          }
+        }
+
+        if (!clientAutologinDevices.isEmpty()) {
+          clientDevices.removeAll(clientSsoDevices);
+
+          if (hwTypeHasAutologin) {
+            clientDevices.removeAll(clientAutologinDevices);
+          } else {
+            clientAutologinDevices.remove(clientAutologinDevices.iterator().next());
+            clientDevices.removeAll(clientAutologinDevices);
+          }
+        } else if (!clientSsoDevices.isEmpty()) {
+          clientSsoDevices.remove(clientSsoDevices.iterator().next());
+          clientDevices.removeAll(clientSsoDevices);
+        }
+
+        clientService.save(client);
+      }
+    }
+  }
+
+  // Third step of the `mergeSsoAndAutologinComponents` migration.
+  // Delete login components that are not linked to any client or hardware type.
+  private void mergeSsoAndAutologinComponentsDelete() throws DirectoryException {
+    for (Device device : deviceService.findAll()) {
+      if (!device.getSchemaName2().equals("login")) {
+        continue;
+      }
+
+      if (device.getMembers().isEmpty()) {
+        deviceService.delete(device);
+        LOG.info("Deleting login device {}.", device.getName());
+      }
     }
   }
 
