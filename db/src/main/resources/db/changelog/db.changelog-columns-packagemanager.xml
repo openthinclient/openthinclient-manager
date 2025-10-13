@@ -6,38 +6,38 @@
 
     <!-- packages to be removed from the database -->
     <property name="obsolete_packages" value="(
-        'openthinclient-manager', 
-        'openthinclient-server-tftp', 
-        'openthinclient-server-ldap', 
-        'openthinclient-server-dhcp', 
-        'openthinclient-server-nfs', 
-        'tcos-scripts', 
-        'tcos-devices', 
+        'openthinclient-manager',
+        'openthinclient-server-tftp',
+        'openthinclient-server-ldap',
+        'openthinclient-server-dhcp',
+        'openthinclient-server-nfs',
+        'tcos-scripts',
+        'tcos-devices',
         'desktop',
         'tcos-license'
         )"/>
 
     <changeSet id="1" author="François Fernandès" dbms="h2,derby">
-    
+
           <addPrimaryKey columnNames="id"
                        constraintName="pk_source"
-                       tableName="otc_source" /> 
-                       
+                       tableName="otc_source" />
+
            <addPrimaryKey tableName="otc_installation"
                        columnNames="id"
-                       constraintName="pk_otc_installation"/> 
+                       constraintName="pk_otc_installation"/>
 
-            <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>                   
+            <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
 
             <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_otc_package"/>
-               
+
             <addPrimaryKey tableName="otc_package_installed_content" columnNames="id" constraintName="pk_otc_package_installed_content"/>
-            
+
     </changeSet>
 
 	<changeSet id="2" author="François Fernandès">
         <addColumn tableName="otc_source">
-  
+
             <column name="enabled" defaultValueBoolean="true" type="boolean"/>
             <column name="description" type="CLOB"/>
             <column name="url" type="VARCHAR(300)" defaultValue="">
@@ -46,7 +46,7 @@
             <column name="last_updated" type="TIMESTAMP"/>
             <column name="status" type="char(20)"/>
         </addColumn>
-    
+
         <addColumn tableName="otc_installation">
             <column name="comment" type="CLOB"/>
             <column name="START" type="TIMESTAMP"/>
@@ -103,17 +103,17 @@
             <column name="PATH" type="varchar(260)"/>
             <column name="sha1" type="char(40)"/>
         </addColumn>
-        
-    </changeSet>    
-    
+
+    </changeSet>
+
     <changeSet id="3" author="François Fernandès">
-        
+
         <addForeignKeyConstraint baseTableName="otc_installation_log"
                                  baseColumnNames="installation_id"
                                  constraintName="fk_otc_installation_log_installation"
                                  referencedTableName="otc_installation"
                                  referencedColumnNames="id" onDelete="RESTRICT"/>
-    
+
         <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package_id"
                                  constraintName="fk_otc_installation_log_package"
                                  referencedTableName="otc_package" referencedColumnNames="id"
@@ -121,15 +121,15 @@
 
         <addForeignKeyConstraint baseTableName="otc_package" baseColumnNames="source_id"
                                  constraintName="fk_otc_package_source_id"
-                                 referencedTableName="otc_source" referencedColumnNames="id" onDelete="RESTRICT"/>                                 
-               
+                                 referencedTableName="otc_source" referencedColumnNames="id" onDelete="RESTRICT"/>
+
         <addForeignKeyConstraint baseTableName="otc_package_installed_content"
                                  baseColumnNames="package_id"
                                  constraintName="fk_otc_package_installed_content_package_id"
                                  referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="RESTRICT"/>
     </changeSet>
-    
+
     <changeSet id="4" author="Jörg Neumann">
         <dropColumn tableName="otc_package" columnName="status"/>
     </changeSet>
@@ -144,7 +144,7 @@
             <column name="package_source_url" type="VARCHAR(300)" />
         </addColumn>
 	</changeSet>
-	
+
     <changeSet id="6" author="Jörg Neumann">
       <addColumn tableName="otc_package">
         <column name="change_log" type="CLOB"/>
@@ -195,7 +195,7 @@
         <comment>Disable all sources, updating to current source</comment>
         <sql><![CDATA[
             UPDATE otc_source SET enabled=false;
-            INSERT INTO otc_source (enabled,description,url,last_updated,status) 
+            INSERT INTO otc_source (enabled,description,url,last_updated,status)
             VALUES (true,'openthinclient repository', '${application.repository}', null, 'ENABLED');
         ]]></sql>
     </changeSet>

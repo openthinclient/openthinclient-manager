@@ -123,10 +123,10 @@
             <column name="path" type="varchar(260)"/>
             <column name="sha1" type="char(40)"/>
         </createTable>
-        
+
         <addPrimaryKey tableName="otc_package_installed_content" columnNames="id" constraintName="pk_otc_package_installed_content"/>
         <addAutoIncrement tableName="otc_package_installed_content" columnName="id" columnDataType="bigint"/>
-        
+
         <addForeignKeyConstraint baseTableName="otc_package_installed_content"
                                  baseColumnNames="package_id"
                                  constraintName="fk_otc_package_installed_content_package_id"
@@ -135,4 +135,3 @@
     </changeSet>
 
 </databaseChangeLog>
-

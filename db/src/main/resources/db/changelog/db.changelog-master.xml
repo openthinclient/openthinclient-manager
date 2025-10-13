@@ -1,10 +1,10 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
-	objectQuotingStrategy="QUOTE_ALL_OBJECTS">	
-	<!-- QUOTE_ALL_OBJECTS is set to ensure consistency in derby databases. 
-		Derby will uppercase all column and table names, if they are not explicitly 
-		quoted. This will result in Hibernate mapping errors, as the appropriate target 
+	objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	<!-- QUOTE_ALL_OBJECTS is set to ensure consistency in derby databases.
+		Derby will uppercase all column and table names, if they are not explicitly
+		quoted. This will result in Hibernate mapping errors, as the appropriate target
 		column is not visible (END != end) -->
 
 	<include file="db.changelog-mysql.xml" relativeToChangelogFile="true" />
@@ -15,4 +15,3 @@
 	<include file="db.changelog-columns-licensemanager.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
-
