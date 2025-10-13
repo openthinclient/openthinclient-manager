@@ -206,6 +206,7 @@ public class ProgressReceiverDialog {
         if (throwable instanceof PackageManagerDownloadException) {
             errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR, ((PackageManagerDownloadException) throwable).getDownloadUrl()));
         } else {
+            LOGGER.error("Error during package operation", throwable);
             errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
         }
         window.setContent(new MVerticalLayout(errorLabel, header, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
