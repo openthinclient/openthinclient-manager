@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.openthinclient.pkgmgr.PackageTestUtils.createInstallation;
 import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,9 +25,6 @@ public class PackageRepositoryTest {
   @Autowired
   PackageRepository packageRepository;
 
-  @Autowired
-  InstallationRepository installationRepository;
-  
   @Autowired
   SourceRepository sourceRepository;
   
@@ -91,17 +87,6 @@ public class PackageRepositoryTest {
     assertEquals("pkg2", installablePackages.get(0).getName());
   }
 
-  @Test
-  public void testInstallation() throws Exception {
-
-    assertEquals(0, installationRepository.count());
-    
-    Installation installation = createInstallation("Comment", LocalDateTime.now(), LocalDateTime.now().plusMinutes(2));
-    installationRepository.saveAndFlush(installation);
- 
-    assertEquals(1, installationRepository.findAll().size());
-  }
-  
   @Test
   public void testSource() throws Exception {
     

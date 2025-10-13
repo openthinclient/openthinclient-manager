@@ -14,8 +14,6 @@ import java.util.Optional;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
@@ -48,10 +46,6 @@ public class PackageManagerOperationStepDefinitions {
   PackageRepository packageRepository;
   @Autowired
   PackageManagerFactory packageManagerFactory;
-  @Autowired
-  InstallationLogEntryRepository installationLogEntryRepository;
-  @Autowired
-  InstallationRepository installationRepository;
 
   private final List<Package> generatedPackages;
 

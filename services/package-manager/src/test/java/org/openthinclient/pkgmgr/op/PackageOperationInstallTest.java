@@ -51,7 +51,7 @@ public class PackageOperationInstallTest {
         final PackageOperationInstall op = new PackageOperationInstall(pkg);
 
         final Path installDir = testdir.resolve("install");
-        op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, null, null, installedContentRepository), null, installDir, pkg), new NoopProgressReceiver());
+        op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, installedContentRepository), installDir, pkg), new NoopProgressReceiver());
 
         assertDirectory(installDir, "schema");
         assertDirectory(installDir, "schema/application");

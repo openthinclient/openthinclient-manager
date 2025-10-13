@@ -1,7 +1,5 @@
 package org.openthinclient.pkgmgr.spring;
 
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
@@ -19,17 +17,11 @@ public class PackageManagerDatabaseConfiguration {
     PackageRepository packageRepository;
 
     @Autowired
-    InstallationRepository installationRepository;
-
-    @Autowired
-    InstallationLogEntryRepository installationLogEntryRepository;
-
-    @Autowired
     PackageInstalledContentRepository installedContentRepository;
 
     @Bean
     public PackageManagerDatabase db() {
-        return new PackageManagerDatabase(sourceRepository, packageRepository, installationRepository, installationLogEntryRepository, installedContentRepository);
+        return new PackageManagerDatabase(sourceRepository, packageRepository, installedContentRepository);
     }
 
 }

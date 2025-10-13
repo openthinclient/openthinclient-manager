@@ -32,7 +32,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testDownloadFile");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg), new NoopProgressReceiver());
 
         assertTrue(Files.exists(repoTarget.resolve("736").resolve("foo_2.0-1_i386.deb")));
     }
@@ -70,7 +70,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testNonExistingPackage");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg), new NoopProgressReceiver());
     }
 
     @Test(expected = PackageChecksumVerificationFailedException.class)
@@ -81,7 +81,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testMismatchingChecksum");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg), new NoopProgressReceiver());
 
     }
 }

@@ -212,4 +212,13 @@
         ]]></sql>
     </changeSet>
 
+    <changeSet id="Remove installation log tables" author="Marc Häfner">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="otc_installation_log"/>
+            <tableExists tableName="otc_installation"/>
+        </preConditions>
+        <dropTable tableName="otc_installation_log" cascadeConstraints="true"/>
+        <dropTable tableName="otc_installation" cascadeConstraints="true"/>
+    </changeSet>
+
 </databaseChangeLog>

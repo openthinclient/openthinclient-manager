@@ -149,7 +149,7 @@ public class PackageSourcesHandlingTest {
       // perform install operation
       final PackageOperationInstall op = new PackageOperationInstall(pkg);
       final Path installDir = testdir.resolve("install");
-      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, null, null, packageInstalledContentRepository), null, installDir, pkg), new NoopProgressReceiver());
+      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, packageInstalledContentRepository), installDir, pkg), new NoopProgressReceiver());
       
       return pkg;
     }

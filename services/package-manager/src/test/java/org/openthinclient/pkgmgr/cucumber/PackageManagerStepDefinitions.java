@@ -14,8 +14,6 @@ import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
@@ -53,13 +51,9 @@ public class PackageManagerStepDefinitions {
    @Autowired
    SourceRepository sourceRepository;
    @Autowired
-   InstallationLogEntryRepository installationLogEntryRepository;
-   @Autowired
    PackageInstalledContentRepository packageInstalledContentRepository;
    @Autowired
    PackageRepository packageRepository;
-   @Autowired
-   InstallationRepository installationRepository;
    
    PackageManagerConfiguration packageManagerConfiguration;
    PackageManager packageManager;
@@ -71,8 +65,6 @@ public class PackageManagerStepDefinitions {
 
       packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
 
-      installationLogEntryRepository.deleteAll();
-      installationRepository.deleteAll();
       packageInstalledContentRepository.deleteAll();
       packageRepository.deleteAll();
       sourceRepository.deleteAll();

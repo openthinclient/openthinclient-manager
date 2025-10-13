@@ -2,7 +2,6 @@ package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -45,13 +43,6 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws PackageManagerDownloadException {
         LOGGER.info("Package installation/uninstallation started.");
 
-        Installation installation = new Installation();
-        installation.setStart(LocalDateTime.now());
-
-
-        // persist the installation first to allow on the go persistence of the installationlogentry entities
-        installation = packageManagerDatabase.getInstallationRepository().save(installation);
-
         LOGGER.info("Determining packages to be downloaded");
         progressReceiver.progress("Determining packages to be downloaded");
 
@@ -60,20 +51,16 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, progressReceiver.subprogress(0, 0.85d));
+        downloadPackages(progressReceiver.subprogress(0, 0.85d));
 
-        PackageManagerOperationReport report = executeSteps(installation, installPlan.getSteps(), progressReceiver.subprogress(0.85d, 1));
-
-        installation.setEnd(LocalDateTime.now());
-
-        packageManagerDatabase.getInstallationRepository().save(installation);
+        PackageManagerOperationReport report = executeSteps(installPlan.getSteps(), progressReceiver.subprogress(0.85d, 1));
 
         LOGGER.info("Package installation/uninstallation completed.");
 
         return report;
     }
 
-    private PackageManagerOperationReport executeSteps(Installation installation, List<InstallPlanStep> steps, ProgressReceiver progressReceiver) {
+    private PackageManagerOperationReport executeSteps(List<InstallPlanStep> steps, ProgressReceiver progressReceiver) {
 
         final List<PackageOperation> operations = new ArrayList<>(steps.size());
 
@@ -98,14 +85,14 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             }
         }
 
-        return execute(installation, operations, progressReceiver);
+        return execute(operations, progressReceiver);
     }
 
     /**
      * Download all packages that are not available in the {@link #localPackageRepository local
      * package repository}
      */
-    private void downloadPackages(Installation installation, ProgressReceiver progressReceiver) {
+    private void downloadPackages(ProgressReceiver progressReceiver) {
 
         List<PackageOperationDownload> operations = Stream.concat( //
                 installPlan.getPackageInstallSteps()
@@ -118,10 +105,10 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
                 .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
                 .collect(Collectors.toList());
 
-        execute(installation, operations, progressReceiver);
+        execute(operations, progressReceiver);
     }
 
-    private PackageManagerOperationReport execute(Installation installation, List<? extends PackageOperation> operations, ProgressReceiver progressReceiver) {
+    private PackageManagerOperationReport execute(List<? extends PackageOperation> operations, ProgressReceiver progressReceiver) {
                 final PackageManagerOperationReport report = new PackageManagerOperationReport();
         final double operationCount = operations.size();
 
@@ -131,7 +118,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             PackageOperation operation = operations.get(i);
 
             try {
-              report.addPackageReport(execute(installation, operation, progressReceiver.subprogress(i * step, (i * step) + step)));
+              report.addPackageReport(execute(operation, progressReceiver.subprogress(i * step, (i * step) + step)));
             } catch (IOException exception) {
               LOGGER.error("Failed to execute PackageOperation: " + operation, exception);
               // add FAIL-report entry
@@ -141,16 +128,13 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return report;
     }
 
-    private PackageReport execute(Installation installation, PackageOperation operation, ProgressReceiver progressReceiver) throws IOException {
+    private PackageReport execute(PackageOperation operation, ProgressReceiver progressReceiver) throws IOException {
 
         final Path targetDirectory = configuration.getInstallDir().toPath();
 
         final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository,
-            packageManagerDatabase, installation, targetDirectory, operation.getPackage());
+            packageManagerDatabase, targetDirectory, operation.getPackage());
         operation.execute(context, progressReceiver);
-
-        // save the generated log entries
-        packageManagerDatabase.getInstallationLogEntryRepository().saveAll(context.getLog());
 
         PackageReportType reportType = null;
         if (operation instanceof PackageOperationInstall) {

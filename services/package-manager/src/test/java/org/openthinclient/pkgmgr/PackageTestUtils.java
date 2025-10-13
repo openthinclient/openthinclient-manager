@@ -1,7 +1,6 @@
 package org.openthinclient.pkgmgr;
 
 import org.junit.Assert;
-import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.Version;
@@ -9,7 +8,6 @@ import org.openthinclient.pkgmgr.db.Version;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,14 +34,6 @@ public class PackageTestUtils {
     version.setUpstreamVersion(upstreamVersions);
     version.setDebianRevision(debianRevision);
     return version;
-  }
-
-  public static Installation createInstallation(String comment, LocalDateTime start, LocalDateTime end) {
-    Installation installation = new Installation();
-    installation.setComment(comment);
-    installation.setStart(start);
-    installation.setEnd(end);
-    return installation;
   }
 
   public static void configureSources(DebianTestRepositoryServer server, PackageManager packageManager) {
