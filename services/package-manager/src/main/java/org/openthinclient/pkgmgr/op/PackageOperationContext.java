@@ -21,6 +21,10 @@ public interface PackageOperationContext {
 
     void createSymlink(Path link, Path target) throws IOException;
 
+    void createLegacySFSLink(Path target) throws IOException;
+
+    void deleteLegacySFSLink(Path target) throws IOException;
+
     InputStream newInputStream(Path path) throws IOException;
 
     void delete(Path path) throws IOException;

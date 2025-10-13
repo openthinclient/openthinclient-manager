@@ -50,6 +50,10 @@ public class PackageOperationUninstall implements PackageOperation {
                     boolean uninstalled = deleteFile(context, content, remove);
                     // Skip remembering for later cleanup if it's not our file
                     if (!uninstalled) continue;
+                    if (!remove  // i.e. path start with packages/
+                            && content.getPath().toString().endsWith(".sfs")) {
+                        context.deleteLegacySFSLink(content.getPath());
+                    }
                     break;
                 case DIR:
                     if (remove) deleteDirectory(context, content);

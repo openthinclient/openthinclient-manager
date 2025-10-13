@@ -127,7 +127,10 @@ public class PackageOperationInstall implements PackageOperation {
 
                 sha1 = PackageOperationDownload.byteArrayToHexString(digestOut.getMessageDigest().digest()).toLowerCase();
             }
-
+            if (relativePath.startsWith("packages")
+                    && relativePath.toString().endsWith(".sfs")) {
+                context.createLegacySFSLink(relativePath);
+            }
             installedContent.setType(PackageInstalledContent.Type.FILE);
             installedContent.setSha1(sha1);
         } else if (t.isDirectory()) {

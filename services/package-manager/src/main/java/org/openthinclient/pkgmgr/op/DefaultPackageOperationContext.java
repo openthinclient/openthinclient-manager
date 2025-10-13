@@ -57,6 +57,57 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
 
     }
 
+    private Path getSFSPath(final Path target) {
+        Path filename = target.getFileName();
+        if (filename == null) {
+            return null;
+        }
+        Path link = targetDirectory.resolve("sfs");
+        if (filename.toString().equals("base.sfs")) {
+            link = link.resolve("base.sfs");
+        } else {
+            link = link.resolve("package").resolve(filename);
+        }
+        return link;
+    }
+
+    @Override
+    public void createLegacySFSLink(final Path target) throws IOException {
+        Path link = getSFSPath(target);
+        if (link == null) {
+            LOGGER.warn("Cannot create legacy link for path {}",
+                        target);
+            return;
+        }
+        Path absoluteTarget = targetDirectory.resolve(target);
+        if (link.equals(absoluteTarget)) {
+            LOGGER.error("Package {} contains invalid file path {}",
+                        pkg.getName(), target);
+            return;
+        }
+        LOGGER.info("Creating legacy SFS link {} -> {}",
+                    link, absoluteTarget);
+        if (Files.exists(link)) {
+            Files.delete(link);
+        }
+        Files.createDirectories(link.getParent());
+        Files.createLink(link, absoluteTarget);
+    }
+
+    @Override
+    public void deleteLegacySFSLink(Path target) throws IOException {
+        Path link = getSFSPath(target);
+        if (link == null) {
+            LOGGER.warn("Cannot delete legacy link for path {}",
+                        target);
+            return;
+        }
+        if (Files.exists(link)) {
+            LOGGER.info("Deleting legacy SFS link {}", link);
+            Files.delete(link);
+        }
+    }
+
     @Override
     public InputStream newInputStream(Path path) throws IOException {
         LOGGER.info("reading file {}", path);
