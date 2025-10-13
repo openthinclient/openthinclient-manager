@@ -4,10 +4,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ParserProperties;
 import org.openthinclient.runtime.control.cmd.AbstractCommand;
-import org.openthinclient.runtime.control.cmd.ListDistributionsCommand;
-import org.openthinclient.runtime.control.cmd.PrepareHomeCommand;
-import org.openthinclient.runtime.control.cmd.RemoveServerIdCommand;
-import org.openthinclient.runtime.control.cmd.ShowVersionCommand;
+import org.openthinclient.runtime.control.cmd.*;
 
 import java.io.PrintStream;
 import java.util.Optional;
@@ -20,6 +17,7 @@ public class ManagerControlApplication {
           new PrepareHomeCommand(), //
           new ListDistributionsCommand(), //
           new RemoveServerIdCommand(), //
+          new RemoveLicenseCommand(), //
           new ShowVersionCommand() //
   };
 
