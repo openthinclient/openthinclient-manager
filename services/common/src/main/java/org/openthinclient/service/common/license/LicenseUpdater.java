@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.progress.NoopProgressReceiver;
@@ -37,16 +36,13 @@ public class LicenseUpdater {
 
   public CompletableFuture<Void> updateLicense(String serverID) {
     CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-
-    Executors.newCachedThreadPool().submit(() -> {
-      new Thread(() -> {
-        try {
-          updateLicense_(serverID);
-        } finally {
-          completableFuture.complete(null);
-        }
-      }).start();
-    });
+    new Thread(() -> {
+      try {
+        updateLicense_(serverID);
+      } finally {
+        completableFuture.complete(null);
+      }
+    }).start();
     return completableFuture;
   }
 
