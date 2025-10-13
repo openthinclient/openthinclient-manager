@@ -55,6 +55,10 @@ public class DefaultLDAPRealmService implements RealmService {
           realm.setSchemaProvider(schemaProvider);
           try {
             final Schema schema = schemaProvider.getSchema(Realm.class, null);
+            if (schema == null) {
+              LOGGER.error("Failed to load realm schema.");
+              continue;
+            }
             realm.setSchema(schema);
           } catch (SchemaLoadingException e) {
             LOGGER.error("Failed to load realm schema definition. Trying to proceed.", e);
