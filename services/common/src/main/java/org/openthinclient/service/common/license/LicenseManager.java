@@ -4,6 +4,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 
@@ -66,7 +67,14 @@ public class LicenseManager {
     }
     logError(LicenseError.ErrorType.UPDATED);
     this.license = license;
-    applicationContext.publishEvent(new LicenseChangeEvent(this));
+    try {
+      applicationContext.publishEvent(new LicenseChangeEvent(this));
+    } catch(ScopeNotActiveException ex) {
+      LOG.warn("Could not publish license change event," +
+               " request scope not active");
+    } catch(Exception ex) {
+      LOG.error("Could not publish license change event", ex);
+    }
     return true;
   }
 
@@ -90,7 +98,11 @@ public class LicenseManager {
   public void deleteLicense() {
     licenseRepository.deleteAll();
     this.license = null;
-    applicationContext.publishEvent(new LicenseChangeEvent(this));
+    try {
+      applicationContext.publishEvent(new LicenseChangeEvent(this));
+    } catch(Exception ex) {
+      LOG.error("Could not publish license change event", ex);
+    }
   }
 
   public boolean setLicense(EncryptedLicense encryptedLicense) {
