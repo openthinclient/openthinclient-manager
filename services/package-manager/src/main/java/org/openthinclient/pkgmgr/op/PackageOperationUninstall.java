@@ -2,6 +2,7 @@ package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.db.PackageUninstalledContent;
 import org.openthinclient.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +42,27 @@ public class PackageOperationUninstall implements PackageOperation {
 
         for (PackageInstalledContent content : contents) {
 
+            // Don't delete under packages/ (Just remember for later cleanup)
+            boolean remove = !content.getPath().startsWith("packages");
+
             switch (content.getType()) {
                 case FILE:
-                    deleteFile(context, content);
+                    boolean uninstalled = deleteFile(context, content, remove);
+                    // Skip remembering for later cleanup if it's not our file
+                    if (!uninstalled) continue;
                     break;
                 case DIR:
-                    deleteDirectory(context, content);
+                    if (remove) deleteDirectory(context, content);
                     break;
                 case SYMLINK:
-                    context.delete(content.getPath());
+                    if (remove) context.delete(content.getPath());
                     break;
+            }
+
+            if (!remove) {
+                // Remember for later cleanup
+                context.getDatabase().getUninstalledContentRepository()
+                        .save(new PackageUninstalledContent(content));
             }
 
         }
@@ -91,7 +103,7 @@ public class PackageOperationUninstall implements PackageOperation {
         }
     }
 
-    private void deleteFile(PackageOperationContext context, PackageInstalledContent content) throws IOException {
+    private boolean deleteFile(PackageOperationContext context, PackageInstalledContent content, boolean remove) throws IOException {
         final MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA1");
@@ -112,12 +124,15 @@ public class PackageOperationUninstall implements PackageOperation {
 
             if (d.equalsIgnoreCase(content.getSha1())) {
                 LOG.info("Deleting unmodified file {}", content.getPath());
-                context.delete(content.getPath());
+                if (remove)
+                    context.delete(content.getPath());
+                return true;
             } else {
                 LOG.warn("Not deleting modified file {}", content.getPath());
             }
         } else {
             LOG.warn("Previously installed file could not be found {}", content.getPath());
         }
+        return false;
     }
 }

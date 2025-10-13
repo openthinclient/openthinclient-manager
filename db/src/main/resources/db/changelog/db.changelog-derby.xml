@@ -60,4 +60,19 @@
 
   </changeSet>
 
+  <changeSet id="Create uninstalled content table" author="MH" dbms="derby">
+      <preConditions onFail="MARK_RAN">
+          <not>
+              <tableExists tableName="otc_package_uninstalled_content"/>
+          </not>
+      </preConditions>
+      <sql>
+          CREATE TABLE otc_package_uninstalled_content
+          (
+          id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+          )
+      </sql>
+
+  </changeSet>
+
 </databaseChangeLog>

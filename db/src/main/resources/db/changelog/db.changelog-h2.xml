@@ -60,4 +60,16 @@
 
     </changeSet>
 
+    <changeSet id="Create uninstalled content table" author="Marc Häfner" dbms="h2">
+
+        <createTable tableName="otc_package_uninstalled_content">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_package_uninstalled_content"
+                          columnName="id" columnDataType="bigint"/>
+
+    </changeSet>
+
 </databaseChangeLog>

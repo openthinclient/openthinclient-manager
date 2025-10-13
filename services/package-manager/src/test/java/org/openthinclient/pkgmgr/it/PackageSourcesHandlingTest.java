@@ -16,6 +16,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.PackageUninstalledContentRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
@@ -67,6 +68,8 @@ public class PackageSourcesHandlingTest {
     SourceRepository sourceRepository;    
     @Autowired
     PackageInstalledContentRepository packageInstalledContentRepository;
+    @Autowired
+    PackageUninstalledContentRepository packageUninstalledContentRepository;
 
     private PackageManager packageManager;
 
@@ -149,8 +152,8 @@ public class PackageSourcesHandlingTest {
       // perform install operation
       final PackageOperationInstall op = new PackageOperationInstall(pkg);
       final Path installDir = testdir.resolve("install");
-      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, packageInstalledContentRepository), installDir, pkg), new NoopProgressReceiver());
-      
+      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, packageInstalledContentRepository, packageUninstalledContentRepository), installDir, pkg), new NoopProgressReceiver());
+
       return pkg;
     }
 

@@ -113,6 +113,13 @@ public class PackageOperationInstall implements PackageOperation {
         final PackageInstalledContent installedContent = new PackageInstalledContent();
         installedContent.setPath(relativePath);
 
+        if (relativePath.startsWith("packages")) {
+            // Avoid accidental cleanup if path was previously uninstalled
+            context.getDatabase()
+            .getUninstalledContentRepository()
+            .deleteByPath(relativePath.toString());
+        }
+
         if (t.isFile()) {
             final String sha1;
             try (final OutputStream os = context.createFile(relativePath); final DigestOutputStream digestOut = new DigestOutputStream(os, getSha1MessageDigest())) {

@@ -212,22 +212,12 @@ public class PackageUpdateTest {
         Path[] pkgPath = getFilePathsInPackage("bar2", installDirectory);
         for (Path file : pkgPath)
             assertFileExists(file);
-        pkgPath = getFilePathsInPackage("foo", installDirectory);
-        // package foo still exists, but should be replaced by 'bar2'
-        for (Path file : pkgPath)
-            assertFileNotExists(file);
-
         assertVersion("bar2", "2.1-1");
-        assertTestinstallDirectoryEmpty();
     }
 
     private void assertFileExists(Path path) {
         assertTrue(path.getFileName() + " does not exist", Files.exists(path));
         assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
-    }
-
-    private void assertFileNotExists(Path path) {
-        assertTrue(path.getFileName() + " does exist", !Files.exists(path));
     }
 
     private void assertTestinstallDirectoryEmpty() throws IOException {

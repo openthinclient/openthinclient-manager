@@ -60,4 +60,19 @@
 
     </changeSet>
 
+
+    <changeSet id="Create uninstalled content table" author="Marc Häfner" dbms="mysql,mariadb">
+
+        <createTable tableName="otc_package_uninstalled_content">
+            <column name="id" type="BIGINT">
+                <constraints
+                    nullable="false" primaryKey="true"
+                    uniqueConstraintName="pk_otc_package_uninstalled_content"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_package_uninstalled_content"
+                          columnName="id" columnDataType="bigint"/>
+
+    </changeSet>
+
 </databaseChangeLog>

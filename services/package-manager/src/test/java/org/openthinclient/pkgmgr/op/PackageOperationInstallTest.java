@@ -12,6 +12,7 @@ import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.PackageUninstalledContentRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
@@ -35,6 +36,8 @@ public class PackageOperationInstallTest {
     @Mock
     PackageInstalledContentRepository installedContentRepository;
     @Mock
+    PackageUninstalledContentRepository uninstalledContentRepository;
+    @Mock
     PackageRepository packageRepository;
 
     @Test
@@ -51,7 +54,7 @@ public class PackageOperationInstallTest {
         final PackageOperationInstall op = new PackageOperationInstall(pkg);
 
         final Path installDir = testdir.resolve("install");
-        op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, installedContentRepository), installDir, pkg), new NoopProgressReceiver());
+        op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, installedContentRepository, uninstalledContentRepository), installDir, pkg), new NoopProgressReceiver());
 
         assertDirectory(installDir, "schema");
         assertDirectory(installDir, "schema/application");

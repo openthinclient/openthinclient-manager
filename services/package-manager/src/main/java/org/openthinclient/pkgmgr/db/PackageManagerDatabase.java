@@ -4,11 +4,13 @@ public class PackageManagerDatabase {
     private final SourceRepository sourceRepository;
     private final PackageRepository packageRepository;
     private final PackageInstalledContentRepository installedContentRepository;
+    private final PackageUninstalledContentRepository uninstalledContentRepository;
 
-    public PackageManagerDatabase(SourceRepository sourceRepository, PackageRepository packageRepository, PackageInstalledContentRepository installedContentRepository) {
+    public PackageManagerDatabase(SourceRepository sourceRepository, PackageRepository packageRepository, PackageInstalledContentRepository installedContentRepository, PackageUninstalledContentRepository uninstalledContentRepository) {
         this.sourceRepository = sourceRepository;
         this.packageRepository = packageRepository;
         this.installedContentRepository = installedContentRepository;
+        this.uninstalledContentRepository = uninstalledContentRepository;
     }
 
     public SourceRepository getSourceRepository() {
@@ -19,6 +21,10 @@ public class PackageManagerDatabase {
 
     public PackageInstalledContentRepository getInstalledContentRepository() {
         return installedContentRepository;
+    }
+
+    public PackageUninstalledContentRepository getUninstalledContentRepository() {
+        return uninstalledContentRepository;
     }
 
     /**

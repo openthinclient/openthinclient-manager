@@ -221,4 +221,15 @@
         <dropTable tableName="otc_installation" cascadeConstraints="true"/>
     </changeSet>
 
+    <changeSet id="Initialize uninstalled content table" author="Marc Häfner" dbms="h2,derby">
+        <addPrimaryKey tableName="otc_package_uninstalled_content"
+                       columnNames="id"
+                       constraintName="pk_otc_package_uninstalled_content"/>
+        <addColumn tableName="otc_package_uninstalled_content">
+            <column name="package_id" type="bigint"/>
+            <column name="sequence" type="int"/>
+            <column name="path" type="varchar(260)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -14,7 +14,7 @@ public class SimpleTestingPackageManagerConfiguration {
 
   @Bean
   public PackageManager packageManager() {
-    return new PackageManagerFactory(new PackageManagerDatabase(null, null, null), null, null).createPackageManager(configuration);
+    return new PackageManagerFactory(new PackageManagerDatabase(null, null, null, null), null, null).createPackageManager(configuration);
   }
 
 }
