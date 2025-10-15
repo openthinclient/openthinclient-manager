@@ -3,6 +3,7 @@ package org.openthinclient.manager.standalone.config;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.splash.SplashConfiguration;
 import org.openthinclient.meta.PackageMetadataManager;
+import org.openthinclient.pkgmgr.PackagesListFile;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
@@ -27,6 +28,7 @@ import java.nio.file.Path;
         DirectoryServicesConfiguration.class, //
         LicenseUpdaterConfiguration.class,
         UpdateCheckerConfiguration.class,
+        PackagesListFile.class,
         StatisticsReportingConfiguration.class
 })
 public class ManagerStandaloneServerConfiguration {
