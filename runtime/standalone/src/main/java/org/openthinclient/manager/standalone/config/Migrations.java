@@ -371,7 +371,14 @@ public class Migrations {
 
   private void rewriteKioskModeSettings() {
     for(Application application : applicationService.findAll()) {
-      Schema schema = application.getSchema(application.getRealm());
+      Schema schema;
+      try {
+        schema = application.getSchema(application.getRealm());
+      } catch (Exception ex) {
+        LOG.error("Failed to get schema for app {}: {}",
+                  application.getName(), ex.getMessage());
+        continue;
+      }
 
       if (!schema.getName().equals("desktop")) {
         continue;
@@ -406,7 +413,14 @@ public class Migrations {
 
   private void separateFreeRdpAuthenticationOption() {
     for(Application application : applicationService.findAll()) {
-      Schema schema = application.getSchema(application.getRealm());
+      Schema schema;
+      try {
+        schema = application.getSchema(application.getRealm());
+      } catch (Exception ex) {
+        LOG.error("Failed to get schema for app {}: {}",
+                  application.getName(), ex.getMessage());
+        continue;
+      }
 
       if (!schema.getName().equals("freerdp-git")) {
         continue;
@@ -442,7 +456,14 @@ public class Migrations {
 
   private void separateAudioSettings() {
     for(Application application : applicationService.findAll()) {
-      Schema schema = application.getSchema(application.getRealm());
+      Schema schema;
+      try {
+        schema = application.getSchema(application.getRealm());
+      } catch (Exception ex) {
+        LOG.error("Failed to get schema for app {}: {}",
+                  application.getName(), ex.getMessage());
+        continue;
+      }
 
       if (!schema.getName().equals("desktop")) {
         continue;

@@ -3,6 +3,7 @@ package org.openthinclient.common.model.service;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,12 @@ public class DefaultLDAPApplicationService extends AbstractLDAPService<Applicati
 
   private String getSchemaName(Application application) {
     final Realm realm = application.getRealm();
-    final Schema schema = application.getSchema(realm);
-    return schema.getName();
+    try {
+      return application.getSchema(realm).getName();
+    } catch (SchemaLoadingException ex) {
+      LOGGER.error("No schema for {}",
+                   application.getSchemaName2());
+      return null;
+    }
   }
 }
