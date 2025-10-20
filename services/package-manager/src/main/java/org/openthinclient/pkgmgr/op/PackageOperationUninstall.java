@@ -41,6 +41,8 @@ public class PackageOperationUninstall implements PackageOperation {
         LOG.info("Uninstalling package {} {}", pkgToUninstall.getName(), pkgToUninstall.getVersion());
 
         for (PackageInstalledContent content : contents) {
+            if (content.getPath().toString().equals("packages"))
+                continue;   // Don't touch the packages/ dir itself
 
             // Don't delete under packages/ (Just remember for later cleanup)
             boolean remove = !content.getPath().startsWith("packages");
