@@ -69,12 +69,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
         return send(session, type, null);
     }
 
+    @SuppressWarnings("resource")
     public boolean send(WebSocketSession session, String type, String message) {
-        try (WebSocketSession wrappedSession =
-                new ConcurrentWebSocketSessionDecorator(
-                    session, 1000 /*ms*/, 1024/*B*/, TERMINATE)
-        ) {
-            wrappedSession.sendMessage(new TextMessage(
+        try {
+            (new ConcurrentWebSocketSessionDecorator(
+                session,
+                1000 /*ms*/,
+                1024/*B*/,
+                TERMINATE))
+            .sendMessage(new TextMessage(
                 (message == null) ? type
                                   : type + "\n" + message
             ));
