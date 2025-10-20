@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
- * Reads (some) schema files and re-reads them if they change.
- *
- * The only exposed method is the static SchemaStore.getClientBootDefaults
+ * Reads schema files and re-reads them if they change.
  */
 public enum SchemaStore {
   INSTANCE();
