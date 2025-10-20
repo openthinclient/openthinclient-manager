@@ -30,6 +30,10 @@ public class PackageUninstalledContent {
     @Column(name = "package_id")
     private Long packageId;
 
+    public Long getPackageId() {
+        return packageId;
+    }
+
     @Column
     private Integer sequence;
 

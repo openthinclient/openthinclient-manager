@@ -15,4 +15,6 @@ public interface PackageUninstalledContentRepository extends JpaRepository<Packa
 
     @Query("SELECT p FROM PackageUninstalledContent p WHERE p.path LIKE '%.sfs'")
     List<PackageUninstalledContent> findAllSFContent();
+
+    List<PackageUninstalledContent> findAllByPackageIdOrderBySequenceAsc(Long packageId);
 }
