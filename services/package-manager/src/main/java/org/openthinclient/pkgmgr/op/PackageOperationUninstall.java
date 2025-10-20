@@ -129,8 +129,8 @@ public class PackageOperationUninstall implements PackageOperation {
             final String d = PackageOperationDownload.byteArrayToHexString(digest);
 
             if (d.equalsIgnoreCase(content.getSha1())) {
-                LOG.info("Deleting unmodified file {}", content.getPath());
                 if (remove)
+                    LOG.info("Deleting {}", content.getPath());
                     context.delete(content.getPath());
                 return true;
             } else {
