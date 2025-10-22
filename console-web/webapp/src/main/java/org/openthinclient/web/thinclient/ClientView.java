@@ -164,6 +164,7 @@ public final class ClientView extends AbstractProfileView<Client> {
       if (ip != null && !ip.isEmpty() && !ip.equals("0.0.0.0")) {
         presenter.addPanelCaptionComponent(createIPButton(profile));
       }
+      presenter.addPanelCaptionComponent(createReapplySettingsButton(profile));
       presenter.addPanelCaptionComponent(createVNCButton(profile));
       presenter.addPanelCaptionComponent(createLOGButton(profile));
     }
@@ -297,6 +298,14 @@ public final class ClientView extends AbstractProfileView<Client> {
         ev -> shutdownClients(profile));
   }
 
+  private Component createReapplySettingsButton(Client profile) {
+    return createIconButton(
+        VaadinIcons.FLASH,
+        UI_PROFILE_PANEL_BUTTON_REAPPLY_SETTINGS,
+        "reapplySettings",
+        ev -> reapplySettings(profile));
+  }
+
   private Component createVNCButton(Client profile) {
     return createIconButton(
         VaadinIcons.DESKTOP,
@@ -356,6 +365,9 @@ public final class ClientView extends AbstractProfileView<Client> {
     });
     plopPresenter.addShutdownButtonClickHandler(clients -> {
       shutdownClients(clients.toArray(new ClientMetaData[0]));
+    });
+    plopPresenter.addReapplySettingsClickHandler(clients -> {
+      reapplySettings(clients.toArray(new ClientMetaData[0]));
     });
     plopPresenter.setVisible(true);
     return plopPresenter;
@@ -799,6 +811,24 @@ public final class ClientView extends AbstractProfileView<Client> {
             ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_SINGLE_OK:
             ConsoleWebMessages.UI_PROFILE_CONFIRM_SHUTDOWN_MULTI_OK,
         () -> clientStatus.shutdownClients(
+                  Arrays.stream(profiles)
+                        .map(ClientMetaData::getMacAddress)
+                        .collect(Collectors.toList()))
+    )).open();
+  }
+
+  private void reapplySettings(ClientMetaData... profiles) {
+    if (profiles.length == 0) {
+      return;
+    }
+    (new ConfimationPopup(
+        ConsoleWebMessages.UI_PROFILE_CONFIRM_REAPPLY_SETTINGS_TITLE,
+        profiles.length == 1? UI_PROFILE_CONFIRM_REAPPLY_SETTINGS_SINGLE_MESSAGE
+                            : UI_PROFILE_CONFIRM_REAPPLY_SETTINGS_MULTI_MESSAGE,
+        profiles.length == 1?
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_REAPPLY_SETTINGS_SINGLE_OK:
+            ConsoleWebMessages.UI_PROFILE_CONFIRM_REAPPLY_SETTINGS_MULTI_OK,
+        () -> clientStatus.reapplySettings(
                   Arrays.stream(profiles)
                         .map(ClientMetaData::getMacAddress)
                         .collect(Collectors.toList()))

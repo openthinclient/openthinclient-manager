@@ -164,6 +164,7 @@ $ok-button-color: #2db200;
 
       .restart,
       .shutdown,
+      .reapplySettings,
       .ip,
       .vnc {
         color: #999;
@@ -717,6 +718,10 @@ $ok-button-color: #2db200;
         .shutdown:hover,
         .shutdown:focus-visible {
           color: #e0061e;
+        }
+        .reapplySettings:hover,
+        .reapplySettings:focus-visible {
+          color: #b47500;
         }
 
         .v-button {

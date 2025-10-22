@@ -116,4 +116,13 @@ public class ClientStatus {
             }
         }
     }
+
+    public void reapplySettings(Iterable<String> macs) {
+        for (String mac : macs) {
+            ClientInfo info = clients.get(mac);
+            if (info != null) {
+                webSocket.send(info.wsSession, "reapply-settings");
+            }
+        }
+    }
 }

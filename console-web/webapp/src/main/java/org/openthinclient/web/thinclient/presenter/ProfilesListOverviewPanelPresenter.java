@@ -50,6 +50,7 @@ public class ProfilesListOverviewPanelPresenter {
   private Registration wolClickListenerRegistration = null;
   private Registration restartClickListenerRegistration = null;
   private Registration shutdownClickListenerRegistration = null;
+  private Registration reapplySettingsClickListenerRegistration = null;
   private Supplier<Set<DirectoryObject>> itemsSupplier = null;
   private LdifExporterService ldifExporterService;
   private Function<DirectoryObject, DeleteMandate> deleteMandatSupplier = null;
@@ -195,6 +196,13 @@ public class ProfilesListOverviewPanelPresenter {
     button.setVisible(true);
     if (shutdownClickListenerRegistration != null) shutdownClickListenerRegistration.remove();
     shutdownClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
+  }
+
+  public void addReapplySettingsClickHandler(Consumer<Set<DirectoryObject>> clickListener) {
+    Button button = panel.getReapplySettingsButton();
+    button.setVisible(true);
+    if (reapplySettingsClickListenerRegistration != null) reapplySettingsClickListenerRegistration.remove();
+    reapplySettingsClickListenerRegistration = button.addClickListener(ev -> clickListener.accept(panel.getSelectedItems()));
   }
 
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {

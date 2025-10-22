@@ -38,6 +38,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
   private Button wolAction;
   private Button restartAction;
   private Button shutdownAction;
+  private Button reapplySettingsAction;
   private boolean enabled = true;
 
   private Consumer<DirectoryObject> itemButtonClickedConsumer = null;
@@ -119,6 +120,15 @@ public class ProfilesListOverviewPanel extends CssLayout {
     Label spacer = new Label("");
     spacer.addStyleName("spacer");
     actionLine.addComponent(spacer);
+
+    reapplySettingsAction = new Button("");
+    reapplySettingsAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_REAPPLY_SETTINGS));
+    reapplySettingsAction.setIcon(VaadinIcons.FLASH);
+    reapplySettingsAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    reapplySettingsAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    reapplySettingsAction.addStyleName("reapplySettings");
+    reapplySettingsAction.setVisible(false);
+    actionLine.addComponent(reapplySettingsAction);
 
     ldifExportAction = new Button("");
     ldifExportAction.setDescription("Export LDIF");
@@ -224,6 +234,10 @@ public class ProfilesListOverviewPanel extends CssLayout {
 
   public Button getShutdownButton() {
     return shutdownAction;
+  }
+
+  public Button getReapplySettingsButton() {
+    return reapplySettingsAction;
   }
 
   public CheckBox getCheckBox() {
