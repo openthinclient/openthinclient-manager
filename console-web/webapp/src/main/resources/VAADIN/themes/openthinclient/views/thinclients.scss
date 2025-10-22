@@ -694,6 +694,10 @@ $ok-button-color: #2db200;
           }
         }
 
+        .spacer {
+          visibility: hidden;
+        }
+
         .deleteProfile:hover,
         .deleteProfile:focus-visible {
           color: #e0061e;

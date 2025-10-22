@@ -89,22 +89,6 @@ public class ProfilesListOverviewPanel extends CssLayout {
     selectAll.addValueChangeListener(this::selectAllItems);
     actionLine.addComponent(selectAll);
 
-    deleteProfileAction = new Button();
-    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
-    deleteProfileAction.setIcon(VaadinIcons.TRASH);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    deleteProfileAction.addStyleName("deleteProfile");
-    actionLine.addComponent(deleteProfileAction);
-
-    ldifExportAction = new Button("");
-    ldifExportAction.setDescription("Export LDIF");
-    ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
-    ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-    ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    ldifExportAction.addStyleName("ldifExport");
-    actionLine.addComponent(ldifExportAction);
-
     wolAction = new Button("");
     wolAction.setDescription("Wake On LAN");
     wolAction.setIcon(VaadinIcons.PLAY);
@@ -131,6 +115,26 @@ public class ProfilesListOverviewPanel extends CssLayout {
     shutdownAction.addStyleName("shutdown");
     shutdownAction.setVisible(false);
     actionLine.addComponent(shutdownAction);
+
+    Label spacer = new Label("");
+    spacer.addStyleName("spacer");
+    actionLine.addComponent(spacer);
+
+    ldifExportAction = new Button("");
+    ldifExportAction.setDescription("Export LDIF");
+    ldifExportAction.setIcon(VaadinIcons.DOWNLOAD);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    ldifExportAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    ldifExportAction.addStyleName("ldifExport");
+    actionLine.addComponent(ldifExportAction);
+
+    deleteProfileAction = new Button();
+    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
+    deleteProfileAction.setIcon(VaadinIcons.TRASH);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    deleteProfileAction.addStyleName("deleteProfile");
+    actionLine.addComponent(deleteProfileAction);
 
     gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table", "detectOverflow");
