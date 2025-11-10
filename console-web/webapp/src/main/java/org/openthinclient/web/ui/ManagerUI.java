@@ -176,7 +176,7 @@ public final class ManagerUI extends AbstractUI implements View {
             directoryObjects.removeAll(realm.getAdministrators().getMembers())
           );
         } catch (Exception e) {
-          LOGGER.warn("Cannot find clients for search: " + e.getMessage());
+          LOGGER.warn("Cannot find clients for search: ", e);
         }
         LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
         eventBus.publish(this, new DashboardEvent.SearchObjectsSetupEvent(directoryObjects));

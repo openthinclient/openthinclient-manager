@@ -55,13 +55,13 @@ public class ClientBootData {
           }
 
           if (client.locationDN == null) {
-            LOG.error("No location set for {}, Ignoring client.", client.dn);
+            LOG.warn("No location set for {}, Ignoring client.", client.dn);
             return null;
           }
 
           String hwTypeDN = ldapCon.searchHwTypeDN(client.dn);
           if (hwTypeDN == null) {
-            LOG.error("No hwtype found for {}, Ignoring client.", client.dn);
+            LOG.warn("No hwtype found for {}, Ignoring client.", client.dn);
             return null;
           }
 
