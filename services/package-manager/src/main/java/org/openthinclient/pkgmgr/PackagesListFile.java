@@ -1,8 +1,10 @@
 package org.openthinclient.pkgmgr;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.List;
+import java.nio.file.attribute.FileTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -94,6 +96,49 @@ public class PackagesListFile {
     }
   }
 
+  class Duplicates extends HashMap<String, Set<Path>> {
+    Duplicates() {
+      super();
+    }
+
+    void add(String filename, Path path1, Path path2) {
+      Set<Path> set = this.computeIfAbsent(filename, k -> new HashSet<>());
+      set.add(path1);
+      set.add(path2);
+    }
+
+    void removeNewest() {
+      for (Set<Path> paths: this.values()) {
+        Path newest = paths.stream().max((left, right) -> {
+          FileTime left_mtime;
+          FileTime right_mtime;
+          try {
+            left_mtime = Files.getLastModifiedTime(nfsRootPath.resolve(left));
+          } catch (Exception ex) {
+            LOG.error("Could not stat {}: {}", left, ex);
+            return -1;
+          }
+          try {
+            right_mtime = Files.getLastModifiedTime(nfsRootPath.resolve(right));
+          } catch (Exception ex) {
+            LOG.error("Could not stat {}: {}", right, ex);
+            return 1;
+          }
+          return left_mtime.compareTo(right_mtime);
+        }).orElse(null);
+        paths.remove(newest);
+        LOG.warn("Duplicate SFS files! Choosing first.\n  * {}\n    {}",
+                 newest,
+                 paths.stream().map(Path::toString).collect(Collectors.joining("\n    ")));
+      }
+    }
+
+    boolean contains(String pathString) {
+      Path path = Paths.get(pathString);
+      return this.values().stream().anyMatch(paths -> paths.contains(path));
+    }
+  }
+
   /**
    * Write the packages.list file
    *
@@ -107,10 +152,13 @@ public class PackagesListFile {
                                     .collect(Collectors.toList());
 
     List<String> sfsPaths;
+    Duplicates duplicates = new Duplicates();
     try {
       sfsPaths = Files.walk(packagesPath, Integer.MAX_VALUE)
         .filter(Files::isRegularFile)
+        .filter(p -> p.toString().endsWith(".sfs"))
         .map(nfsRootPath::relativize)
+        .filter(p -> !uninstalledPaths.contains(p))
         .sorted((left, right) -> {
           String left_name = left.getFileName().toString();
           String right_name = right.getFileName().toString();
@@ -118,15 +166,20 @@ public class PackagesListFile {
             return 1;
           if (!left_name.startsWith("base") && right_name.startsWith("base"))
             return -1;
-          return left_name.compareTo(right_name);
+          int result = left_name.compareTo(right_name);
+          if (result == 0) duplicates.add(left_name, left, right);
+          return result;
         })
-        .map(Path::toString)
-        .filter(p -> p.endsWith(".sfs"))
-        .filter(p -> !uninstalledPaths.contains(p))
+        .map(p -> p.toString().replace(File.separator, "/"))
         .collect(Collectors.toList());
     } catch (IOException ex) {
       LOG.error("Failed to read packages directory", ex);
       return;
+    }
+
+    if (!duplicates.isEmpty()) {
+      duplicates.removeNewest();
+      sfsPaths.removeIf(duplicates::contains);
     }
 
     try {
