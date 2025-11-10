@@ -49,9 +49,7 @@ public class PackageOperationUninstall implements PackageOperation {
 
             switch (content.getType()) {
                 case FILE:
-                    boolean uninstalled = deleteFile(context, content, remove);
-                    // Skip remembering for later cleanup if it's not our file
-                    if (!uninstalled) continue;
+                    deleteFile(context, content, remove);
                     if (!remove  // i.e. path start with packages/
                             && content.getPath().toString().endsWith(".sfs")) {
                         context.deleteLegacySFSLink(content.getPath());
@@ -109,7 +107,7 @@ public class PackageOperationUninstall implements PackageOperation {
         }
     }
 
-    private boolean deleteFile(PackageOperationContext context, PackageInstalledContent content, boolean remove) throws IOException {
+    private void deleteFile(PackageOperationContext context, PackageInstalledContent content, boolean remove) throws IOException {
         final MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA1");
@@ -128,17 +126,15 @@ public class PackageOperationUninstall implements PackageOperation {
 
             final String d = PackageOperationDownload.byteArrayToHexString(digest);
 
-            if (d.equalsIgnoreCase(content.getSha1())) {
-                if (remove)
-                    LOG.info("Deleting {}", content.getPath());
-                    context.delete(content.getPath());
-                return true;
-            } else {
-                LOG.warn("Not deleting modified file {}", content.getPath());
+            if (!d.equalsIgnoreCase(content.getSha1())) {
+                LOG.warn("Deleting modified file {}", content.getPath());
+            }
+            if (remove) {
+                LOG.info("Deleting {}", content.getPath());
+                context.delete(content.getPath());
             }
         } else {
             LOG.warn("Previously installed file could not be found {}", content.getPath());
         }
-        return false;
     }
 }
