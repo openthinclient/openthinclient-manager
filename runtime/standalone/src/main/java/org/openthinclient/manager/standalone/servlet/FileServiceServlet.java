@@ -101,9 +101,10 @@ public class FileServiceServlet extends HttpServlet {
           w.write("\n");
         }
       } else {
-        logger.info("HTTP 200 - Sending file "
-                    + request.getServletPath() + request.getPathInfo()
-                    + " to " + request.getRemoteAddr());
+        String filePath = request.getServletPath() + request.getPathInfo();
+        String id = Integer.toHexString(System.identityHashCode(request));
+        logger.info("HTTP [{}]: Sending {} to {}",
+                    id, filePath, request.getRemoteAddr());
 
         response.setContentType("application/octet-stream");
 
@@ -111,11 +112,21 @@ public class FileServiceServlet extends HttpServlet {
         FileInputStream is = new FileInputStream(f);
         byte buffer[] = new byte[1024];
 
-        int read;
-        while ((read = is.read(buffer)) > 0)
-          os.write(buffer, 0, read);
-        is.close();
-        os.flush();
+        try {
+          int read;
+          while ((read = is.read(buffer)) > 0)
+            os.write(buffer, 0, read);
+          os.flush();
+        } catch (IOException ex) {
+          logger.warn("HTTP [{}]: Error sending {} to {}: {}",
+                      id, filePath, request.getRemoteAddr(), ex.getMessage());
+          throw ex;
+        } finally {
+          is.close();
+          os.close();
+        }
+        logger.info("HTTP [{}]: Sent {} to {}",
+                    id, filePath, request.getRemoteAddr());
       }
     }
   }
