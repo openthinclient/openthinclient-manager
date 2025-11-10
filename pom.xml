@@ -25,11 +25,16 @@
 	</licenses>
 
 	<properties>
-		<revision>2025.1.4</revision>
-		<application.meta-package-version>2025.1.4</application.meta-package-version>
-		<application.packages-update-version>2025.1</application.packages-update-version>
-		<application.repository>http://archive.openthinclient.org/openthinclient/v2025/packages</application.repository>
-		<application.distribution>http://archive.openthinclient.org/openthinclient/v2025/first-start-profiles/distributions.xml</application.distribution>
+		<!-- version of this management server -->
+		<revision>2511-BETA</revision>
+		<!-- debian version of management server for packages -->
+		<application.meta-package-version>2511~beta</application.meta-package-version>
+		<!-- debian version for auto-updates -->
+		<application.packages-update-version>2511~</application.packages-update-version>
+		<!-- debian repo for packages -->
+		<application.repository>http://archive.openthinclient.org/openthinclient/v2511/packages</application.repository>
+		<!-- definition of pre-configured profiles -->
+		<application.distribution>http://archive.openthinclient.org/openthinclient/v2511/first-start-profiles/distributions.xml</application.distribution>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
