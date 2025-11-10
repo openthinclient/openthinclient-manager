@@ -118,7 +118,13 @@ public enum SplashServer {
   private HttpHandler resourceFile(ResourceManager rm, String resourcePath) {
     try {
       Resource resource = rm.getResource(resourcePath);
-      return ex -> resource.serve(ex.getResponseSender(), ex, IoCallback.END_EXCHANGE);
+      return ex -> {
+        ex.getResponseHeaders().add(
+          new HttpString("Cache-Control"),
+          "no-store, no-cache, max-age=0, must-revalidate, proxy-revalidate"
+        );
+        resource.serve(ex.getResponseSender(), ex, IoCallback.END_EXCHANGE);
+      };
     } catch (IOException err) {
       LOG.error("Failed to load resource {}", resourcePath, err);
       return ex -> ex.setStatusCode(501).getResponseSender().send(err.toString());

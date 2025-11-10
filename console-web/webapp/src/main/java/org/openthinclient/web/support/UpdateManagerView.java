@@ -213,7 +213,7 @@ public class UpdateManagerView extends Panel implements View {
     } else {
       this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_INSTALLING));
       Page page = ui.getPage();
-      page.setLocation("/VAADIN/splash.html#" + ui.getUiRootPath() + "#" + page.getUriFragment());
+      page.setLocation("/VAADIN/splash.html?" + applicationVersion + "#" + ui.getUiRootPath() + "#" + page.getUriFragment());
     }
     ui.push();
   }
