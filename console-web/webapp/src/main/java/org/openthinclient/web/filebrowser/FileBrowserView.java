@@ -125,8 +125,21 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
 
       content.addStyleName("filebrowser");
 
-      HorizontalLayout controlBar = new HorizontalLayout();
-      controlBar.setSpacing(true);
+      bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox.setTextInputAllowed(false);
+      bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
+      bookmarkComboBox.setEmptySelectionAllowed(true);
+      bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
+      bookmarkComboBox.setItemCaptionGenerator(this::resolveBookmarkLabel);
+      bookmarkComboBox.setItems(metadataManager.getBookmarks());
+      bookmarkComboBox.setWidth(100, Unit.PERCENTAGE);
+
+      bookmarkComboBox.addValueChangeListener(this::navigatoToBookmark);
+
+      content.addComponent(bookmarkComboBox);
+
+      CssLayout controlBar = new CssLayout();
+      controlBar.setStyleName("control-bar");
 
       this.contentButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_VIEWCONTENT), event -> {
          showSubwindow(new ContentViewSubWindow(selectedFileItem));
@@ -152,35 +165,18 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       this.removeDirButton.setEnabled(false);
       controlBar.addComponent(removeDirButton);
 
-      // Upload/Download group
-      CssLayout groupUploadDownload = new CssLayout();
-      groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       this.downloadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_DOWNLOAD));
       this.downloadButton.setIcon(VaadinIcons.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       this.downloadButton.setEnabled(false);
-      groupUploadDownload.addComponent(this.downloadButton);
+      controlBar.addComponent(this.downloadButton);
 
       uploadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_UPLOAD), event -> {
          showSubwindow(new FileUploadSubWindow(this, selectedFileItem, ROOT_PATH));
       });
       uploadButton.setIcon(VaadinIcons.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      groupUploadDownload.addComponent(uploadButton);
-      controlBar.addComponent(groupUploadDownload);
-
-      bookmarkComboBox = new ComboBox<>();
-      bookmarkComboBox.setTextInputAllowed(false);
-      bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
-      bookmarkComboBox.setEmptySelectionAllowed(true);
-      bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
-      bookmarkComboBox.setItemCaptionGenerator(this::resolveBookmarkLabel);
-      bookmarkComboBox.setItems(metadataManager.getBookmarks());
-      bookmarkComboBox.setWidth(100, Unit.PERCENTAGE);
-
-      bookmarkComboBox.addValueChangeListener(this::navigatoToBookmark);
-      controlBar.addComponent(bookmarkComboBox);
-      controlBar.setExpandRatio(bookmarkComboBox, 1);
+      controlBar.addComponent(uploadButton);
 
       controlBar.setWidth(100, Unit.PERCENTAGE);
       content.addComponent(controlBar);
@@ -188,7 +184,7 @@ public final class FileBrowserView extends Panel implements View, FileUploadView
       locationLabel = new Label(ROOT_DIR.toString());
       locationLabel.addStyleNames("location", "copy-on-click");
       locationLabel.setDescription(mc.getMessage(UI_FILEBROWSER_LOCATION_LABEL_HINT));
-      content.addComponent(locationLabel);
+      controlBar.addComponent(locationLabel);
 
       createTreeGrid();
       content.addComponent(docList);
