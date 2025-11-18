@@ -66,7 +66,7 @@ public class Migrations {
   private static Version v2021 = Version.parse("2021");
   private static Version v2021b2 = Version.parse("2021.2~beta2~");
   private static Version v2025_1 = Version.parse("2025.1");
-  private static Version v2025_2 = Version.parse("2025.2");
+  private static Version v2511 = Version.parse("2511~");
 
   @Autowired
   private ManagerHome managerHome;
@@ -179,12 +179,12 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "tcos-libs", v2025_1)) {
       removeObsoletePackageFiles(obsoleteWithTcosLibs2025PackageNames);
     }
-    if(isUpdate(ev.getReports(), "tcos-libs", v2025_2)) {
+    if(isUpdate(ev.getReports(), "tcos-libs", v2511)) {
       rewriteKioskModeSettings();
       separateAudioSettings();
       mergeSsoAndAutologinComponents();
     }
-    if(isUpdate(ev.getReports(), "freerdp-git", v2025_2)) {
+    if(isUpdate(ev.getReports(), "freerdp-git", v2511)) {
       separateFreeRdpAuthenticationOption();
     }
   }
@@ -208,13 +208,13 @@ public class Migrations {
       updateHardwaretypeBootOptions();
     }
 
-    if(isInstalled("tcos-libs", v2025_2)) {
+    if(isInstalled("tcos-libs", v2511)) {
       rewriteKioskModeSettings();
       separateAudioSettings();
       mergeSsoAndAutologinComponents();
     }
 
-    if(isInstalled("freerdp-git", v2025_2)) {
+    if(isInstalled("freerdp-git", v2511)) {
       separateFreeRdpAuthenticationOption();
     }
   }
