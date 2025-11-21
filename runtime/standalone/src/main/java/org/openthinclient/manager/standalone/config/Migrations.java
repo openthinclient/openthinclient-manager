@@ -187,6 +187,9 @@ public class Migrations {
     if(isUpdate(ev.getReports(), "freerdp-git", v2511)) {
       separateFreeRdpAuthenticationOption();
     }
+    if(isUpdate(ev.getReports(), "localboot", v2511)) {
+      separateLocalbootInstaller();
+    }
   }
 
   @EventListener
@@ -216,6 +219,10 @@ public class Migrations {
 
     if(isInstalled("freerdp-git", v2511)) {
       separateFreeRdpAuthenticationOption();
+    }
+
+    if(isInstalled("localboot", v2511)) {
+      separateLocalbootInstaller();
     }
   }
 
@@ -450,6 +457,36 @@ public class Migrations {
       application.setValue(
         "Application.Account.Authentication", newAuthMethod
       );
+      applicationService.save(application);
+    }
+  }
+
+  private void separateLocalbootInstaller() {
+    for (Application application : applicationService.findAll()) {
+      Schema schema;
+      try {
+        schema = application.getSchema(application.getRealm());
+      } catch (Exception ex) {
+        LOG.error("Failed to get schema for app {}: {}",
+                  application.getName(), ex.getMessage());
+        continue;
+      }
+
+      if (!schema.getName().equals("localboot")) {
+        continue;
+      }
+      String installer = application.getValueLocal("flasher.installer");
+      if (installer != null && !installer.equals("yes")) {
+        continue;
+      }
+      LOG.info(
+        "Creating install stick from localboot application '{}'",
+        application.getName()
+      );
+
+      Schema installStickSchema = schemaProvider.getSchema(Application.class,
+                                                           "install-stick");
+      application.setSchema(installStickSchema);
       applicationService.save(application);
     }
   }
