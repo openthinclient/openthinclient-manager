@@ -475,10 +475,14 @@ public class Migrations {
       if (!schema.getName().equals("localboot")) {
         continue;
       }
+
       String installer = application.getValueLocal("flasher.installer");
-      if (installer != null && !installer.equals("yes")) {
+      application.removeValue("flasher.installer");
+      if (!"yes".equals(installer)) {
+        applicationService.save(application);
         continue;
       }
+
       LOG.info(
         "Creating install stick from localboot application '{}'",
         application.getName()
