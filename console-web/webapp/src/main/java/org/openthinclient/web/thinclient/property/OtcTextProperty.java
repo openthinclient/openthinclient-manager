@@ -4,7 +4,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 
+import java.util.regex.Pattern;
+
 public class OtcTextProperty extends OtcProperty {
+
+  /* Unicode format control characters, especially Bidi controls */
+  private final static Pattern UNICODE_FORMAT_CONTROL = Pattern.compile(
+      "[\\p{Cf}]");
 
   private ItemConfiguration config;
 
@@ -32,7 +38,7 @@ public class OtcTextProperty extends OtcProperty {
   }
 
   public void setValue(String value) {
-    this.config.setValue(value);
+    this.config.setValue(UNICODE_FORMAT_CONTROL.matcher(value).replaceAll(""));
   }
 
   @Override
