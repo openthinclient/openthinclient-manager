@@ -171,7 +171,7 @@ $ok-button-color: #2db200;
       }
     }
 
-    &.client_view .profiles-overview .overviewPanel .table .columns .v-checkbox {
+    &.client_view .profiles-overview .overviewPanel:first-child .table .columns .v-checkbox {
       width: 10px;
     }
 

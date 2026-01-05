@@ -95,9 +95,13 @@ public final class ClientView extends AbstractProfileView<Client> {
   @Autowired
   private ClientService clientService;
   @Autowired
+  private ClientGroupService clientGroupService;
+  @Autowired
   private LocationService locationService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
+  @Autowired
+  private ClientGroupView clientGroupView;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired
@@ -199,11 +203,30 @@ public final class ClientView extends AbstractProfileView<Client> {
                                   mc.getMessage(UI_LOCATION));
     }
 
+    Set<ClientGroup> clientGroups = client.getClientGroups();
+    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
+    refPresenter.showReference(clientGroups,
+                                mc.getMessage(UI_CLIENTGROUP_HEADER),
+                                allClientGroups,
+                                values -> saveReference(client, values, allClientGroups, ClientGroup.class),
+                                getApplicationsForApplicationGroupFunction(client));
+
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(client.getApplications(),
                                 mc.getMessage(UI_APPLICATION_HEADER),
                                 allApplications,
                                 values -> saveReference(client, values, allApplications, Application.class));
+    Set<ClientGroup> clientGroupsWithApplications =
+        allClientGroups.stream()
+        .filter(group -> group.getApplications().size() > 0)
+        .collect(Collectors.toSet());
+    if (clientGroupsWithApplications.size() > 0) {
+      refPresenter.showReferenceAddendum(
+        clientGroupsWithApplications,
+        mc.getMessage(UI_FROM_CLIENTGROUP_HEADER),
+        ApplicationsFromClientGroupFunction(client)
+      );
+    }
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(client.getApplicationGroups(),
@@ -211,6 +234,23 @@ public final class ClientView extends AbstractProfileView<Client> {
                                 allApplicationGroups,
                                 values -> saveReference(client, values, allApplicationGroups, ApplicationGroup.class),
                                 getApplicationsForApplicationGroupFunction(client));
+
+    Set<ClientGroup> clientGroupsWithAppGroups =
+        allClientGroups.stream()
+        .filter(group -> group.getApplicationGroups().size() > 0)
+        .collect(Collectors.toSet());
+
+    if (clientGroupsWithAppGroups.size() > 0) {
+      Set<ApplicationGroup>
+      appGroups = clientGroupsWithAppGroups.stream()
+                  .flatMap(g -> g.getApplicationGroups().stream())
+                  .collect(Collectors.toSet());
+      refPresenter.showReferenceAddendum(
+        appGroups,
+        mc.getMessage(UI_FROM_CLIENTGROUP_HEADER),
+        getApplicationsForClientGroupApplicationGroupFunction(client)
+      );
+    }
 
     Set<? extends DirectoryObject> devices = client.getDevices();
     Set<Device> allDevices = deviceService.findAll();
@@ -241,6 +281,27 @@ public final class ClientView extends AbstractProfileView<Client> {
     }
 
     return referencesPanel;
+  }
+
+  private Function<Item, List<Item>>
+  ApplicationsFromClientGroupFunction(Client client) {
+    return item -> client.getClientGroups().stream()
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(
+                                                    group.getApplications()))
+                    .orElse(new ArrayList<>());
+  }
+
+  private Function<Item, List<Item>>
+  getApplicationsForClientGroupApplicationGroupFunction(Client client) {
+    return item -> client.getClientGroups().stream()
+                    .flatMap(group -> group.getApplicationGroups().stream())
+                    .filter(group -> group.getName().equals(item.getName()))
+                    .findFirst()
+                    .map(group -> ProfilePropertiesBuilder.createItems(
+                                                    group.getApplications()))
+                    .orElse(new ArrayList<>());
   }
 
   /**
@@ -860,6 +921,14 @@ public final class ClientView extends AbstractProfileView<Client> {
   @Override
   public ConsoleWebMessages getViewTitleKey() {
     return TITLE_KEY;
+  }
+
+  @Override
+  public void showOverview() {
+    super.showOverview();
+    overviewCL.addComponent(
+      clientGroupView.createOverviewItemlistPanel(clientGroupView.getViewTitleKey(), clientGroupView.getAllItems(), true).getPanel()
+    );
   }
 
   class ConfimationPopup extends Popup {

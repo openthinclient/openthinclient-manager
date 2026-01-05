@@ -46,6 +46,8 @@ public final class ApplicationView extends AbstractProfileView<Application> {
   @Autowired
   private ClientService clientService;
   @Autowired
+  private ClientGroupService clientGroupService;
+  @Autowired
   private UserService userService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
@@ -130,6 +132,12 @@ public final class ApplicationView extends AbstractProfileView<Application> {
                                 mc.getMessage(UI_CLIENT_HEADER),
                                 allClients,
                                 values -> saveReference(profile, values, allClients, Client.class));
+
+    Set<ClientGroup> clientGroups = clientGroupService.findAll();
+    refPresenter.showReference(members, ClientGroup.class,
+                                mc.getMessage(UI_CLIENTGROUP_HEADER),
+                                clientGroups,
+                                values -> saveReference(profile, values, clientGroups, ClientGroup.class));
 
     return referencesPanel;
   }

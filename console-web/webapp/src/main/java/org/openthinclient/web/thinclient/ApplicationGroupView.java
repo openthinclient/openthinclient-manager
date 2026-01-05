@@ -33,6 +33,8 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
   @Autowired
   private ClientService clientService;
   @Autowired
+  private ClientGroupService clientGroupService;
+  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
@@ -94,6 +96,12 @@ public final class ApplicationGroupView extends AbstractThinclientGroupView<Appl
                                 mc.getMessage(UI_CLIENT_HEADER),
                                 allClients,
                                 values -> saveReference(applicationGroup, values, allClients, Client.class));
+
+    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
+    refPresenter.showReference(members, ClientGroup.class,
+                                mc.getMessage(UI_CLIENTGROUP_HEADER),
+                                allClientGroups,
+                                values -> saveReference(applicationGroup, values, allClientGroups, ClientGroup.class));
 
     return referencesPanel;
   }
