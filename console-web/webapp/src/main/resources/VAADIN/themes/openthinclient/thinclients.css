@@ -1,0 +1,21 @@
+/* Additional CSS that is not compatible with the outdated SASS compiler */
+
+.openthinclient .maincontent {
+ 	container-type: inline-size;
+}
+
+@container (width > 88ch) {
+  .openthinclient .profiles-overview {
+    display: flex !important;
+    flex-flow: row nowrap;
+  }
+
+  .openthinclient .profiles-overview > * {
+    flex: 1 1;
+    min-width: 42ch;
+  }
+
+  .openthinclient .profiles-overview > :first-child {
+    flex-basis: 72ch;
+  }
+}

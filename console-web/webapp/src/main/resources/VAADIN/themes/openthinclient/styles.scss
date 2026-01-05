@@ -1,3 +1,5 @@
+@import "thinclients.css";
+
 @import "passwordfield";
 @import "../valo/valo";
 @import "common";
@@ -103,6 +105,7 @@ b {
   :root & .v-grid-select-all-checkbox {
     & > input ~ label {
       padding-left: 8px;
+      cursor: default;
     }
     & > input ~ label::before {
       border-radius: 50%;
