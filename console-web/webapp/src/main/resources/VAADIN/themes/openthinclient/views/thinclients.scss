@@ -612,7 +612,6 @@ $ok-button-color: #2db200;
     align-items: center;
     border: 1px solid #d9d9d9;
     border-top: none;
-    margin-bottom: 1em;
 
     &::before {
       content: "";
@@ -679,7 +678,8 @@ $ok-button-color: #2db200;
 
       .actionLine {
         display: flex;
-        padding: 0 8px 8px 6px;
+        align-items: baseline;
+        padding: 8px 8px 8px 6px;
 
         & > :first-child {
           flex: 1;
@@ -733,15 +733,17 @@ $ok-button-color: #2db200;
 
       .table {
         max-height: 100%;
-        width: calc(100% - 14px);
         border: 2px solid var(--section-color);
         border-width: 2px 0;
-        padding: 1ex 0;
-        margin: 0 6px;
+        padding: 1ex 6px;
         overflow: auto;
 
         &.overflowing {
           padding-right: 1ch;
+        }
+
+        & > * {
+          vertical-align: baseline;
         }
 
         .columns {
