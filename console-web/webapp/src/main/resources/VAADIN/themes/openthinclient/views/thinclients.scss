@@ -631,7 +631,7 @@ $ok-button-color: #2db200;
   .profiles-overview {
     display: flex; // IE fallback
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(42ch, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(42ch, 77ch));
     grid-gap: 2ch;
     align-items: start;
     height: 100%;
