@@ -53,6 +53,7 @@ import org.openthinclient.ldap.ManyToManyMapping;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.UserNameAttributeMapping;
+import org.openthinclient.ldap.UserDescriptionAttributeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -300,6 +301,8 @@ public class LDAPDirectory implements Directory {
 
 		String userNameAttribute =
 				realm.getValue("Directory.Secondary.UserNameAttribute");
+		String userDescrAttribute = realm.getValue(
+						"Directory.Secondary.UserDescriptionAttribute");
 
 		String groupObjectFilter =
 				realm.getValue("Directory.Secondary.GroupObjectFilter");
@@ -328,6 +331,8 @@ public class LDAPDirectory implements Directory {
 		final TypeMapping userTM = mapping.getTypes().get(User.class);
 		userTM.setSearchFilter(userObjectFilter);
 		userTM.add(new UserNameAttributeMapping(userNameAttribute));
+		if (userDescrAttribute != null && !userDescrAttribute.isEmpty())
+		userTM.add(new UserDescriptionAttributeMapping(userDescrAttribute));
 
 		final TypeMapping groupTM = mapping.getTypes().get(UserGroup.class);
 		groupTM.setSearchFilter(groupObjectFilter);
