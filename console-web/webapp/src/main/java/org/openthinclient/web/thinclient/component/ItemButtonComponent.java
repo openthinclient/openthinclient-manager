@@ -23,7 +23,6 @@ public class ItemButtonComponent extends CssLayout {
     referencedItemsButton.addClickListener(e -> {
       Navigator navigator = UI.getCurrent().getNavigator();
       String navigationState = item.getType().name().toLowerCase() + "_view/edit/" + item.getName();
-      LOGGER.info("Navigate to " + navigationState);
       navigator.navigateTo(navigationState);
     });
     addComponent(referencedItemsButton);
