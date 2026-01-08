@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-public abstract class AbstractThinclientGroupView<T extends DirectoryObject> extends AbstractDirectoryObjectView<T> {
+public abstract class AbstractGroupView<T extends DirectoryObject> extends AbstractDirectoryObjectView<T> {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 

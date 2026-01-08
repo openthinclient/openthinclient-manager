@@ -22,7 +22,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationGroupView.NAME, ui= ManagerUI.class)
 @ThemeIcon(ApplicationGroupView.ICON)
-public final class ApplicationGroupView extends AbstractThinclientGroupView<ApplicationGroup> {
+public final class ApplicationGroupView extends AbstractGroupView<ApplicationGroup> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGroupView.class);
 
