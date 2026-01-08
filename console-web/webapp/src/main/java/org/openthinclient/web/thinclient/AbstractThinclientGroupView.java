@@ -56,7 +56,7 @@ public abstract class AbstractThinclientGroupView<T extends DirectoryObject> ext
                 profile.setDescription(current);
                 break;
               }
-            } else {
+            } else if (current == null || current.length() == 0) {
               if (propertyKey.equals("description")) {
                 LOGGER.info(" Apply null value for description");
                 profile.setDescription(null);
