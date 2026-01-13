@@ -218,6 +218,7 @@ public final class ClientView extends AbstractProfileView<Client> {
                                 values -> saveReference(client, values, allApplications, Application.class));
     Set<ClientGroup> clientGroupsWithApplications =
         allClientGroups.stream()
+        .filter(group -> group.getMembers().contains(client))
         .filter(group -> group.getApplications().size() > 0)
         .collect(Collectors.toSet());
     if (clientGroupsWithApplications.size() > 0) {
@@ -237,6 +238,7 @@ public final class ClientView extends AbstractProfileView<Client> {
 
     Set<ClientGroup> clientGroupsWithAppGroups =
         allClientGroups.stream()
+        .filter(group -> group.getMembers().contains(client))
         .filter(group -> group.getApplicationGroups().size() > 0)
         .collect(Collectors.toSet());
 
