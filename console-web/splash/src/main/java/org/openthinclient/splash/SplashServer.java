@@ -11,7 +11,10 @@ import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.server.handlers.sse.ServerSentEventHandler;
 import io.undertow.util.HttpString;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +56,30 @@ public enum SplashServer {
                           .addPrefixPath("/api/", serviceUnavailableHandler)
                           .addExactPath("/favicon.ico", resourceFile(rm, "favicon.ico"));
 
+    Properties externalProps = loadExternalApplicationProperties();
+    int port = 8080;
+    try {
+      port = Integer.parseInt(externalProps.getProperty("server.port", "8080"));
+    } catch (NumberFormatException ex) {
+      LOG.error("Invalid port in external application.properties");
+    }
+    String host = externalProps.getProperty("server.address", "0.0.0.0");
+
     server = Undertow.builder()
-              .addHttpListener(8080, "0.0.0.0")
+              .addHttpListener(port, host)
               .setHandler(new AllowedMethodsHandler(handler, new HttpString("GET")))
               .build();
+  }
+
+  private Properties loadExternalApplicationProperties() {
+    Properties props = new Properties();
+    try (FileInputStream fis = new FileInputStream("application.properties")) {
+      props.load(fis);
+    } catch (FileNotFoundException ex) { // ignore and use defaults
+    } catch (IOException ex) {
+      LOG.error("Failed to read external application.properties", ex);
+    }
+    return props;
   }
 
   public static SplashServer getInstance() {
