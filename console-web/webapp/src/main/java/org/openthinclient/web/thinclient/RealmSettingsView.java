@@ -140,7 +140,6 @@ public final class RealmSettingsView extends AbstractProfileView<Realm> {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-    LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
     Realm realmConfiguration = getFreshProfile("RealmConfiguration");
     showProfile(realmConfiguration);
   }

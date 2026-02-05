@@ -330,7 +330,6 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
     String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/", 2);
     if (params.length > 0) {
       // handle create action
