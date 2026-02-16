@@ -113,9 +113,6 @@ public final class ApplicationView extends AbstractProfileView<Application> {
 
 
     Set<User> allUsers = userService.findAll();
-    getRealmService().findAllRealms().forEach(realm ->
-      allUsers.removeAll(realm.getAdministrators().getMembers())
-    );
     refPresenter.showReference(members, User.class,
                                 mc.getMessage(UI_USER_HEADER),
                                 allUsers,

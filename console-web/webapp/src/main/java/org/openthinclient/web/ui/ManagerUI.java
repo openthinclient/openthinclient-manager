@@ -172,9 +172,6 @@ public final class ManagerUI extends AbstractUI implements View {
           directoryObjects.addAll(locationService.findAll());
           directoryObjects.addAll(clientService.findAllClientMetaData());
           directoryObjects.addAll(userService.findAll());
-          realmService.findAllRealms().forEach(realm ->
-            directoryObjects.removeAll(realm.getAdministrators().getMembers())
-          );
         } catch (Exception e) {
           LOGGER.warn("Cannot find clients for search: ", e);
         }

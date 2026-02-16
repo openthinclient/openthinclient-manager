@@ -71,9 +71,6 @@ public final class UserGroupView extends AbstractGroupView<UserGroup> {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<User> allUsers = userService.findAll();
-    getRealmService().findAllRealms().forEach(realm ->
-      allUsers.removeAll(realm.getAdministrators().getMembers())
-    );
     Consumer<List<Item>> profileReferenceChangeConsumer = null;
     if(!secondaryDirectory) {
       profileReferenceChangeConsumer = values -> saveReference(userGroup, values, allUsers, User.class);

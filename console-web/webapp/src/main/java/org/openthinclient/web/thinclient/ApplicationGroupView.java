@@ -77,9 +77,6 @@ public final class ApplicationGroupView extends AbstractGroupView<ApplicationGro
                                 values -> saveApplicationGroupReference(applicationGroup, values));
 
     Set<User> allUsers = userService.findAll();
-    getRealmService().findAllRealms().forEach(realm ->
-      allUsers.removeAll(realm.getAdministrators().getMembers())
-    );
     refPresenter.showReference(members, User.class,
                                 mc.getMessage(UI_USER_HEADER),
                                 allUsers,

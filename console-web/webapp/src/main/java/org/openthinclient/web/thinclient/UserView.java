@@ -71,11 +71,7 @@ public final class UserView extends AbstractDirectoryObjectView<User> {
   @Override
   public Set<User> getAllItems() {
     try {
-      Set<User> users = userService.findAll();
-      getRealmService().findAllRealms().forEach(realm ->
-        users.removeAll(realm.getAdministrators().getMembers())
-      );
-      return users;
+      return userService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
