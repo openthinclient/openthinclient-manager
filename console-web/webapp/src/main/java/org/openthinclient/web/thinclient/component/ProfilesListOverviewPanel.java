@@ -305,7 +305,7 @@ public class ProfilesListOverviewPanel extends CssLayout {
               .append(HtmlUtils.htmlEscape(directoryObject.getName()))
               .append("</span>");
       String description = directoryObject.getDescription();
-      if (description != null) {
+      if (description != null && !description.isEmpty()) {
         caption.append("\n\n<span class=\"description\">")
         .append(HtmlUtils.htmlEscape(description))
         .append("</span>");
