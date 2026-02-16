@@ -258,7 +258,6 @@ public class ProfilesListOverviewPanel extends CssLayout {
 
   public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider, Collection<String> onlineMACs) {
     this.dataProvider = dataProvider;
-    this.dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
     this.onlineMACs = onlineMACs;
     updateRowList();
   }

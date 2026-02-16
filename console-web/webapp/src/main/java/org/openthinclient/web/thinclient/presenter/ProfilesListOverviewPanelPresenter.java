@@ -3,6 +3,7 @@ package org.openthinclient.web.thinclient.presenter;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.Registration;
@@ -25,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.vaadin.viritin.button.MButton;
 
 import java.io.ByteArrayInputStream;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -141,7 +143,13 @@ public class ProfilesListOverviewPanelPresenter {
             });
             // update display
             Set<DirectoryObject> allItems = itemsSupplier == null ? directoryObjectView.getAllItems() : itemsSupplier.get();
-            panel.setDataProvider(DataProvider.ofCollection(allItems));
+            ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(allItems);
+            dataProvider.setSortComparator(
+              Comparator.comparing(
+                DirectoryObject::getName, String::compareToIgnoreCase
+              )::compare
+            );
+            panel.setDataProvider(dataProvider);
             directoryObjectView.selectItem(null);
             panel.getCheckBox().setValue(false);
             window.close();
