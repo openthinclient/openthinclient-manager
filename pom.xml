@@ -26,7 +26,7 @@
 
 	<properties>
 		<!-- version of this management server -->
-		<revision>2511-BETA2</revision>
+		<revision>2511-BETA3</revision>
 		<!-- debian version of management server for packages -->
 		<application.meta-package-version>2511~beta2</application.meta-package-version>
 		<!-- debian version for auto-updates -->
