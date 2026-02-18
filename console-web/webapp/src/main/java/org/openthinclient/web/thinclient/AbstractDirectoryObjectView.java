@@ -11,6 +11,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.SerializableComparator;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
@@ -313,6 +314,13 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
     });
   }
 
+  protected SerializableComparator<DirectoryObject> getComparator() {
+    return Comparator.comparing(
+      DirectoryObject::getName,
+      String::compareToIgnoreCase
+    )::compare;
+  }
+
   // Overview panel setup
   public ProfilesListOverviewPanelPresenter createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean enabled) {
 
@@ -320,7 +328,7 @@ public abstract class AbstractDirectoryObjectView<P extends DirectoryObject> ext
     ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop, new LdifExporterService(realmService.getDefaultRealm().getConnectionDescriptor()), null);
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
-    dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    dataProvider.setSortComparator(getComparator());
     plop.setDataProvider(dataProvider);
     plopPresenter.setVisible(true);
 

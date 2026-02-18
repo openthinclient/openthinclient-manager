@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
@@ -287,6 +288,10 @@ public class ProfilesListOverviewPanel extends CssLayout {
       cb.setVisible(enabled);
 
       Button button = new Button();
+      if (directoryObject instanceof User) {
+        boolean isAdmin = ((User) directoryObject).getRole().equals("admin");
+        button.addStyleName(isAdmin ? "admin" : "user");
+      }
       button.setCaptionAsHtml(true);
       if (isClient) {
         String mac = ((ClientMetaData) directoryObject).getMacAddress();

@@ -436,6 +436,150 @@ public class LDAPConnection implements AutoCloseable {
           "printer", PRINTERS_DN, relation, memberDNs);
   }
 
+  private static final String ADMINIS_DN = "cn=administrators," + REALM_DN;
+  private static final String[] ADMINIS_ATTRS = new String[] { "uniquemember" };
+  public Collection<String> loadAdminDNs() throws NamingException{
+    Collection<String> adminDNs = new ArrayList<>();
+    Attributes attrs = ctx.getAttributes(ADMINIS_DN, ADMINIS_ATTRS);
+    if (attrs.get("uniquemember") == null) return adminDNs;
+    NamingEnumeration<?> adminDNsEnum = attrs.get("uniquemember").getAll();
+    while (adminDNsEnum.hasMore()) {
+      adminDNs.add((String) adminDNsEnum.next());
+    }
+    return adminDNs;
+  }
+
+  public void updateAdminDNs(String dn, boolean isAdmin)
+  throws NamingException {
+    LOG.info("Updating admin DNs: " + dn + " isAdmin: " + isAdmin);
+    Collection<String> adminDNs = loadAdminDNs();
+    boolean wasAdmin = adminDNs.contains(dn);
+    if (wasAdmin && !isAdmin) {
+      ctx.modifyAttributes(ADMINIS_DN, DirContext.REMOVE_ATTRIBUTE,
+          new BasicAttributes("uniquemember", dn));
+    } else if (!wasAdmin && isAdmin) {
+      ctx.modifyAttributes(ADMINIS_DN, DirContext.ADD_ATTRIBUTE,
+          new BasicAttributes("uniquemember", dn));
+    }
+  }
+
+  private static final String USERS_DN = "ou=users," + BASE_DN;
+  private static final SearchControls USERS_SC = multiSC(
+      "cn", "description");
+  public List<Map<String, String>> loadAllUsers() throws NamingException {
+    Collection<String> adminDNs = loadAdminDNs();
+    List<Map<String, String>> users = new ArrayList<>();
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( USERS_DN,
+                    "(objectClass=person)",
+                    USERS_SC);
+
+    while (r.hasMore()) {
+      SearchResult sr = r.next();
+      Attributes attrs = sr.getAttributes();
+      Map<String, String> user = new HashMap<>();
+      String dn = sr.getName();
+      user.put("dn", dn);
+      user.put("role", adminDNs.contains(dn) ? "admin": "");
+      user.put("name", (String) attrs.get("cn").get());
+      Attribute descriptionAttr = attrs.get("description");
+      if (descriptionAttr != null) {
+        user.put("description", (String) descriptionAttr.get());
+      }
+      users.add(user);
+    }
+    return users;
+  }
+
+  public Map<String, String> loadUser(String name) throws NamingException {
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( USERS_DN,
+                    "(cn={0})", new String[] { name },
+                    USERS_SC);
+    if (!r.hasMore()) return null;
+    SearchResult sr = r.next();
+    Attributes attrs = sr.getAttributes();
+
+    Map<String, String> user = new HashMap<>();
+    String dn = sr.getName();
+    user.put("dn", dn);
+    user.put("role", loadAdminDNs().contains(dn) ? "admin": "");
+    user.put("name", (String) attrs.get("cn").get());
+    Attribute descriptionAttr = attrs.get("description");
+    if (descriptionAttr != null) {
+      user.put("description", (String) descriptionAttr.get());
+    }
+    return user;
+  }
+
+  public
+  String saveUser(String dn, String name, String description, String password,
+                  boolean isAdmin)
+  throws NamingException {
+    Attributes attrs = new BasicAttributes(true);
+    attrs.put("cn", name);
+    attrs.put("description", description == null? "": description);
+    if (password != null && !password.isEmpty()) {
+      attrs.put("userPassword", password);
+    }
+    if (dn == null) {
+      Attribute objectClassAttribute = new BasicAttribute("objectClass");
+      objectClassAttribute.add("top");
+      objectClassAttribute.add("person");
+      objectClassAttribute.add("organizationalPerson");
+      objectClassAttribute.add("inetOrgPerson");
+      attrs.put(objectClassAttribute);
+      dn = "cn=" + name + "," + USERS_DN;
+      attrs.put("sn", name); // sn is required by person objectClass
+      ctx.bind(dn, null, attrs);
+    } else {
+      ctx.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
+      String newDN = "cn=" + name + "," + USERS_DN;
+      if (!dn.equals(newDN)) {
+        ctx.rename(dn, newDN);
+        updateReferences(dn, newDN);
+        dn = newDN;
+      }
+    }
+    updateAdminDNs(dn, isAdmin);
+    return dn;
+  }
+
+  public void deleteUser(String dn) throws NamingException {
+    ctx.unbind(dn);
+    updateReferences(dn, null);
+  }
+
+  private
+  void updateReferences(String oldDN, String newDN)
+  throws NamingException {
+    SearchControls sc;
+    sc = new SearchControls(SearchControls.SUBTREE_SCOPE,
+                              0 /* count limit */,
+                              500 /* time limit in ms */,
+                              new String[] { "uniquemember" },
+                              false /* don't return bound object */,
+                              true  /* dereference links */);
+    NamingEnumeration<SearchResult> r;
+    r = ctx.search( BASE_DN, "(uniquemember={0})", new String[] { oldDN }, sc);
+    while (r.hasMore()) {
+      SearchResult sr = r.next();
+      String dn = sr.getName();
+      NamingEnumeration<?> members;
+      members = sr.getAttributes().get("uniquemember").getAll();
+      Attribute uniquemember = new BasicAttribute("uniquemember");
+      while (members.hasMore()) {
+        String member = (String) members.next();
+        if (member.equals(oldDN)) {
+          if (newDN != null) member = newDN;
+        }
+        uniquemember.add(member);
+      }
+      Attributes attrs = new BasicAttributes(true);
+      attrs.put(uniquemember);
+      ctx.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
+    }
+  }
 
   /**
    * Close LDAP connection. This instance should be thrown away afterwards.

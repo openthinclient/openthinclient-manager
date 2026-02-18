@@ -19,6 +19,7 @@ import org.openthinclient.web.thinclient.AbstractDirectoryObjectView;
 import org.openthinclient.web.thinclient.ApplicationGroupView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.UserGroupView;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
@@ -322,7 +323,8 @@ public class OTCSideBar extends ValoSideBar {
       addClickListener(event -> {
         try {
           descriptor.itemInvoked(getUI());
-          if (compositionRoot != null && itemsMap.containsKey(descriptor)) {
+          if (compositionRoot != null && itemsMap.containsKey(descriptor)
+              && ManagerSideBarSections.DEVICE_MANAGEMENT.equals(sectionId)) {
             showGridItems(descriptor);
           } else {
             // cannot find sidbarItem to attach subItems, maybe no directoryObjectView

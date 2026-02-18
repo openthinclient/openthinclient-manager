@@ -1,0 +1,13 @@
+@mixin user-view {
+  .user_view .admin .name {
+    font-weight: bolder;
+  }
+
+  .admin_user_view .user {
+    opacity: .5;
+  }
+
+  #mainmenu.builtin-user-management .adminuserview {
+    display: none !important;
+  }
+}

@@ -49,6 +49,7 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	private byte[] userPassword;
 	private String newPassword = "";
 	private String verifyPassword = "";
+	private String role = "user";
 
 	public Set<ApplicationGroup> getApplicationGroups() {
 		return applicationGroups;
@@ -225,5 +226,13 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 
 	public Location getLocation() {
 		return location;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 }

@@ -121,6 +121,11 @@ public final class RealmSettingsView extends AbstractProfileView<Realm> {
     } catch (DirectoryException e) {
       throw new ProfileNotSavedException("Cannot save object " + profile, e);
     }
+    if (getRealmService().getDefaultRealm().isSecondaryConfigured()) {
+      settingsSideBar.removeStyleName("builtin-user-management");
+    } else {
+      settingsSideBar.addStyleName("builtin-user-management");
+    }
   }
 
   @Override

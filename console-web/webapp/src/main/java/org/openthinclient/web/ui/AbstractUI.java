@@ -141,6 +141,9 @@ public abstract class AbstractUI extends UI {
     root.setSpacing(false);
     root.setSizeFull();
     sideBar.setId("mainmenu");
+    if (!realmService.getDefaultRealm().isSecondaryConfigured()) {
+      sideBar.addStyleName("builtin-user-management");
+    }
     root.addComponent(sideBar);
 
     VerticalLayout vl = new VerticalLayout();

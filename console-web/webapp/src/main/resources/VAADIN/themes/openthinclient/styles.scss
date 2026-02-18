@@ -7,6 +7,7 @@
 @import "mainmenu";
 @import "header";
 @import "views/thinclients";
+@import "views/user.scss";
 @import "views/license";
 @import "views/login";
 @import "views/dashboard";
@@ -185,6 +186,7 @@ b {
   @include mainmenu;
   @include header;
   @include thinclients-view;
+  @include user-view;
   @include license-view;
   @include login-view;
   @include dashboard-view;
