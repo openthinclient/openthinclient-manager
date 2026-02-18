@@ -33,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -69,8 +67,6 @@ public abstract class AbstractUI extends UI {
   @Autowired
   private ClientService clientService;
   @Autowired
-  private UserService userService;
-  @Autowired
   private LicenseManager licenseManager;
 
   @Value("${application.is-preview}")
@@ -78,7 +74,6 @@ public abstract class AbstractUI extends UI {
 
   protected IMessageConveyor mc;
   private AbstractOrderedLayout root;
-  private UserProfileSubWindow userProfileWindow;
   private LicenseMessageBar licenseMessageBar;
 
   @PostConstruct
@@ -111,8 +106,6 @@ public abstract class AbstractUI extends UI {
     JavaScript.getCurrent().execute("installInfoButtonFunction()");
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
-
-    userProfileWindow = new UserProfileSubWindow(userService);
   }
 
   protected void afterNavigatorViewChange(ViewChangeEvent event) {
@@ -247,7 +240,6 @@ public abstract class AbstractUI extends UI {
     menuBar.addStyleName("header-menu");
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
-    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), this::onLogoutButton);
 
     return menuBar;
@@ -259,24 +251,5 @@ public abstract class AbstractUI extends UI {
     // invalidate the current HttpSession.
     VaadinSession.getCurrent().close();
     vaadinSecurity.logout();
-  }
-
-  private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
-
-    if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
-      SecurityContext securityContext = (SecurityContext) VaadinSession.getCurrent().getSession().getAttribute("SPRING_SECURITY_CONTEXT");
-      Authentication authentication = securityContext.getAuthentication();
-      UserDetails principal = (UserDetails) authentication.getPrincipal();
-      try {
-        userProfileWindow.refresh(userService.findByName(principal.getUsername()));
-      } catch (Exception e) {
-        LOGGER.warn("Cannot find directory-object: " + e.getMessage());
-        userProfileWindow.showError(e);
-      }
-      UI.getCurrent().addWindow(userProfileWindow);
-    } else {
-      userProfileWindow.close();
-      UI.getCurrent().removeWindow(userProfileWindow);
-    }
   }
 }
