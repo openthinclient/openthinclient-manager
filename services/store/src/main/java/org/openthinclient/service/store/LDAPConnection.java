@@ -426,7 +426,7 @@ public class LDAPConnection implements AutoCloseable {
 
   private static final String PRINTERS_DN = "ou=printers," + BASE_DN;
   /**
-   * @return list of applications for the given memberDNs.
+   * @return list of printers for the given memberDNs.
    * @see loadRelatedProfiles
    */
   public List<Map<String, String>> loadPrinters(

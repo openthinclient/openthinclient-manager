@@ -273,7 +273,7 @@ public enum SchemaStore {
     }
 
     private void populateNodeData(Node node, String key) {
-      // key for this node. Skip the <schema> root node and nameless groups.
+      // Full key of the node. Skip the <schema> root node and nameless groups.
       if (node.getParent() != null && node.getName() != null)  {
         key = (key == null) || key.isEmpty() ? node.getName() : key + "." + node.getName();
       }
