@@ -124,7 +124,7 @@ public abstract class AbstractUserView extends AbstractDirectoryObjectView<User>
     configuration.addProperty(desc);
 
     // Password
-    OtcPasswordProperty pwd = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_LABEL), mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), "password", null);
+    OtcPasswordProperty pwd = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_LABEL), null, "password", null);
     ItemConfiguration pwdConfig = new ItemConfiguration("password", null);
     pwdConfig.addValidator(new Validator<String>() {
       @Override
