@@ -46,7 +46,7 @@ import org.openthinclient.service.common.ServerIDFactory;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
 import org.openthinclient.splash.SplashServer;
-import org.openthinclient.web.pkgmngr.event.PackageEvent;
+import org.openthinclient.util.PackageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

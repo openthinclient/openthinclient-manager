@@ -1,4 +1,4 @@
-package org.openthinclient.web.pkgmngr.event;
+package org.openthinclient.util;
 
 import java.util.List;
 

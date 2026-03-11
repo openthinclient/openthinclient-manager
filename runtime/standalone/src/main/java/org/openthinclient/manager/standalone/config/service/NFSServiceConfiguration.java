@@ -1,7 +1,7 @@
 package org.openthinclient.manager.standalone.config.service;
 
 import org.openthinclient.service.nfs.NFSService;
-import org.openthinclient.web.pkgmngr.event.PackageEvent;
+import org.openthinclient.util.PackageEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
