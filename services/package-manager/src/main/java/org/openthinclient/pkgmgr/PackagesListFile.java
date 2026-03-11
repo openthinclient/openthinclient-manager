@@ -12,9 +12,11 @@ import javax.annotation.PostConstruct;
 import org.openthinclient.pkgmgr.db.PackageUninstalledContent;
 import org.openthinclient.pkgmgr.db.PackageUninstalledContentRepository;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.util.PackageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
@@ -64,6 +66,13 @@ public class PackagesListFile {
 
     // Watching packages/ for changes
     startDirWatcher();
+  }
+
+  @EventListener
+  public void onPackageEvent(PackageEvent ev) {
+    if(ev.changesOccured()) {
+      requestUpdate();
+    }
   }
 
   /**
