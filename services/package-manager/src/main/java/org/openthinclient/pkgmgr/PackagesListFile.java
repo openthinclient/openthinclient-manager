@@ -60,7 +60,7 @@ public class PackagesListFile {
     }
 
     // Ensure a valid packages.list exists
-    writePackagesList();
+    requestUpdate();
 
     // Watching packages/ for changes
     startDirWatcher();
