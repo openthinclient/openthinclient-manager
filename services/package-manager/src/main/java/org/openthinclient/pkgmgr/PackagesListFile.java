@@ -158,7 +158,7 @@ public class PackagesListFile {
         .filter(Files::isRegularFile)
         .filter(p -> p.toString().endsWith(".sfs"))
         .map(nfsRootPath::relativize)
-        .filter(p -> !uninstalledPaths.contains(p))
+        .filter(p -> !uninstalledPaths.contains(p.toString()))
         .sorted((left, right) -> {
           String left_name = left.getFileName().toString();
           String right_name = right.getFileName().toString();
