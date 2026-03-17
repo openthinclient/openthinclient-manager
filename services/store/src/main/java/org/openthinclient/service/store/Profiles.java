@@ -2,6 +2,7 @@ package org.openthinclient.service.store;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,8 @@ import org.slf4j.LoggerFactory;
 public class Profiles {
   private static final Logger LOG = LoggerFactory.getLogger(Profiles.class);
 
-  public static Iterable<Map<String, String>> getDevices(String mac) {
-    Iterable<Map<String, String>> devices = loadDevices(mac);
+  public static Collection<Map<String, String>> getDevices(String mac) {
+    Collection<Map<String, String>> devices = loadDevices(mac);
     for (Map<String, String> device: devices) {
       String type = device.get("type");
       if (type == null) {
@@ -40,7 +41,7 @@ public class Profiles {
    * @param mac MAC address of the client
    * @return all assigned devices as a list of maps
    */
-  private static Iterable<Map<String, String>> loadDevices(String mac) {
+  private static Collection<Map<String, String>> loadDevices(String mac) {
     // Load all assigned devices in order of precedence.
     List<Map<String, String>> devices = new ArrayList<>();
 
