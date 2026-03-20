@@ -26,15 +26,15 @@
 
 	<properties>
 		<!-- version of this management server -->
-		<revision>2511-BETA4</revision>
+		<revision>2603</revision>
 		<!-- debian version of management server for packages -->
-		<application.meta-package-version>2511~beta2</application.meta-package-version>
+		<application.meta-package-version>2603</application.meta-package-version>
 		<!-- debian version for auto-updates -->
-		<application.packages-update-version>2511~</application.packages-update-version>
+		<application.packages-update-version>2603</application.packages-update-version>
 		<!-- debian repo for packages -->
-		<application.repository>http://archive.openthinclient.org/openthinclient/v2511/packages</application.repository>
+		<application.repository>http://archive.openthinclient.org/openthinclient/v2603/packages</application.repository>
 		<!-- definition of pre-configured profiles -->
-		<application.distribution>http://archive.openthinclient.org/openthinclient/v2511/first-start-profiles/distributions.xml</application.distribution>
+		<application.distribution>http://archive.openthinclient.org/openthinclient/v2603/first-start-profiles/distributions.xml</application.distribution>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
