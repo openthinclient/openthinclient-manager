@@ -75,4 +75,13 @@
 
     </changeSet>
 
+
+    <changeSet id="Add columns to uninstalled content table" author="Marc Häfner" dbms="mysql,mariadb">
+        <addColumn tableName="otc_package_uninstalled_content">
+            <column name="package_id" type="bigint"/>
+            <column name="sequence" type="int"/>
+            <column name="path" type="varchar(260)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
