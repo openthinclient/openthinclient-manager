@@ -26,7 +26,7 @@
 
 	<properties>
 		<!-- version of this management server -->
-		<revision>2603</revision>
+		<revision>2603.1</revision>
 		<!-- debian version of management server for packages -->
 		<application.meta-package-version>2603</application.meta-package-version>
 		<!-- debian version for auto-updates -->
