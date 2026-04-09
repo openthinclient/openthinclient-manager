@@ -42,7 +42,6 @@ import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.DatabaseModel;
-import org.openthinclient.wizard.model.DatabaseModel.MySQLConfiguration;
 import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
@@ -141,36 +140,6 @@ public class ReinstallInformationPanel extends Panel {
       } catch (Exception e) {
         logger.error("Cannot restore proxy settings", e);
         resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_PROXY_FAIL));
-      }
-
-      try {
-        DatabaseConfiguration databaseConfiguration = managerHome.getConfiguration(DatabaseConfiguration.class);
-        DatabaseModel databaseModel = systemSetupModel.getDatabaseModel();
-        if (databaseConfiguration != null && databaseConfiguration.getType() != null) {
-          databaseModel.setType(databaseConfiguration.getType());
-          if (databaseConfiguration.getType() == DatabaseType.MYSQL) {
-            MySQLConfiguration mySQLConfiguration = databaseModel.getMySQLConfiguration();
-            String url = databaseConfiguration.getUrl();
-            try {
-              URI uri = new URI(url.substring(5));
-              mySQLConfiguration.setDatabase(uri.getPath().substring(1));
-              mySQLConfiguration.setHostname(uri.getHost());
-              mySQLConfiguration.setPort(uri.getPort());
-            } catch (URISyntaxException e) {
-              logger.error("Cannot parse database uri, using defaults.");
-            }
-            mySQLConfiguration.setTimezone(databaseConfiguration.getTimezone());
-            mySQLConfiguration.setUsername(databaseConfiguration.getUsername());
-            mySQLConfiguration.setPassword(databaseConfiguration.getPassword());
-          }
-          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_RESTORED));
-        } else {
-          logger.info("No database settings found, using defaults.");
-          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_DEFAULT));
-        }
-      } catch (Exception e) {
-        logger.error("Cannot restore database settings", e);
-        resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_FAIL));
       }
 
       try {

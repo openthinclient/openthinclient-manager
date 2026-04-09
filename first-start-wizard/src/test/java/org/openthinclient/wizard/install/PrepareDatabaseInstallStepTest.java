@@ -35,8 +35,6 @@ public class PrepareDatabaseInstallStepTest {
      String derbyDatabaseUrl = DataSourceConfiguration.createApacheDerbyDatabaseUrl(installContext.getManagerHome());
      final DatabaseModel model = new DatabaseModel();
 
-     model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
-
      final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
      step.execute(installContext);
 
@@ -60,38 +58,6 @@ public class PrepareDatabaseInstallStepTest {
 
      connection.close();
   }
-  
-  
-   @Test
-   public void testInstallH2() throws Exception {
-     
-      final Path targetDir = prepareTestInstallationDirectory();
-
-      final DefaultManagerHome home = new DefaultManagerHome(targetDir.toFile());
-
-      final InstallContext installContext = new InstallContext();
-      installContext.setManagerHome(home);
-
-      final DatabaseModel model = new DatabaseModel();
-
-      model.setType(DatabaseConfiguration.DatabaseType.H2);
-
-      final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
-      step.execute(installContext);
-
-      // verify that the database configuration has been written
-      assertTrue(Files.isRegularFile(targetDir.resolve("db.xml")));
-
-//      final SourceRepository sourceRepository = installContext.getPackageManager().getSourceRepository();
-//      sourceRepository.findAll();
-      installContext.getPackageManager().findAllSources();
-
-      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()), "sa", "");
-      // ensure that the otc_source table exists.
-      connection.createStatement().executeQuery("SELECT * FROM otc_source");
-
-      connection.close();
-   }
 
    private Path prepareTestInstallationDirectory() throws IOException {
       final Path testDataDirectory = Paths.get("target", "test-data");
@@ -100,25 +66,9 @@ public class PrepareDatabaseInstallStepTest {
    }
 
    @Test
-   public void testCreateH2Configuration() throws Exception {
-
-      final DatabaseModel model = new DatabaseModel();
-      model.setType(DatabaseConfiguration.DatabaseType.H2);
-
-      final DatabaseConfiguration target = new DatabaseConfiguration();
-     DatabaseModel.apply(model, target);
-
-      assertEquals("sa", target.getUsername());
-      assertEquals("", target.getPassword());
-      assertEquals(DatabaseConfiguration.DatabaseType.H2, target.getType());
-      assertEquals(null, target.getUrl());
-   }
-
-   @Test
    public void testCreateApacheDerbyConfiguration() throws Exception {
 
       final DatabaseModel model = new DatabaseModel();
-      model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
 
       final DatabaseConfiguration target = new DatabaseConfiguration();
       DatabaseModel.apply(model, target);
@@ -127,26 +77,5 @@ public class PrepareDatabaseInstallStepTest {
       assertEquals(null, target.getUrl());
       assertEquals("sa", target.getUsername());
       assertEquals("", target.getPassword());
-   }   
-   
-   
-   @Test
-   public void testCreateMySQLConfigurationWithDefaultPort() throws Exception {
-
-      final DatabaseModel model = new DatabaseModel();
-      model.setType(DatabaseConfiguration.DatabaseType.MYSQL);
-      model.getMySQLConfiguration().setHostname("mysql-simple-host.com");
-      // using the default port
-      model.getMySQLConfiguration().setDatabase("otc-database");
-      model.getMySQLConfiguration().setUsername("some-user");
-      model.getMySQLConfiguration().setPassword("secret PAssWoRD");
-
-      final DatabaseConfiguration target = new DatabaseConfiguration();
-      DatabaseModel.apply(model, target);
-
-      assertEquals(DatabaseConfiguration.DatabaseType.MYSQL, target.getType());
-      assertEquals("some-user", target.getUsername());
-      assertEquals("secret PAssWoRD", target.getPassword());
-      assertEquals("jdbc:mysql://mysql-simple-host.com:3306/otc-database", target.getUrl());
    }
 }

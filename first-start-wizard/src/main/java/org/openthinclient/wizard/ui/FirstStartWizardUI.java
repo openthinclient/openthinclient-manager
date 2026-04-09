@@ -26,7 +26,6 @@ import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
-import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
 import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
@@ -197,7 +196,6 @@ public class FirstStartWizardUI extends UI {
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
 //    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
-    wizard.addStep(new ConfigureDatabaseStep(systemSetupModel), "config-database");
     wizard.addStep(new ConfigureDirectoryStep(wizard, systemSetupModel), "directory");
     wizard.addStep(new ReadyToInstallStep(wizard), "install-ready");
 

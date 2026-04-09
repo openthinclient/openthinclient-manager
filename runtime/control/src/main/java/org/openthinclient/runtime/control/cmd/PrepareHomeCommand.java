@@ -57,16 +57,6 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
       networkConfigurationModel.enableDirectConnectionProperty();
     }
     DatabaseModel databaseModel = new DatabaseModel();
-    databaseModel.setType(options.dbType);
-
-    if (options.dbType == DatabaseConfiguration.DatabaseType.MYSQL) {
-      databaseModel.getMySQLConfiguration().setDatabase(options.dbDatabase);
-      databaseModel.getMySQLConfiguration().setTimezone(options.dbTimezone);
-      databaseModel.getMySQLConfiguration().setUsername(options.dbUsername);
-      databaseModel.getMySQLConfiguration().setPassword(options.dbPassword);
-      databaseModel.getMySQLConfiguration().setHostname(options.dbHostname);
-      databaseModel.getMySQLConfiguration().setPort(options.dbMySQLport);
-    }
     validateDatabaseConnection(databaseModel);
 
     directoryModel.getAdministratorUser().setNewPassword(options.adminPassword);
@@ -90,32 +80,11 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     DatabaseModel.apply(databaseModel, configuration);
 
     final DataSource dataSource = DataSourceConfiguration.createDataSource(configuration, configuration.getUrl());
-
-    // do not validate the embedded databases as their URL will be constructed once the final manager home directory has been identified.
-    if (!databaseModel.getType().isEmbedded())
-      DataSourceConfiguration.validateDataSource(dataSource);
   }
 
   public static class Options {
     @Option(name = "--home", required = true, metaVar = "DIR", usage = "The target manager home directory")
     public Path homePath;
-
-
-    @Option(name = "--db", required = false, metaVar = "TYPE", usage = "Type of the database that shall be used.")
-    public DatabaseConfiguration.DatabaseType dbType = DatabaseConfiguration.DatabaseType.APACHE_DERBY;
-
-    @Option(name = "--db-host", required = false, metaVar = "HOST", usage = "Hostname to be used for the database connection. Only required for MySQL database connections")
-    public String dbHostname = "localhost";
-    @Option(name = "--db-user", required = false, metaVar = "USER", usage = "Username to be used for the database connection. Only required for MySQL database connections")
-    public String dbUsername = "root";
-    @Option(name = "--db-password", required = false, metaVar = "PASS", usage = "Password to be used for the database connection. Only required for MySQL database connections")
-    public String dbPassword;
-    @Option(name = "--db-name", required = false, metaVar = "DB", usage = "Name of the Database to be used. Only required for MySQL database connections")
-    public String dbDatabase = "openthinclient";
-    @Option(name = "--db-timezone", required = false, metaVar = "TZ", usage = "Time zone of the MySQL database. Leave empty / unset for system time zone. Use 'auto' for auto detection.")
-    public String dbTimezone = "";
-    @Option(name = "--db-mysql-port", required = false, metaVar = "PORT", usage = "The port of the MySQL database. Defaults to 3306")
-    public int dbMySQLport = 3306;
 
     @Option(name = "--dist-source", required = false, metaVar = "NAME", usage = "The source of distribution.xml, i.e. http://archive.openthinclient.org/openthinclient/distributions.xml, the default value is " + InstallableDistributions.LOCAL_DISTRIBUTIONS_XML)
     public String distributionSource;
