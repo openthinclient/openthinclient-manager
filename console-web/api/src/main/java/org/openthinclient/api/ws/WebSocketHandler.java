@@ -60,7 +60,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 }
             }
         } else {
-            String remote_ip = session.getRemoteAddress().getAddress().getHostAddress();
+            String remote_ip = session.getAttributes().get("ip").toString();
             LOG.error("Received message with unknown type '{}' from IP {}", message_type, remote_ip);
         }
     }
@@ -84,11 +84,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
             return true;
         } catch(IOException ex) {
             LOG.error("Failed to send {} to {}",
-                      type, session.getRemoteAddress());
+                      type, session.getAttributes().get("ip"));
             return false;
         } catch(SessionLimitExceededException ex) {
             LOG.info("Could not send {} to {}. Seems to be offline.",
-                    type, session.getRemoteAddress());
+                    type, session.getAttributes().get("ip"));
             sessions.remove(session);
             return false;
         }

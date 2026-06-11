@@ -52,7 +52,7 @@ public class ClientStatus {
     }
 
     private void onHeartbeat(WebSocketSession session, String message) {
-        String remote_ip = session.getRemoteAddress().getAddress().getHostAddress();
+        String remote_ip = session.getAttributes().get("ip").toString();
         ClientInfo clientInfo = new ClientInfo() {{
             lastHeartbeat = System.currentTimeMillis();
             wsSession = session;
