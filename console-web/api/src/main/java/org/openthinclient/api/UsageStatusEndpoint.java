@@ -1,6 +1,7 @@
 package org.openthinclient.api;
 
 import org.openthinclient.common.Events.ClientCountChangeEvent;
+import org.openthinclient.service.common.license.LicenseChangeEvent;
 import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.service.store.LDAPConnection;
 import org.slf4j.Logger;
@@ -31,6 +32,11 @@ public class UsageStatusEndpoint {
 
   @EventListener
   private void clientCountChanged(ClientCountChangeEvent event) {
+    usageStatus = getUsageStatus();
+  }
+
+  @EventListener
+  private void licenseChanged(LicenseChangeEvent event) {
     usageStatus = getUsageStatus();
   }
 
