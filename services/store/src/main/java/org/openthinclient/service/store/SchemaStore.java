@@ -274,7 +274,8 @@ public enum SchemaStore {
 
     private void populateNodeData(Node node, String key) {
       // Full key of the node. Skip the <schema> root node and nameless groups.
-      if (node.getParent() != null && node.getName() != null)  {
+      if (node.getParent() != null  && node.getName() != null
+                                    && !node.getName().isEmpty()) {
         key = (key == null) || key.isEmpty() ? node.getName() : key + "." + node.getName();
       }
       if (!(node instanceof EntryNode)) {  // container (section, group etc.)
