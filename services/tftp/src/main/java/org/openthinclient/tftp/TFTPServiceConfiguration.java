@@ -27,6 +27,8 @@ public class TFTPServiceConfiguration implements ServiceConfiguration {
 
   @XmlElement
   private int tftpPort = DEFAULT_TFTP_PORT;
+  @XmlElement
+  private int maxBlockSize = 0;
 
   @XmlElementWrapper(name = "exports")
   @XmlElement(name = "export")
@@ -49,6 +51,14 @@ public class TFTPServiceConfiguration implements ServiceConfiguration {
 
   public void setTftpPort(int tftpPort) {
     this.tftpPort = tftpPort;
+  }
+
+  public int getMaxBlockSize() {
+    return maxBlockSize;
+  }
+
+  public void setMaxBlockSize(int maxBlockSize) {
+    this.maxBlockSize = maxBlockSize;
   }
 
   public List<Export> getExports() {

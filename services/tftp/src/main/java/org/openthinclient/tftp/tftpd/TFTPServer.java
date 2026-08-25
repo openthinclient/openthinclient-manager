@@ -96,6 +96,7 @@ public class TFTPServer implements Runnable {
    */
   private final Set<TFTPExport> exports = new HashSet<TFTPExport>();
   private final Selector serverSelector;
+  private final int max_blksize;
 
   /**
    * Construct a TFTPServer which does not yet export any directory and uses the
@@ -103,7 +104,8 @@ public class TFTPServer implements Runnable {
    *
    * @param port the port to use
    */
-  public TFTPServer(int port) throws IOException {
+  public TFTPServer(int port, int max_blksize) throws IOException {
+    this.max_blksize = max_blksize;
     serverSelector = Selector.open();
     if (!PROVIDE_LOCAL_ADDRESS) {
       // set up the channel
@@ -489,6 +491,8 @@ public class TFTPServer implements Runnable {
           blksize = Integer.parseInt(options.get("blksize"));
           if (blksize < 10 || blksize > 65535)
             throw new IOException("Illegal blksize option: " + blksize);
+          if (blksize > max_blksize)
+            blksize = max_blksize;
           recognizedOptions.put("blksize", Integer.toString(blksize));
           if (logger.isInfoEnabled())
             logger.info("Using blksize=" + blksize);

@@ -72,7 +72,10 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
   public void startService() throws Exception {
     try {
 
-      tftpServer = new TFTPServer(0 != configuration.getTftpPort() ? configuration.getTftpPort() : TFTPServer.DEFAULT_TFTP_PORT);
+      tftpServer = new TFTPServer(
+        0 != configuration.getTftpPort()  ? configuration.getTftpPort()
+                                          : TFTPServer.DEFAULT_TFTP_PORT,
+        configuration.getMaxBlockSize());
 
       for (TFTPServiceConfiguration.Export export : configuration.getExports()) {
         String prefix = export.getPrefix();
