@@ -67,6 +67,7 @@ public class Migrations {
   private static Version v2021b2 = Version.parse("2021.2~beta2~");
   private static Version v2025_1 = Version.parse("2025.1");
   private static Version v2511 = Version.parse("2511~");
+  private static Version v2611 = Version.parse("2611~");
 
   @Autowired
   private ManagerHome managerHome;
@@ -142,6 +143,34 @@ public class Migrations {
       .put("pulseaudio.custom-bell-sound", "bell.custom-sound")
       .build();
 
+  private static Map<String, String> oldToNewDisplayOptions = ImmutableMap
+      .<String, String>builder()
+        .put("firstscreen.connect", "screens.1.connect")
+        .put(
+          "firstscreen.cust_connector", "screens.1.cust_connector"
+        )
+        .put("firstscreen.resolution", "screens.1.resolution")
+        .put("firstscreen.rotation", "screens.1.rotation")
+        .put(
+          "firstscreen.fallbackfrequency",
+          "screens.1.fallbackfrequency"
+        )
+        .put("secondscreen.connect", "screens.2.connect")
+        .put(
+          "secondscreen.cust_connector", "screens.2.cust_connector"
+        )
+        .put("secondscreen.resolution", "screens.2.resolution")
+        .put(
+          "secondscreen.fallbackfrequency",
+          "screens.2.fallbackfrequency"
+        )
+        .put(
+          "secondscreen.positioning",
+          "screens.2.positioning.position"
+        )
+        .put("secondscreen.rotation", "screens.2.rotation")
+        .build();
+
   public void setServerId() {
     final ManagerHomeMetadata meta = managerHome.getMetadata();
     if (Strings.isNullOrEmpty(meta.getServerID())) {
@@ -184,6 +213,9 @@ public class Migrations {
       separateAudioSettings();
       mergeSsoAndAutologinComponents();
     }
+    if(isUpdate(ev.getReports(), "tcos-libs", v2611)) {
+      migrateDisplaySettingsExtension();
+    }
     if(isUpdate(ev.getReports(), "freerdp-git", v2511)) {
       separateFreeRdpAuthenticationOption();
     }
@@ -215,6 +247,10 @@ public class Migrations {
       rewriteKioskModeSettings();
       separateAudioSettings();
       mergeSsoAndAutologinComponents();
+    }
+
+    if(isInstalled("tcos-libs", v2611)) {
+      migrateDisplaySettingsExtension();
     }
 
     if(isInstalled("freerdp-git", v2511)) {
@@ -693,6 +729,46 @@ public class Migrations {
         deviceService.delete(device);
         LOG.info("Deleting login device {}.", device.getName());
       }
+    }
+  }
+
+  private void migrateDisplaySettingsExtension() {
+    for (Device device : deviceService.findAll()) {
+      Schema schema;
+      try {
+        schema = device.getSchema(device.getRealm());
+      } catch (Exception ex) {
+        LOG.error(
+          "Failed to get schema for device {}: {}",
+          device.getName(), ex.getMessage()
+        );
+        continue;
+      }
+
+      if(!schema.getName().equals("display")) {
+        continue;
+      }
+
+      LOG.info(
+        "Migrating settings for display device '{}'",
+        device.getName()
+      );
+
+      for (Entry<String, String> entry : oldToNewDisplayOptions.entrySet()) {
+        String oldValName = entry.getKey();
+        String newValName = entry.getValue();
+
+        String value = device.getValueLocal(oldValName);
+
+        if (value == null || value.isEmpty()) {
+          continue;
+        }
+
+        device.setValue(newValName, value);
+        device.removeValue(oldValName);
+      }
+
+      deviceService.save(device);
     }
   }
 
