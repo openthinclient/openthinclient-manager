@@ -141,16 +141,16 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     boolean safe = "safe".equals(bootData.get("BootOptions.BootMode", null));
     switch(ArchType.fromMessage(message)) {
     case UEFI32:
-      return safe ? "ipxe32.efi" : "syslinux32.efi";
+      return "stub32.efi";
     case UEFI64:
-      return safe ? "ipxe64.efi" : "syslinux64.efi";
+      return safe ? "ipxe.efi" : "snponly.efi";
     default:
       // old schema value if installation is not yet migrated
       String bootfile = bootData.get("BootOptions.BootfileName", null);
       if (bootfile != null) {
         return bootfile;
       }
-      return safe ? "/pxelinux.0" : "/lpxelinux.0";
+      return safe ? "/ipxe.kpxe" : "/undionly.kpxe";
     }
   }
 
@@ -158,15 +158,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     String bootFileName = null;
     switch(conversation.getArchType()) {
       case HTTP32:
-        bootFileName = "ipxe32.efi";
+        bootFileName = "stub32.efi";
         break;
       case HTTP64:
-        bootFileName = "ipxe64.efi";
+        bootFileName = "ipxe.efi";
         break;
       default:
         logger.error("Could not determine boot file for {}",
                       conversation.getArchType());
-        bootFileName = "ipxe64.efi";
+        bootFileName = "ipxe.efi";
     }
 
     InetSocketAddress serverAddress = conversation.getApplicableServerAddress();
