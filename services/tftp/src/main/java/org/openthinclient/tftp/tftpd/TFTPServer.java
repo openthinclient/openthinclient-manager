@@ -1,19 +1,19 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -59,7 +59,7 @@ import java.util.Set;
  * extenstion (RFC 2347)</a> and the <a
  * href="http://www.faqs.org/rfcs/rfc1784.html">TFTP Timeout Interval and
  * Transfer Size Options (RFC 1784)</a>
- * 
+ *
  * @author levigo
  */
 public class TFTPServer implements Runnable {
@@ -96,7 +96,7 @@ public class TFTPServer implements Runnable {
    */
   private final Set<TFTPExport> exports = new HashSet<TFTPExport>();
   private final Selector serverSelector;
-  private final int max_blksize;
+  private int max_blksize = 0;
 
   /**
    * Construct a TFTPServer which does not yet export any directory and uses the
@@ -105,7 +105,13 @@ public class TFTPServer implements Runnable {
    * @param port the port to use
    */
   public TFTPServer(int port, int max_blksize) throws IOException {
-    this.max_blksize = max_blksize;
+    if (max_blksize > 0) {
+      if (max_blksize < 10 || max_blksize > 65535) {
+        logger.error("Ignoring illegal maxBlockSize: " + max_blksize);
+      } else {
+        this.max_blksize = max_blksize;
+      }
+    }
     serverSelector = Selector.open();
     if (!PROVIDE_LOCAL_ADDRESS) {
       // set up the channel
@@ -379,6 +385,10 @@ public class TFTPServer implements Runnable {
                     DatagramChannel serverChannel) throws IOException {
       super("TFTP Send for " + peer);
 
+
+      if (max_blksize < this.blksize)
+        this.blksize = max_blksize;
+
       this.peer = peer;
       this.serverChannel = serverChannel;
 
@@ -486,12 +496,13 @@ public class TFTPServer implements Runnable {
         recognizedOptions.put("tsize", Long.toString(len));
       }
 
+      // blksize option: requests the transfer block size
       if (options.containsKey("blksize")) {
         try {
           blksize = Integer.parseInt(options.get("blksize"));
           if (blksize < 10 || blksize > 65535)
             throw new IOException("Illegal blksize option: " + blksize);
-          if (blksize > max_blksize)
+          if (max_blksize >= 0 && blksize > max_blksize)
             blksize = max_blksize;
           recognizedOptions.put("blksize", Integer.toString(blksize));
           if (logger.isInfoEnabled())
