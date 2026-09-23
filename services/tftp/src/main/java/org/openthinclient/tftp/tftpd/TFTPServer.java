@@ -96,7 +96,7 @@ public class TFTPServer implements Runnable {
    */
   private final Set<TFTPExport> exports = new HashSet<TFTPExport>();
   private final Selector serverSelector;
-  private final int max_blksize;
+  private int max_blksize = 0;
 
   /**
    * Construct a TFTPServer which does not yet export any directory and uses the
@@ -105,7 +105,14 @@ public class TFTPServer implements Runnable {
    * @param port the port to use
    */
   public TFTPServer(int port, int max_blksize) throws IOException {
-    this.max_blksize = max_blksize;
+    if (max_blksize > 0) {
+      if (max_blksize < 10 || max_blksize > 65535) {
+        logger.error("Ignoring illegal maxBlockSize: " + max_blksize);
+        this.max_blksize = 0;
+      } else {
+        this.max_blksize = max_blksize;
+      }
+    }
     serverSelector = Selector.open();
     if (!PROVIDE_LOCAL_ADDRESS) {
       // set up the channel
@@ -379,6 +386,10 @@ public class TFTPServer implements Runnable {
                     DatagramChannel serverChannel) throws IOException {
       super("TFTP Send for " + peer);
 
+
+      if (max_blksize > 0 && this.blksize > max_blksize)
+        this.blksize = max_blksize;
+
       this.peer = peer;
       this.serverChannel = serverChannel;
 
@@ -486,12 +497,13 @@ public class TFTPServer implements Runnable {
         recognizedOptions.put("tsize", Long.toString(len));
       }
 
+      // blksize option: requests the transfer block size
       if (options.containsKey("blksize")) {
         try {
           blksize = Integer.parseInt(options.get("blksize"));
           if (blksize < 10 || blksize > 65535)
             throw new IOException("Illegal blksize option: " + blksize);
-          if (blksize > max_blksize)
+          if (max_blksize > 0 && blksize > max_blksize)
             blksize = max_blksize;
           recognizedOptions.put("blksize", Integer.toString(blksize));
           if (logger.isInfoEnabled())
