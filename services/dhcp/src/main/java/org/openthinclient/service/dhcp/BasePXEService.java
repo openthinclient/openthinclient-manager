@@ -146,13 +146,10 @@ public abstract class BasePXEService extends AbstractPXEService {
 			if (archType.isHTTP()) {
 				reply.setBootFileName(getBootFileURI(conversation));
 			} else {
-				final ClientBootData bootData = conversation.getBootData();
-				if (null != bootData)
-					reply.setNextServerAddress(
-							getNextServerAddress(
-									"BootOptions.TFTPBootserver",
-									conversation.getApplicableServerAddress(),
-									bootData));
+				reply.setNextServerAddress(
+						getTFTPServerAddress(
+								conversation.getApplicableServerAddress(),
+								conversation.getBootData()));
 			}
 			if (logger.isInfoEnabled())
 				logger.info("Sending PXE proxy offer " + offer);
