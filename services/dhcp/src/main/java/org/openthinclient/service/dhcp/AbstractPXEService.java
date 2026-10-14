@@ -222,7 +222,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
    * @param bootData
    * @return
    */
-  protected InetAddress getTFTPServerAddress(InetSocketAddress localAddress,
+  protected String getTFTPServerAddress(InetSocketAddress localAddress,
                                              ClientBootData bootData) {
     InetAddress nsa = null;
 
@@ -240,7 +240,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     if (null == nsa)
       nsa = localAddress.getAddress();
 
-    return nsa;
+    return nsa.getHostAddress();
   }
 
     /**
@@ -375,7 +375,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       vci.setString("PXEClient");
       options.add(vci);
 
-      reply.setNextServerAddress(getTFTPServerAddress(serverAddress, bootData));
+      reply.setNextServerAddress(serverAddress.getAddress());
+
+      reply.setServerHostname(getTFTPServerAddress(serverAddress, bootData));
 
       reply.setBootFileName(getBootfileName(request, bootData));
 
