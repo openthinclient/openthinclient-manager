@@ -228,7 +228,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
     if (bootData != null) {
       final String value = bootData.get("BootOptions.TFTPBootserver", null);
-      if (value != null && !value.contains("${myip}")) {
+      if (value != null && !value.contains("{{myip}}")) {
         try {
           nsa = InetAddress.getByName(value);
         } catch (final IOException e) {

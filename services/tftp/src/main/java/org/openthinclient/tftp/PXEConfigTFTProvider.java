@@ -52,7 +52,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
   // pattern used to fill the template
   public static final Pattern TEMPLATE_REPLACEMENT_PATTERN =
-      Pattern.compile("\\$\\{([^\\}]+)\\}");
+      Pattern.compile("\\{\\{([^\\}]+)\\}\\}");
 
   private final Path tftpHome;
   private final String fastTemplate;
