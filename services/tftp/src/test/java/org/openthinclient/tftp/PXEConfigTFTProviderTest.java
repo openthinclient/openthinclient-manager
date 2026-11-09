@@ -22,17 +22,17 @@ public class PXEConfigTFTProviderTest {
           "DEFAULT tcos\n" + //
           "\n" + //
           "LABEL tcos\n" + //
-          "\tKERNEL\t${BootOptions.KernelName}\n" + //
-          "\tINITRD\t${BootOptions.InitrdName},${BootOptions.KernelName}-modules.img${BootOptions.FirmwareImage}\n" + //
-          "\tAPPEND\tnfsroot=${BootOptions.NFSRootserver}:${BootOptions.NFSRootPath} \\\n" + //
-          "\t\tnfshome=${HomeOptions.NFSHomeserver}:${HomeOptions.NFSHomePath} \\\n" + //
-          "\t\tldapurl=${Directory.Primary.LDAPURLs}????bindname=${urlencoded:Directory.Primary.ReadOnly.Principal},X-BINDPW=${base64:Directory.Primary.ReadOnly.Secret} \\\n" + //
+          "\tKERNEL\t{{BootOptions.KernelName}}\n" + //
+          "\tINITRD\t{{BootOptions.InitrdName}},{{BootOptions.KernelName}}-modules.img{{BootOptions.FirmwareImage}}\n" + //
+          "\tAPPEND\tnfsroot={{BootOptions.NFSRootserver}}:{{BootOptions.NFSRootPath}} \\\n" + //
+          "\t\tnfshome={{HomeOptions.NFSHomeserver}}:{{HomeOptions.NFSHomePath}} \\\n" + //
+          "\t\tldapurl={{Directory.Primary.LDAPURLs}}????bindname={{urlencoded:Directory.Primary.ReadOnly.Principal}},X-BINDPW={{base64:Directory.Primary.ReadOnly.Secret}} \\\n" + //
           "\t\tro max_loop=256 \\\n" + //
-          "\t\t${VerbosityOptions.Verbosity} \\\n" + //
-          "\t\t${BootOptions.GpuModule} \\\n" + //
-          "\t\tsplashImage=${VerbosityOptions.SplashImage} \\\n" + //
-          "\t\t${BootOptions.Debug} \\\n" + //
-          "\t\t${BootOptions.ExtraOptions}\n" + //
+          "\t\t{{VerbosityOptions.Verbosity}} \\\n" + //
+          "\t\t{{BootOptions.GpuModule}} \\\n" + //
+          "\t\tsplashImage={{VerbosityOptions.SplashImage}} \\\n" + //
+          "\t\t{{BootOptions.Debug}} \\\n" + //
+          "\t\t{{BootOptions.ExtraOptions}}\n" + //
           "\tIPAPPEND 1\n" + //
           "\n" + //
           "\n" + //
