@@ -27,13 +27,17 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
+import org.openthinclient.common.model.service.DirectoryObjectService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Version;
@@ -87,6 +91,8 @@ public class Migrations {
   private ApplicationContext applicationContext;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private RealmService realmService;
 
   @Value("${application.is-preview}")
   private boolean applicationIsPreview;
@@ -221,6 +227,7 @@ public class Migrations {
     }
     if(isUpdate(ev.getReports(), "tcos-libs", v2611)) {
       migrateDisplaySettingsExtension();
+      migrateTemplateVariables();
     }
   }
 
@@ -259,6 +266,7 @@ public class Migrations {
 
     if(isInstalled("tcos-libs", v2611)) {
       migrateDisplaySettingsExtension();
+      migrateTemplateVariables();
     }
   }
 
@@ -788,6 +796,46 @@ public class Migrations {
       }
 
       deviceService.save(device);
+    }
+  }
+
+  private boolean migrateProfileTemplateVariables(Profile profile) {
+    Map<String, String> migrated = new HashMap<>();
+    profile.getProperties().getMap().forEach((key, value) -> {
+      String newValue = value.replaceAll("\\$\\{([^}]*)\\}", "{{$1}}");
+      if (!newValue.equals(value)) {
+        migrated.put(key, newValue);
+      }
+    });
+    migrated.forEach(profile::setValue);
+    return !migrated.isEmpty();
+  }
+
+  private <T extends Profile> void migrateServiceTemplateVariables(
+    DirectoryObjectService<T> service
+  ) {
+    for (T profile : service.findAll()) {
+      if (migrateProfileTemplateVariables(profile)) {
+        LOG.info("Migrated template variables of '{}'", profile.getName());
+        service.save(profile);
+      }
+    }
+  }
+
+  private void migrateTemplateVariables() {
+    migrateServiceTemplateVariables(clientService);
+    migrateServiceTemplateVariables(hardwareTypeService);
+    migrateServiceTemplateVariables(locationService);
+
+    Realm realm = realmService.getDefaultRealm();
+    if (!migrateProfileTemplateVariables(realm)) {
+      return;
+    }
+    try {
+      realm.getDirectory().save(realm);
+      realm.refresh();
+    } catch (DirectoryException e) {
+      LOG.error("Failed to save migrated realm settings", e);
     }
   }
 
