@@ -764,6 +764,25 @@ public class Migrations {
           continue;
         }
 
+        if (oldValName.equals("secondscreen.positioning")) {
+          switch (value) {
+            case "--same-as":
+              value = "clone";
+              break;
+            case "--above":
+              value = "above";
+              break;
+            case "--below":
+              value = "below";
+              break;
+            case "--left-of":
+              value = "left";
+              break;
+            default:
+              value = "right";
+          }
+        }
+
         device.setValue(newValName, value);
         device.removeValue(oldValName);
       }
