@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.service.ClientGroupService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
@@ -40,6 +41,8 @@ public final class DeviceView extends AbstractProfileView<Device> {
   private DeviceService deviceService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
+  @Autowired
+  private ClientGroupService clientGroupService;
   @Autowired
   private ClientService clientService;
 
@@ -106,6 +109,12 @@ public final class DeviceView extends AbstractProfileView<Device> {
                                 mc.getMessage(UI_CLIENT_HEADER),
                                 allClients,
                                 values -> saveReference(device, values, allClients, Client.class));
+
+    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
+    refPresenter.showReference(members, ClientGroup.class,
+                                mc.getMessage(UI_CLIENTGROUP_HEADER),
+                                allClientGroups,
+                                values -> saveReference(device, values, allClientGroups, ClientGroup.class));
 
     return referencesPanel;
   }

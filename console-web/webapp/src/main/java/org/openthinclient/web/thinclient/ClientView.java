@@ -269,6 +269,16 @@ public final class ClientView extends AbstractProfileView<Client> {
       }
     }
 
+    Set<ClientGroup> clientGroupsWithDevices = clientGroups.stream()
+        .filter(group -> group.getDevices().size() > 0)
+        .collect(Collectors.toSet());
+    if (!clientGroupsWithDevices.isEmpty()) {
+      refPresenter.showReferenceAddendum(
+          clientGroupsWithDevices,
+          mc.getMessage(UI_FROM_CLIENTGROUP_HEADER),
+          getDevicesForClientGroupFunction(client));
+    }
+
     Set<Printer> allPrinters = printerService.findAll();
     refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
                                 allPrinters,
@@ -304,6 +314,15 @@ public final class ClientView extends AbstractProfileView<Client> {
                     .map(group -> ProfilePropertiesBuilder.createItems(
                                                     group.getApplications()))
                     .orElse(new ArrayList<>());
+  }
+
+  private Function<Item, List<Item>>
+  getDevicesForClientGroupFunction(Client client) {
+    return item -> client.getClientGroups().stream()
+        .filter(group -> group.getName().equals(item.getName()))
+        .findFirst()
+        .map(group -> ProfilePropertiesBuilder.createItems(group.getDevices()))
+        .orElse(new ArrayList<>());
   }
 
   /**

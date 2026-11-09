@@ -484,6 +484,21 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 					.getDevices().size() > 0);
 		}
 	}
+
+	@Test
+	public void assignDevicesToClientGroup() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
+
+		for (final ClientGroup clientGroup : dir.list(ClientGroup.class)) {
+			clientGroup.setDevices(dir.list(Device.class));
+			dir.save(clientGroup);
+
+			final ClientGroup clientGroupNew = dir.load(ClientGroup.class, clientGroup.getDn());
+
+			Assert.assertTrue("No Devices at: " + clientGroupNew.getName(),
+					clientGroupNew.getDevices().size() > 0);
+		}
+	}
 //FIXME
 //	@Test
 //	public void assignClientsToHardwareType() throws DirectoryException {

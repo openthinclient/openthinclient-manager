@@ -3,6 +3,7 @@ package org.openthinclient.sysreport.generate;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
@@ -87,7 +88,8 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     Set<ApplicationGroup> applicationGroups = applicationGroupService.findAll();
     report.getConfiguration().setApplicationGroupCount(applicationGroups.size());
-    report.getConfiguration().setThinClientGroupCount(clientGroupService.findAll().size());
+    Set<ClientGroup> clientGroups = clientGroupService.findAll();
+    report.getConfiguration().setThinClientGroupCount(clientGroups.size());
 
     // application usage
     Set<Application> applications = applicationService.findAll();
@@ -123,6 +125,14 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     for (HardwareType hardwaretype : hardwareTypes) {
       for (Device device : hardwaretype.getDevices()) {
         deviceClients.get(device).addAll(hwtClients.get(hardwaretype));
+      }
+    }
+    for (ClientGroup clientGroup : clientGroups) {
+      Set<Client> groupClients = clientGroup.getMembers().stream()
+          .filter(Objects::nonNull)
+          .collect(toSet());
+      for (Device device : clientGroup.getDevices()) {
+        deviceClients.get(device).addAll(groupClients);
       }
     }
     report.getConfiguration().setDeviceTypeUsage(countSchemaObjects(devices, deviceClients));

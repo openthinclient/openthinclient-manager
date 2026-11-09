@@ -35,6 +35,8 @@ public final class ClientGroupView extends AbstractGroupView<ClientGroup> {
   @Autowired
   private ClientGroupService clientGroupService;
   @Autowired
+  private DeviceService deviceService;
+  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
@@ -71,6 +73,12 @@ public final class ClientGroupView extends AbstractGroupView<ClientGroup> {
                                 mc.getMessage(UI_CLIENT_HEADER),
                                 allClients,
                                 values -> saveReference(clientGroup, values, allClients, Client.class));
+
+    Set<Device> allDevices = deviceService.findAll();
+    refPresenter.showReference(clientGroup.getDevices(),
+                                mc.getMessage(UI_DEVICE_HEADER),
+                                allDevices,
+                                values -> saveReference(clientGroup, values, allDevices, Device.class));
 
     Set<Application> allApplications = applicationService.findAll();
     refPresenter.showReference(clientGroup.getApplications(),
@@ -111,6 +119,8 @@ public final class ClientGroupView extends AbstractGroupView<ClientGroup> {
   protected <D extends DirectoryObject> Set<D> getMembers(ClientGroup profile, Class<D> clazz) {
     if (clazz == Client.class) {
       return (Set<D>)profile.getMembers();
+    } else if (clazz == Device.class) {
+      return (Set<D>)profile.getDevices();
     } else if (clazz == ApplicationGroup.class) {
       return (Set<D>)profile.getApplicationGroups();
     } else if (clazz == Application.class) {

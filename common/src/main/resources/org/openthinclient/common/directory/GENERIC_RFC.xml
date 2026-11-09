@@ -37,6 +37,8 @@
 			filter="(uniqueMember={0})" member-field="uniqueMember" />
 		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
+		<many-to-many name="devices" type="org.openthinclient.common.model.Device" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
 		<many-to-many name="clientGroups" type="org.openthinclient.common.model.ClientGroup" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
 		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
