@@ -222,31 +222,25 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
    * @param bootData
    * @return
    */
-  protected InetAddress getNextServerAddress(String property,
-                                             InetSocketAddress localAddress,
+  protected InetAddress getTFTPServerAddress(InetSocketAddress localAddress,
                                              ClientBootData bootData) {
     InetAddress nsa = null;
-    final String value = bootData.get(property, null);
-    if (value != null && !value.contains("${myip}"))
-      nsa = safeGetInetAddress(value);
+
+    if (bootData != null) {
+      final String value = bootData.get("BootOptions.TFTPBootserver", null);
+      if (value != null && !value.contains("${myip}")) {
+        try {
+          nsa = InetAddress.getByName(value);
+        } catch (final IOException e) {
+          logger.warn("Invalid inet address: " + value);
+        }
+      }
+    }
 
     if (null == nsa)
       nsa = localAddress.getAddress();
 
     return nsa;
-  }
-
-  /**
-   * @param name
-   * @return
-   */
-  private InetAddress safeGetInetAddress(String name) {
-    try {
-      return InetAddress.getByName(name);
-    } catch (final IOException e) {
-      logger.warn("Invalid inet address: " + name);
-      return null;
-    }
   }
 
     /**
@@ -381,8 +375,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       vci.setString("PXEClient");
       options.add(vci);
 
-      reply.setNextServerAddress(getNextServerAddress(
-              "BootOptions.TFTPBootserver", serverAddress, bootData));
+      reply.setNextServerAddress(getTFTPServerAddress(serverAddress, bootData));
 
       reply.setBootFileName(getBootfileName(request, bootData));
 
