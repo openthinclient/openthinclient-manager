@@ -87,14 +87,10 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
 
       LOGGER.info("Exporting PXE Boot configuration");
       final Path tftpHome = managerHome.getLocation().toPath().resolve(DEFAULT_ROOT_PATH);
-      tftpServer.addExport(new TFTPExport("/pxelinux.cfg", new PXEConfigTFTProvider(
-              tftpHome,
-              "template-http.txt",
-              "template-tftp.txt")));
       tftpServer.addExport(new TFTPExport("/ipxe.cfg", new PXEConfigTFTProvider(
               tftpHome,
-              "ipxe.cfg",
-              "ipxe.cfg")));
+              "ipxe_http.cfg",
+              "ipxe_tftp.cfg")));
       tftpServer.addExport(new TFTPExport("/localboot.cfg", new PXEConfigTFTProvider(
               tftpHome,
               "localboot.cfg",
