@@ -62,7 +62,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   protected static final Map<RequestID, Conversation> conversations = Collections
           .synchronizedMap(new HashMap<RequestID, Conversation>());
   private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
-  private String defaultNextServerAddress;
   private volatile boolean trackUnrecognizedPXEClients;
   private DhcpServiceConfiguration.PXEPolicy policy;
 
@@ -230,9 +229,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     final String value = bootData.get(property, null);
     if (value != null && !value.contains("${myip}"))
       nsa = safeGetInetAddress(value);
-
-    if (null == nsa && null != defaultNextServerAddress)
-      nsa = safeGetInetAddress(defaultNextServerAddress);
 
     if (null == nsa)
       nsa = localAddress.getAddress();
