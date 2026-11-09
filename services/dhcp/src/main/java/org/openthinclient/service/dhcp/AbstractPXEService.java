@@ -29,7 +29,6 @@ import org.apache.directory.server.dhcp.options.AddressOption;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
-import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.apache.directory.server.dhcp.service.AbstractDhcpService;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
@@ -389,16 +388,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       reply.setNextServerAddress(getNextServerAddress(
               "BootOptions.TFTPBootserver", serverAddress, bootData));
 
-      final String rootPath = getNextServerAddress(
-          "BootOptions.NFSRootserver",
-          serverAddress,
-          bootData).getHostAddress() + ":" + bootData.get("BootOptions.NFSRootPath", null);
-      options.add(new RootPath(rootPath));
-
       reply.setBootFileName(getBootfileName(request, bootData));
 
       if (logger.isInfoEnabled())
-        logger.info("Sending PXE proxy ACK rootPath=" + rootPath
+        logger.info("Sending PXE proxy ACK"
                     + " bootFileName=" + reply.getBootFileName()
                     + " nextServerAddress="
                     + reply.getNextServerAddress().getHostAddress() + " reply="
