@@ -283,9 +283,10 @@ public class LDAPConnection implements AutoCloseable {
     }
     if (!r.hasMore()) return null;
     SearchResult sr = r.next();
+    Attribute location = sr.getAttributes().get("l");
     return new String[] {
         sr.getName(),
-        (String) sr.getAttributes().get("l").get()
+        location != null ? (String) location.get() : null
     };
   }
 
