@@ -43,6 +43,8 @@ public final class PrinterView extends AbstractProfileView<Printer> {
   @Autowired
   private ClientService clientService;
   @Autowired
+  private ClientGroupService clientGroupService;
+  @Autowired
   private LocationService locationService;
 
   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -128,6 +130,12 @@ public final class PrinterView extends AbstractProfileView<Printer> {
                                 mc.getMessage(UI_CLIENT_HEADER),
                                 allClients,
                                 values -> saveReference(printer, values, allClients, Client.class));
+
+    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
+    refPresenter.showReference(members, ClientGroup.class,
+                                mc.getMessage(UI_CLIENTGROUP_HEADER),
+                                allClientGroups,
+                                values -> saveReference(printer, values, allClientGroups, ClientGroup.class));
 
     return referencesPanel;
   }

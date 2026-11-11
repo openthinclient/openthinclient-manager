@@ -147,17 +147,21 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
     report.getConfiguration().setLocationUsage(usedLocations.size());
 
     // printer usage
-    Map<Location, Set<Client>> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
+    ClientMap<Location> locationClients = getCollectClientsByProfile(clients, client -> Stream.of(client.getLocation()).collect(Collectors.toSet()));
     Set<Printer> printers = printerService.findAll();
     report.getConfiguration().setPrinters(countTypes(printers));
-    Map<Printer, Set<Client>> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);
+    ClientMap<Printer> printerClients = getCollectClientsByProfile(clients, Client::getPrinters);
     for (Location location: locations) {
       for (Printer printer : location.getPrinters()) {
-        if (printerClients.containsKey(printer)) {
-          printerClients.get(printer).addAll(locationClients.get(location));
-        } else {
-          printerClients.put(printer, locationClients.get(location));
-        }
+        printerClients.get(printer).addAll(locationClients.get(location));
+      }
+    }
+    for (ClientGroup clientGroup : clientGroups) {
+      Set<Client> groupClients = clientGroup.getMembers().stream()
+          .filter(Objects::nonNull)
+          .collect(toSet());
+      for (Printer printer : clientGroup.getPrinters()) {
+        printerClients.get(printer).addAll(groupClients);
       }
     }
     report.getConfiguration().setPrinterUsage(countSchemaObjects(printers, printerClients));

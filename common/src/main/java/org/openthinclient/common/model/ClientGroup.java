@@ -41,6 +41,7 @@ public class ClientGroup extends DirectoryObject implements
 	private Set<ApplicationGroup> applicationGroups;
 	private Set<Application> applications;
 	private Set<Device> devices;
+	private Set<Printer> printers;
 
 	private String groupType;
 
@@ -92,6 +93,17 @@ public class ClientGroup extends DirectoryObject implements
 		firePropertyChange("devices", null, devices);
 	}
 
+	public Set<Printer> getPrinters() {
+		if (null == printers)
+			printers = new HashSet<Printer>();
+		return printers;
+	}
+
+	public void setPrinters(Set<Printer> printers) {
+		this.printers = printers;
+		firePropertyChange("printers", null, printers);
+	}
+
 	/*
 	 *This method returns a set of the referenced clientgroup.
 	 * If there is none it creates a new one.
@@ -126,6 +138,7 @@ public class ClientGroup extends DirectoryObject implements
 		assocObjects.put(ApplicationGroup.class, applicationGroups);
 		assocObjects.put(ClientGroup.class, clientGroups);
 		assocObjects.put(Device.class, devices);
+		assocObjects.put(Printer.class, printers);
 
 		return assocObjects;
 	}
@@ -147,6 +160,8 @@ public class ClientGroup extends DirectoryObject implements
 			setClientGroups((Set<ClientGroup>) subgroups);
 		if (subgroupClass.equals(Device.class))
 			setDevices((Set<Device>) subgroups);
+		if (subgroupClass.equals(Printer.class))
+			setPrinters((Set<Printer>) subgroups);
 	}
 
 	/*

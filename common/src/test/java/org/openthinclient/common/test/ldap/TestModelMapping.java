@@ -499,6 +499,52 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 					clientGroupNew.getDevices().size() > 0);
 		}
 	}
+
+	@Test
+	public void assignAndRemovePrintersOnClientGroup() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
+		final ClientGroup clientGroup = dir.list(ClientGroup.class).iterator().next();
+		final Client client = dir.list(Client.class).iterator().next();
+		final Printer printer = dir.list(Printer.class).iterator().next();
+
+		printer.getMembers().add(client);
+		dir.save(printer);
+		clientGroup.getPrinters().add(printer);
+		dir.save(clientGroup);
+
+		final ClientGroup reloadedGroup = dir.load(ClientGroup.class, clientGroup.getDn(), true);
+		Assert.assertTrue(reloadedGroup.getPrinters().contains(printer));
+		Printer reloadedPrinter = dir.load(Printer.class, printer.getDn(), true);
+		Assert.assertTrue(reloadedPrinter.getMembers().contains(clientGroup));
+		Assert.assertTrue(reloadedPrinter.getMembers().contains(client));
+
+		reloadedGroup.getPrinters().remove(printer);
+		dir.save(reloadedGroup);
+
+		Assert.assertFalse(dir.load(ClientGroup.class, clientGroup.getDn(), true)
+				.getPrinters().contains(printer));
+		reloadedPrinter = dir.load(Printer.class, printer.getDn(), true);
+		Assert.assertFalse(reloadedPrinter.getMembers().contains(clientGroup));
+		Assert.assertTrue(reloadedPrinter.getMembers().contains(client));
+	}
+
+	@Test
+	public void assignAndRemoveClientGroupsOnPrinter() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
+		final ClientGroup clientGroup = dir.list(ClientGroup.class).iterator().next();
+		final Printer printer = dir.list(Printer.class).iterator().next();
+
+		printer.getMembers().add(clientGroup);
+		dir.save(printer);
+		Assert.assertTrue(dir.load(ClientGroup.class, clientGroup.getDn(), true)
+				.getPrinters().contains(printer));
+
+		final Printer reloadedPrinter = dir.load(Printer.class, printer.getDn(), true);
+		reloadedPrinter.getMembers().remove(clientGroup);
+		dir.save(reloadedPrinter);
+		Assert.assertFalse(dir.load(ClientGroup.class, clientGroup.getDn(), true)
+				.getPrinters().contains(printer));
+	}
 //FIXME
 //	@Test
 //	public void assignClientsToHardwareType() throws DirectoryException {

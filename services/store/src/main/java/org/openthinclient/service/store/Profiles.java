@@ -166,9 +166,10 @@ public class Profiles {
    *
    * <pre>
    *   1.  user
-   *   3.    '-- usergroups
-   *   5.  client
-   *   6.    '-- location
+   *   2.    '-- usergroups
+   *   3.  client
+   *   4.    |-- location
+   *   5.    '-- clientgroups
    * </pre>
    *
    * @param mac    MAC address of the client or null
@@ -202,6 +203,9 @@ public class Profiles {
             printers.addAll(ldapCon.loadPrinters( "location",
                                                   clientAndLocationDNs[1]));
           }
+          printers.addAll(ldapCon.loadPrinters("clientgroup",
+                          ldapCon.searchClientgroupDNs(clientAndLocationDNs[0])
+                              .toArray(new String[0])));
         }
       }
     } catch (NamingException ex) {
