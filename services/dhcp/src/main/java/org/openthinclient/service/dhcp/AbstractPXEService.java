@@ -143,11 +143,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
     case UEFI64:
       return safe ? "ipxe_slow.efi" : "snponly_fast.efi";
     default:
-      // old schema value if installation is not yet migrated
-      String bootfile = bootData.get("BootOptions.BootfileName", null);
-      if (bootfile != null) {
-        return bootfile;
-      }
       return safe ? "/ipxe_slow.kpxe" : "/undionly_fast.kpxe";
     }
   }
